@@ -22,6 +22,7 @@ startFrame = bpy.data.scenes[ActiveScene].frame_start
 endFrame   = bpy.data.scenes[ActiveScene].frame_end
 framerate  = bpy.data.scenes[ActiveScene].render.fps / bpy.data.scenes[ActiveScene].render.fps_base
 outputPath = bpy.data.scenes[ActiveScene].render.filepath
+outputDirectoryIsRelative = False
 
 """
 Error code table:
@@ -30,32 +31,27 @@ Error code table:
 -2: output invalid, no slashes in path
 -3: output is relative, has // at start
 """
-
+errorcode = 0
 # check if relative
-rel_chk = outputPath[0:2]
+#rel_chk = outputPath[0:2]
 
-if len(outputPath) == 0:
-    errorcode = -1
-
-elif outputPath.count("\\") == 0:
-    errorcode = -2
-
-elif rel_chk == "//":
-    errorcode = -3
-
-else:
-    errorcode = 0
+#if len(outputPath) == 0:
+#    errorcode = -1
+#
+#elif outputPath.count("\\") == 0:
+#    errorcode = -2
+#
+#elif rel_chk == "//":
+#	errorcode = -3
+#else:
+#    errorcode = 0
 
 # os.path.isabs(my_path) | true = absolute, false = relative
 
 # get output dir minus file name
 altdir = str(outputPath).rpartition('\\')[:-1][0]
 
-#print( "Proj Name: %s\n" % (projName) )
-#print( "Start: %s\n" % (startFrame) )
-#print( "end: %s\n" % (endFrame) )
-
-data = { 'ProjectName': projName, 'StartFrame': startFrame, 'EndFrame': endFrame, 'Framerate': framerate, 'OutputDirectory': outputPath,  
+data = { 'ProjectName': projName, 'StartFrame': startFrame, 'EndFrame': endFrame, 'Framerate': framerate, 'OutputDirectory': outputPath, 'OutputDirectoryIsRelative':  outputDirectoryIsRelative,
         'NumScenes': N_of_Scenes, 'ActiveScene': ActiveScene, 'AltDir': altdir, 'ErrorCode': errorcode };
 
 jsonData = json.dumps(data, indent=4, skipkeys=True, sort_keys=True);

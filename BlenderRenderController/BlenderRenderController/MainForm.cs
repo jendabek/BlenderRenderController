@@ -49,7 +49,8 @@ namespace BlenderRenderController
 			public int    EndFrame;
             public string    Framerate;
             public string OutputDirectory;
-			public string ProjectName;
+            public bool OutputDirectoryIsRelative;
+            public string ProjectName;
             // new
             public string NumScenes;
             public string ActiveScene;
@@ -585,8 +586,24 @@ namespace BlenderRenderController
                 //chunkEndNumericUpDown.Text = int.Parse(chunkStartNumericUpDown.Text) + chunkEndNumericUpDown.Text;
 
                 // Remove last bit from file path, if checked
+                /*if(blendData.OutputDirectoryIsRelative)
+                {
+                    outFolderPath = Path.Combine(blendFilePath, blendData.OutputDirectory);
+                } else
+                {
+                    outFolderPath = blendData.OutputDirectory;
+                }*/
+                try
+                {
+                    outFolderPath = Path.GetFullPath(blendData.OutputDirectory);
+                }
+                catch (Exception)
+                {
 
-                partsFolderPathTextBox.Text = blendData.AltDir;
+                    outFolderPath = Path.Combine(Path.GetDirectoryName(blendFilePath), blendData.OutputDirectory.Replace("//", ""));
+                }
+                
+                partsFolderPathTextBox.Text = outFolderPath;
                 
 
                 //outFolderPathTextBox.Text          = outFolderPath = blendData.AltDir;
