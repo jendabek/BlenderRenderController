@@ -335,7 +335,7 @@ namespace BlenderRenderController
                     DialogResult dialogResult = MessageBox.Show("Can I delete all previously rendered chunks?",
                                                                 "Chunks folder not empty",
                                                                 MessageBoxButtons.YesNo,
-                                                                MessageBoxIcon.Question);
+                                                                MessageBoxIcon.Exclamation);
 
                     if (dialogResult == DialogResult.No) {
                         return;
