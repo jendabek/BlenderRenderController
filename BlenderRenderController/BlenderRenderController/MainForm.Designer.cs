@@ -197,7 +197,7 @@
             this.partsFolderPathTextBox.Size = new System.Drawing.Size(605, 22);
             this.partsFolderPathTextBox.TabIndex = 3;
             this.partsFolderPathTextBox.TabStop = false;
-            this.partsFolderPathTextBox.TextChanged += new System.EventHandler(this.outFolderPathTextBox_TextChanged);
+            this.partsFolderPathTextBox.Leave += new System.EventHandler(this.outFolderPathTextBox_TextChanged);
             // 
             // rendererComboBox
             // 
@@ -912,7 +912,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(678, 675);
-            this.MinimumSize = new System.Drawing.Size(678, 0);
+            this.MinimumSize = new System.Drawing.Size(678, 39);
             this.Name = "MainForm";
             this.Text = "Blender Render Controller";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_Close);

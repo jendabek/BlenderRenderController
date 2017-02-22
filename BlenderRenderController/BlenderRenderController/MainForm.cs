@@ -215,19 +215,31 @@ namespace BlenderRenderController
         {
             var partsFolderBrowseDialog = new FolderBrowserDialog();
             //outFileBrowseDialog.Filter = "Blend|*.blend";
-
+            Trace.WriteLine(partsFolderPathTextBox.Text);
             var result = partsFolderBrowseDialog.ShowDialog();
 
             if (result == DialogResult.OK)
             {
-                outFolderPath = partsFolderBrowseDialog.SelectedPath;
-                partsFolderPathTextBox.Text = outFolderPath;
+                outFolderPath = partsFolderPathTextBox.Text = Path.GetFullPath(partsFolderBrowseDialog.SelectedPath);
             }
         }
 
         private void outFolderPathTextBox_TextChanged(object sender, EventArgs e)
         {
-            outFolderPath = partsFolderPathTextBox.Text;
+
+            partsFolderPathTextBox.Text = partsFolderPathTextBox.Text.Trim();
+
+            try {
+                Path.GetFullPath(partsFolderPathTextBox.Text);
+            }
+            catch (Exception)
+            {
+                partsFolderPathTextBox.Text = outFolderPath;
+                return;
+            }
+
+            outFolderPath = partsFolderPathTextBox.Text = Path.GetFullPath(partsFolderPathTextBox.Text);
+
         }
 
         private void renderChunkButton_Click(object sender, EventArgs e)
@@ -717,8 +729,8 @@ namespace BlenderRenderController
             }
 
 
-            if (!Directory.Exists(partsFolderPathTextBox.Text)) {
-                Directory.CreateDirectory(partsFolderPathTextBox.Text);
+            if (!Directory.Exists(outFolderPath)) {
+                Directory.CreateDirectory(outFolderPath);
             }
 
             Process p = new Process();
