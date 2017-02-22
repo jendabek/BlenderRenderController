@@ -116,6 +116,9 @@ namespace BlenderRenderController
                     chunkLengthNumericUpDown.Enabled = false;
                     concatenatePartsButton.Enabled = false;
                     reloadBlenderDataButton.Enabled = false;
+                    openOutputFolderButton.Enabled = false;
+                    partsFolderBrowseButton.Enabled = false;
+                    partsFolderPathTextBox.Enabled = false;
                 break;
                 case AppStates.READY:
                     renderAllButton.Enabled = true;
@@ -134,6 +137,7 @@ namespace BlenderRenderController
                     //removeFileFromPathCheckbox.Enabled = true;
                     processCountNumericUpDown.Enabled = true;
                     rendererComboBox.Enabled = true;
+                    openOutputFolderButton.Enabled = true;
                     break;
                 case AppStates.RENDERING_ALL:
                 case AppStates.RENDERING_CHUNK_ONLY:
@@ -153,6 +157,7 @@ namespace BlenderRenderController
                     //removeFileFromPathCheckbox.Enabled = false;
                     processCountNumericUpDown.Enabled = false;
                     rendererComboBox.Enabled = false;
+                    openOutputFolderButton.Enabled = true;
                     break;
             }
         }
@@ -178,7 +183,7 @@ namespace BlenderRenderController
                 // arg 1 = .blend path
                 blendFilePath = args[1];
                 //blendFilePathTextBox.Text = blendFilePath;
-                loadBlenderData();
+                loadBlend();
             }
 
             blendFilePath = "";
@@ -200,7 +205,7 @@ namespace BlenderRenderController
             {
                 blendFilePath             = blendFileBrowseDialog.FileName;
                 //blendFilePathTextBox.Text = blendFilePath;
-				loadBlenderData();
+				loadBlend();
             }
 
         }
@@ -227,9 +232,12 @@ namespace BlenderRenderController
         private void renderChunkButton_Click(object sender, EventArgs e)
         {
             appState = AppStates.RENDERING_CHUNK_ONLY;
+            startTime = DateTime.Now;
+            totalTimeLabel.Text = "00:00:00";
             lastChunkStarted = true;
             processTimer.Enabled = true;
             renderCurrentChunk();
+            updateUI();
         }
         private void renderCurrentChunk()
         {
@@ -312,15 +320,35 @@ namespace BlenderRenderController
 
         private void renderAllButton_Click(object sender, EventArgs e)
         {
+
+            //we are stopping
             if (processTimer.Enabled) { 
                 stopRender();
                 renderAllButton.Text = "Render All";
-            } else {
+            }
+            //we want to start render
+            else {
+                var chunksPath = Path.Combine(outFolderPath, chunksSubfolder);
+                if (Directory.Exists(chunksPath) && Directory.GetFiles(chunksPath).Length > 0)
+                {
+                    // Configure the message box to be displayed
+                    DialogResult dialogResult = MessageBox.Show("Can I delete all previously rendered chunks?",
+                                                                "Chunks folder not empty",
+                                                                MessageBoxButtons.YesNo,
+                                                                MessageBoxIcon.Question);
+
+                    if (dialogResult == DialogResult.No) {
+                        return;
+                    }
+                    Helper.clearFolder(chunksPath);
+                    renderAllButton_Click(null, null);
+                }
                 startRenderAll();
                 renderAllButton.Text = "Stop";
             }
 
         }
+        
         private void startRenderAll()
         {
             appState = AppStates.RENDERING_ALL;
@@ -470,7 +498,7 @@ namespace BlenderRenderController
             Trace.WriteLine(ffmpegProcess.StartInfo.Arguments);
             ffmpegProcess.Start();
         }
-		private void loadBlenderData() {
+		private void loadBlend() {
 
             if ( !File.Exists( blendFilePath) ) {
                 // file does not exist
@@ -550,11 +578,14 @@ namespace BlenderRenderController
                 
                 totalStart       = blendData.StartFrame;
 				totalEnd         = blendData.EndFrame;
+                blendFileLabel.Text = "1. Blend File:";
+                blendFileNameLabel.Text = " " + blendData.ProjectName + ".blend";
+
 
                 //chunkEndNumericUpDown.Text = int.Parse(chunkStartNumericUpDown.Text) + chunkEndNumericUpDown.Text;
 
                 // Remove last bit from file path, if checked
-                
+
                 partsFolderPathTextBox.Text = blendData.AltDir;
                 
 
@@ -650,7 +681,7 @@ namespace BlenderRenderController
 
 		private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
 
-            loadBlenderData();
+            loadBlend();
 		}
 
         private void MixdownAudio_Click(object sender, EventArgs e) {
@@ -732,7 +763,7 @@ namespace BlenderRenderController
 
         private void ajustOutDir_CheckedChanged(object sender, EventArgs e)
         {
-            loadBlenderData();
+            loadBlend();
         }
 
         // DEBUG OPTIONS
@@ -789,6 +820,10 @@ namespace BlenderRenderController
         {
             Process.Start("https://github.com/RedRaptor93/BlenderRenderController");
         }
+        private void jendabekToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/jendabek/BlenderRenderController");
+        }
 
         private void label3_Click(object sender, EventArgs e)
         {
@@ -823,6 +858,21 @@ namespace BlenderRenderController
         private void chunkEndLabel_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void infoFramesTotal_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void infoFramesTotalLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void openOutputFolderButton_Click(object sender, EventArgs e)
+        {
+            Process.Start(outFolderPath);
         }
 
         //total start numericUpDown change
