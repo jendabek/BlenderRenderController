@@ -20,6 +20,7 @@ ActiveScene = str(a_data).partition('("')[-1].rpartition('")')[0]
 # set infos acording to active Scene
 startFrame = bpy.data.scenes[ActiveScene].frame_start
 endFrame   = bpy.data.scenes[ActiveScene].frame_end
+framerate  = bpy.data.scenes[ActiveScene].render.fps / bpy.data.scenes[ActiveScene].render.fps_base
 outputPath = bpy.data.scenes[ActiveScene].render.filepath
 
 """
@@ -54,7 +55,7 @@ altdir = str(outputPath).rpartition('\\')[:-1][0]
 #print( "Start: %s\n" % (startFrame) )
 #print( "end: %s\n" % (endFrame) )
 
-data = { 'ProjectName': projName, 'StartFrame': startFrame, 'EndFrame': endFrame, 'OutputDirectory': outputPath,  
+data = { 'ProjectName': projName, 'StartFrame': startFrame, 'EndFrame': endFrame, 'Framerate': framerate, 'OutputDirectory': outputPath,  
         'NumScenes': N_of_Scenes, 'ActiveScene': ActiveScene, 'AltDir': altdir, 'ErrorCode': errorcode };
 
 jsonData = json.dumps(data, indent=4, skipkeys=True, sort_keys=True);

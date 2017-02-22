@@ -16,31 +16,44 @@ using System.Web.Script.Serialization;
 namespace BlenderRenderController
 {
 
+    
     public partial class MainForm : Form
     {
-        string   blendFilePath;
-        string   outFolderPath;
-		string   blendProjectName = "concat_output.mp4";
-		DateTime startTime        = DateTime.MaxValue;
+        string blendFilePath;
+        string outFolderPath;
 
-		string ScriptsPath;
+        decimal chunkStart, chunkEnd, chunkLength, totalStart, totalEnd;
 
-        Timer renderAllTimer;
-        int runningRenderProcessCount;
+        bool lastChunkStarted = false;
 
+        String[] allowedFormats = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
+
+        string audioFormat = "ac3";
+        string chunksSubfolder = "chunks";
+
+        string appState = AppStates.AFTER_START;
+
+        List<Process> processes = new List<Process>();
+
+        BlenderData blendData;
+
+        DateTime startTime;
+
+		string scriptsPath;
+
+        Timer processTimer;
         int ErrorCode;
-        string AltDir;
-        // Lenth of segments, TEST
-        int SeqFrame = 1000;
 
         public class BlenderData {
 			public int    StartFrame;
 			public int    EndFrame;
-			public string OutputDirectory;
+            public string    Framerate;
+            public string OutputDirectory;
 			public string ProjectName;
             // new
             public string NumScenes;
             public string ActiveScene;
+
             public string AltDir;
             public int ErrorCode;
             //public int SegFrame = 1000;
@@ -53,13 +66,95 @@ namespace BlenderRenderController
         public MainForm()
         {
             InitializeComponent();
+            
 
 			//string execPath = Path.GetDirectoryName( System.Reflection.Assembly.GetExecutingAssembly().CodeBase );
 			string execPath = new Uri( System.Reflection.Assembly.GetExecutingAssembly().CodeBase ).LocalPath;
 
-			ScriptsPath = Path.Combine( Path.GetDirectoryName( execPath ), "Scripts" );
-			Trace.WriteLine( String.Format( "Scripts Path: '{0}'", ScriptsPath ) );
+			scriptsPath = Path.Combine( Path.GetDirectoryName( execPath ), "Scripts" );
+			Trace.WriteLine( String.Format( "Scripts Path: '{0}'", scriptsPath ) );
+            chunkLength = chunkLengthNumericUpDown.Value;
+            totalStart = totalStartNumericUpDown.Value;
+            totalEnd = totalEndNumericUpDown.Value;
+            updateUI();
+        }
+        public void updateUI()
+        {
+            chunkEndNumericUpDown.Text = chunkEnd.ToString();
+            chunkStartNumericUpDown.Text = chunkStart.ToString();
+            chunkLengthNumericUpDown.Value = chunkLength;
+            totalStartNumericUpDown.Value = totalStart;
+            totalEndNumericUpDown.Value = totalEnd;
 
+            //top infos
+            if (blendData != null)
+            {
+                var durationSeconds = Convert.ToDouble((totalEnd - totalStart) / int.Parse(blendData.Framerate.Split('.')[0]));
+                TimeSpan t = TimeSpan.FromSeconds(durationSeconds);
+
+                infoDuration.Text = string.Format("{0:D1}h {1:D1}m {2:D1}s {3:D1}ms",
+                                t.Hours,
+                                t.Minutes,
+                                t.Seconds,
+                                t.Milliseconds);
+                infoFramesTotal.Text = (totalEnd - totalStart).ToString();
+            }
+
+            renderAllButton.Text = (processTimer != null && processTimer.Enabled) ? "Stop" : "Render All";
+
+            //enabling / disabling UI according to current app state
+            switch (appState)
+            {
+                case AppStates.AFTER_START:
+                    renderAllButton.Enabled = false;
+                    renderChunkButton.Enabled = false;
+                    prevChunkButton.Enabled = false;
+                    nextChunkButton.Enabled = false;
+                    mixDownButton.Enabled = false;
+                    totalStartNumericUpDown.Enabled = false;
+                    totalEndNumericUpDown.Enabled = false;
+                    chunkLengthNumericUpDown.Enabled = false;
+                    concatenatePartsButton.Enabled = false;
+                    reloadBlenderDataButton.Enabled = false;
+                break;
+                case AppStates.READY:
+                    renderAllButton.Enabled = true;
+                    renderChunkButton.Enabled = true;
+                    prevChunkButton.Enabled = true;
+                    nextChunkButton.Enabled = true;
+                    mixDownButton.Enabled = true;
+                    totalStartNumericUpDown.Enabled = true;
+                    totalEndNumericUpDown.Enabled = true;
+                    chunkLengthNumericUpDown.Enabled = true;
+                    concatenatePartsButton.Enabled = true;
+                    reloadBlenderDataButton.Enabled = true;
+                    blendFileBrowseButton.Enabled = true;
+                    partsFolderBrowseButton.Enabled = true;
+                    partsFolderPathTextBox.Enabled = true;
+                    //removeFileFromPathCheckbox.Enabled = true;
+                    processCountNumericUpDown.Enabled = true;
+                    rendererComboBox.Enabled = true;
+                    break;
+                case AppStates.RENDERING_ALL:
+                case AppStates.RENDERING_CHUNK_ONLY:
+                    renderAllButton.Enabled = true;
+                    renderChunkButton.Enabled = false;
+                    prevChunkButton.Enabled = false;
+                    nextChunkButton.Enabled = false;
+                    mixDownButton.Enabled = false;
+                    totalStartNumericUpDown.Enabled = false;
+                    totalEndNumericUpDown.Enabled = false;
+                    chunkLengthNumericUpDown.Enabled = false;
+                    concatenatePartsButton.Enabled = false;
+                    reloadBlenderDataButton.Enabled = false;
+                    blendFileBrowseButton.Enabled = false;
+                    partsFolderBrowseButton.Enabled = false;
+                    partsFolderPathTextBox.Enabled = false;
+                    //removeFileFromPathCheckbox.Enabled = false;
+                    processCountNumericUpDown.Enabled = false;
+                    rendererComboBox.Enabled = false;
+                    break;
+            }
         }
 
         // Deletes json on form close
@@ -82,18 +177,16 @@ namespace BlenderRenderController
 
                 // arg 1 = .blend path
                 blendFilePath = args[1];
-                blendFilePathTextBox.Text = blendFilePath;
-                DoReadBlenderData();
+                //blendFilePathTextBox.Text = blendFilePath;
+                loadBlenderData();
             }
 
             blendFilePath = "";
             outFolderPath = "";
 
-            renderAllTimer = new Timer();
-            renderAllTimer.Interval = 2500;
-            renderAllTimer.Tick += new EventHandler(updateProcessManagement);
-
-            runningRenderProcessCount = 0;
+            processTimer = new Timer();
+            processTimer.Interval = 2500;
+            processTimer.Tick += new EventHandler(updateProcessManagement);
         }
 
         private void blendFileBrowseButton_Click(object sender, EventArgs e)
@@ -106,8 +199,8 @@ namespace BlenderRenderController
             if(result == DialogResult.OK)
             {
                 blendFilePath             = blendFileBrowseDialog.FileName;
-                blendFilePathTextBox.Text = blendFilePath;
-				DoReadBlenderData();
+                //blendFilePathTextBox.Text = blendFilePath;
+				loadBlenderData();
             }
 
         }
@@ -131,206 +224,261 @@ namespace BlenderRenderController
             outFolderPath = partsFolderPathTextBox.Text;
         }
 
-        private void renderSegmentButton_Click(object sender, EventArgs e)
+        private void renderChunkButton_Click(object sender, EventArgs e)
+        {
+            appState = AppStates.RENDERING_CHUNK_ONLY;
+            lastChunkStarted = true;
+            processTimer.Enabled = true;
+            renderCurrentChunk();
+        }
+        private void renderCurrentChunk()
         {
             Process p = new Process();
-
             p.StartInfo.WorkingDirectory = outFolderPath;
             p.StartInfo.FileName = "blender";
-			p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-
-            //p.StartInfo.Arguments = String.Format("-b \"{0}\" -E {1} -s {2} -e {3} {4} -a ",
-            p.StartInfo.Arguments = String.Format("-b \"{0}\" -E {1} -s {2} -e {3} -a ",
-                                                  blendFilePathTextBox.Text,
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+            
+            if (chunkEnd == totalEnd)
+            {
+                lastChunkStarted = true;
+            }
+            
+            p.StartInfo.Arguments = String.Format("-b \"{0}\" -o {1} -E {2} -s {3} -e {4} -a",
+                                                  blendFilePath,
+                                                  outFolderPath + "\\" + chunksSubfolder + "\\" + blendData.ProjectName + "-#",
                                                   rendererComboBox.Text,
-                                                  startFrameNumericUpDown.Value, 
-                                                  endFrameNumericUpDown.Value
-												  );
+                                                  chunkStart,
+                                                  chunkEnd
+                                                  );
 
-			Trace.WriteLine( String.Format( "CEW: {0}", p.StartInfo.Arguments ) );
+            Trace.WriteLine(String.Format("CEW: {0}", p.StartInfo.Arguments));
 
             p.EnableRaisingEvents = true;
-            p.Exited += new EventHandler(chunk_Finished);
+            p.Exited += new EventHandler(chunkRendered);
 
             p.Start();
-            runningRenderProcessCount++;
 
+            processes.Add(p);
         }
 
-        private void chunk_Finished(object sender, EventArgs e)
+        private void chunkRendered(object sender, EventArgs e)
         {
-            runningRenderProcessCount--;
+            processes.Remove((Process) sender);
+            Trace.WriteLine(processes.Count);
         }
 
         private void prevChunkButton_Click(object sender, EventArgs e)
         {
-            var difference = endFrameNumericUpDown.Value - startFrameNumericUpDown.Value;
-            //difference = SegFrame;
-            //var step =  endFrameNumericUpDown.Value = startFrameNumericUpDown.Value + SegFrame;
-            if (startFrameNumericUpDown.Value - difference < 1)
+
+            if (chunkStart - chunkLength < totalStart)
             {
-                startFrameNumericUpDown.Value = 1;
-                endFrameNumericUpDown.Value = 1 + difference;
+                chunkStart = totalStart;
+                chunkEnd = totalStart + chunkLength;
+            }
+
+            else
+            {
+                chunkEnd = chunkStart - 1;
+                chunkStart = chunkEnd - chunkLength;
+            }
+            updateUI();
+        }
+        private void moveToNextChunk()
+        {
+
+            if (chunkEnd + 1 > totalEnd)
+            {
+                
             }
             else
             {
-                endFrameNumericUpDown.Value = startFrameNumericUpDown.Value - 1;
-                startFrameNumericUpDown.Value = endFrameNumericUpDown.Value - difference;
+                chunkStart = chunkEnd + 1;
+
+                if (chunkEnd + chunkLength + 1 > totalEnd)
+                {
+                    chunkEnd = totalEnd;
+                }
+                else
+                {
+                    chunkEnd += chunkLength + 1;
+                }
+                updateUI();
             }
-
         }
-
         private void nextChunkButton_Click(object sender, EventArgs e)
         {
-            var difference = endFrameNumericUpDown.Value - startFrameNumericUpDown.Value;
-            startFrameNumericUpDown.Value = endFrameNumericUpDown.Value + 1;
-
-            if (endFrameNumericUpDown.Value + difference + 1 > totalFrameCountNumericUpDown.Value)
-            {
-                endFrameNumericUpDown.Value = totalFrameCountNumericUpDown.Value;
-            }
-            else
-            {
-                endFrameNumericUpDown.Value = startFrameNumericUpDown.Value + difference;
-            }
-
+            moveToNextChunk();
         }
 
         private void renderAllButton_Click(object sender, EventArgs e)
         {
-			//Becuase "clever" coding before us
-			if( startTime == DateTime.MaxValue ) {
-				//First time, set start time
-				startTime = DateTime.Now;
-				TotalTime.Text = "Total Time: 00:00:00";
-			}
-			else {
-				//Stopping whether finished or user intervention so show time run
-				TimeSpan runTime = DateTime.Now - startTime;
-				TotalTime.Text = String.Format( "Total Time: {0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds );
-				startTime = DateTime.MaxValue;
-			}
+            if (processTimer.Enabled) { 
+                stopRender();
+                renderAllButton.Text = "Render All";
+            } else {
+                startRenderAll();
+                renderAllButton.Text = "Stop";
+            }
 
-            renderAllTimer.Enabled = !renderAllTimer.Enabled;
-            renderAllButton.Text   = renderAllTimer.Enabled ? "Stop" : "Render all";
+        }
+        private void startRenderAll()
+        {
+            appState = AppStates.RENDERING_ALL;
+            startTime = DateTime.Now;
+            totalTimeLabel.Text = "00:00:00";
+            processTimer.Enabled = true;
+            renderCurrentChunk();
+            moveToNextChunk();
+        }
+        private void stopRender()
+        {
+            
+            //Show time run
+            TimeSpan runTime = DateTime.Now - startTime;
+            totalTimeLabel.Text = String.Format("{0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds);
+            //startTime = DateTime.MaxValue;
+            
+            foreach (var process in processes.ToList())
+            {
+                process.CloseMainWindow();
+                process.Dispose();
+                processes.Remove(process);
+            }
+            chunkStart = totalStart;
+            processTimer.Enabled = false;
+            lastChunkStarted = false;
+            renderProgressBar.Value = 0;
+
+
+            appState = AppStates.READY;
+            resetChunkStartEnd();
+            updateUI();
         }
 
         private void updateProcessManagement(object sender, EventArgs e)
         {
 
-            if (!(startFrameNumericUpDown.Value < totalFrameCountNumericUpDown.Value))
+            if(lastChunkStarted)
             {
-                renderAllButton_Click(sender, e);
-                return;
-            }
-
-            renderProgressBar.Value = (int)((endFrameNumericUpDown.Value / totalFrameCountNumericUpDown.Value) * 100);
-
-			TimeSpan runTime = DateTime.Now - startTime;
-			TotalTime.Text = String.Format( "Total Time: {0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds );
-
-            if (runningRenderProcessCount < processCountNumericUpDown.Value)
-            {
-                renderSegmentButton_Click(null, EventArgs.Empty);
-                nextChunkButton_Click(null, EventArgs.Empty);
-            }
-
-        }
-
-		private List<string> findFiles( string folderPath, string fileSearch )
-		{
-            string[] partList   = Directory.GetFiles(folderPath, fileSearch);
-			Regex    filePatern = new Regex( @"\d+-\d+" + Path.GetExtension(fileSearch) );
-
-            return partList.Where( file => filePatern.IsMatch( file ) ).ToList();
-
-		}
-
-        private void concatenatePartsButton_Click(object sender, EventArgs e)
-        {
-            string ffmpeg_dir;
-            if (ajustOutDir.Checked == true)
-            {
-                ffmpeg_dir = AltDir;
+                renderProgressBar.Value = 100;
             }
             else
             {
-                ffmpeg_dir = outFolderPath;
+                renderProgressBar.Value = (int)((chunkEnd / totalEnd) * 100);
+
+                if(processes.Count < processCountNumericUpDown.Value)
+                {
+                    renderCurrentChunk();
+                    moveToNextChunk();
+                }
             }
-            if (!Directory.Exists(ffmpeg_dir))
+
+			TimeSpan runTime = DateTime.Now - startTime;
+			totalTimeLabel.Text = String.Format( "{0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds );
+
+            if (processes.Count == 0)
+            {
+                stopRender();
+                resetChunkStartEnd();
+                return;
+            }
+            updateUI();
+        }
+        
+        private void concatenatePartsButton_Click(object sender, EventArgs e)
+        {
+
+            if (!Directory.Exists(outFolderPath))
             {
                 errorMsgs(-100);
                 return;
             }
+            string chunksPath = Path.Combine(outFolderPath, chunksSubfolder);
+            string chunksTxtPath = Path.Combine(chunksPath, "partList.txt");
+            string videoExtensionFound = "";
+            string audioFileName = blendData.ProjectName + "." + audioFormat;
+            string audioSettings = string.Empty; //"-c:a aac -b:a 256k";
 
-            StreamWriter partListWriter = new StreamWriter(ffmpeg_dir + "\\partList.txt");
-            List<string> stringPartList = findFiles(ffmpeg_dir, "*.avi");
-            string fileExtension = "avi";
-            string audioFile = Path.GetFileNameWithoutExtension(blendFilePathTextBox.Text);
-            string audioSettings = string.Empty;//"-c:a aac -b:a 256k";
 
-            if (stringPartList == null || stringPartList.Count == 0)
+            List<string> fileList = new List<string>();
+            foreach (var format in allowedFormats)
             {
-                stringPartList = findFiles(ffmpeg_dir, "*.mp4");
-                fileExtension = "mp4";
+                videoExtensionFound = format;
+                fileList = Directory.GetFiles(chunksPath, "*." + videoExtensionFound, SearchOption.TopDirectoryOnly).ToList();
+                if (fileList.Count > 0) break;
             }
 
-            if (File.Exists(Path.Combine(ffmpeg_dir, audioFile + ".ac3")))
+            // no chunks found
+            if (fileList.Count == 0) return;
+
+            //audio found
+            var audioArgument = "";
+            if (!File.Exists(Path.Combine(outFolderPath, audioFileName)))
             {
-                audioFile = " -i " + audioFile + ".ac3";
-            }
-            else
-            {
-                audioFile = string.Empty;
+                audioFileName = string.Empty;
                 audioSettings = string.Empty;
-            }
-
-            stringPartList.Sort(compareParts);
-
-            foreach (var currentPart in stringPartList)
+            } else
             {
-                partListWriter.WriteLine("file '{0}'", Path.GetFileName(currentPart));
+                audioArgument = "-i " + Path.Combine(outFolderPath, audioFileName);
             }
 
+            string[] pathSplitted;
+
+            //add only correct videos to list
+            List<string> fileListFiltered = new List<string>();
+
+            for (int i = 0; i < fileList.Count; i++)
+            {
+                //does not contain frame number, we do not add it
+                pathSplitted = fileList[i].Split('-');
+                int x;
+                if (int.TryParse(pathSplitted[pathSplitted.Length - 2], out x) == false) {
+                    continue;
+                }
+                fileListFiltered.Add(fileList[i]);
+            }
+
+            //sort files in list by starting frame
+            var fileListSorted = fileListFiltered.OrderBy(s =>
+            {
+                pathSplitted = s.Split('-');
+                return Int32.Parse(pathSplitted[pathSplitted.Length - 2]);
+            });
+
+
+            //write txt for ffmpeg concat
+            StreamWriter partListWriter = new StreamWriter(chunksTxtPath);
+            foreach (var filePath in fileListSorted)
+            {
+                partListWriter.WriteLine("file '{0}'", filePath);
+            }
             partListWriter.Close();
 
 
-            Process p = new Process();
-            
-            p.StartInfo.WorkingDirectory = ffmpeg_dir;
-            //p.StartInfo.WorkingDirectory = AltDir;
-            p.StartInfo.FileName = "ffmpeg";
-            p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+            Process ffmpegProcess = new Process();
+            ffmpegProcess.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            ffmpegProcess.StartInfo.FileName = "ffmpeg";
+            ffmpegProcess.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
 
-            p.StartInfo.Arguments = String.Format("-f concat -i partList.txt {0} -c:v copy {1} concat_output.{2}",
-                                                   audioFile,
+            ffmpegProcess.StartInfo.Arguments = String.Format("-f concat -safe 0 -i {0} {1} -c:v copy {2} {3}.{4} -y",
+                                                   chunksTxtPath,
+                                                   audioArgument,
                                                    audioSettings,
-                                                   fileExtension
+                                                   Path.Combine(outFolderPath, blendData.ProjectName),
+                                                   videoExtensionFound
                                     );
-
-            p.Start();
-
+            Trace.WriteLine(ffmpegProcess.StartInfo.Arguments);
+            ffmpegProcess.Start();
         }
+		private void loadBlenderData() {
 
-        public int compareParts(string a, string b)
-        {
-            Regex pattern = new Regex(@"-(.*)\.(mp4|avi)");
-
-            int aEnd = Convert.ToInt32(pattern.Match(a).Groups[1].Value);
-            int bEnd = Convert.ToInt32(pattern.Match(b).Groups[1].Value);
-
-            return aEnd.CompareTo(bEnd);
-        }
-
-		private void DoReadBlenderData() {
-
-            if ( !File.Exists( blendFilePathTextBox.Text ) ) {
+            if ( !File.Exists( blendFilePath) ) {
                 // file does not exist
                 errorMsgs(-104);
                 return;
 			}
 
-            if (!Directory.Exists(ScriptsPath))
+            if (!Directory.Exists(scriptsPath))
             {
                 // Error scriptsfolder not found
                 string caption = "Error";
@@ -341,15 +489,15 @@ namespace BlenderRenderController
 
             Process p = new Process();
             //p.StartInfo.WorkingDirectory     = outFolderPath;
-            p.StartInfo.WorkingDirectory       = ScriptsPath;
+            p.StartInfo.WorkingDirectory       = scriptsPath;
             p.StartInfo.FileName               = "blender";
 			p.StartInfo.RedirectStandardOutput = true;
 			p.StartInfo.CreateNoWindow         = true;
 			p.StartInfo.UseShellExecute        = false;
 
             p.StartInfo.Arguments = String.Format("-b \"{0}\" -P \"{1}\"",
-                                                  blendFilePathTextBox.Text,
-                                                  Path.Combine(ScriptsPath, "get_project_info.py")
+                                                  blendFilePath,
+                                                  Path.Combine(scriptsPath, "get_project_info.py")
                                     );
 
 			try {
@@ -391,49 +539,46 @@ namespace BlenderRenderController
 
 			}
 
-			BlenderData blendData = null;
+			blendData = null;
 			if( jsonInfo.Length > 0 ) { 
 				JavaScriptSerializer serializer = new JavaScriptSerializer();
 				blendData = serializer.Deserialize<BlenderData>( jsonInfo.ToString() );
-			}
+
+            }
 
 			if( blendData != null ) {
+                
+                totalStart       = blendData.StartFrame;
+				totalEnd         = blendData.EndFrame;
 
-                startFrameNumericUpDown.Value      = blendData.StartFrame;
-				totalFrameCountNumericUpDown.Value = blendData.EndFrame;
-
-                //endFrameNumericUpDown.Value = startFrameNumericUpDown.Value + endFrameNumericUpDown.Value;
+                //chunkEndNumericUpDown.Text = int.Parse(chunkStartNumericUpDown.Text) + chunkEndNumericUpDown.Text;
 
                 // Remove last bit from file path, if checked
-                if (ajustOutDir.Checked == true)
-                {
-                    partsFolderPathTextBox.Text = blendData.AltDir;
-                }
-                else
-                {
-                    partsFolderPathTextBox.Text = outFolderPath = blendData.OutputDirectory;
-                }
+                
+                partsFolderPathTextBox.Text = blendData.AltDir;
+                
 
-                outFolderPathTextBox.Text          = outFolderPath = blendData.OutputDirectory;
+                //outFolderPathTextBox.Text          = outFolderPath = blendData.AltDir;
                 infoActiveScene.Text               = blendData.ActiveScene;
+                infoFramerate.Text                 = blendData.Framerate.ToString();
                 infoNoScenes.Text                  = blendData.NumScenes;
-                AltDir                             = blendData.AltDir;
                 ErrorCode                          = blendData.ErrorCode;
-                //blendProjectName                   = blendData.ProjectName;
 
-                if ( blendData.EndFrame < endFrameNumericUpDown.Value ) {
-					endFrameNumericUpDown.Value = blendData.EndFrame;
+                chunkEnd = chunkLength + chunkStart;
+
+                if ( blendData.EndFrame < chunkEnd ) {
+					chunkEnd = blendData.EndFrame;
 				}
 
 			}
+
             // Error checker
             errorMsgs(ErrorCode);
 
-            //outFolderPathTextBox.Text = string.Empty;
+            resetChunkStartEnd();
+            updateUI();
 
             Trace.WriteLine( "Json data = " + jsonInfo.ToString() );
-
-			//Trace.WriteLine( String.Format( "CEW: {0}", p.StartInfo.Arguments ) );
 
 		}
 
@@ -455,17 +600,11 @@ namespace BlenderRenderController
             var isbad = invalid_list.Contains(input);
             if (isbad == true)
             {
-                renderAllButton.Enabled = false;
-                renderSegmentButton.Enabled = false;
-                concatenatePartsButton.Enabled = false;
-                MixdownAudio.Enabled = false;
+                appState = AppStates.AFTER_START;
             }
             else
             {
-                renderAllButton.Enabled = true;
-                renderSegmentButton.Enabled = true;
-                concatenatePartsButton.Enabled = true;
-                MixdownAudio.Enabled = true;
+                appState = AppStates.READY;
             }
 
             // Messages
@@ -507,21 +646,20 @@ namespace BlenderRenderController
                 // no problems, don't show error message
                 return 0;
             }
-            
         }
 
-		private void ReadBlenderData_Click( object sender, EventArgs e ) {
+		private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
 
-            DoReadBlenderData();
+            loadBlenderData();
 		}
 
         private void MixdownAudio_Click(object sender, EventArgs e) {
 
-            if (!File.Exists(blendFilePathTextBox.Text)) {
+            if (!File.Exists(blendFilePath)) {
                 return;
             }
 
-            if (!Directory.Exists(ScriptsPath))
+            if (!Directory.Exists(scriptsPath))
             {
                 // Error scriptsfolder not found
                 string caption = "Error";
@@ -544,11 +682,14 @@ namespace BlenderRenderController
             //p.StartInfo.CreateNoWindow         = true;
             p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
 
-            p.StartInfo.Arguments = String.Format("-b \"{0}\" -P \"{1}\"",
-                                                  blendFilePathTextBox.Text,
-                                                  Path.Combine(ScriptsPath, "mixdown_audio.py")
+            p.StartInfo.Arguments = String.Format("-b \"{0}\" -s {1} -e {2} -P \"{3}\" -- {4}",
+                                                  blendFilePath,
+                                                  chunkStart,
+                                                  totalEnd,
+                                                  Path.Combine(scriptsPath, "mixdown_audio.py"),
+                                                  outFolderPath
                                     );
-
+            Trace.WriteLine(p.StartInfo.Arguments);
             p.Start();
 
             p.WaitForExit((int)TimeSpan.FromMinutes(5).TotalMilliseconds);
@@ -591,7 +732,7 @@ namespace BlenderRenderController
 
         private void ajustOutDir_CheckedChanged(object sender, EventArgs e)
         {
-            DoReadBlenderData();
+            loadBlenderData();
         }
 
         // DEBUG OPTIONS
@@ -610,7 +751,7 @@ namespace BlenderRenderController
         void jsonDel()
         {
             // delete json
-            string jsonfile = Path.Combine(ScriptsPath, "blend_info.json");
+            string jsonfile = Path.Combine(scriptsPath, "blend_info.json");
             if (File.Exists(jsonfile))
             {
                 File.Delete(jsonfile);
@@ -629,7 +770,7 @@ namespace BlenderRenderController
             jsonDel();
         }
 
-        private void endFrameNumericUpDown_ValueChanged(object sender, EventArgs e)
+        private void chunkEndNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
 
         }
@@ -647,6 +788,89 @@ namespace BlenderRenderController
         private void redRaptor93ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/RedRaptor93/BlenderRenderController");
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void totalFrameCountLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void rendererComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void rendererLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label13_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void chunkEndNumericUpDown_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void chunkEndLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        //total start numericUpDown change
+        private void totalStartNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            totalStart = totalStartNumericUpDown.Value;
+            if (totalStart >= totalEnd)
+            {
+                totalEnd = totalStart + chunkLength;
+            }
+            chunkStart = totalStart;
+            resetChunkStartEnd();
+        }
+        //total end numericUpDown change
+        private void totalEndNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            totalEnd = totalEndNumericUpDown.Value;
+            if (totalEnd <= totalStart)
+            {
+                totalStart -= chunkLength;
+            }
+            if (totalStart < 0) totalStart = 0;
+            resetChunkStartEnd();
+        }
+
+        //chunk length numericUpDown change
+        private void chunkLengthNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            chunkLength = chunkLengthNumericUpDown.Value;
+            chunkStart = totalStart;
+            resetChunkStartEnd();
+        }
+
+        private void resetChunkStartEnd()
+        {
+            if(chunkStart >= totalEnd)
+            {
+                chunkStart = 0;
+            }
+            if (chunkStart + chunkLength > totalEnd)
+            {
+                chunkLength = totalEnd - totalStart;
+            }
+            else
+            {
+                chunkEnd = chunkStart + chunkLength;
+            }
+            updateUI();
         }
     }
 }
