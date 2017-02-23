@@ -119,7 +119,7 @@ namespace BlenderRenderController
                     reloadBlenderDataButton.Enabled = false;
                     openOutputFolderButton.Enabled = false;
                     partsFolderBrowseButton.Enabled = false;
-                    partsFolderPathTextBox.Enabled = false;
+                    outputFolderTextBox.Enabled = false;
                 break;
                 case AppStates.READY:
                     renderAllButton.Enabled = true;
@@ -134,7 +134,7 @@ namespace BlenderRenderController
                     reloadBlenderDataButton.Enabled = true;
                     blendFileBrowseButton.Enabled = true;
                     partsFolderBrowseButton.Enabled = true;
-                    partsFolderPathTextBox.Enabled = true;
+                    outputFolderTextBox.Enabled = true;
                     //removeFileFromPathCheckbox.Enabled = true;
                     processCountNumericUpDown.Enabled = true;
                     rendererComboBox.Enabled = true;
@@ -154,7 +154,7 @@ namespace BlenderRenderController
                     reloadBlenderDataButton.Enabled = false;
                     blendFileBrowseButton.Enabled = false;
                     partsFolderBrowseButton.Enabled = false;
-                    partsFolderPathTextBox.Enabled = false;
+                    outputFolderTextBox.Enabled = false;
                     //removeFileFromPathCheckbox.Enabled = false;
                     processCountNumericUpDown.Enabled = false;
                     rendererComboBox.Enabled = false;
@@ -215,30 +215,30 @@ namespace BlenderRenderController
         {
             var partsFolderBrowseDialog = new FolderBrowserDialog();
             //outFileBrowseDialog.Filter = "Blend|*.blend";
-            Trace.WriteLine(partsFolderPathTextBox.Text);
+            Trace.WriteLine(outputFolderTextBox.Text);
             var result = partsFolderBrowseDialog.ShowDialog();
 
             if (result == DialogResult.OK)
             {
-                outFolderPath = partsFolderPathTextBox.Text = Path.GetFullPath(partsFolderBrowseDialog.SelectedPath);
+                outFolderPath = outputFolderTextBox.Text = Path.GetFullPath(partsFolderBrowseDialog.SelectedPath);
             }
         }
 
         private void outFolderPathTextBox_TextChanged(object sender, EventArgs e)
         {
 
-            partsFolderPathTextBox.Text = partsFolderPathTextBox.Text.Trim();
+            outputFolderTextBox.Text = outputFolderTextBox.Text.Trim();
 
             try {
-                Path.GetFullPath(partsFolderPathTextBox.Text);
+                Path.GetFullPath(outputFolderTextBox.Text);
             }
             catch (Exception)
             {
-                partsFolderPathTextBox.Text = outFolderPath;
+                outputFolderTextBox.Text = outFolderPath;
                 return;
             }
 
-            outFolderPath = partsFolderPathTextBox.Text = Path.GetFullPath(partsFolderPathTextBox.Text);
+            outFolderPath = outputFolderTextBox.Text = Path.GetFullPath(outputFolderTextBox.Text);
 
         }
 
@@ -452,17 +452,7 @@ namespace BlenderRenderController
             // no chunks found
             if (fileList.Count == 0) return;
 
-            //audio found
-            var audioArgument = "";
-            if (!File.Exists(Path.Combine(outFolderPath, audioFileName)))
-            {
-                audioFileName = string.Empty;
-                audioSettings = string.Empty;
-            } else
-            {
-                audioArgument = "-i " + Path.Combine(outFolderPath, audioFileName);
-            }
-
+            
             string[] pathSplitted;
 
             //add only correct videos to list
@@ -495,19 +485,32 @@ namespace BlenderRenderController
             }
             partListWriter.Close();
 
-
+            var addAudioArguments = "";
+            
+            //mixdown audio not found
+            if (!File.Exists(Path.Combine(outFolderPath, audioFileName)))
+            {
+                audioFileName = string.Empty;
+                audioSettings = string.Empty;
+            }
+            //mixdown audio found
+            else
+            {
+                addAudioArguments = "-i " + Path.Combine(outFolderPath, audioFileName) + " -map 0:v -map 1:a";
+            }
             Process ffmpegProcess = new Process();
             ffmpegProcess.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
             ffmpegProcess.StartInfo.FileName = "ffmpeg";
             ffmpegProcess.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
 
-            ffmpegProcess.StartInfo.Arguments = String.Format("-f concat -safe 0 -i {0} {1} -c:v copy {2} {3}.{4} -y",
+            
+            ffmpegProcess.StartInfo.Arguments = String.Format("-f concat -safe 0 -i {0} {1} -c:v copy {3}.{4} -y",
                                                    chunksTxtPath,
-                                                   audioArgument,
+                                                   addAudioArguments,
                                                    audioSettings,
                                                    Path.Combine(outFolderPath, blendData.ProjectName),
                                                    videoExtensionFound
-                                    );
+            );
             Trace.WriteLine(ffmpegProcess.StartInfo.Arguments);
             ffmpegProcess.Start();
         }
@@ -615,7 +618,7 @@ namespace BlenderRenderController
                     outFolderPath = Path.Combine(Path.GetDirectoryName(blendFilePath), blendData.OutputDirectory.Replace("//", ""));
                 }
                 
-                partsFolderPathTextBox.Text = outFolderPath;
+                outputFolderTextBox.Text = outFolderPath;
                 
 
                 //outFolderPathTextBox.Text          = outFolderPath = blendData.AltDir;

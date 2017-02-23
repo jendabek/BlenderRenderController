@@ -37,7 +37,7 @@
             this.startFrameLabel = new System.Windows.Forms.Label();
             this.chunkEndLabel = new System.Windows.Forms.Label();
             this.partsFolderBrowseButton = new System.Windows.Forms.Button();
-            this.partsFolderPathTextBox = new System.Windows.Forms.TextBox();
+            this.outputFolderTextBox = new System.Windows.Forms.TextBox();
             this.rendererComboBox = new System.Windows.Forms.ComboBox();
             this.progressLabel = new System.Windows.Forms.Label();
             this.nextChunkButton = new System.Windows.Forms.Button();
@@ -113,6 +113,7 @@
             this.renderChunkButton.Name = "renderChunkButton";
             this.renderChunkButton.Size = new System.Drawing.Size(101, 34);
             this.renderChunkButton.TabIndex = 0;
+            this.renderChunkButton.TabStop = false;
             this.renderChunkButton.Text = "Render Chunk";
             this.toolTip1.SetToolTip(this.renderChunkButton, "Render current segment");
             this.renderChunkButton.UseVisualStyleBackColor = true;
@@ -189,15 +190,15 @@
             this.partsFolderBrowseButton.UseVisualStyleBackColor = true;
             this.partsFolderBrowseButton.Click += new System.EventHandler(this.partsFolderBrowseButton_Click);
             // 
-            // partsFolderPathTextBox
+            // outputFolderTextBox
             // 
-            this.partsFolderPathTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.partsFolderPathTextBox.Location = new System.Drawing.Point(36, 316);
-            this.partsFolderPathTextBox.Name = "partsFolderPathTextBox";
-            this.partsFolderPathTextBox.Size = new System.Drawing.Size(605, 22);
-            this.partsFolderPathTextBox.TabIndex = 3;
-            this.partsFolderPathTextBox.TabStop = false;
-            this.partsFolderPathTextBox.Leave += new System.EventHandler(this.outFolderPathTextBox_TextChanged);
+            this.outputFolderTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.outputFolderTextBox.Location = new System.Drawing.Point(36, 316);
+            this.outputFolderTextBox.Name = "outputFolderTextBox";
+            this.outputFolderTextBox.Size = new System.Drawing.Size(605, 22);
+            this.outputFolderTextBox.TabIndex = 7;
+            this.outputFolderTextBox.WordWrap = false;
+            this.outputFolderTextBox.Leave += new System.EventHandler(this.outFolderPathTextBox_TextChanged);
             // 
             // rendererComboBox
             // 
@@ -232,6 +233,7 @@
             this.nextChunkButton.Name = "nextChunkButton";
             this.nextChunkButton.Size = new System.Drawing.Size(47, 27);
             this.nextChunkButton.TabIndex = 12;
+            this.nextChunkButton.TabStop = false;
             this.nextChunkButton.Text = ">";
             this.toolTip1.SetToolTip(this.nextChunkButton, "Segment select");
             this.nextChunkButton.UseVisualStyleBackColor = true;
@@ -244,6 +246,7 @@
             this.prevChunkButton.Name = "prevChunkButton";
             this.prevChunkButton.Size = new System.Drawing.Size(47, 27);
             this.prevChunkButton.TabIndex = 12;
+            this.prevChunkButton.TabStop = false;
             this.prevChunkButton.Text = "<";
             this.toolTip1.SetToolTip(this.prevChunkButton, "Segment select");
             this.prevChunkButton.UseVisualStyleBackColor = true;
@@ -313,7 +316,7 @@
             this.renderAllButton.Location = new System.Drawing.Point(36, 410);
             this.renderAllButton.Name = "renderAllButton";
             this.renderAllButton.Size = new System.Drawing.Size(168, 38);
-            this.renderAllButton.TabIndex = 7;
+            this.renderAllButton.TabIndex = 9;
             this.renderAllButton.Text = "Render All";
             this.toolTip1.SetToolTip(this.renderAllButton, "Render all segments");
             this.renderAllButton.UseVisualStyleBackColor = true;
@@ -325,7 +328,7 @@
             this.concatenatePartsButton.Location = new System.Drawing.Point(36, 500);
             this.concatenatePartsButton.Name = "concatenatePartsButton";
             this.concatenatePartsButton.Size = new System.Drawing.Size(123, 38);
-            this.concatenatePartsButton.TabIndex = 10;
+            this.concatenatePartsButton.TabIndex = 11;
             this.concatenatePartsButton.Text = "Join Chunks";
             this.toolTip1.SetToolTip(this.concatenatePartsButton, "Combine segments in FFmpeg");
             this.concatenatePartsButton.UseVisualStyleBackColor = true;
@@ -349,7 +352,7 @@
             this.mixDownButton.Location = new System.Drawing.Point(210, 410);
             this.mixDownButton.Name = "mixDownButton";
             this.mixDownButton.Size = new System.Drawing.Size(119, 38);
-            this.mixDownButton.TabIndex = 9;
+            this.mixDownButton.TabIndex = 10;
             this.mixDownButton.Text = "Audio Mixdown";
             this.mixDownButton.UseVisualStyleBackColor = true;
             this.mixDownButton.Click += new System.EventHandler(this.MixdownAudio_Click);
@@ -638,6 +641,7 @@
             this.infoActiveScene.ReadOnly = true;
             this.infoActiveScene.Size = new System.Drawing.Size(126, 21);
             this.infoActiveScene.TabIndex = 25;
+            this.infoActiveScene.TabStop = false;
             this.infoActiveScene.Text = "...";
             this.infoActiveScene.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.activeWarn.SetToolTip(this.infoActiveScene, "This program will only render the ACTIVE scene, if you \r\nhave more then one scene" +
@@ -856,7 +860,7 @@
             this.openOutputFolderButton.Location = new System.Drawing.Point(536, 343);
             this.openOutputFolderButton.Name = "openOutputFolderButton";
             this.openOutputFolderButton.Size = new System.Drawing.Size(105, 31);
-            this.openOutputFolderButton.TabIndex = 10;
+            this.openOutputFolderButton.TabIndex = 12;
             this.openOutputFolderButton.Text = "Open";
             this.openOutputFolderButton.UseVisualStyleBackColor = true;
             this.openOutputFolderButton.Click += new System.EventHandler(this.openOutputFolderButton_Click);
@@ -900,7 +904,7 @@
             this.Controls.Add(this.chunkLengthNumericUpDown);
             this.Controls.Add(this.startFrameLabel);
             this.Controls.Add(this.totalEndNumericUpDown);
-            this.Controls.Add(this.partsFolderPathTextBox);
+            this.Controls.Add(this.outputFolderTextBox);
             this.Controls.Add(this.totalStartNumericUpDown);
             this.Controls.Add(this.partsFolderBrowseButton);
             this.Controls.Add(this.renderProgressBar);
@@ -941,7 +945,7 @@
         private System.Windows.Forms.Label startFrameLabel;
         private System.Windows.Forms.Label chunkEndLabel;
         private System.Windows.Forms.Button partsFolderBrowseButton;
-        private System.Windows.Forms.TextBox partsFolderPathTextBox;
+        private System.Windows.Forms.TextBox outputFolderTextBox;
         private System.Windows.Forms.ComboBox rendererComboBox;
         private System.Windows.Forms.Label progressLabel;
         private System.Windows.Forms.Button nextChunkButton;
