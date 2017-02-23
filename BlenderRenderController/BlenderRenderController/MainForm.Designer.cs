@@ -38,8 +38,7 @@
             this.chunkEndLabel = new System.Windows.Forms.Label();
             this.partsFolderBrowseButton = new System.Windows.Forms.Button();
             this.outputFolderTextBox = new System.Windows.Forms.TextBox();
-            this.rendererComboBox = new System.Windows.Forms.ComboBox();
-            this.progressLabel = new System.Windows.Forms.Label();
+            this.statusLabel = new System.Windows.Forms.Label();
             this.nextChunkButton = new System.Windows.Forms.Button();
             this.prevChunkButton = new System.Windows.Forms.Button();
             this.totalFrameCountLabel = new System.Windows.Forms.Label();
@@ -97,6 +96,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.openOutputFolderButton = new System.Windows.Forms.Button();
             this.blendFileNameLabel = new System.Windows.Forms.Label();
+            this.rendererRadioButtonCycles = new System.Windows.Forms.RadioButton();
+            this.rendererRadioButtonBlender = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -126,7 +127,7 @@
             this.blendFileBrowseButton.Name = "blendFileBrowseButton";
             this.blendFileBrowseButton.Size = new System.Drawing.Size(158, 45);
             this.blendFileBrowseButton.TabIndex = 1;
-            this.blendFileBrowseButton.Text = "Browse for .blend";
+            this.blendFileBrowseButton.Text = "Open .blend";
             this.blendFileBrowseButton.UseVisualStyleBackColor = true;
             this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
             // 
@@ -182,7 +183,7 @@
             // partsFolderBrowseButton
             // 
             this.partsFolderBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.partsFolderBrowseButton.Location = new System.Drawing.Point(424, 343);
+            this.partsFolderBrowseButton.Location = new System.Drawing.Point(424, 345);
             this.partsFolderBrowseButton.Name = "partsFolderBrowseButton";
             this.partsFolderBrowseButton.Size = new System.Drawing.Size(106, 31);
             this.partsFolderBrowseButton.TabIndex = 8;
@@ -193,38 +194,25 @@
             // outputFolderTextBox
             // 
             this.outputFolderTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.outputFolderTextBox.Location = new System.Drawing.Point(36, 316);
+            this.outputFolderTextBox.Location = new System.Drawing.Point(36, 318);
             this.outputFolderTextBox.Name = "outputFolderTextBox";
             this.outputFolderTextBox.Size = new System.Drawing.Size(605, 22);
             this.outputFolderTextBox.TabIndex = 7;
             this.outputFolderTextBox.WordWrap = false;
             this.outputFolderTextBox.Leave += new System.EventHandler(this.outFolderPathTextBox_TextChanged);
             // 
-            // rendererComboBox
+            // statusLabel
             // 
-            this.rendererComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererComboBox.FormattingEnabled = true;
-            this.rendererComboBox.Items.AddRange(new object[] {
-            "BLENDER_RENDER",
-            "CYCLES"});
-            this.rendererComboBox.Location = new System.Drawing.Point(492, 237);
-            this.rendererComboBox.Name = "rendererComboBox";
-            this.rendererComboBox.Size = new System.Drawing.Size(152, 23);
-            this.rendererComboBox.TabIndex = 6;
-            this.rendererComboBox.Text = "BLENDER_RENDER";
-            this.rendererComboBox.SelectedIndexChanged += new System.EventHandler(this.rendererComboBox_SelectedIndexChanged);
-            // 
-            // progressLabel
-            // 
-            this.progressLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.progressLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.progressLabel.Location = new System.Drawing.Point(32, 608);
-            this.progressLabel.Name = "progressLabel";
-            this.progressLabel.Size = new System.Drawing.Size(54, 20);
-            this.progressLabel.TabIndex = 11;
-            this.progressLabel.Text = "0/0";
-            this.toolTip1.SetToolTip(this.progressLabel, "Progress");
-            this.progressLabel.Visible = false;
+            this.statusLabel.AutoSize = true;
+            this.statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.statusLabel.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.statusLabel.Location = new System.Drawing.Point(32, 608);
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(145, 16);
+            this.statusLabel.TabIndex = 11;
+            this.statusLabel.Text = "Some status message.";
+            this.toolTip1.SetToolTip(this.statusLabel, "Progress");
+            this.statusLabel.Visible = false;
             // 
             // nextChunkButton
             // 
@@ -287,7 +275,7 @@
             // processCountNumericUpDown
             // 
             this.processCountNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.processCountNumericUpDown.Location = new System.Drawing.Point(402, 238);
+            this.processCountNumericUpDown.Location = new System.Drawing.Point(568, 238);
             this.processCountNumericUpDown.Name = "processCountNumericUpDown";
             this.processCountNumericUpDown.Size = new System.Drawing.Size(73, 22);
             this.processCountNumericUpDown.TabIndex = 5;
@@ -303,7 +291,7 @@
             // 
             this.processCountLabel.AutoSize = true;
             this.processCountLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.processCountLabel.Location = new System.Drawing.Point(399, 221);
+            this.processCountLabel.Location = new System.Drawing.Point(555, 220);
             this.processCountLabel.Name = "processCountLabel";
             this.processCountLabel.Size = new System.Drawing.Size(86, 15);
             this.processCountLabel.TabIndex = 15;
@@ -317,7 +305,7 @@
             this.renderAllButton.Name = "renderAllButton";
             this.renderAllButton.Size = new System.Drawing.Size(168, 38);
             this.renderAllButton.TabIndex = 9;
-            this.renderAllButton.Text = "Render All";
+            this.renderAllButton.Text = "Render";
             this.toolTip1.SetToolTip(this.renderAllButton, "Render all segments");
             this.renderAllButton.UseVisualStyleBackColor = true;
             this.renderAllButton.Click += new System.EventHandler(this.renderAllButton_Click);
@@ -687,7 +675,7 @@
             this.blendFileLabel.AutoSize = true;
             this.blendFileLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.blendFileLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.blendFileLabel.Location = new System.Drawing.Point(20, 49);
+            this.blendFileLabel.Location = new System.Drawing.Point(19, 49);
             this.blendFileLabel.Name = "blendFileLabel";
             this.blendFileLabel.Size = new System.Drawing.Size(102, 20);
             this.blendFileLabel.TabIndex = 25;
@@ -739,7 +727,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label2.Location = new System.Drawing.Point(20, 284);
+            this.label2.Location = new System.Drawing.Point(19, 286);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(129, 20);
             this.label2.TabIndex = 25;
@@ -750,7 +738,7 @@
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label8.Location = new System.Drawing.Point(20, 185);
+            this.label8.Location = new System.Drawing.Point(19, 185);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(214, 20);
             this.label8.TabIndex = 25;
@@ -761,7 +749,7 @@
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label10.Location = new System.Drawing.Point(20, 376);
+            this.label10.Location = new System.Drawing.Point(19, 376);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(81, 20);
             this.label10.TabIndex = 25;
@@ -809,7 +797,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label5.Location = new System.Drawing.Point(20, 466);
+            this.label5.Location = new System.Drawing.Point(19, 466);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(58, 20);
             this.label5.TabIndex = 25;
@@ -857,7 +845,7 @@
             // openOutputFolderButton
             // 
             this.openOutputFolderButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.openOutputFolderButton.Location = new System.Drawing.Point(536, 343);
+            this.openOutputFolderButton.Location = new System.Drawing.Point(536, 345);
             this.openOutputFolderButton.Name = "openOutputFolderButton";
             this.openOutputFolderButton.Size = new System.Drawing.Size(105, 31);
             this.openOutputFolderButton.TabIndex = 12;
@@ -875,12 +863,38 @@
             this.blendFileNameLabel.Size = new System.Drawing.Size(0, 20);
             this.blendFileNameLabel.TabIndex = 25;
             // 
+            // rendererRadioButtonCycles
+            // 
+            this.rendererRadioButtonCycles.AutoSize = true;
+            this.rendererRadioButtonCycles.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(403, 245);
+            this.rendererRadioButtonCycles.Name = "rendererRadioButtonCycles";
+            this.rendererRadioButtonCycles.Size = new System.Drawing.Size(104, 19);
+            this.rendererRadioButtonCycles.TabIndex = 32;
+            this.rendererRadioButtonCycles.Text = "Cycles Render";
+            this.rendererRadioButtonCycles.UseVisualStyleBackColor = true;
+            // 
+            // rendererRadioButtonBlender
+            // 
+            this.rendererRadioButtonBlender.AutoSize = true;
+            this.rendererRadioButtonBlender.Checked = true;
+            this.rendererRadioButtonBlender.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(403, 221);
+            this.rendererRadioButtonBlender.Name = "rendererRadioButtonBlender";
+            this.rendererRadioButtonBlender.Size = new System.Drawing.Size(112, 19);
+            this.rendererRadioButtonBlender.TabIndex = 32;
+            this.rendererRadioButtonBlender.TabStop = true;
+            this.rendererRadioButtonBlender.Text = "Blender Render";
+            this.rendererRadioButtonBlender.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(662, 636);
+            this.Controls.Add(this.rendererRadioButtonBlender);
+            this.Controls.Add(this.rendererRadioButtonCycles);
             this.Controls.Add(this.blendFileNameLabel);
             this.Controls.Add(this.blendFileLabel);
             this.Controls.Add(this.label5);
@@ -899,8 +913,7 @@
             this.Controls.Add(this.processCountNumericUpDown);
             this.Controls.Add(this.chunkLengthLabel);
             this.Controls.Add(this.totalFrameCountLabel);
-            this.Controls.Add(this.progressLabel);
-            this.Controls.Add(this.rendererComboBox);
+            this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.chunkLengthNumericUpDown);
             this.Controls.Add(this.startFrameLabel);
             this.Controls.Add(this.totalEndNumericUpDown);
@@ -946,8 +959,7 @@
         private System.Windows.Forms.Label chunkEndLabel;
         private System.Windows.Forms.Button partsFolderBrowseButton;
         private System.Windows.Forms.TextBox outputFolderTextBox;
-        private System.Windows.Forms.ComboBox rendererComboBox;
-        private System.Windows.Forms.Label progressLabel;
+        private System.Windows.Forms.Label statusLabel;
         private System.Windows.Forms.Button nextChunkButton;
         private System.Windows.Forms.Button prevChunkButton;
         private System.Windows.Forms.Label totalFrameCountLabel;
@@ -1005,6 +1017,8 @@
         private System.Windows.Forms.ToolStripMenuItem jendabekToolStripMenuItem;
         private System.Windows.Forms.Button openOutputFolderButton;
         private System.Windows.Forms.Label blendFileNameLabel;
+        private System.Windows.Forms.RadioButton rendererRadioButtonCycles;
+        private System.Windows.Forms.RadioButton rendererRadioButtonBlender;
     }
 }
 
