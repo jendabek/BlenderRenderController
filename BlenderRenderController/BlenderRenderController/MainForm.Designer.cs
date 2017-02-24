@@ -833,7 +833,7 @@
             // 
             this.timeElapsedLabel.AutoSize = true;
             this.timeElapsedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.timeElapsedLabel.Location = new System.Drawing.Point(486, 503);
+            this.timeElapsedLabel.Location = new System.Drawing.Point(492, 503);
             this.timeElapsedLabel.Name = "timeElapsedLabel";
             this.timeElapsedLabel.Size = new System.Drawing.Size(96, 16);
             this.timeElapsedLabel.TabIndex = 19;

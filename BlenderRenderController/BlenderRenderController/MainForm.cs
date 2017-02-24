@@ -80,7 +80,7 @@ namespace BlenderRenderController
             chunkLength = chunkLengthNumericUpDown.Value;
             totalStart = totalStartNumericUpDown.Value;
             totalEnd = totalEndNumericUpDown.Value;
-            statusLabel.Text = "Hello 3D World!";
+            statusLabel.Text = "Hello 3D world!";
             updateUI();
         }
 
@@ -133,6 +133,8 @@ namespace BlenderRenderController
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = false;
                     totalTimeLabel.Visible = false;
+                    rendererRadioButtonBlender.Enabled = true;
+                    rendererRadioButtonCycles.Enabled = true;
                     break;
                 case AppStates.READY:
                     renderAllButton.Enabled = true;
@@ -153,6 +155,8 @@ namespace BlenderRenderController
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = true;
                     totalTimeLabel.Visible = true;
+                    rendererRadioButtonBlender.Enabled = true;
+                    rendererRadioButtonCycles.Enabled = true;
                     break;
                 case AppStates.RENDERING_ALL:
                 case AppStates.RENDERING_CHUNK_ONLY:
@@ -173,6 +177,8 @@ namespace BlenderRenderController
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = true;
+                    rendererRadioButtonBlender.Enabled = false;
+                    rendererRadioButtonCycles.Enabled = false;
                     break;
             }
         }
@@ -219,7 +225,7 @@ namespace BlenderRenderController
             if(result == DialogResult.OK)
             {
                 blendFilePath             = blendFileBrowseDialog.FileName;
-				loadBlend();
+                loadBlend();
             }
 
         }
@@ -260,7 +266,7 @@ namespace BlenderRenderController
             appState = AppStates.RENDERING_CHUNK_ONLY;
             startTime = DateTime.Now;
             totalTimeLabel.Text = "00:00:00";
-            statusLabel.Text = "Starting Render...";
+            statusLabel.Text = "Starting render...";
             processesCompletedCount = 0;
             lastChunkStarted = true;
             processTimer.Enabled = true;
@@ -437,7 +443,7 @@ namespace BlenderRenderController
         {
 
             //Show time run
-            statusLabel.Text = wasComplete ? "Render Complete, press Join Chunks to get final video.\nIf your anim has a sound, press Audio Mixdown before Join Chunks." : "Render Cancelled.";
+            statusLabel.Text = wasComplete ? "Render complete, press Join Chunks to get the final video.\nIf your anim has a sound, press Audio Mixdown before Join Chunks." : "Render cancelled.";
             TimeSpan runTime = DateTime.Now - startTime;
             totalTimeLabel.Text = String.Format("{0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds);
             //startTime = DateTime.MaxValue;
@@ -572,12 +578,15 @@ namespace BlenderRenderController
             //mixdown audio not found
             if (!File.Exists(Path.Combine(outFolderPath, audioFileName)))
             {
+                statusLabel.Text = "Joining chunks...";
                 audioFileName = string.Empty;
                 audioSettings = string.Empty;
             }
             //mixdown audio found
             else
             {
+
+                statusLabel.Text = "Joining chunks with mixdown audio...";
                 addAudioArguments = "-i " + Path.Combine(outFolderPath, audioFileName) + " -map 0:v -map 1:a";
             }
             Process ffmpegProcess = new Process();
@@ -596,8 +605,13 @@ namespace BlenderRenderController
             );
             Trace.WriteLine(ffmpegProcess.StartInfo.Arguments);
             ffmpegProcess.Start();
+            ffmpegProcess.WaitForExit();
+            statusLabel.Text = "Chunks Joined.";
         }
 		private void loadBlend() {
+
+            statusLabel.Text = "Reading the .blend file...";
+            statusLabel.Update();
 
             if ( !File.Exists( blendFilePath) ) {
                 // file does not exist
@@ -609,7 +623,7 @@ namespace BlenderRenderController
             {
                 // Error scriptsfolder not found
                 string caption = "Error";
-                string message = "Scripts folder not found";
+                string message = "Scripts folder not found.";
                 MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -683,7 +697,7 @@ namespace BlenderRenderController
 
                 blendFileLabel.Text = "1. Blend File:";
                 blendFileNameLabel.Text = " " + blendData.ProjectName;
-                statusLabel.Text = "Successfully opened " + blendData.ProjectName + ".blend";
+                statusLabel.Text = "Successfully opened " + blendData.ProjectName + ".blend.";
 
                 //chunkEndNumericUpDown.Text = int.Parse(chunkStartNumericUpDown.Text) + chunkEndNumericUpDown.Text;
 
@@ -792,11 +806,13 @@ namespace BlenderRenderController
         }
 
 		private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
-
             loadBlend();
 		}
 
         private void MixdownAudio_Click(object sender, EventArgs e) {
+
+            statusLabel.Text = "Rendering mixdown...";
+            statusLabel.Update();
 
             if (!File.Exists(blendFilePath)) {
                 return;
@@ -837,7 +853,8 @@ namespace BlenderRenderController
 
             p.WaitForExit((int)TimeSpan.FromMinutes(5).TotalMilliseconds);
 
-            Trace.WriteLine("MixDown Completed");
+            Trace.WriteLine("Mixdown completed");
+            statusLabel.Text = "Mixdown complete.";
 
 
         }
