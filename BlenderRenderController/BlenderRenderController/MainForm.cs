@@ -305,11 +305,11 @@ namespace BlenderRenderController
             //Console.WriteLine("Output from other process");
             if(e.Data != null && e.Data.IndexOf("Fra:") == 0)
             {
-                int frameBeingRended = int.Parse(e.Data.Split(' ')[0].Replace("Fra:", ""));
+                int frameBeingRendered = int.Parse(e.Data.Split(' ')[0].Replace("Fra:", ""));
                 Console.WriteLine(e.Data.Split(' ')[0].Replace("Fra:", ""));
-                if(!framesRendered.Contains(frameBeingRended))
+                if(!framesRendered.Contains(frameBeingRendered))
                 {
-                    framesRendered.Add(frameBeingRended);
+                    framesRendered.Add(frameBeingRendered);
                 }
             }
             //Console.WriteLine(e.Data);
