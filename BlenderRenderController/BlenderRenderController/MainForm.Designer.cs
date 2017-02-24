@@ -133,9 +133,9 @@
             // 
             // renderProgressBar
             // 
-            this.renderProgressBar.Location = new System.Drawing.Point(32, 481);
+            this.renderProgressBar.Location = new System.Drawing.Point(32, 475);
             this.renderProgressBar.Name = "renderProgressBar";
-            this.renderProgressBar.Size = new System.Drawing.Size(612, 25);
+            this.renderProgressBar.Size = new System.Drawing.Size(612, 14);
             this.renderProgressBar.Step = 1;
             this.renderProgressBar.TabIndex = 2;
             this.toolTip1.SetToolTip(this.renderProgressBar, "Progress bar");
@@ -207,7 +207,7 @@
             this.statusLabel.AutoSize = true;
             this.statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.statusLabel.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.statusLabel.Location = new System.Drawing.Point(32, 516);
+            this.statusLabel.Location = new System.Drawing.Point(32, 503);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(145, 16);
             this.statusLabel.TabIndex = 11;
@@ -358,7 +358,7 @@
             // 
             this.totalTimeLabel.AutoSize = true;
             this.totalTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.totalTimeLabel.Location = new System.Drawing.Point(588, 516);
+            this.totalTimeLabel.Location = new System.Drawing.Point(588, 503);
             this.totalTimeLabel.Name = "totalTimeLabel";
             this.totalTimeLabel.Size = new System.Drawing.Size(56, 16);
             this.totalTimeLabel.TabIndex = 19;
@@ -721,6 +721,11 @@
             0,
             0,
             0});
+            this.chunkLengthNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.chunkLengthNumericUpDown.Name = "chunkLengthNumericUpDown";
             this.chunkLengthNumericUpDown.Size = new System.Drawing.Size(86, 22);
             this.chunkLengthNumericUpDown.TabIndex = 4;
@@ -828,7 +833,7 @@
             // 
             this.timeElapsedLabel.AutoSize = true;
             this.timeElapsedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.timeElapsedLabel.Location = new System.Drawing.Point(486, 516);
+            this.timeElapsedLabel.Location = new System.Drawing.Point(486, 503);
             this.timeElapsedLabel.Name = "timeElapsedLabel";
             this.timeElapsedLabel.Size = new System.Drawing.Size(96, 16);
             this.timeElapsedLabel.TabIndex = 19;
@@ -847,7 +852,7 @@
             this.currentChunkInfoPanel.Controls.Add(this.label15);
             this.currentChunkInfoPanel.Controls.Add(this.chunkEndLabel);
             this.currentChunkInfoPanel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.currentChunkInfoPanel.Location = new System.Drawing.Point(188, 3);
+            this.currentChunkInfoPanel.Location = new System.Drawing.Point(198, 280);
             this.currentChunkInfoPanel.Name = "currentChunkInfoPanel";
             this.currentChunkInfoPanel.Size = new System.Drawing.Size(268, 122);
             this.currentChunkInfoPanel.TabIndex = 31;
@@ -904,6 +909,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(662, 550);
+            this.Controls.Add(this.currentChunkInfoPanel);
             this.Controls.Add(this.rendererRadioButtonBlender);
             this.Controls.Add(this.rendererRadioButtonCycles);
             this.Controls.Add(this.blendFileNameLabel);
@@ -914,7 +920,6 @@
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.infoPanel);
-            this.Controls.Add(this.currentChunkInfoPanel);
             this.Controls.Add(this.timeElapsedLabel);
             this.Controls.Add(this.totalTimeLabel);
             this.Controls.Add(this.reloadBlenderDataButton);

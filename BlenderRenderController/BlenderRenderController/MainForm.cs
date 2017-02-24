@@ -47,7 +47,7 @@ namespace BlenderRenderController
         DateTime startTime;
 
         Timer processTimer;
-        int processTimerInterval = 1000;
+        int processTimerInterval = 100;
 
         int ErrorCode;
 
@@ -100,7 +100,7 @@ namespace BlenderRenderController
             //top infos
             if (blendData != null)
             {
-                var durationSeconds = Convert.ToDouble((totalEnd - totalStart) / int.Parse(blendData.Framerate.Split('.')[0]));
+                var durationSeconds = Convert.ToDouble((totalEnd - totalStart + 1) / int.Parse(blendData.Framerate.Split('.')[0]));
                 TimeSpan t = TimeSpan.FromSeconds(durationSeconds);
 
                 infoDuration.Text = string.Format("{0:D1}h {1:D1}m {2:D1}s {3:D1}ms",
@@ -108,10 +108,10 @@ namespace BlenderRenderController
                                 t.Minutes,
                                 t.Seconds,
                                 t.Milliseconds);
-                infoFramesTotal.Text = (totalEnd - totalStart).ToString();
+                infoFramesTotal.Text = (totalEnd - totalStart + 1).ToString();
             }
 
-            renderAllButton.Text = (processTimer != null && processTimer.Enabled) ? "Stop" : "Render";
+            renderAllButton.Text = (appState == AppStates.RENDERING_CHUNK_ONLY || appState == AppStates.RENDERING_ALL) ? "Stop" : "Render";
 
             //enabling / disabling UI according to current app state
             switch (appState)
@@ -260,7 +260,7 @@ namespace BlenderRenderController
             appState = AppStates.RENDERING_CHUNK_ONLY;
             startTime = DateTime.Now;
             totalTimeLabel.Text = "00:00:00";
-            statusLabel.Text = "Rendering current chunk";
+            statusLabel.Text = "Starting Render...";
             processesCompletedCount = 0;
             lastChunkStarted = true;
             processTimer.Enabled = true;
@@ -339,16 +339,16 @@ namespace BlenderRenderController
         private void prevChunkButton_Click(object sender, EventArgs e)
         {
 
-            if (chunkStart - chunkLength < totalStart)
+            if (chunkStart - chunkLength - 1 < totalStart)
             {
                 chunkStart = totalStart;
-                chunkEnd = totalStart + chunkLength;
+                chunkEnd = totalStart + chunkLength - 1;
             }
 
             else
             {
                 chunkEnd = chunkStart - 1;
-                chunkStart = chunkEnd - chunkLength;
+                chunkStart = chunkEnd - chunkLength + 1;
             }
             updateUI();
         }
@@ -363,13 +363,13 @@ namespace BlenderRenderController
             {
                 chunkStart = chunkEnd + 1;
 
-                if (chunkEnd + chunkLength + 1 > totalEnd)
+                if (chunkEnd + chunkLength - 1 > totalEnd)
                 {
                     chunkEnd = totalEnd;
                 }
                 else
                 {
-                    chunkEnd += chunkLength + 1;
+                    chunkEnd += chunkLength;
                 }
                 updateUI();
             }
@@ -430,14 +430,14 @@ namespace BlenderRenderController
 
         private decimal getChunksTotalCount()
         {
-            return Math.Ceiling((totalEnd - totalStart) / chunkLength);
+            return Math.Ceiling((totalEnd - totalStart + 1) / chunkLength);
         }
 
         private void stopRender(bool wasComplete)
         {
 
             //Show time run
-            statusLabel.Text = wasComplete ? "Render Complete." : "Render Cancelled.";
+            statusLabel.Text = wasComplete ? "Render Complete, press Join Chunks to get final video.\nIf your anim has a sound, press Audio Mixdown before Join Chunks." : "Render Cancelled.";
             TimeSpan runTime = DateTime.Now - startTime;
             totalTimeLabel.Text = String.Format("{0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds);
             //startTime = DateTime.MaxValue;
@@ -458,7 +458,7 @@ namespace BlenderRenderController
 
 
             appState = AppStates.READY;
-            resetChunkStartEnd();
+            checkCurrentChunkStartEnd();
             updateUI();
         }
 
@@ -470,13 +470,15 @@ namespace BlenderRenderController
             {
                 renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (totalEnd - totalStart + 1)) * 100);
 
-                statusLabel.Text = "Completed " + processesCompletedCount.ToString() + " / " + getChunksTotalCount().ToString();
-                statusLabel.Text += " chunks, rendered " + framesRendered.Count + " frames in " + processes.Count;
-                statusLabel.Text += (processes.Count > 1) ? " processes." : " process.";
+                var statusText = "";
+                statusText = "Completed " + processesCompletedCount.ToString() + " / " + getChunksTotalCount().ToString();
+                statusText += " chunks, rendered " + framesRendered.Count + " frames in " + processes.Count;
+                statusText += (processes.Count > 1) ? " processes." : " process.";
+                statusLabel.Text = statusText;
             } else
             {
                 renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (chunkEnd - chunkStart + 1)) * 100);
-
+                
                 if (framesRendered.Count > 0)
                 {
                     statusLabel.Text = "Rendering chunk frame " + framesRendered.ElementAt(framesRendered.Count - 1) + ".";
@@ -500,7 +502,7 @@ namespace BlenderRenderController
             if (processes.Count == 0)
             {
                 stopRender(true);
-                resetChunkStartEnd();
+                checkCurrentChunkStartEnd();
                 return;
             }
             updateUI();
@@ -672,9 +674,13 @@ namespace BlenderRenderController
             }
 
 			if( blendData != null ) {
-                
+
+                //reset chunk range according to new timeline
                 totalStart       = blendData.StartFrame;
 				totalEnd         = blendData.EndFrame;
+                checkCurrentChunkStartEnd();
+                checkChunkLength();
+
                 blendFileLabel.Text = "1. Blend File:";
                 blendFileNameLabel.Text = " " + blendData.ProjectName;
                 statusLabel.Text = "Successfully opened " + blendData.ProjectName + ".blend";
@@ -708,19 +714,11 @@ namespace BlenderRenderController
                 infoFramerate.Text                 = blendData.Framerate.ToString();
                 infoNoScenes.Text                  = blendData.NumScenes;
                 ErrorCode                          = blendData.ErrorCode;
-
-                chunkEnd = chunkLength + chunkStart;
-
-                if ( blendData.EndFrame < chunkEnd ) {
-					chunkEnd = blendData.EndFrame;
-				}
-
 			}
 
             // Error checker
             errorMsgs(ErrorCode);
-
-            resetChunkStartEnd();
+            
             updateUI();
 
             Trace.WriteLine( "Json data = " + jsonInfo.ToString() );
@@ -1005,23 +1003,27 @@ namespace BlenderRenderController
         private void totalStartNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             totalStart = totalStartNumericUpDown.Value;
-            if (totalStart >= totalEnd)
+            if (totalStart > totalEnd)
             {
-                totalEnd = totalStart + chunkLength;
+                totalEnd = totalStart + chunkLength - 1;
             }
             chunkStart = totalStart;
-            resetChunkStartEnd();
+            checkCurrentChunkStartEnd();
+            checkChunkLength();
+            updateUI();
         }
         //total end numericUpDown change
         private void totalEndNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             totalEnd = totalEndNumericUpDown.Value;
-            if (totalEnd <= totalStart)
+            if (totalEnd < totalStart)
             {
-                totalStart -= chunkLength;
+                totalStart -= chunkLength - 1;
             }
             if (totalStart < 0) totalStart = 0;
-            resetChunkStartEnd();
+            checkCurrentChunkStartEnd();
+            checkChunkLength();
+            updateUI();
         }
 
         //chunk length numericUpDown change
@@ -1029,22 +1031,30 @@ namespace BlenderRenderController
         {
             chunkStart = totalStart;
             chunkLength = chunkLengthNumericUpDown.Value;
-            resetChunkStartEnd();
+            checkCurrentChunkStartEnd();
+            checkChunkLength();
+            updateUI();
         }
 
-        private void resetChunkStartEnd()
+        private void checkCurrentChunkStartEnd()
         {
-            if(chunkStart >= totalEnd)
+            if(chunkStart < totalStart || chunkStart > totalEnd)
             {
-                chunkStart = 0;
+                chunkStart = totalStart;
             }
-            if (chunkStart + chunkLength > totalEnd)
+            if (chunkEnd > totalEnd || chunkEnd < totalStart)
             {
-                chunkLength = totalEnd - totalStart;
+                chunkEnd = totalEnd;
+            } else
+            {
+                chunkEnd = totalStart + chunkLength - 1;
             }
-            else
-            {
-                chunkEnd = chunkStart + chunkLength;
+            updateUI();
+        }
+        private void checkChunkLength()
+        {
+            if(chunkLength - 1 > totalEnd - totalStart || chunkEnd > totalEnd) {
+                chunkLength = totalEnd - totalStart + 1;
             }
             updateUI();
         }
