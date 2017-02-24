@@ -22,7 +22,7 @@ namespace BlenderRenderController
         string blendFilePath;
         string outFolderPath;
 
-        decimal chunkStart, chunkEnd, chunkLength, totalStart, totalEnd, chunksTotal;
+        decimal chunkStart, chunkEnd, chunkLength, totalStart, totalEnd;
         const string RENDERER_BLENDER = "BLENDER_RENDER";
         const string RENDERER_CYCLES = "CYCLES";
 
@@ -39,6 +39,7 @@ namespace BlenderRenderController
 
         //processes
         List<Process> processes = new List<Process>();
+        List<int> framesRendered = new List<int>();
         int processesCompletedCount = 0;
 
         BlenderData blendData;
@@ -78,7 +79,7 @@ namespace BlenderRenderController
             chunkLength = chunkLengthNumericUpDown.Value;
             totalStart = totalStartNumericUpDown.Value;
             totalEnd = totalEndNumericUpDown.Value;
-            statusLabel.Text = "";
+            statusLabel.Text = "Hello 3D World!";
             updateUI();
         }
         public void updateUI()
@@ -123,6 +124,7 @@ namespace BlenderRenderController
                     partsFolderBrowseButton.Enabled = false;
                     outputFolderTextBox.Enabled = false;
                     statusLabel.Visible = true;
+                    timeElapsedLabel.Visible = true;
                     break;
                 case AppStates.READY:
                     renderAllButton.Enabled = true;
@@ -141,6 +143,7 @@ namespace BlenderRenderController
                     processCountNumericUpDown.Enabled = true;
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
+                    timeElapsedLabel.Visible = true;
                     break;
                 case AppStates.RENDERING_ALL:
                 case AppStates.RENDERING_CHUNK_ONLY:
@@ -160,6 +163,7 @@ namespace BlenderRenderController
                     processCountNumericUpDown.Enabled = false;
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
+                    timeElapsedLabel.Visible = true;
                     break;
             }
         }
@@ -251,38 +255,70 @@ namespace BlenderRenderController
             processesCompletedCount = 0;
             lastChunkStarted = true;
             processTimer.Enabled = true;
+            framesRendered.Clear();
             renderCurrentChunk();
             updateUI();
         }
         private void renderCurrentChunk()
         {
-            Process p = new Process();
-            p.StartInfo.WorkingDirectory = outFolderPath;
-            p.StartInfo.FileName = "blender";
-            p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-            
-            if (chunkEnd == totalEnd)
-            {
-                lastChunkStarted = true;
-            }
-            string renderer = rendererRadioButtonBlender.Checked ? RENDERER_BLENDER : RENDERER_CYCLES;
+            if (chunkEnd == totalEnd) lastChunkStarted = true;
 
-            p.StartInfo.Arguments = String.Format("-b \"{0}\" -o {1} -E {2} -s {3} -e {4} -a",
+            Process p = new Process();
+            processes.Add(p);
+
+            ProcessStartInfo pStartInfo = new ProcessStartInfo();
+            pStartInfo.RedirectStandardOutput = true;
+            pStartInfo.RedirectStandardError = true;
+            pStartInfo.RedirectStandardInput = true;
+            pStartInfo.UseShellExecute = false;
+            pStartInfo.CreateNoWindow = true;
+            pStartInfo.WorkingDirectory = outFolderPath;
+            pStartInfo.FileName = "blender";
+
+            string renderer = rendererRadioButtonBlender.Checked ? RENDERER_BLENDER : RENDERER_CYCLES;
+            pStartInfo.Arguments = String.Format("-b \"{0}\" -o {1} -E {2} -s {3} -e {4} -a",
                                                   blendFilePath,
                                                   outFolderPath + "\\" + chunksSubfolder + "\\" + blendData.ProjectName + "-#",
                                                   renderer,
                                                   chunkStart,
                                                   chunkEnd
                                                   );
-
-            Trace.WriteLine(String.Format("CEW: {0}", p.StartInfo.Arguments));
-
+            p.StartInfo = pStartInfo;
+            p.ErrorDataReceived += onRenderProcessErrorDataReceived;
+            p.OutputDataReceived += onRenderProcessDataReceived;
             p.EnableRaisingEvents = true;
+
+            Trace.WriteLine(String.Format("CEW: {0}", pStartInfo.Arguments));
+            
             p.Exited += new EventHandler(chunkRendered);
 
             p.Start();
 
-            processes.Add(p);
+            p.PriorityClass = ProcessPriorityClass.High;
+            p.BeginOutputReadLine();
+            p.BeginErrorReadLine();
+            //p.WaitForExit();
+        }
+
+        private void onRenderProcessDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            //Console.WriteLine("Output from other process");
+            if(e.Data != null && e.Data.IndexOf("Fra:") == 0)
+            {
+                int frameBeingRended = int.Parse(e.Data.Split(' ')[0].Replace("Fra:", ""));
+                Console.WriteLine(e.Data.Split(' ')[0].Replace("Fra:", ""));
+                if(!framesRendered.Contains(frameBeingRended))
+                {
+                    framesRendered.Add(frameBeingRended);
+                }
+            }
+            //Console.WriteLine(e.Data);
+        }
+
+        private void onRenderProcessErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            //Console.WriteLine("Error from other process");
+            Console.WriteLine(e.Data);
         }
 
         private void chunkRendered(object sender, EventArgs e)
@@ -356,25 +392,31 @@ namespace BlenderRenderController
                     if (dialogResult == DialogResult.No) {
                         return;
                     }
-                    Helper.clearFolder(chunksPath);
+                    try {
+                        Helper.clearFolder(chunksPath);
+                    }
+                    catch (Exception){
+                        MessageBox.Show("It can't be deleted, files are in use by some program.\n");
+                        return;
+                    }
                     renderAllButton_Click(null, null);
                 }
-                startRenderAll();
+                renderAll();
                 renderAllButton.Text = "Stop";
             }
 
         }
         
-        private void startRenderAll()
+        private void renderAll()
         {
             appState = AppStates.RENDERING_ALL;
             startTime = DateTime.Now;
             totalTimeLabel.Text = "00:00:00";
             statusLabel.Text = "Starting render...";
             processesCompletedCount = 0;
+            framesRendered.Clear();
             processTimer.Enabled = true;
-            renderCurrentChunk();
-            moveToNextChunk();
+            updateUI();
         }
 
         private decimal getChunksTotalCount()
@@ -393,7 +435,10 @@ namespace BlenderRenderController
             
             foreach (var process in processes.ToList())
             {
-                process.CloseMainWindow();
+                if (!process.HasExited)
+                {
+                    process.Kill();
+                }
                 process.Dispose();
                 processes.Remove(process);
             }
@@ -411,13 +456,24 @@ namespace BlenderRenderController
         private void updateProcessManagement(object sender, EventArgs e)
         {
 
-            //progressbar
-            renderProgressBar.Value = (int)Math.Ceiling((processesCompletedCount / getChunksTotalCount()) * 100);
+            //PROGRESS display
+            if (appState == AppStates.RENDERING_ALL)
+            {
+                renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (totalEnd - totalStart + 1)) * 100);
 
-            //status text
-            statusLabel.Text = "Rendered " + processesCompletedCount.ToString() + " / " + getChunksTotalCount().ToString();
-            statusLabel.Text += ", running " + processes.Count;
-            statusLabel.Text += (processes.Count > 1) ? " processes." : " process.";
+                statusLabel.Text = "Completed " + processesCompletedCount.ToString() + " / " + getChunksTotalCount().ToString();
+                statusLabel.Text += " chunks, rendered " + framesRendered.Count + " frames in " + processes.Count;
+                statusLabel.Text += (processes.Count > 1) ? " processes." : " process.";
+            } else
+            {
+                renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (chunkEnd - chunkStart + 1)) * 100);
+
+                if (framesRendered.Count > 0)
+                {
+                    statusLabel.Text = "Rendering chunk frame " + framesRendered.ElementAt(framesRendered.Count - 1) + ".";
+                }
+            }
+
 
             //start next chunk if needed
             if (!lastChunkStarted)
@@ -516,9 +572,10 @@ namespace BlenderRenderController
             Process ffmpegProcess = new Process();
             ffmpegProcess.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
             ffmpegProcess.StartInfo.FileName = "ffmpeg";
-            ffmpegProcess.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+            ffmpegProcess.StartInfo.CreateNoWindow = true;
+            ffmpegProcess.StartInfo.UseShellExecute = false;
 
-            
+
             ffmpegProcess.StartInfo.Arguments = String.Format("-f concat -safe 0 -i {0} {1} -c:v copy {3}.{4} -y",
                                                    chunksTxtPath,
                                                    addAudioArguments,
@@ -611,7 +668,7 @@ namespace BlenderRenderController
 				totalEnd         = blendData.EndFrame;
                 blendFileLabel.Text = "1. Blend File:";
                 blendFileNameLabel.Text = " " + blendData.ProjectName;
-
+                statusLabel.Text = "Successfully opened " + blendData.ProjectName + ".blend";
 
                 //chunkEndNumericUpDown.Text = int.Parse(chunkStartNumericUpDown.Text) + chunkEndNumericUpDown.Text;
 
@@ -644,7 +701,6 @@ namespace BlenderRenderController
                 ErrorCode                          = blendData.ErrorCode;
 
                 chunkEnd = chunkLength + chunkStart;
-                statusLabel.Text = "";
 
                 if ( blendData.EndFrame < chunkEnd ) {
 					chunkEnd = blendData.EndFrame;
@@ -758,9 +814,9 @@ namespace BlenderRenderController
             p.StartInfo.FileName = "blender";
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.UseShellExecute = false;
+            p.StartInfo.CreateNoWindow         = true;
             //Using minimized instead so we get feedback
-            //p.StartInfo.CreateNoWindow         = true;
-            p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+            //p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
 
             p.StartInfo.Arguments = String.Format("-b \"{0}\" -s {1} -e {2} -P \"{3}\" -- {4}",
                                                   blendFilePath,

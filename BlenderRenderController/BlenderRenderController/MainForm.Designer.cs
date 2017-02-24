@@ -93,7 +93,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.timeElapsedLabel = new System.Windows.Forms.Label();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.currentChunkInfoPanel = new System.Windows.Forms.Panel();
             this.openOutputFolderButton = new System.Windows.Forms.Button();
             this.blendFileNameLabel = new System.Windows.Forms.Label();
             this.rendererRadioButtonCycles = new System.Windows.Forms.RadioButton();
@@ -104,7 +104,7 @@
             this.menuStrip1.SuspendLayout();
             this.infoPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).BeginInit();
-            this.panel1.SuspendLayout();
+            this.currentChunkInfoPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // renderChunkButton
@@ -133,7 +133,7 @@
             // 
             // renderProgressBar
             // 
-            this.renderProgressBar.Location = new System.Drawing.Point(36, 573);
+            this.renderProgressBar.Location = new System.Drawing.Point(36, 481);
             this.renderProgressBar.Name = "renderProgressBar";
             this.renderProgressBar.Size = new System.Drawing.Size(608, 25);
             this.renderProgressBar.Step = 1;
@@ -143,7 +143,7 @@
             // totalStartNumericUpDown
             // 
             this.totalStartNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.totalStartNumericUpDown.Location = new System.Drawing.Point(36, 238);
+            this.totalStartNumericUpDown.Location = new System.Drawing.Point(36, 239);
             this.totalStartNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -159,7 +159,7 @@
             // 
             this.startFrameLabel.AutoSize = true;
             this.startFrameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startFrameLabel.Location = new System.Drawing.Point(33, 221);
+            this.startFrameLabel.Location = new System.Drawing.Point(33, 222);
             this.startFrameLabel.Name = "startFrameLabel";
             this.startFrameLabel.Size = new System.Drawing.Size(71, 15);
             this.startFrameLabel.TabIndex = 6;
@@ -183,9 +183,9 @@
             // partsFolderBrowseButton
             // 
             this.partsFolderBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.partsFolderBrowseButton.Location = new System.Drawing.Point(424, 345);
+            this.partsFolderBrowseButton.Location = new System.Drawing.Point(539, 321);
             this.partsFolderBrowseButton.Name = "partsFolderBrowseButton";
-            this.partsFolderBrowseButton.Size = new System.Drawing.Size(106, 31);
+            this.partsFolderBrowseButton.Size = new System.Drawing.Size(105, 31);
             this.partsFolderBrowseButton.TabIndex = 8;
             this.partsFolderBrowseButton.Text = "Change";
             this.partsFolderBrowseButton.UseVisualStyleBackColor = true;
@@ -194,9 +194,9 @@
             // outputFolderTextBox
             // 
             this.outputFolderTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.outputFolderTextBox.Location = new System.Drawing.Point(36, 318);
+            this.outputFolderTextBox.Location = new System.Drawing.Point(36, 326);
             this.outputFolderTextBox.Name = "outputFolderTextBox";
-            this.outputFolderTextBox.Size = new System.Drawing.Size(605, 22);
+            this.outputFolderTextBox.Size = new System.Drawing.Size(497, 22);
             this.outputFolderTextBox.TabIndex = 7;
             this.outputFolderTextBox.WordWrap = false;
             this.outputFolderTextBox.Leave += new System.EventHandler(this.outFolderPathTextBox_TextChanged);
@@ -206,7 +206,7 @@
             this.statusLabel.AutoSize = true;
             this.statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.statusLabel.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.statusLabel.Location = new System.Drawing.Point(32, 608);
+            this.statusLabel.Location = new System.Drawing.Point(32, 516);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(145, 16);
             this.statusLabel.TabIndex = 11;
@@ -244,7 +244,7 @@
             // 
             this.totalFrameCountLabel.AutoSize = true;
             this.totalFrameCountLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.totalFrameCountLabel.Location = new System.Drawing.Point(140, 221);
+            this.totalFrameCountLabel.Location = new System.Drawing.Point(140, 222);
             this.totalFrameCountLabel.Name = "totalFrameCountLabel";
             this.totalFrameCountLabel.Size = new System.Drawing.Size(68, 15);
             this.totalFrameCountLabel.TabIndex = 13;
@@ -255,7 +255,7 @@
             // totalEndNumericUpDown
             // 
             this.totalEndNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.totalEndNumericUpDown.Location = new System.Drawing.Point(143, 238);
+            this.totalEndNumericUpDown.Location = new System.Drawing.Point(143, 239);
             this.totalEndNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -275,7 +275,7 @@
             // processCountNumericUpDown
             // 
             this.processCountNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.processCountNumericUpDown.Location = new System.Drawing.Point(568, 238);
+            this.processCountNumericUpDown.Location = new System.Drawing.Point(571, 239);
             this.processCountNumericUpDown.Name = "processCountNumericUpDown";
             this.processCountNumericUpDown.Size = new System.Drawing.Size(73, 22);
             this.processCountNumericUpDown.TabIndex = 5;
@@ -291,7 +291,7 @@
             // 
             this.processCountLabel.AutoSize = true;
             this.processCountLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.processCountLabel.Location = new System.Drawing.Point(555, 220);
+            this.processCountLabel.Location = new System.Drawing.Point(558, 221);
             this.processCountLabel.Name = "processCountLabel";
             this.processCountLabel.Size = new System.Drawing.Size(86, 15);
             this.processCountLabel.TabIndex = 15;
@@ -301,7 +301,7 @@
             // renderAllButton
             // 
             this.renderAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderAllButton.Location = new System.Drawing.Point(36, 410);
+            this.renderAllButton.Location = new System.Drawing.Point(36, 416);
             this.renderAllButton.Name = "renderAllButton";
             this.renderAllButton.Size = new System.Drawing.Size(168, 38);
             this.renderAllButton.TabIndex = 9;
@@ -312,8 +312,8 @@
             // 
             // concatenatePartsButton
             // 
-            this.concatenatePartsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.concatenatePartsButton.Location = new System.Drawing.Point(36, 500);
+            this.concatenatePartsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.concatenatePartsButton.Location = new System.Drawing.Point(410, 416);
             this.concatenatePartsButton.Name = "concatenatePartsButton";
             this.concatenatePartsButton.Size = new System.Drawing.Size(123, 38);
             this.concatenatePartsButton.TabIndex = 11;
@@ -337,7 +337,7 @@
             // mixDownButton
             // 
             this.mixDownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.mixDownButton.Location = new System.Drawing.Point(210, 410);
+            this.mixDownButton.Location = new System.Drawing.Point(210, 416);
             this.mixDownButton.Name = "mixDownButton";
             this.mixDownButton.Size = new System.Drawing.Size(119, 38);
             this.mixDownButton.TabIndex = 10;
@@ -349,7 +349,7 @@
             // 
             this.totalTimeLabel.AutoSize = true;
             this.totalTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.totalTimeLabel.Location = new System.Drawing.Point(585, 608);
+            this.totalTimeLabel.Location = new System.Drawing.Point(588, 516);
             this.totalTimeLabel.Name = "totalTimeLabel";
             this.totalTimeLabel.Size = new System.Drawing.Size(56, 16);
             this.totalTimeLabel.TabIndex = 19;
@@ -685,7 +685,7 @@
             // 
             this.chunkLengthLabel.AutoSize = true;
             this.chunkLengthLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkLengthLabel.Location = new System.Drawing.Point(249, 221);
+            this.chunkLengthLabel.Location = new System.Drawing.Point(249, 222);
             this.chunkLengthLabel.Name = "chunkLengthLabel";
             this.chunkLengthLabel.Size = new System.Drawing.Size(72, 15);
             this.chunkLengthLabel.TabIndex = 13;
@@ -706,7 +706,7 @@
             // chunkLengthNumericUpDown
             // 
             this.chunkLengthNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(252, 238);
+            this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(252, 239);
             this.chunkLengthNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -727,7 +727,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label2.Location = new System.Drawing.Point(19, 286);
+            this.label2.Location = new System.Drawing.Point(19, 294);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(129, 20);
             this.label2.TabIndex = 25;
@@ -738,7 +738,7 @@
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label8.Location = new System.Drawing.Point(19, 185);
+            this.label8.Location = new System.Drawing.Point(19, 186);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(214, 20);
             this.label8.TabIndex = 25;
@@ -749,7 +749,7 @@
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label10.Location = new System.Drawing.Point(19, 376);
+            this.label10.Location = new System.Drawing.Point(19, 382);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(81, 20);
             this.label10.TabIndex = 25;
@@ -760,7 +760,7 @@
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label12.Location = new System.Drawing.Point(382, 185);
+            this.label12.Location = new System.Drawing.Point(382, 186);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(147, 20);
             this.label12.TabIndex = 25;
@@ -797,7 +797,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label5.Location = new System.Drawing.Point(19, 466);
+            this.label5.Location = new System.Drawing.Point(394, 382);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(58, 20);
             this.label5.TabIndex = 25;
@@ -818,38 +818,39 @@
             // 
             this.timeElapsedLabel.AutoSize = true;
             this.timeElapsedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.timeElapsedLabel.Location = new System.Drawing.Point(486, 608);
+            this.timeElapsedLabel.Location = new System.Drawing.Point(486, 516);
             this.timeElapsedLabel.Name = "timeElapsedLabel";
             this.timeElapsedLabel.Size = new System.Drawing.Size(96, 16);
             this.timeElapsedLabel.TabIndex = 19;
             this.timeElapsedLabel.Text = "Time Elapsed:";
             // 
-            // panel1
+            // currentChunkInfoPanel
             // 
-            this.panel1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel1.Controls.Add(this.renderChunkButton);
-            this.panel1.Controls.Add(this.chunkEndNumericUpDown);
-            this.panel1.Controls.Add(this.prevChunkButton);
-            this.panel1.Controls.Add(this.chunkStartNumericUpDown);
-            this.panel1.Controls.Add(this.nextChunkButton);
-            this.panel1.Controls.Add(this.chunkStartLabel);
-            this.panel1.Controls.Add(this.label15);
-            this.panel1.Controls.Add(this.chunkEndLabel);
-            this.panel1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.panel1.Location = new System.Drawing.Point(376, 436);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(268, 122);
-            this.panel1.TabIndex = 31;
+            this.currentChunkInfoPanel.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.currentChunkInfoPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.currentChunkInfoPanel.Controls.Add(this.renderChunkButton);
+            this.currentChunkInfoPanel.Controls.Add(this.chunkEndNumericUpDown);
+            this.currentChunkInfoPanel.Controls.Add(this.prevChunkButton);
+            this.currentChunkInfoPanel.Controls.Add(this.chunkStartNumericUpDown);
+            this.currentChunkInfoPanel.Controls.Add(this.nextChunkButton);
+            this.currentChunkInfoPanel.Controls.Add(this.chunkStartLabel);
+            this.currentChunkInfoPanel.Controls.Add(this.label15);
+            this.currentChunkInfoPanel.Controls.Add(this.chunkEndLabel);
+            this.currentChunkInfoPanel.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.currentChunkInfoPanel.Location = new System.Drawing.Point(188, 3);
+            this.currentChunkInfoPanel.Name = "currentChunkInfoPanel";
+            this.currentChunkInfoPanel.Size = new System.Drawing.Size(268, 122);
+            this.currentChunkInfoPanel.TabIndex = 31;
+            this.currentChunkInfoPanel.Visible = false;
             // 
             // openOutputFolderButton
             // 
             this.openOutputFolderButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.openOutputFolderButton.Location = new System.Drawing.Point(536, 345);
+            this.openOutputFolderButton.Location = new System.Drawing.Point(539, 416);
             this.openOutputFolderButton.Name = "openOutputFolderButton";
-            this.openOutputFolderButton.Size = new System.Drawing.Size(105, 31);
+            this.openOutputFolderButton.Size = new System.Drawing.Size(105, 38);
             this.openOutputFolderButton.TabIndex = 12;
-            this.openOutputFolderButton.Text = "Open";
+            this.openOutputFolderButton.Text = "Open Folder";
             this.openOutputFolderButton.UseVisualStyleBackColor = true;
             this.openOutputFolderButton.Click += new System.EventHandler(this.openOutputFolderButton_Click);
             // 
@@ -867,7 +868,7 @@
             // 
             this.rendererRadioButtonCycles.AutoSize = true;
             this.rendererRadioButtonCycles.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(403, 245);
+            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(403, 243);
             this.rendererRadioButtonCycles.Name = "rendererRadioButtonCycles";
             this.rendererRadioButtonCycles.Size = new System.Drawing.Size(104, 19);
             this.rendererRadioButtonCycles.TabIndex = 32;
@@ -879,7 +880,7 @@
             this.rendererRadioButtonBlender.AutoSize = true;
             this.rendererRadioButtonBlender.Checked = true;
             this.rendererRadioButtonBlender.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(403, 221);
+            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(403, 219);
             this.rendererRadioButtonBlender.Name = "rendererRadioButtonBlender";
             this.rendererRadioButtonBlender.Size = new System.Drawing.Size(112, 19);
             this.rendererRadioButtonBlender.TabIndex = 32;
@@ -892,7 +893,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(662, 636);
+            this.ClientSize = new System.Drawing.Size(662, 550);
             this.Controls.Add(this.rendererRadioButtonBlender);
             this.Controls.Add(this.rendererRadioButtonCycles);
             this.Controls.Add(this.blendFileNameLabel);
@@ -903,6 +904,7 @@
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.infoPanel);
+            this.Controls.Add(this.currentChunkInfoPanel);
             this.Controls.Add(this.timeElapsedLabel);
             this.Controls.Add(this.totalTimeLabel);
             this.Controls.Add(this.reloadBlenderDataButton);
@@ -924,11 +926,10 @@
             this.Controls.Add(this.blendFileBrowseButton);
             this.Controls.Add(this.renderAllButton);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(678, 675);
+            this.MaximumSize = new System.Drawing.Size(678, 589);
             this.MinimumSize = new System.Drawing.Size(678, 39);
             this.Name = "MainForm";
             this.Text = "Blender Render Controller";
@@ -942,8 +943,8 @@
             this.infoPanel.ResumeLayout(false);
             this.infoPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).EndInit();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.currentChunkInfoPanel.ResumeLayout(false);
+            this.currentChunkInfoPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1013,7 +1014,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label timeElapsedLabel;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel currentChunkInfoPanel;
         private System.Windows.Forms.ToolStripMenuItem jendabekToolStripMenuItem;
         private System.Windows.Forms.Button openOutputFolderButton;
         private System.Windows.Forms.Label blendFileNameLabel;
