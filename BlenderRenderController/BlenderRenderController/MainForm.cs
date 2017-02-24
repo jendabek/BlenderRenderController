@@ -74,6 +74,7 @@ namespace BlenderRenderController
         public MainForm()
         {
             InitializeComponent();
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(onAppExit);
             scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, scriptsSubfolder);
 			Trace.WriteLine( String.Format( "Scripts Path: '{0}'", scriptsPath ) );
             chunkLength = chunkLengthNumericUpDown.Value;
@@ -82,6 +83,12 @@ namespace BlenderRenderController
             statusLabel.Text = "Hello 3D World!";
             updateUI();
         }
+
+        private void onAppExit(object sender, EventArgs e)
+        {
+            stopRender(false);
+        }
+
         public void updateUI()
         {
             chunkEndNumericUpDown.Text = chunkEnd.ToString();
@@ -124,7 +131,8 @@ namespace BlenderRenderController
                     partsFolderBrowseButton.Enabled = false;
                     outputFolderTextBox.Enabled = false;
                     statusLabel.Visible = true;
-                    timeElapsedLabel.Visible = true;
+                    timeElapsedLabel.Visible = false;
+                    totalTimeLabel.Visible = false;
                     break;
                 case AppStates.READY:
                     renderAllButton.Enabled = true;
@@ -144,6 +152,7 @@ namespace BlenderRenderController
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = true;
+                    totalTimeLabel.Visible = true;
                     break;
                 case AppStates.RENDERING_ALL:
                 case AppStates.RENDERING_CHUNK_ONLY:
@@ -985,6 +994,11 @@ namespace BlenderRenderController
                                                                 MessageBoxButtons.OK,
                                                                 MessageBoxIcon.Exclamation);
             }
+        }
+
+        private void processCountNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+
         }
 
         //total start numericUpDown change

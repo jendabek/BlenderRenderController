@@ -133,9 +133,9 @@
             // 
             // renderProgressBar
             // 
-            this.renderProgressBar.Location = new System.Drawing.Point(36, 481);
+            this.renderProgressBar.Location = new System.Drawing.Point(32, 481);
             this.renderProgressBar.Name = "renderProgressBar";
-            this.renderProgressBar.Size = new System.Drawing.Size(608, 25);
+            this.renderProgressBar.Size = new System.Drawing.Size(612, 25);
             this.renderProgressBar.Step = 1;
             this.renderProgressBar.TabIndex = 2;
             this.toolTip1.SetToolTip(this.renderProgressBar, "Progress bar");
@@ -143,7 +143,7 @@
             // totalStartNumericUpDown
             // 
             this.totalStartNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.totalStartNumericUpDown.Location = new System.Drawing.Point(36, 239);
+            this.totalStartNumericUpDown.Location = new System.Drawing.Point(32, 243);
             this.totalStartNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -152,6 +152,7 @@
             this.totalStartNumericUpDown.Name = "totalStartNumericUpDown";
             this.totalStartNumericUpDown.Size = new System.Drawing.Size(90, 22);
             this.totalStartNumericUpDown.TabIndex = 2;
+            this.totalStartNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTip1.SetToolTip(this.totalStartNumericUpDown, "Segment\'s starting frame");
             this.totalStartNumericUpDown.ValueChanged += new System.EventHandler(this.totalStartNumericUpDown_ValueChanged);
             // 
@@ -159,7 +160,7 @@
             // 
             this.startFrameLabel.AutoSize = true;
             this.startFrameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startFrameLabel.Location = new System.Drawing.Point(33, 222);
+            this.startFrameLabel.Location = new System.Drawing.Point(29, 226);
             this.startFrameLabel.Name = "startFrameLabel";
             this.startFrameLabel.Size = new System.Drawing.Size(71, 15);
             this.startFrameLabel.TabIndex = 6;
@@ -194,7 +195,7 @@
             // outputFolderTextBox
             // 
             this.outputFolderTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.outputFolderTextBox.Location = new System.Drawing.Point(36, 326);
+            this.outputFolderTextBox.Location = new System.Drawing.Point(32, 326);
             this.outputFolderTextBox.Name = "outputFolderTextBox";
             this.outputFolderTextBox.Size = new System.Drawing.Size(497, 22);
             this.outputFolderTextBox.TabIndex = 7;
@@ -244,7 +245,7 @@
             // 
             this.totalFrameCountLabel.AutoSize = true;
             this.totalFrameCountLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.totalFrameCountLabel.Location = new System.Drawing.Point(140, 222);
+            this.totalFrameCountLabel.Location = new System.Drawing.Point(134, 226);
             this.totalFrameCountLabel.Name = "totalFrameCountLabel";
             this.totalFrameCountLabel.Size = new System.Drawing.Size(68, 15);
             this.totalFrameCountLabel.TabIndex = 13;
@@ -255,7 +256,7 @@
             // totalEndNumericUpDown
             // 
             this.totalEndNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.totalEndNumericUpDown.Location = new System.Drawing.Point(143, 239);
+            this.totalEndNumericUpDown.Location = new System.Drawing.Point(137, 243);
             this.totalEndNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -264,6 +265,7 @@
             this.totalEndNumericUpDown.Name = "totalEndNumericUpDown";
             this.totalEndNumericUpDown.Size = new System.Drawing.Size(90, 22);
             this.totalEndNumericUpDown.TabIndex = 3;
+            this.totalEndNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTip1.SetToolTip(this.totalEndNumericUpDown, "Project\'s end frame");
             this.totalEndNumericUpDown.Value = new decimal(new int[] {
             3000,
@@ -275,10 +277,16 @@
             // processCountNumericUpDown
             // 
             this.processCountNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.processCountNumericUpDown.Location = new System.Drawing.Point(571, 239);
+            this.processCountNumericUpDown.Location = new System.Drawing.Point(383, 243);
+            this.processCountNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.processCountNumericUpDown.Name = "processCountNumericUpDown";
-            this.processCountNumericUpDown.Size = new System.Drawing.Size(73, 22);
+            this.processCountNumericUpDown.Size = new System.Drawing.Size(69, 22);
             this.processCountNumericUpDown.TabIndex = 5;
+            this.processCountNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTip1.SetToolTip(this.processCountNumericUpDown, "N# of processes. For best results set acording to \r\nhow many logical cores you ha" +
         "ve.");
             this.processCountNumericUpDown.Value = new decimal(new int[] {
@@ -286,12 +294,13 @@
             0,
             0,
             0});
+            this.processCountNumericUpDown.ValueChanged += new System.EventHandler(this.processCountNumericUpDown_ValueChanged);
             // 
             // processCountLabel
             // 
             this.processCountLabel.AutoSize = true;
             this.processCountLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.processCountLabel.Location = new System.Drawing.Point(558, 221);
+            this.processCountLabel.Location = new System.Drawing.Point(380, 225);
             this.processCountLabel.Name = "processCountLabel";
             this.processCountLabel.Size = new System.Drawing.Size(86, 15);
             this.processCountLabel.TabIndex = 15;
@@ -301,7 +310,7 @@
             // renderAllButton
             // 
             this.renderAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderAllButton.Location = new System.Drawing.Point(36, 416);
+            this.renderAllButton.Location = new System.Drawing.Point(32, 416);
             this.renderAllButton.Name = "renderAllButton";
             this.renderAllButton.Size = new System.Drawing.Size(168, 38);
             this.renderAllButton.TabIndex = 9;
@@ -313,9 +322,9 @@
             // concatenatePartsButton
             // 
             this.concatenatePartsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.concatenatePartsButton.Location = new System.Drawing.Point(410, 416);
+            this.concatenatePartsButton.Location = new System.Drawing.Point(405, 416);
             this.concatenatePartsButton.Name = "concatenatePartsButton";
-            this.concatenatePartsButton.Size = new System.Drawing.Size(123, 38);
+            this.concatenatePartsButton.Size = new System.Drawing.Size(128, 38);
             this.concatenatePartsButton.TabIndex = 11;
             this.concatenatePartsButton.Text = "Join Chunks";
             this.toolTip1.SetToolTip(this.concatenatePartsButton, "Combine segments in FFmpeg");
@@ -685,11 +694,11 @@
             // 
             this.chunkLengthLabel.AutoSize = true;
             this.chunkLengthLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkLengthLabel.Location = new System.Drawing.Point(249, 222);
+            this.chunkLengthLabel.Location = new System.Drawing.Point(239, 226);
             this.chunkLengthLabel.Name = "chunkLengthLabel";
-            this.chunkLengthLabel.Size = new System.Drawing.Size(72, 15);
+            this.chunkLengthLabel.Size = new System.Drawing.Size(69, 15);
             this.chunkLengthLabel.TabIndex = 13;
-            this.chunkLengthLabel.Text = "Chunk Size:";
+            this.chunkLengthLabel.Text = "Chunk Size";
             // 
             // chunkStartLabel
             // 
@@ -706,7 +715,7 @@
             // chunkLengthNumericUpDown
             // 
             this.chunkLengthNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(252, 239);
+            this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(242, 243);
             this.chunkLengthNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -715,6 +724,7 @@
             this.chunkLengthNumericUpDown.Name = "chunkLengthNumericUpDown";
             this.chunkLengthNumericUpDown.Size = new System.Drawing.Size(86, 22);
             this.chunkLengthNumericUpDown.TabIndex = 4;
+            this.chunkLengthNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.chunkLengthNumericUpDown.Value = new decimal(new int[] {
             100,
             0,
@@ -738,11 +748,11 @@
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label8.Location = new System.Drawing.Point(19, 186);
+            this.label8.Location = new System.Drawing.Point(19, 190);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(214, 20);
+            this.label8.Size = new System.Drawing.Size(224, 20);
             this.label8.TabIndex = 25;
-            this.label8.Text = "2. Start - End && Chunk Size";
+            this.label8.Text = "2. Anim Range && Chunk Size";
             // 
             // label10
             // 
@@ -760,11 +770,11 @@
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label12.Location = new System.Drawing.Point(382, 186);
+            this.label12.Location = new System.Drawing.Point(361, 190);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(147, 20);
+            this.label12.Size = new System.Drawing.Size(144, 20);
             this.label12.TabIndex = 25;
-            this.label12.Text = "3. Render Settings";
+            this.label12.Text = "3. Render Options";
             // 
             // chunkStartNumericUpDown
             // 
@@ -868,7 +878,7 @@
             // 
             this.rendererRadioButtonCycles.AutoSize = true;
             this.rendererRadioButtonCycles.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(403, 243);
+            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(492, 251);
             this.rendererRadioButtonCycles.Name = "rendererRadioButtonCycles";
             this.rendererRadioButtonCycles.Size = new System.Drawing.Size(104, 19);
             this.rendererRadioButtonCycles.TabIndex = 32;
@@ -880,7 +890,7 @@
             this.rendererRadioButtonBlender.AutoSize = true;
             this.rendererRadioButtonBlender.Checked = true;
             this.rendererRadioButtonBlender.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(403, 219);
+            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(492, 227);
             this.rendererRadioButtonBlender.Name = "rendererRadioButtonBlender";
             this.rendererRadioButtonBlender.Size = new System.Drawing.Size(112, 19);
             this.rendererRadioButtonBlender.TabIndex = 32;
