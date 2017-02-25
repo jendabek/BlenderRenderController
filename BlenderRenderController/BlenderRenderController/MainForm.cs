@@ -945,17 +945,17 @@ namespace BlenderRenderController
 
         private void checkCurrentChunkStartEnd()
         {
-            if(chunkStart < start || chunkStart > end)
+
+            chunkEnd = chunkStart + chunkLength - 1;
+            if (chunkStart < start)
             {
                 chunkStart = start;
             }
-            if (chunkEnd > end || chunkEnd < start)
+            if (chunkEnd > end)
             {
                 chunkEnd = end;
-            } else
-            {
-                chunkEnd = start + chunkLength - 1;
             }
+            
             updateUI();
         }
         private void checkChunkLength()

@@ -394,7 +394,11 @@
             this.tipsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.tipsToolStripMenuItem.Text = "Tooltips";
             this.tipsToolStripMenuItem.Click += new System.EventHandler(this.tipsToolStripMenuItem_Click);
-
+            // 
+            // debugShow
+            // 
+            this.debugShow.Name = "debugShow";
+            this.debugShow.Size = new System.Drawing.Size(164, 22);
             // 
             // speToolStripMenuItem
             // 
@@ -460,7 +464,7 @@
             // readmeToolStripMenuItem
             // 
             this.readmeToolStripMenuItem.Name = "readmeToolStripMenuItem";
-            this.readmeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.readmeToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.readmeToolStripMenuItem.Text = "Readme";
             this.readmeToolStripMenuItem.ToolTipText = "Open readme (WIP)";
             // 
