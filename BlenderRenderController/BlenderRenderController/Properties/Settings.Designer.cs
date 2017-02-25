@@ -22,14 +22,5 @@ namespace BlenderRenderController.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public decimal testValue {
-            get {
-                return ((decimal)(this["testValue"]));
-            }
-        }
     }
 }

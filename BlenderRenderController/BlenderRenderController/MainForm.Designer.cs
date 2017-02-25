@@ -53,7 +53,6 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tipsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.autocombineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugShow = new System.Windows.Forms.ToolStripMenuItem();
             this.speToolStripMenuItem = new System.Windows.Forms.ToolStripSeparator();
             this.visitGithubPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,10 +62,6 @@
             this.redRaptor93ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.readmeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.jsonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteJsonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cMDArgsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.infoPanel = new System.Windows.Forms.Panel();
             this.infoDurationLabel = new System.Windows.Forms.Label();
@@ -98,6 +93,7 @@
             this.blendFileNameLabel = new System.Windows.Forms.Label();
             this.rendererRadioButtonCycles = new System.Windows.Forms.RadioButton();
             this.rendererRadioButtonBlender = new System.Windows.Forms.RadioButton();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -368,8 +364,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem,
-            this.infoToolStripMenuItem,
-            this.debugToolStripMenuItem});
+            this.infoToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -381,7 +376,6 @@
             // 
             this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tipsToolStripMenuItem,
-            this.autocombineToolStripMenuItem,
             this.debugShow,
             this.speToolStripMenuItem,
             this.visitGithubPageToolStripMenuItem});
@@ -400,23 +394,7 @@
             this.tipsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.tipsToolStripMenuItem.Text = "Tooltips";
             this.tipsToolStripMenuItem.Click += new System.EventHandler(this.tipsToolStripMenuItem_Click);
-            // 
-            // autocombineToolStripMenuItem
-            // 
-            this.autocombineToolStripMenuItem.CheckOnClick = true;
-            this.autocombineToolStripMenuItem.Name = "autocombineToolStripMenuItem";
-            this.autocombineToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.autocombineToolStripMenuItem.Text = "Auto-combine";
-            this.autocombineToolStripMenuItem.ToolTipText = "Automatically combine parts when clicking \"Render all\"";
-            this.autocombineToolStripMenuItem.Visible = false;
-            // 
-            // debugShow
-            // 
-            this.debugShow.CheckOnClick = true;
-            this.debugShow.Name = "debugShow";
-            this.debugShow.Size = new System.Drawing.Size(164, 22);
-            this.debugShow.Text = "Debug menu";
-            this.debugShow.Click += new System.EventHandler(this.debugMenuToolStripMenuItem_Click);
+
             // 
             // speToolStripMenuItem
             // 
@@ -474,8 +452,7 @@
             // infoToolStripMenuItem
             // 
             this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.readmeToolStripMenuItem,
-            this.jsonToolStripMenuItem});
+            this.readmeToolStripMenuItem});
             this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
             this.infoToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
             this.infoToolStripMenuItem.Text = "Info";
@@ -483,40 +460,9 @@
             // readmeToolStripMenuItem
             // 
             this.readmeToolStripMenuItem.Name = "readmeToolStripMenuItem";
-            this.readmeToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.readmeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.readmeToolStripMenuItem.Text = "Readme";
             this.readmeToolStripMenuItem.ToolTipText = "Open readme (WIP)";
-            // 
-            // jsonToolStripMenuItem
-            // 
-            this.jsonToolStripMenuItem.Name = "jsonToolStripMenuItem";
-            this.jsonToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
-            this.jsonToolStripMenuItem.Text = "Json info";
-            this.jsonToolStripMenuItem.ToolTipText = "Show contents of Json file";
-            this.jsonToolStripMenuItem.Click += new System.EventHandler(this.jsonToolStripMenuItem_Click);
-            // 
-            // debugToolStripMenuItem
-            // 
-            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteJsonToolStripMenuItem,
-            this.cMDArgsToolStripMenuItem});
-            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
-            this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
-            this.debugToolStripMenuItem.Text = "Debug";
-            this.debugToolStripMenuItem.Visible = false;
-            // 
-            // deleteJsonToolStripMenuItem
-            // 
-            this.deleteJsonToolStripMenuItem.Name = "deleteJsonToolStripMenuItem";
-            this.deleteJsonToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
-            this.deleteJsonToolStripMenuItem.Text = "Delete json";
-            this.deleteJsonToolStripMenuItem.Click += new System.EventHandler(this.deleteJsonToolStripMenuItem_Click);
-            // 
-            // cMDArgsToolStripMenuItem
-            // 
-            this.cMDArgsToolStripMenuItem.Name = "cMDArgsToolStripMenuItem";
-            this.cMDArgsToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
-            this.cMDArgsToolStripMenuItem.Text = "CMD args";
             // 
             // label1
             // 
@@ -903,12 +849,23 @@
             this.rendererRadioButtonBlender.Text = "Blender Render";
             this.rendererRadioButtonBlender.UseVisualStyleBackColor = true;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(177, 49);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 33;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.button1_MouseClick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(662, 550);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.currentChunkInfoPanel);
             this.Controls.Add(this.rendererRadioButtonBlender);
             this.Controls.Add(this.rendererRadioButtonCycles);
@@ -947,7 +904,7 @@
             this.MaximumSize = new System.Drawing.Size(678, 589);
             this.MinimumSize = new System.Drawing.Size(678, 39);
             this.Name = "MainForm";
-            this.Text = "Blender Render Controller";
+            this.Text = "BlenderRenderController";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_Close);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).EndInit();
@@ -998,15 +955,10 @@
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.ToolStripMenuItem tipsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem jsonToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator speToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem readmeToolStripMenuItem;
         private System.Windows.Forms.Label blendFileLabel;
-        private System.Windows.Forms.ToolStripMenuItem autocombineToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem debugShow;
-        private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem deleteJsonToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem cMDArgsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem visitGithubPageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem isti115ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem meTwentyFiveToolStripMenuItem;
@@ -1035,6 +987,7 @@
         private System.Windows.Forms.Label blendFileNameLabel;
         private System.Windows.Forms.RadioButton rendererRadioButtonCycles;
         private System.Windows.Forms.RadioButton rendererRadioButtonBlender;
+        private System.Windows.Forms.Button button1;
     }
 }
 

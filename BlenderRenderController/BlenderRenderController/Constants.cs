@@ -13,4 +13,9 @@ namespace BlenderRenderController
         public const string READY = "state_ready";
         public const string AFTER_START = "state_after_start";
     }
+    static class Requirements
+    {
+        public const string BLENDER_PATH_NOT_SET = "blenderPathNotSet";
+        public const string FFMPEG_PATH_NOT_SET = "ffmpegPathNotSet";
+    }
 }

@@ -7,58 +7,37 @@ from bpy import ops
 from bpy import data
 
 blendPath = bpy.context.blend_data.filepath;
-projName  = bpy.path.display_name_from_filepath( blendPath );
+projectName  = bpy.path.display_name_from_filepath( blendPath );
 
 # get number of Scenes and active scene name
-n_data = bpy.data.scenes
-a_data = bpy.context.scene
+scenes = bpy.data.scenes
+scene = bpy.context.scene
 
 # get values from strings
-N_of_Scenes = str(n_data).partition('[')[-1].rpartition(']')[0]
-ActiveScene = str(a_data).partition('("')[-1].rpartition('")')[0]
+scenesNum = str(scenes).partition('[')[-1].rpartition(']')[0]
+sceneActive = str(scene).partition('("')[-1].rpartition('")')[0]
 
 # set infos acording to active Scene
-startFrame = bpy.data.scenes[ActiveScene].frame_start
-endFrame   = bpy.data.scenes[ActiveScene].frame_end
-framerate  = bpy.data.scenes[ActiveScene].render.fps / bpy.data.scenes[ActiveScene].render.fps_base
-outputPath = bpy.data.scenes[ActiveScene].render.filepath
-outputDirectoryIsRelative = False
+start = bpy.data.scenes[sceneActive].frame_start
+end   = bpy.data.scenes[sceneActive].frame_end
+fps  = bpy.data.scenes[sceneActive].render.fps / bpy.data.scenes[sceneActive].render.fps_base
+outputPath = bpy.data.scenes[sceneActive].render.filepath
 
-"""
-Error code table:
- 0: no errors
--1: output unset, lenth = 0
--2: output invalid, no slashes in path
--3: output is relative, has // at start
-"""
-errorcode = 0
-# check if relative
-#rel_chk = outputPath[0:2]
+#altDir = str(outputPath).rpartition('\\')[:-1][0]
 
-#if len(outputPath) == 0:
-#    errorcode = -1
-#
-#elif outputPath.count("\\") == 0:
-#    errorcode = -2
-#
-#elif rel_chk == "//":
-#	errorcode = -3
-#else:
-#    errorcode = 0
-
-# os.path.isabs(my_path) | true = absolute, false = relative
-
-# get output dir minus file name
-altdir = str(outputPath).rpartition('\\')[:-1][0]
-
-data = { 'ProjectName': projName, 'StartFrame': startFrame, 'EndFrame': endFrame, 'Framerate': framerate, 'OutputDirectory': outputPath, 'OutputDirectoryIsRelative':  outputDirectoryIsRelative,
-        'NumScenes': N_of_Scenes, 'ActiveScene': ActiveScene, 'AltDir': altdir, 'ErrorCode': errorcode };
+data = {'projectName': projectName,
+		'start': start,
+		'end': end,
+		'fps': fps,
+		'outputPath': outputPath,
+        'scenesNum': scenesNum,
+		'sceneActive': sceneActive
+};
 
 jsonData = json.dumps(data, indent=4, skipkeys=True, sort_keys=True);
 
-
-with open('blend_info.json', 'w') as f:
-    print(jsonData, file=f)
+#with open('settings.json', 'w') as f:
+#    print(jsonData, file=f)
 
 print(jsonData);
 
