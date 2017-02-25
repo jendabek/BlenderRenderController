@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
+using System.Windows.Forms;
 
 namespace BlenderRenderController
 {
@@ -16,9 +17,18 @@ namespace BlenderRenderController
     public class AppSettings
     {
 
-        private List<string> _lastBlends = new List<string>();
-        private int _LAST_BLENDS_MAX_COUNT = 10;
+        //these properties are stored (saved/loaded) in external JSON file
+        //they overrides default values of this class
+        private const int _LAST_BLENDS_MAX_COUNT = 10;
+        public const string BLENDER_EXE_NAME = "blender.exe";
+        public const string FFMPEG_EXE_NAME = "ffmpeg.exe";
 
+        private string[] _jsonProperties = { "lastBlends", "processCount", "blenderPath", "ffmpegPath"};
+
+        private string _blenderPathDefault = "C:\\Program Files\\Blender Foundation\\Blender";
+        private string _ffmpegPathDefault = AppDomain.CurrentDomain.BaseDirectory;
+
+        private List<string> _lastBlends = new List<string>();
         private string _jsonFileName = "settings.json";
         private string _chunksSubfolder = "chunks";
         private string _scriptsSubfolder = "scripts";
@@ -26,25 +36,36 @@ namespace BlenderRenderController
         private string _chunksTxtFileName = "partList.txt";
         private decimal _processCount = 4;
         private string[] _allowedFormats = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
-        private string[] _jsonProperties = { "lastBlends", "processCount" };
-        private string _scriptsPath;
+
+        private string _scriptsPath, _blenderPath, _ffmpegPath;
+
         private int _processCheckInterval = 100;
+        private bool _appConfigured = false;
+        private SettingsForm _settingsForm;
 
 
-        public AppSettings()
+        public void init()
         {
             //LOADing data from JSON and set it to properties
             //-----------------------
-            string jsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _jsonFileName);
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);
+            _blenderPath = _blenderPathDefault;
+            _ffmpegPath = _ffmpegPathDefault;
+            loadJsonSettings();
+            checkRequiredSettings();
+        }
 
+
+        private void loadJsonSettings()
+        {
+            string jsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _jsonFileName);
             if (File.Exists(jsonFilePath))
             {
-                
+
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 string jsonText = File.ReadAllText(jsonFilePath);
                 var jsonSettings = serializer.Deserialize<Dictionary<string, object>>(jsonText.ToString());
-                
+
 
                 foreach (var propertyName in _jsonProperties)
                 {
@@ -53,7 +74,8 @@ namespace BlenderRenderController
                     {
                         var test = jsonSettings[propertyName];
                     }
-                    catch(Exception) {
+                    catch (Exception)
+                    {
                         return;
                     }
 
@@ -61,7 +83,7 @@ namespace BlenderRenderController
                     if (jsonSettings[propertyName] is ArrayList)
                     {
 
-                        ArrayList arrayList = (ArrayList) jsonSettings[propertyName];
+                        ArrayList arrayList = (ArrayList)jsonSettings[propertyName];
                         List<string> listValue = arrayList.Cast<string>().ToList();
                         GetType().GetField("_" + propertyName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, listValue);
                     }
@@ -71,16 +93,15 @@ namespace BlenderRenderController
                         decimal decimalValue = (decimal)(int)jsonSettings[propertyName];
                         GetType().GetField("_" + propertyName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, decimalValue);
                     }
+                    //just a string
+                    else
+                    {
+                        GetType().GetField("_" + propertyName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, jsonSettings[propertyName]);
+                    }
                 }
-
             }
         }
-        public List<string> getRequirementsResult()
-        {
-            List<string> errors = new List<string> {};
-            //List<string> errors = new List<string> { Requirements.BLENDER_PATH_NOT_SET, Requirements.FFMPEG_PATH_NOT_SET };
-            return errors;
-        }
+
         public bool save()
         {
             
@@ -103,7 +124,7 @@ namespace BlenderRenderController
             }
         }
 
-        public void addToLastBlends(string blendFilePath)
+        public void lastBlendsAdd(string blendFilePath)
         {
             //dont want to show one file many times
             if (_lastBlends.IndexOf(blendFilePath) != -1) return;
@@ -114,6 +135,55 @@ namespace BlenderRenderController
                 _lastBlends.RemoveAt(_LAST_BLENDS_MAX_COUNT - 1);
             }
             _lastBlends.Insert(0, blendFilePath);
+        }
+        public void checkRequiredSettings()
+        {
+            List<string> errors = new List<string>();
+            
+            if (!checkBlenderPath())
+            {
+                errors.Add(AppErrorCodes.BLENDER_PATH_NOT_SET);
+            }
+            if (!checkFFmpegPath())
+            {
+                errors.Add(AppErrorCodes.FFMPEG_PATH_NOT_SET);
+            }
+
+            if (errors.Count == 0)
+            {
+                _appConfigured = true;
+                return;
+            }
+            _appConfigured = false;
+            Helper.showErrors(errors);
+        }
+
+        public bool checkBlenderPath()
+        {
+            if (File.Exists(Path.Combine(_blenderPath, BLENDER_EXE_NAME))) {
+                return true;
+            }
+            if (File.Exists(Path.Combine(_blenderPathDefault, BLENDER_EXE_NAME))) {
+                _blenderPath = _blenderPathDefault;
+                save();
+                return true;
+            }
+            return false;
+        }
+
+        public bool checkFFmpegPath()
+        {
+            if(File.Exists(Path.Combine(_ffmpegPath, FFMPEG_EXE_NAME)))
+            {
+                return true;
+            }
+            if (File.Exists(Path.Combine(_ffmpegPathDefault, FFMPEG_EXE_NAME)))
+            {
+                _ffmpegPath = _ffmpegPathDefault;
+                save();
+                return true;
+            }
+            return false;
         }
         public List<string> lastBlends
         {
@@ -182,6 +252,41 @@ namespace BlenderRenderController
                 _processCount = value;
             }
         }
-
+        public bool appConfigured
+        {
+            get
+            {
+                return _appConfigured;
+            }
+        }
+        public string blenderPath
+        {
+            get
+            {
+                return _blenderPath;
+            }
+            set
+            {
+                _blenderPath = value;
+            }
+        }
+        public string ffmpegPath
+        {
+            get
+            {
+                return _ffmpegPath;
+            }
+            set
+            {
+                _ffmpegPath = value;
+            }
+        }
+        public SettingsForm settingsForm
+        {
+            set
+            {
+                _settingsForm = value;
+            }
+        }
     }
 }

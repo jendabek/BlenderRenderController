@@ -12,8 +12,9 @@ namespace BlenderRenderController
         public const string RENDERING_CHUNK_ONLY = "state_rendering_chunk_only";
         public const string READY = "state_ready";
         public const string AFTER_START = "state_after_start";
+        public const string NOT_CONFIGURED = "state_not_configured";
     }
-    static class Requirements
+    static class AppErrorCodes
     {
         public const string BLENDER_PATH_NOT_SET = "blenderPathNotSet";
         public const string FFMPEG_PATH_NOT_SET = "ffmpegPathNotSet";

@@ -34,56 +34,58 @@ namespace BlenderRenderController
         Timer processTimer;
 
         //settingsForm
-        SettingsForm settingsForm = new SettingsForm();
+        SettingsForm settingsForm;
 
         //settings
-        AppSettings appSettings = new AppSettings();
+        AppSettings appSettings;
 
         //string[] args = Environment.GetCommandLineArgs();
 
 
         public MainForm()
         {
-            InitializeComponent();
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(onAppExit);
+
+            InitializeComponent();
+
+            settingsForm = new SettingsForm();
+            appSettings = new AppSettings();
+
+
+            appSettings.settingsForm = settingsForm;
+            appSettings.init();
+
+            settingsForm.FormClosed += new FormClosedEventHandler(onSettingsFormClosed);
+            settingsForm.init(appSettings);
+
             chunkLength = chunkLengthNumericUpDown.Value;
             start = totalStartNumericUpDown.Value;
             end = totalEndNumericUpDown.Value;
             statusLabel.Text = "Hello 3D world!";
             applySettings();
-            checkRequirements();
+            if (!appSettings.appConfigured)
+            {
+                appState = AppStates.NOT_CONFIGURED;
+                settingsForm.ShowDialog();
+            }
+            updateUI();
+        }
+
+        private void onSettingsFormClosed(object sender, FormClosedEventArgs e)
+        {
+            if(appSettings.appConfigured)
+            {
+                appState = AppStates.AFTER_START;
+            } else
+            {
+                appState = AppStates.NOT_CONFIGURED;
+            }
             updateUI();
         }
 
         private void applySettings()
         {
             processCountNumericUpDown.Value = appSettings.processCount;
-        }
-
-        private void checkRequirements()
-        {
-            var errorText = "";
-            List<string> requirementsErrors = appSettings.getRequirementsResult();
-
-            foreach (var error in requirementsErrors)
-            {
-                if (error.ToString() == Requirements.BLENDER_PATH_NOT_SET)
-                {
-                    errorText += "Please set a path to blender.exe.\n";
-                }
-                if (error.ToString() == Requirements.FFMPEG_PATH_NOT_SET)
-                {
-                    errorText += "Please set a path to ffmpeg.exe.\n";
-                }
-            }
-
-            if (errorText != "")
-            {
-                MessageBox.Show(errorText, "Required programs not set",
-                                            MessageBoxButtons.OK,
-                                            MessageBoxIcon.Asterisk);
-                settingsForm.ShowDialog();
-            }
         }
 
         private void onAppExit(object sender, EventArgs e)
@@ -124,6 +126,7 @@ namespace BlenderRenderController
                     renderChunkButton.Enabled = false;
                     prevChunkButton.Enabled = false;
                     nextChunkButton.Enabled = false;
+                    blendFileBrowseButton.Enabled = true;
                     mixDownButton.Enabled = false;
                     totalStartNumericUpDown.Enabled = false;
                     totalEndNumericUpDown.Enabled = false;
@@ -132,6 +135,27 @@ namespace BlenderRenderController
                     reloadBlenderDataButton.Enabled = false;
                     openOutputFolderButton.Enabled = false;
                     partsFolderBrowseButton.Enabled = false;
+                    outputFolderTextBox.Enabled = false;
+                    statusLabel.Visible = true;
+                    timeElapsedLabel.Visible = false;
+                    totalTimeLabel.Visible = false;
+                    rendererRadioButtonBlender.Enabled = true;
+                    rendererRadioButtonCycles.Enabled = true;
+                    break;
+                case AppStates.NOT_CONFIGURED:
+                    renderAllButton.Enabled = false;
+                    renderChunkButton.Enabled = false;
+                    prevChunkButton.Enabled = false;
+                    nextChunkButton.Enabled = false;
+                    mixDownButton.Enabled = false;
+                    totalStartNumericUpDown.Enabled = false;
+                    totalEndNumericUpDown.Enabled = false;
+                    chunkLengthNumericUpDown.Enabled = false;
+                    concatenatePartsButton.Enabled = false;
+                    reloadBlenderDataButton.Enabled = false;
+                    blendFileBrowseButton.Enabled = false;
+                    partsFolderBrowseButton.Enabled = false;
+                    openOutputFolderButton.Enabled = false;
                     outputFolderTextBox.Enabled = false;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = false;
@@ -290,8 +314,8 @@ namespace BlenderRenderController
             pStartInfo.RedirectStandardInput = true;
             pStartInfo.UseShellExecute = false;
             pStartInfo.CreateNoWindow = true;
-            pStartInfo.WorkingDirectory = outputPath;
-            pStartInfo.FileName = "blender";
+            pStartInfo.WorkingDirectory = appSettings.blenderPath;
+            pStartInfo.FileName = Path.Combine(appSettings.blenderPath, "blender.exe");
 
             string renderer = rendererRadioButtonBlender.Checked ? RENDERER_BLENDER : RENDERER_CYCLES;
             pStartInfo.Arguments = String.Format("-b \"{0}\" -o {1} -E {2} -s {3} -e {4} -a",
@@ -310,7 +334,16 @@ namespace BlenderRenderController
             
             p.Exited += new EventHandler(chunkRendered);
 
-            p.Start();
+            try
+            {
+                p.Start();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+                stopRender(false);
+                return;
+            }
 
             p.PriorityClass = ProcessPriorityClass.High;
             p.BeginOutputReadLine();
@@ -450,16 +483,24 @@ namespace BlenderRenderController
             //Show time run
             statusLabel.Text = wasComplete ? "Render complete, press Join Chunks to get the final video.\nIf your anim has a sound, press Audio Mixdown before Join Chunks." : "Render cancelled.";
             TimeSpan runTime = DateTime.Now - startTime;
-            totalTimeLabel.Text = String.Format("{0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds);
+            //totalTimeLabel.Text = String.Format("{0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds);
             //startTime = DateTime.MaxValue;
             
             foreach (var process in processes.ToList())
             {
-                if (!process.HasExited)
+                try
                 {
-                    process.Kill();
+                    if (process != null && !process.HasExited)
+                    {
+                        process.Kill();
+                    }
+
+                    process.Dispose();
                 }
-                process.Dispose();
+                catch(Exception ex)
+                {
+                    Trace.WriteLine(ex);
+                }
                 processes.Remove(process);
             }
             chunkStart = start;
@@ -512,7 +553,9 @@ namespace BlenderRenderController
 
             if (processes.Count == 0)
             {
-                stopRender(true);
+
+                bool wasComplete = (framesRendered.Count == end - start + 1);
+                stopRender(wasComplete);
                 checkCurrentChunkStartEnd();
                 return;
             }
@@ -590,14 +633,14 @@ namespace BlenderRenderController
                 statusLabel.Text = "Joining chunks with mixdown audio...";
                 addAudioArguments = "-i " + Path.Combine(outputPath, audioFileName) + " -map 0:v -map 1:a";
             }
-            Process ffmpegProcess = new Process();
-            ffmpegProcess.StartInfo.WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            ffmpegProcess.StartInfo.FileName = "ffmpeg";
-            ffmpegProcess.StartInfo.CreateNoWindow = true;
-            ffmpegProcess.StartInfo.UseShellExecute = false;
+            Process p = new Process();
+            p.StartInfo.WorkingDirectory = appSettings.ffmpegPath;
+            p.StartInfo.FileName = Path.Combine(appSettings.ffmpegPath, "ffmpeg.exe");
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.UseShellExecute = false;
 
 
-            ffmpegProcess.StartInfo.Arguments = 
+            p.StartInfo.Arguments = 
                 String.Format("-f concat -safe 0 -i {0} {1} -c:v copy {3}.{4} -y",
                 chunksTxtPath,
                 addAudioArguments,
@@ -605,9 +648,20 @@ namespace BlenderRenderController
                 Path.Combine(outputPath, blendData.projectName),
                 videoExtensionFound
             );
-            Trace.WriteLine(ffmpegProcess.StartInfo.Arguments);
-            ffmpegProcess.Start();
-            ffmpegProcess.WaitForExit();
+            Trace.WriteLine(p.StartInfo.Arguments);
+            try
+            {
+                p.Start();
+                p.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+                Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
+                settingsForm.ShowDialog();
+                statusLabel.Text = "Joining cancelled.";
+                return;
+            }
             statusLabel.Text = "Chunks Joined.";
         }
 		private void loadBlend() {
@@ -631,8 +685,8 @@ namespace BlenderRenderController
             }
 
             Process p = new Process();
-            p.StartInfo.WorkingDirectory       = appSettings.scriptsPath;
-            p.StartInfo.FileName               = "blender";
+            p.StartInfo.WorkingDirectory       = appSettings.blenderPath;
+            p.StartInfo.FileName               = Path.Combine(appSettings.blenderPath, "blender.exe");
 			p.StartInfo.RedirectStandardOutput = true;
 			p.StartInfo.CreateNoWindow         = true;
 			p.StartInfo.UseShellExecute        = false;
@@ -642,11 +696,15 @@ namespace BlenderRenderController
                                                   Path.Combine(appSettings.scriptsPath, "get_project_info.py")
                                     );
 
-			try {
+            Trace.WriteLine(appSettings.blenderPath);
+            try {
 				p.Start();
 			}
 			catch( Exception ex ) {
-				Trace.WriteLine( ex );
+                Helper.showErrors(new List<string> { AppErrorCodes.BLENDER_PATH_NOT_SET });
+                settingsForm.ShowDialog();
+                stopRender(false);
+                return;
 			}
             
 			StringBuilder jsonInfo    = new StringBuilder();
@@ -714,9 +772,10 @@ namespace BlenderRenderController
                 outputFolderTextBox.Text = outputPath;
                 
 
-                appState = AppStates.READY;
-                appSettings.addToLastBlends(blendFilePath);
+                appSettings.lastBlendsAdd(blendFilePath);
                 appSettings.save();
+
+                appState = AppStates.READY;
 			}
 
             // Error checker
@@ -756,7 +815,8 @@ namespace BlenderRenderController
 
             Process p = new Process();
 
-            p.StartInfo.FileName = "blender";
+            p.StartInfo.WorkingDirectory = appSettings.ffmpegPath;
+            p.StartInfo.FileName = Path.Combine(appSettings.ffmpegPath, "ffmpeg.exe");
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.CreateNoWindow         = true;
@@ -771,7 +831,18 @@ namespace BlenderRenderController
                                                   outputPath
                                     );
             Trace.WriteLine(p.StartInfo.Arguments);
-            p.Start();
+            try
+            {
+                p.Start();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+                Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
+                settingsForm.ShowDialog();
+                statusLabel.Text = "Mixdown cancelled.";
+                return;
+            }
 
             p.WaitForExit((int)TimeSpan.FromMinutes(5).TotalMilliseconds);
 
