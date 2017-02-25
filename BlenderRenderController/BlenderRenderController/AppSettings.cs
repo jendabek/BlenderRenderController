@@ -103,6 +103,18 @@ namespace BlenderRenderController
             }
         }
 
+        public void addToLastBlends(string blendFilePath)
+        {
+            //dont want to show one file many times
+            if (_lastBlends.IndexOf(blendFilePath) != -1) return;
+
+            //delete last if the list is larger than _LAST_BLENDS_MAX_COUNT
+            if (_lastBlends.Count == _LAST_BLENDS_MAX_COUNT)
+            {
+                _lastBlends.RemoveAt(_LAST_BLENDS_MAX_COUNT - 1);
+            }
+            _lastBlends.Insert(0, blendFilePath);
+        }
         public List<string> lastBlends
         {
             get {
@@ -171,13 +183,5 @@ namespace BlenderRenderController
             }
         }
 
-        public void addToLastBlends(string blendFilePath)
-        {
-            if(_lastBlends.Count == _LAST_BLENDS_MAX_COUNT)
-            {
-                _lastBlends.RemoveAt(_LAST_BLENDS_MAX_COUNT - 1);
-            }
-            _lastBlends.Insert(0, blendFilePath);
-        }
     }
 }
