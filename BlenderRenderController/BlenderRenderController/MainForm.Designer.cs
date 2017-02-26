@@ -178,7 +178,6 @@
             this.chunkEndLabel.TabIndex = 7;
             this.chunkEndLabel.Text = "End Frame";
             this.toolTip1.SetToolTip(this.chunkEndLabel, "Segment\'s end frame");
-            this.chunkEndLabel.Click += new System.EventHandler(this.chunkEndLabel_Click);
             // 
             // outputFolderBrowseButton
             // 
@@ -251,7 +250,6 @@
             this.totalFrameCountLabel.TabIndex = 13;
             this.totalFrameCountLabel.Text = "End Frame";
             this.toolTip1.SetToolTip(this.totalFrameCountLabel, "Project\'s end frame");
-            this.totalFrameCountLabel.Click += new System.EventHandler(this.totalFrameCountLabel_Click);
             // 
             // totalEndNumericUpDown
             // 
@@ -601,7 +599,6 @@
             this.infoFramesTotal.TabStop = false;
             this.infoFramesTotal.Text = "...";
             this.infoFramesTotal.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.infoFramesTotal.TextChanged += new System.EventHandler(this.infoFramesTotal_TextChanged);
             // 
             // infoActiveScene
             // 
@@ -629,7 +626,6 @@
             this.label3.TabIndex = 23;
             this.label3.Text = "Scenes";
             this.activeWarn.SetToolTip(this.label3, "Number of scenes in project.");
-            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // infoFramesTotalLabel
             // 
@@ -641,7 +637,6 @@
             this.infoFramesTotalLabel.Size = new System.Drawing.Size(79, 15);
             this.infoFramesTotalLabel.TabIndex = 29;
             this.infoFramesTotalLabel.Text = "Frames Total";
-            this.infoFramesTotalLabel.Click += new System.EventHandler(this.infoFramesTotalLabel_Click);
             // 
             // activeWarn
             // 
@@ -879,7 +874,6 @@
             this.rendererRadioButtonBlender.TabStop = true;
             this.rendererRadioButtonBlender.Text = "Blender Render";
             this.rendererRadioButtonBlender.UseVisualStyleBackColor = true;
-            this.rendererRadioButtonBlender.CheckedChanged += new System.EventHandler(this.rendererComboBox_CheckedChanged);
             // 
             // label4
             // 

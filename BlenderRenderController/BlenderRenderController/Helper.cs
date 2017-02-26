@@ -45,5 +45,9 @@ namespace BlenderRenderController
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Asterisk);
         }
+        static public string fixPath(string path)
+        {
+            return path.Trim().TrimEnd('\\');
+        }
     }
 }

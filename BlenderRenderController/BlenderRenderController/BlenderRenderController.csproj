@@ -68,6 +68,8 @@
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
     <Compile Include="BlendData.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="ProjectData.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
