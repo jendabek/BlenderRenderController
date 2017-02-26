@@ -1,4 +1,6 @@
-﻿namespace BlenderRenderController
+﻿using BlenderRenderController.ui;
+
+namespace BlenderRenderController
 {
     partial class MainForm
     {
@@ -31,7 +33,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.renderChunkButton = new System.Windows.Forms.Button();
-            this.blendFileBrowseButton = new System.Windows.Forms.Button();
             this.renderProgressBar = new System.Windows.Forms.ProgressBar();
             this.totalStartNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.startFrameLabel = new System.Windows.Forms.Label();
@@ -52,7 +53,6 @@
             this.totalTimeLabel = new System.Windows.Forms.Label();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tipsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.speToolStripMenuItem = new System.Windows.Forms.ToolStripSeparator();
             this.visitGithubPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,6 +93,8 @@
             this.blendFileNameLabel = new System.Windows.Forms.Label();
             this.rendererRadioButtonCycles = new System.Windows.Forms.RadioButton();
             this.rendererRadioButtonBlender = new System.Windows.Forms.RadioButton();
+            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -114,17 +116,6 @@
             this.toolTip1.SetToolTip(this.renderChunkButton, "Render current segment");
             this.renderChunkButton.UseVisualStyleBackColor = true;
             this.renderChunkButton.Click += new System.EventHandler(this.renderChunkButton_Click);
-            // 
-            // blendFileBrowseButton
-            // 
-            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blendFileBrowseButton.Location = new System.Drawing.Point(486, 80);
-            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
-            this.blendFileBrowseButton.Size = new System.Drawing.Size(158, 45);
-            this.blendFileBrowseButton.TabIndex = 1;
-            this.blendFileBrowseButton.Text = "Open .blend";
-            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
-            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
             // 
             // renderProgressBar
             // 
@@ -385,13 +376,6 @@
             this.aboutToolStripMenuItem.Text = "Options";
             this.aboutToolStripMenuItem.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
             this.aboutToolStripMenuItem.ToolTipText = "Extra options";
-            // 
-            // settingsToolStripMenuItem
-            // 
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.settingsToolStripMenuItem.Text = "Settings";
-            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // tipsToolStripMenuItem
             // 
@@ -856,6 +840,25 @@
             this.rendererRadioButtonBlender.Text = "Blender Render";
             this.rendererRadioButtonBlender.UseVisualStyleBackColor = true;
             // 
+            // blendFileBrowseButton
+            // 
+            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blendFileBrowseButton.Location = new System.Drawing.Point(486, 80);
+            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
+            this.blendFileBrowseButton.Size = new System.Drawing.Size(158, 45);
+            this.blendFileBrowseButton.SplitWidth = 30;
+            this.blendFileBrowseButton.TabIndex = 1;
+            this.blendFileBrowseButton.Text = "Open .blend";
+            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
+            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -921,7 +924,7 @@
         #endregion
 
         private System.Windows.Forms.Button renderChunkButton;
-        private System.Windows.Forms.Button blendFileBrowseButton;
+        private SplitButton blendFileBrowseButton;
         private System.Windows.Forms.ProgressBar renderProgressBar;
         private System.Windows.Forms.NumericUpDown totalStartNumericUpDown;
         private System.Windows.Forms.Label startFrameLabel;
@@ -983,6 +986,7 @@
         private System.Windows.Forms.RadioButton rendererRadioButtonCycles;
         private System.Windows.Forms.RadioButton rendererRadioButtonBlender;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.FontDialog fontDialog1;
     }
 }
 

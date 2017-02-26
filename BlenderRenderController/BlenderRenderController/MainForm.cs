@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Web.Script.Serialization;
+using System.Drawing;
 
 namespace BlenderRenderController
 {
@@ -28,6 +29,7 @@ namespace BlenderRenderController
         Timer processTimer;
         SettingsForm settingsForm;
         AppSettings appSettings;
+        ContextMenuStrip recentBlendsMenu;
 
         //string[] args = Environment.GetCommandLineArgs();
 
@@ -53,18 +55,20 @@ namespace BlenderRenderController
             p.end = totalEndNumericUpDown.Value;
             statusLabel.Text = "Hello 3D world!";
             
-
             processTimer = new Timer();
             processTimer.Interval = appSettings.processCheckInterval;
             processTimer.Tick += new EventHandler(updateProcessManagement);
 
-
+            recentBlendsMenu = new ContextMenuStrip();
+            blendFileBrowseButton.Menu = recentBlendsMenu;
+            
             applySettings();
             if (!appSettings.appConfigured)
             {
                 //appState = AppStates.NOT_CONFIGURED;
                 settingsForm.ShowDialog();
             }
+            updateRecentBlendsMenu();
             updateUI();
         }
 
@@ -92,6 +96,25 @@ namespace BlenderRenderController
             stopRender(false);
             appSettings.save();
         }
+        public void updateRecentBlendsMenu()
+        {
+            //last blends
+            recentBlendsMenu.Items.Clear();
+            foreach (string item in appSettings.recentBlends)
+            {
+                var menuItem = new ToolStripMenuItem(Path.GetFileNameWithoutExtension(item), Properties.Resources.blend_icon);
+                menuItem.ToolTipText = item;
+                menuItem.Click += new EventHandler(recentBlendsMenuItem_Click);
+                recentBlendsMenu.Items.Add(menuItem);
+            }
+        }
+
+        private void recentBlendsMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem) sender;
+            p.blendFilePath = item.ToolTipText;
+            loadBlend();
+        }
 
         public void updateUI()
         {
@@ -100,7 +123,7 @@ namespace BlenderRenderController
             chunkLengthNumericUpDown.Value = p.chunkLength;
             totalStartNumericUpDown.Value = p.start;
             totalEndNumericUpDown.Value = p.end;
-
+            
             //top infos
             if (blendData != null)
             {
@@ -663,8 +686,12 @@ namespace BlenderRenderController
             statusLabel.Update();
 
             if ( !File.Exists(p.blendFilePath) ) {
-                // file does not exist
-                //errorMsgs(-104);
+                var errors = new List<string>();
+                errors.Add(AppErrorCodes.BLEND_FILE_NOT_EXISTS);
+                Helper.showErrors(errors, MessageBoxIcon.Exclamation);
+
+                appSettings.recentBlends.Remove(p.blendFilePath);
+                updateRecentBlendsMenu();
                 return;
 			}
 
@@ -760,10 +787,14 @@ namespace BlenderRenderController
                 outputFolderTextBox.Text = p.outputPath;
 
                 p.chunksPath = Path.Combine(p.outputPath, appSettings.chunksSubfolder);
-                appSettings.lastBlendsAdd(p.blendFilePath);
+                appSettings.addRecentBlend(p.blendFilePath);
                 appSettings.save();
+                updateRecentBlendsMenu();
+
                 appState = AppStates.READY_FOR_RENDER;
-			}
+
+                updateRecentBlendsMenu();
+            }
             updateUI();
             Trace.WriteLine( ".blend data = " + jsonInfo.ToString() );
 		}
@@ -907,12 +938,6 @@ namespace BlenderRenderController
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            settingsForm.ShowDialog();
-        }
-
-        private void button1_MouseClick(object sender, MouseEventArgs e)
-        {
-            settingsForm.StartPosition = FormStartPosition.CenterParent;
             settingsForm.ShowDialog();
         }
 

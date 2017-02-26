@@ -12,16 +12,16 @@ namespace BlenderRenderController
     public class AppSettings
     {
         //THESE PROPERTIES (in _jsonProperties) ARE STORED AND LOADED automatically from external JSON file
-        private string[] _jsonProperties = { "lastBlends", "processCount", "blenderPath", "ffmpegPath", "renderer"};
+        private string[] _jsonProperties = { "recentBlends", "processCount", "blenderPath", "ffmpegPath", "renderer"};
 
-        private const int _LAST_BLENDS_MAX_COUNT = 10;
+        private const int _RECENT_BLENDS_MAX_COUNT = 10;
         public const string BLENDER_EXE_NAME = "blender.exe";
         public const string FFMPEG_EXE_NAME = "ffmpeg.exe";
 
         public const string BLENDER_PATH_DEFAULT = "C:\\Program Files\\Blender Foundation\\Blender";
         public const string FFMPEG_PATH_DEFAULT = ""; //EXE dir
 
-        private List<string> _lastBlends = new List<string>();
+        private List<string> _recentBlends = new List<string>();
         private string _jsonFileName = "settings.json";
         private string _chunksSubfolder = "chunks";
         private string _scriptsSubfolder = "scripts";
@@ -109,17 +109,17 @@ namespace BlenderRenderController
             }
         }
 
-        public void lastBlendsAdd(string blendFilePath)
+        public void addRecentBlend(string blendFilePath)
         {
             //dont want to show one file many times
-            if (_lastBlends.IndexOf(blendFilePath) != -1) return;
+            if (_recentBlends.IndexOf(blendFilePath) != -1) return;
 
             //delete last if the list is larger than _LAST_BLENDS_MAX_COUNT
-            if (_lastBlends.Count == _LAST_BLENDS_MAX_COUNT)
+            if (_recentBlends.Count == _RECENT_BLENDS_MAX_COUNT)
             {
-                _lastBlends.RemoveAt(_LAST_BLENDS_MAX_COUNT - 1);
+                _recentBlends.RemoveAt(_RECENT_BLENDS_MAX_COUNT - 1);
             }
-            _lastBlends.Insert(0, blendFilePath);
+            _recentBlends.Insert(0, blendFilePath);
         }
         public void checkCorrectConfig(bool showErrors = true)
         {
@@ -157,10 +157,10 @@ namespace BlenderRenderController
         {
             return File.Exists(Path.Combine(_ffmpegPath, FFMPEG_EXE_NAME));
         }
-        public List<string> lastBlends
+        public List<string> recentBlends
         {
             get {
-                return _lastBlends;
+                return _recentBlends;
             }
         }
 

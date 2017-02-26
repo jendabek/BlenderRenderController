@@ -25,7 +25,7 @@ namespace BlenderRenderController
                 di.Delete();
             }
         }
-        static public void showErrors(List<string> errorCodes)
+        static public void showErrors(List<string> errorCodes, MessageBoxIcon icon = MessageBoxIcon.Asterisk)
         {
             var errorText = "";
             foreach (var errorCode in errorCodes)
@@ -38,12 +38,17 @@ namespace BlenderRenderController
                 {
                     errorText += "Please set correct path to FFmpeg (ffmpeg.exe).\n";
                 }
+                if (errorCode == AppErrorCodes.BLEND_FILE_NOT_EXISTS)
+                {
+                    errorText += "File does not exists anymore.\n";
+                    errorText += "It was removed from the list of recent blends.\n";
+                }
             }
             MessageBox.Show(
                     errorText,
                     "",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Asterisk);
+                    icon);
         }
         static public string fixPath(string path)
         {

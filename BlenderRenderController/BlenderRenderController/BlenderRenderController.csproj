@@ -87,6 +87,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="ui\SplitButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -120,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="bkp.txt" />
+    <Content Include="resources\blend-icon.png" />
     <Content Include="resources\blender-icon.ico" />
     <Content Include="resources\icon.txt" />
     <Content Include="scripts\get_project_info.py">

@@ -12,6 +12,7 @@
     {
         public const string BLENDER_PATH_NOT_SET = "blenderPathNotSet";
         public const string FFMPEG_PATH_NOT_SET = "ffmpegPathNotSet";
+        public const string BLEND_FILE_NOT_EXISTS = "blendFileNotExists";
     }
     static class AppStrings
     {
