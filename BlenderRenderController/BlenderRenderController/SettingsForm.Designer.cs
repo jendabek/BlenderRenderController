@@ -38,6 +38,9 @@
             this.blenderLabel = new System.Windows.Forms.Label();
             this.ffmpegLabel = new System.Windows.Forms.Label();
             this.ffmpegDownloadLabel = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.DefChunkLen = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.DefChunkLen)).BeginInit();
             this.SuspendLayout();
             // 
             // blenderPathTextBox
@@ -135,12 +138,49 @@
             this.ffmpegDownloadLabel.Text = "download";
             this.ffmpegDownloadLabel.Click += new System.EventHandler(this.ffmpegDownloadLabel_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.label1.Location = new System.Drawing.Point(20, 183);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(171, 20);
+            this.label1.TabIndex = 30;
+            this.label1.Text = "Default Chunk Length";
+            // 
+            // DefChunkLen
+            // 
+            this.DefChunkLen.Location = new System.Drawing.Point(41, 220);
+            this.DefChunkLen.Maximum = new decimal(new int[] {
+            99999,
+            0,
+            0,
+            0});
+            this.DefChunkLen.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.DefChunkLen.Name = "DefChunkLen";
+            this.DefChunkLen.Size = new System.Drawing.Size(86, 20);
+            this.DefChunkLen.TabIndex = 31;
+            this.DefChunkLen.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.DefChunkLen.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.DefChunkLen.ValueChanged += new System.EventHandler(this.DefChunkLen_ValueChanged);
+            // 
             // SettingsForm
             // 
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(545, 277);
+            this.Controls.Add(this.DefChunkLen);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.ffmpegDownloadLabel);
             this.Controls.Add(this.ffmpegLabel);
             this.Controls.Add(this.blenderLabel);
@@ -155,6 +195,7 @@
             this.Text = "Settings";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SettingsForm_FormClosed);
             this.Load += new System.EventHandler(this.onFormLoad);
+            ((System.ComponentModel.ISupportInitialize)(this.DefChunkLen)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -170,5 +211,7 @@
         private System.Windows.Forms.TextBox blenderPathTextBox;
         private System.Windows.Forms.TextBox ffmpegPathTextBox;
         private System.Windows.Forms.Label ffmpegDownloadLabel;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown DefChunkLen;
     }
 }

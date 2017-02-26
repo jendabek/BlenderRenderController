@@ -34,6 +34,8 @@ namespace BlenderRenderController
         private string _scriptsPath, _blenderPath, _ffmpegPath;
 
         private int _processCheckInterval = 100;
+        //private int chunkLen;
+
         private bool _appConfigured = false;
         private SettingsForm _settingsForm;
 
@@ -44,6 +46,7 @@ namespace BlenderRenderController
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);
             _blenderPath = BLENDER_PATH_DEFAULT;
             _ffmpegPath = FFMPEG_PATH_DEFAULT;
+
             loadJsonSettings();
             checkCorrectConfig();
         }
@@ -186,6 +189,7 @@ namespace BlenderRenderController
             {
                 return _allowedFormats;
             }
+
         }
 
         public int processCheckInterval
@@ -193,6 +197,10 @@ namespace BlenderRenderController
             get
             {
                 return _processCheckInterval;
+            }
+            set
+            {
+                _processCheckInterval = value;
             }
         }
 

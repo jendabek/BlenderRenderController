@@ -69,8 +69,11 @@ namespace BlenderRenderController
         {
             string oldBlenderPath = _appSettings.blenderPath;
             string oldFFmpegPath = _appSettings.ffmpegPath;
+            int oldDefChunkLen = _appSettings.processCheckInterval;
+
             _appSettings.blenderPath = blenderPathTextBox.Text.Trim();
             _appSettings.ffmpegPath = ffmpegPathTextBox.Text.Trim();
+            _appSettings.processCheckInterval = Convert.ToInt32(DefChunkLen.Value);
 
             _appSettings.checkCorrectConfig();
 
@@ -96,6 +99,11 @@ namespace BlenderRenderController
         private void ffmpegDownloadLabel_Click(object sender, EventArgs e)
         {
             Process.Start(AppStrings.FFMPEG_DOWNLOAD_URL);
+        }
+
+        private void DefChunkLen_ValueChanged(object sender, EventArgs e)
+        {
+            // make Default ChunkLen user setting...
         }
     }
 }

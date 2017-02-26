@@ -49,6 +49,7 @@ namespace BlenderRenderController
             settingsForm.init(appSettings);
 
             p.chunkLength = chunkLengthNumericUpDown.Value;
+            //p.chunkLength = appSettings.processCheckInterval;
             p.start = totalStartNumericUpDown.Value;
             p.end = totalEndNumericUpDown.Value;
             statusLabel.Text = "Hello 3D world!";
@@ -228,8 +229,6 @@ namespace BlenderRenderController
                 p.blendFilePath = Args[1];
                 loadBlend();
             }
-
-
         }
 
         private void blendFileBrowseButton_Click(object sender, EventArgs e)
