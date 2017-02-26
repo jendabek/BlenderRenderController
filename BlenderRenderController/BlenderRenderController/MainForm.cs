@@ -251,12 +251,12 @@ namespace BlenderRenderController
                 p.blendFilePath = Path.GetFullPath(blendFileBrowseDialog.FileName);
                 loadBlend();
             }
-
         }
 
         private void outputFolderBrowseButton_Click(object sender, EventArgs e)
         {
             var dialog = new FolderBrowserDialog();
+            dialog.SelectedPath = p.chunksPath;
             var result = dialog.ShowDialog();
 
             if (result == DialogResult.OK)
