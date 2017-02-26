@@ -14,7 +14,7 @@ namespace BlenderRenderController
     
     public partial class MainForm : Form
     {
-        string blendFilePath, outputPath;
+        string blendFilePath, outputPath, chunksPath;
 
         decimal chunkStart, chunkEnd, chunkLength, start, end;
 
@@ -61,6 +61,10 @@ namespace BlenderRenderController
             end = totalEndNumericUpDown.Value;
             statusLabel.Text = "Hello 3D world!";
             
+            processTimer = new Timer();
+            processTimer.Interval = appSettings.processCheckInterval;
+            processTimer.Tick += new EventHandler(updateProcessManagement);
+
 
             applySettings();
             if (!appSettings.appConfigured)
@@ -117,7 +121,6 @@ namespace BlenderRenderController
             }
 
             renderAllButton.Text = (appState == AppStates.RENDERING_CHUNK_ONLY || appState == AppStates.RENDERING_ALL) ? "Stop" : "Render";
-
             //enabling / disabling UI according to current app state
             switch (appState)
             {
@@ -135,7 +138,7 @@ namespace BlenderRenderController
                     concatenatePartsButton.Enabled = false;
                     reloadBlenderDataButton.Enabled = false;
                     openOutputFolderButton.Enabled = false;
-                    partsFolderBrowseButton.Enabled = false;
+                    outputFolderBrowseButton.Enabled = false;
                     outputFolderTextBox.Enabled = false;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = false;
@@ -156,7 +159,7 @@ namespace BlenderRenderController
                     concatenatePartsButton.Enabled = false;
                     reloadBlenderDataButton.Enabled = false;
                     blendFileBrowseButton.Enabled = false;
-                    partsFolderBrowseButton.Enabled = false;
+                    outputFolderBrowseButton.Enabled = false;
                     openOutputFolderButton.Enabled = false;
                     outputFolderTextBox.Enabled = false;
                     statusLabel.Visible = true;
@@ -175,10 +178,10 @@ namespace BlenderRenderController
                     totalStartNumericUpDown.Enabled = true;
                     totalEndNumericUpDown.Enabled = true;
                     chunkLengthNumericUpDown.Enabled = true;
-                    concatenatePartsButton.Enabled = true;
+                    concatenatePartsButton.Enabled = Directory.Exists(chunksPath);
                     reloadBlenderDataButton.Enabled = true;
                     blendFileBrowseButton.Enabled = true;
-                    partsFolderBrowseButton.Enabled = true;
+                    outputFolderBrowseButton.Enabled = true;
                     outputFolderTextBox.Enabled = true;
                     processCountNumericUpDown.Enabled = true;
                     openOutputFolderButton.Enabled = true;
@@ -202,7 +205,7 @@ namespace BlenderRenderController
                     concatenatePartsButton.Enabled = false;
                     reloadBlenderDataButton.Enabled = false;
                     blendFileBrowseButton.Enabled = false;
-                    partsFolderBrowseButton.Enabled = false;
+                    outputFolderBrowseButton.Enabled = false;
                     outputFolderTextBox.Enabled = false;
                     processCountNumericUpDown.Enabled = false;
                     openOutputFolderButton.Enabled = true;
@@ -238,12 +241,7 @@ namespace BlenderRenderController
                 loadBlend();
             }*/
 
-            blendFilePath = "";
-            outputPath = "";
-
-            processTimer = new Timer();
-            processTimer.Interval = appSettings.processCheckInterval;
-            processTimer.Tick += new EventHandler(updateProcessManagement);
+            
         }
 
         private void blendFileBrowseButton_Click(object sender, EventArgs e)
@@ -261,20 +259,21 @@ namespace BlenderRenderController
 
         }
 
-        private void partsFolderBrowseButton_Click(object sender, EventArgs e)
+        private void outputFolderBrowseButton_Click(object sender, EventArgs e)
         {
-            var partsFolderBrowseDialog = new FolderBrowserDialog();
-            //outFileBrowseDialog.Filter = "Blend|*.blend";
+            var dialog = new FolderBrowserDialog();
             Trace.WriteLine(outputFolderTextBox.Text);
-            var result = partsFolderBrowseDialog.ShowDialog();
+            var result = dialog.ShowDialog();
 
             if (result == DialogResult.OK)
             {
-                outputPath = outputFolderTextBox.Text = Path.GetFullPath(partsFolderBrowseDialog.SelectedPath);
+                outputPath = outputFolderTextBox.Text = Path.GetFullPath(dialog.SelectedPath);
+                chunksPath = Path.Combine(outputPath, appSettings.chunksSubfolder);
+                updateUI();
             }
         }
 
-        private void outFolderPathTextBox_TextChanged(object sender, EventArgs e)
+        private void outputFolderPathTextBox_TextChanged(object sender, EventArgs e)
         {
 
             outputFolderTextBox.Text = outputFolderTextBox.Text.Trim();
@@ -289,7 +288,19 @@ namespace BlenderRenderController
             }
 
             outputPath = outputFolderTextBox.Text = Path.GetFullPath(outputFolderTextBox.Text);
+            chunksPath = Path.Combine(outputPath, appSettings.chunksSubfolder);
+            updateUI();
 
+        }
+
+        //confirm text input by enter & go to next control
+        private void textBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter || (e.KeyCode == Keys.Return))
+            {
+                SelectNextControl((Control)sender, true, true, true, true);
+                e.SuppressKeyPress = true; //disables sound
+            }
         }
 
         private void renderChunkButton_Click(object sender, EventArgs e)
@@ -437,7 +448,6 @@ namespace BlenderRenderController
 
             //we want to start render
             else {
-                var chunksPath = Path.Combine(outputPath, appSettings.chunksSubfolder);
                 if (Directory.Exists(chunksPath) && Directory.GetFiles(chunksPath).Length > 0)
                 {
                     // Configure the message box to be displayed
@@ -568,13 +578,8 @@ namespace BlenderRenderController
         
         private void concatenatePartsButton_Click(object sender, EventArgs e)
         {
+            if (!Directory.Exists(chunksPath)) return;
 
-            if (!Directory.Exists(outputPath))
-            {
-                //errorMsgs(-100);
-                return;
-            }
-            string chunksPath = Path.Combine(outputPath, appSettings.chunksSubfolder);
             string chunksTxtPath = Path.Combine(chunksPath, appSettings.chunksTxtFileName);
             string audioFileName = blendData.projectName + "." + appSettings.audioFormat;
             string audioSettings = string.Empty; //"-c:a aac -b:a 256k";
@@ -773,6 +778,7 @@ namespace BlenderRenderController
                     outputPath = Path.Combine(Path.GetDirectoryName(blendFilePath), blendData.outputPath.Replace("//", ""));
                 }
                 outputFolderTextBox.Text = outputPath;
+                chunksPath = Path.Combine(outputPath, appSettings.chunksSubfolder);
                 appSettings.lastBlendsAdd(blendFilePath);
                 appSettings.save();
                 appState = AppStates.READY_FOR_RENDER;
@@ -954,7 +960,7 @@ namespace BlenderRenderController
 
         }
 
-        private void openOutputFolderButton_Click(object sender, EventArgs e)
+        private void outputFolderOpenButton_Click(object sender, EventArgs e)
         {
             if (Directory.Exists(outputPath)) {
                 Process.Start(outputPath);
@@ -984,6 +990,7 @@ namespace BlenderRenderController
             checkChunkLength();
             updateUI();
         }
+
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {

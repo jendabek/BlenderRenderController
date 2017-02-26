@@ -36,7 +36,7 @@
             this.totalStartNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.startFrameLabel = new System.Windows.Forms.Label();
             this.chunkEndLabel = new System.Windows.Forms.Label();
-            this.partsFolderBrowseButton = new System.Windows.Forms.Button();
+            this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.outputFolderTextBox = new System.Windows.Forms.TextBox();
             this.statusLabel = new System.Windows.Forms.Label();
             this.nextChunkButton = new System.Windows.Forms.Button();
@@ -150,6 +150,7 @@
             this.totalStartNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTip1.SetToolTip(this.totalStartNumericUpDown, "Segment\'s starting frame");
             this.totalStartNumericUpDown.ValueChanged += new System.EventHandler(this.totalStartNumericUpDown_ValueChanged);
+            this.totalStartNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_KeyDown);
             // 
             // startFrameLabel
             // 
@@ -176,16 +177,16 @@
             this.toolTip1.SetToolTip(this.chunkEndLabel, "Segment\'s end frame");
             this.chunkEndLabel.Click += new System.EventHandler(this.chunkEndLabel_Click);
             // 
-            // partsFolderBrowseButton
+            // outputFolderBrowseButton
             // 
-            this.partsFolderBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.partsFolderBrowseButton.Location = new System.Drawing.Point(539, 321);
-            this.partsFolderBrowseButton.Name = "partsFolderBrowseButton";
-            this.partsFolderBrowseButton.Size = new System.Drawing.Size(105, 31);
-            this.partsFolderBrowseButton.TabIndex = 8;
-            this.partsFolderBrowseButton.Text = "Change";
-            this.partsFolderBrowseButton.UseVisualStyleBackColor = true;
-            this.partsFolderBrowseButton.Click += new System.EventHandler(this.partsFolderBrowseButton_Click);
+            this.outputFolderBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.outputFolderBrowseButton.Location = new System.Drawing.Point(539, 321);
+            this.outputFolderBrowseButton.Name = "outputFolderBrowseButton";
+            this.outputFolderBrowseButton.Size = new System.Drawing.Size(105, 31);
+            this.outputFolderBrowseButton.TabIndex = 9;
+            this.outputFolderBrowseButton.Text = "Change";
+            this.outputFolderBrowseButton.UseVisualStyleBackColor = true;
+            this.outputFolderBrowseButton.Click += new System.EventHandler(this.outputFolderBrowseButton_Click);
             // 
             // outputFolderTextBox
             // 
@@ -193,9 +194,10 @@
             this.outputFolderTextBox.Location = new System.Drawing.Point(32, 326);
             this.outputFolderTextBox.Name = "outputFolderTextBox";
             this.outputFolderTextBox.Size = new System.Drawing.Size(497, 22);
-            this.outputFolderTextBox.TabIndex = 7;
+            this.outputFolderTextBox.TabIndex = 8;
             this.outputFolderTextBox.WordWrap = false;
-            this.outputFolderTextBox.Leave += new System.EventHandler(this.outFolderPathTextBox_TextChanged);
+            this.outputFolderTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_KeyDown);
+            this.outputFolderTextBox.Leave += new System.EventHandler(this.outputFolderPathTextBox_TextChanged);
             // 
             // statusLabel
             // 
@@ -268,6 +270,7 @@
             0,
             0});
             this.totalEndNumericUpDown.ValueChanged += new System.EventHandler(this.totalEndNumericUpDown_ValueChanged);
+            this.totalEndNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_KeyDown);
             // 
             // processCountNumericUpDown
             // 
@@ -290,6 +293,7 @@
             0,
             0});
             this.processCountNumericUpDown.ValueChanged += new System.EventHandler(this.processCountNumericUpDown_ValueChanged);
+            this.processCountNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_KeyDown);
             // 
             // processCountLabel
             // 
@@ -308,7 +312,7 @@
             this.renderAllButton.Location = new System.Drawing.Point(32, 416);
             this.renderAllButton.Name = "renderAllButton";
             this.renderAllButton.Size = new System.Drawing.Size(168, 38);
-            this.renderAllButton.TabIndex = 9;
+            this.renderAllButton.TabIndex = 10;
             this.renderAllButton.Text = "Render";
             this.toolTip1.SetToolTip(this.renderAllButton, "Render all segments");
             this.renderAllButton.UseVisualStyleBackColor = true;
@@ -320,7 +324,7 @@
             this.concatenatePartsButton.Location = new System.Drawing.Point(405, 416);
             this.concatenatePartsButton.Name = "concatenatePartsButton";
             this.concatenatePartsButton.Size = new System.Drawing.Size(128, 38);
-            this.concatenatePartsButton.TabIndex = 11;
+            this.concatenatePartsButton.TabIndex = 12;
             this.concatenatePartsButton.Text = "Join Chunks";
             this.toolTip1.SetToolTip(this.concatenatePartsButton, "Combine segments in FFmpeg");
             this.concatenatePartsButton.UseVisualStyleBackColor = true;
@@ -332,7 +336,7 @@
             this.reloadBlenderDataButton.Location = new System.Drawing.Point(486, 133);
             this.reloadBlenderDataButton.Name = "reloadBlenderDataButton";
             this.reloadBlenderDataButton.Size = new System.Drawing.Size(158, 27);
-            this.reloadBlenderDataButton.TabIndex = 17;
+            this.reloadBlenderDataButton.TabIndex = 1;
             this.reloadBlenderDataButton.Text = "Reload && Reset Form";
             this.toolTip1.SetToolTip(this.reloadBlenderDataButton, "Re-read info from .blend");
             this.reloadBlenderDataButton.UseVisualStyleBackColor = true;
@@ -344,7 +348,7 @@
             this.mixDownButton.Location = new System.Drawing.Point(210, 416);
             this.mixDownButton.Name = "mixDownButton";
             this.mixDownButton.Size = new System.Drawing.Size(119, 38);
-            this.mixDownButton.TabIndex = 10;
+            this.mixDownButton.TabIndex = 11;
             this.mixDownButton.Text = "Audio Mixdown";
             this.mixDownButton.UseVisualStyleBackColor = true;
             this.mixDownButton.Click += new System.EventHandler(this.MixdownAudio_Click);
@@ -424,7 +428,7 @@
             this.isti115ToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.isti115ToolStripMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
             this.isti115ToolStripMenuItem.Name = "isti115ToolStripMenuItem";
-            this.isti115ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.isti115ToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.isti115ToolStripMenuItem.Text = "Isti115";
             this.isti115ToolStripMenuItem.Click += new System.EventHandler(this.isti115ToolStripMenuItem_Click);
             // 
@@ -433,7 +437,7 @@
             this.jendabekToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.jendabekToolStripMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
             this.jendabekToolStripMenuItem.Name = "jendabekToolStripMenuItem";
-            this.jendabekToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.jendabekToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.jendabekToolStripMenuItem.Text = "jendabek";
             this.jendabekToolStripMenuItem.Click += new System.EventHandler(this.jendabekToolStripMenuItem_Click);
             // 
@@ -442,7 +446,7 @@
             this.meTwentyFiveToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.meTwentyFiveToolStripMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
             this.meTwentyFiveToolStripMenuItem.Name = "meTwentyFiveToolStripMenuItem";
-            this.meTwentyFiveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.meTwentyFiveToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.meTwentyFiveToolStripMenuItem.Text = "MeTwentyFive";
             this.meTwentyFiveToolStripMenuItem.Click += new System.EventHandler(this.meTwentyFiveToolStripMenuItem_Click);
             // 
@@ -451,7 +455,7 @@
             this.redRaptor93ToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.redRaptor93ToolStripMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
             this.redRaptor93ToolStripMenuItem.Name = "redRaptor93ToolStripMenuItem";
-            this.redRaptor93ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.redRaptor93ToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.redRaptor93ToolStripMenuItem.Text = "RedRaptor93";
             this.redRaptor93ToolStripMenuItem.Click += new System.EventHandler(this.redRaptor93ToolStripMenuItem_Click);
             // 
@@ -688,6 +692,7 @@
             0,
             0});
             this.chunkLengthNumericUpDown.ValueChanged += new System.EventHandler(this.chunkLengthNumericUpDown_ValueChanged);
+            this.chunkLengthNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_KeyDown);
             // 
             // label2
             // 
@@ -816,10 +821,10 @@
             this.openOutputFolderButton.Location = new System.Drawing.Point(539, 416);
             this.openOutputFolderButton.Name = "openOutputFolderButton";
             this.openOutputFolderButton.Size = new System.Drawing.Size(105, 38);
-            this.openOutputFolderButton.TabIndex = 12;
+            this.openOutputFolderButton.TabIndex = 13;
             this.openOutputFolderButton.Text = "Open Folder";
             this.openOutputFolderButton.UseVisualStyleBackColor = true;
-            this.openOutputFolderButton.Click += new System.EventHandler(this.openOutputFolderButton_Click);
+            this.openOutputFolderButton.Click += new System.EventHandler(this.outputFolderOpenButton_Click);
             // 
             // blendFileNameLabel
             // 
@@ -838,7 +843,7 @@
             this.rendererRadioButtonCycles.Location = new System.Drawing.Point(492, 251);
             this.rendererRadioButtonCycles.Name = "rendererRadioButtonCycles";
             this.rendererRadioButtonCycles.Size = new System.Drawing.Size(104, 19);
-            this.rendererRadioButtonCycles.TabIndex = 32;
+            this.rendererRadioButtonCycles.TabIndex = 7;
             this.rendererRadioButtonCycles.Text = "Cycles Render";
             this.rendererRadioButtonCycles.UseVisualStyleBackColor = true;
             this.rendererRadioButtonCycles.CheckedChanged += new System.EventHandler(this.rendererComboBox_CheckedChanged);
@@ -851,7 +856,7 @@
             this.rendererRadioButtonBlender.Location = new System.Drawing.Point(492, 227);
             this.rendererRadioButtonBlender.Name = "rendererRadioButtonBlender";
             this.rendererRadioButtonBlender.Size = new System.Drawing.Size(112, 19);
-            this.rendererRadioButtonBlender.TabIndex = 32;
+            this.rendererRadioButtonBlender.TabIndex = 6;
             this.rendererRadioButtonBlender.TabStop = true;
             this.rendererRadioButtonBlender.Text = "Blender Render";
             this.rendererRadioButtonBlender.UseVisualStyleBackColor = true;
@@ -890,7 +895,7 @@
             this.Controls.Add(this.totalEndNumericUpDown);
             this.Controls.Add(this.outputFolderTextBox);
             this.Controls.Add(this.totalStartNumericUpDown);
-            this.Controls.Add(this.partsFolderBrowseButton);
+            this.Controls.Add(this.outputFolderBrowseButton);
             this.Controls.Add(this.renderProgressBar);
             this.Controls.Add(this.blendFileBrowseButton);
             this.Controls.Add(this.renderAllButton);
@@ -927,7 +932,7 @@
         private System.Windows.Forms.NumericUpDown totalStartNumericUpDown;
         private System.Windows.Forms.Label startFrameLabel;
         private System.Windows.Forms.Label chunkEndLabel;
-        private System.Windows.Forms.Button partsFolderBrowseButton;
+        private System.Windows.Forms.Button outputFolderBrowseButton;
         private System.Windows.Forms.TextBox outputFolderTextBox;
         private System.Windows.Forms.Label statusLabel;
         private System.Windows.Forms.Button nextChunkButton;
