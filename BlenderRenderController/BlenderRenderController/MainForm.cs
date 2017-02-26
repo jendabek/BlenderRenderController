@@ -811,8 +811,8 @@ namespace BlenderRenderController
 
             Process p = new Process();
 
-            p.StartInfo.WorkingDirectory = appSettings.ffmpegPath;
-            p.StartInfo.FileName = Path.Combine(appSettings.ffmpegPath, "ffmpeg.exe");
+            //p.StartInfo.WorkingDirectory = appSettings.blenderPath;
+            p.StartInfo.FileName = Path.Combine(appSettings.blenderPath, AppSettings.BLENDER_EXE_NAME);
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.CreateNoWindow = true;
