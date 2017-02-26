@@ -64,6 +64,8 @@
             this.readmeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.infoPanel = new System.Windows.Forms.Panel();
+            this.showMoreInfo = new System.Windows.Forms.LinkLabel();
+            this.label4 = new System.Windows.Forms.Label();
             this.infoResolution = new System.Windows.Forms.TextBox();
             this.infoDurationLabel = new System.Windows.Forms.Label();
             this.infoFramerate = new System.Windows.Forms.TextBox();
@@ -94,8 +96,6 @@
             this.blendFileNameLabel = new System.Windows.Forms.Label();
             this.rendererRadioButtonCycles = new System.Windows.Forms.RadioButton();
             this.rendererRadioButtonBlender = new System.Windows.Forms.RadioButton();
-            this.label4 = new System.Windows.Forms.Label();
-            this.showMoreInfo = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -512,6 +512,28 @@
             this.infoPanel.Size = new System.Drawing.Size(434, 98);
             this.infoPanel.TabIndex = 22;
             // 
+            // showMoreInfo
+            // 
+            this.showMoreInfo.AutoSize = true;
+            this.showMoreInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.showMoreInfo.Location = new System.Drawing.Point(387, 74);
+            this.showMoreInfo.Name = "showMoreInfo";
+            this.showMoreInfo.Size = new System.Drawing.Size(36, 15);
+            this.showMoreInfo.TabIndex = 34;
+            this.showMoreInfo.TabStop = true;
+            this.showMoreInfo.Text = "more";
+            this.showMoreInfo.Visible = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(8, 50);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(66, 15);
+            this.label4.TabIndex = 33;
+            this.label4.Text = "Resolution";
+            // 
             // infoResolution
             // 
             this.infoResolution.Cursor = System.Windows.Forms.Cursors.No;
@@ -874,28 +896,6 @@
             this.rendererRadioButtonBlender.TabStop = true;
             this.rendererRadioButtonBlender.Text = "Blender Render";
             this.rendererRadioButtonBlender.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(8, 50);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(66, 15);
-            this.label4.TabIndex = 33;
-            this.label4.Text = "Resolution";
-            // 
-            // showMoreInfo
-            // 
-            this.showMoreInfo.AutoSize = true;
-            this.showMoreInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.showMoreInfo.Location = new System.Drawing.Point(387, 74);
-            this.showMoreInfo.Name = "showMoreInfo";
-            this.showMoreInfo.Size = new System.Drawing.Size(36, 15);
-            this.showMoreInfo.TabIndex = 34;
-            this.showMoreInfo.TabStop = true;
-            this.showMoreInfo.Text = "more";
-            this.showMoreInfo.Visible = false;
             // 
             // MainForm
             // 

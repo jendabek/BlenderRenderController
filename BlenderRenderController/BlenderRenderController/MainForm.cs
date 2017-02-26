@@ -221,22 +221,15 @@ namespace BlenderRenderController
         private void MainForm_Load(object sender, EventArgs e)
         {
             // Arguments
-            /*if (args.Length > 1)
-            {
-                //test arguments
-                //for (int i = 0; i < args.Length; i++)
-                //{
-                //    string teste = string.Format("Arg[{0}] = [{1}] \r\n", i, args[i]);
-                //    MessageBox.Show(teste);
-                //}
-
-                // arg 1 = .blend path
-                blendFilePath = args[1];
-                //blendFilePathTextBox.Text = blendFilePath;
-                loadBlend();
-            }*/
-
+            string[] Args = Environment.GetCommandLineArgs();
             
+            if (Args.Length > 1)
+            {
+                p.blendFilePath = Args[1];
+                loadBlend();
+            }
+
+
         }
 
         private void blendFileBrowseButton_Click(object sender, EventArgs e)
@@ -745,6 +738,7 @@ namespace BlenderRenderController
                 infoActiveScene.Text               = blendData.sceneActive;
                 infoFramerate.Text                 = blendData.fps.ToString();
                 infoNoScenes.Text                  = blendData.scenesNum;
+                infoResolution.Text = blendData.res;
 
                 try
                 {

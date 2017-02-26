@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
     <Compile Include="BlendData.cs" />
+    <Compile Include="CMD.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ProjectData.cs" />
     <Compile Include="SettingsForm.cs">
@@ -119,7 +120,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="bkp.txt" />
     <Content Include="resources\blender-icon.ico" />
     <Content Include="resources\icon.txt" />
     <Content Include="scripts\get_project_info.py">
