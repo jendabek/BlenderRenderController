@@ -60,6 +60,8 @@ namespace BlenderRenderController
             start = totalStartNumericUpDown.Value;
             end = totalEndNumericUpDown.Value;
             statusLabel.Text = "Hello 3D world!";
+            
+
             applySettings();
             if (!appSettings.appConfigured)
             {

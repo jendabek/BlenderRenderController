@@ -128,11 +128,11 @@
             this.ffmpegDownloadLabel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ffmpegDownloadLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ffmpegDownloadLabel.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.ffmpegDownloadLabel.Location = new System.Drawing.Point(319, 167);
+            this.ffmpegDownloadLabel.Location = new System.Drawing.Point(341, 167);
             this.ffmpegDownloadLabel.Name = "ffmpegDownloadLabel";
-            this.ffmpegDownloadLabel.Size = new System.Drawing.Size(83, 15);
+            this.ffmpegDownloadLabel.Size = new System.Drawing.Size(61, 15);
             this.ffmpegDownloadLabel.TabIndex = 29;
-            this.ffmpegDownloadLabel.Text = "download link";
+            this.ffmpegDownloadLabel.Text = "download";
             this.ffmpegDownloadLabel.Click += new System.EventHandler(this.ffmpegDownloadLabel_Click);
             // 
             // SettingsForm
