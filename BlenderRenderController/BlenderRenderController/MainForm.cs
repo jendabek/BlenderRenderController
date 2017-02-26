@@ -10,14 +10,9 @@ using System.Web.Script.Serialization;
 
 namespace BlenderRenderController
 {
-
-    
     public partial class MainForm : Form
     {
-        string blendFilePath, outputPath, chunksPath;
-
-        decimal chunkStart, chunkEnd, chunkLength, start, end;
-
+        
         bool lastChunkStarted = false;
 
         string appState = AppStates.AFTER_START;
@@ -28,13 +23,10 @@ namespace BlenderRenderController
         int processesCompletedCount = 0;
 
         BlendData blendData;
+        ProjectData p;
         DateTime startTime;
         Timer processTimer;
-
-        //settingsForm
         SettingsForm settingsForm;
-
-        //settings
         AppSettings appSettings;
 
         //string[] args = Environment.GetCommandLineArgs();
@@ -48,7 +40,7 @@ namespace BlenderRenderController
 
             settingsForm = new SettingsForm();
             appSettings = new AppSettings();
-
+            p = new ProjectData();
 
             appSettings.settingsForm = settingsForm;
             appSettings.init();
@@ -56,9 +48,9 @@ namespace BlenderRenderController
             settingsForm.FormClosed += new FormClosedEventHandler(onSettingsFormClosed);
             settingsForm.init(appSettings);
 
-            chunkLength = chunkLengthNumericUpDown.Value;
-            start = totalStartNumericUpDown.Value;
-            end = totalEndNumericUpDown.Value;
+            p.chunkLength = chunkLengthNumericUpDown.Value;
+            p.start = totalStartNumericUpDown.Value;
+            p.end = totalEndNumericUpDown.Value;
             statusLabel.Text = "Hello 3D world!";
             
             processTimer = new Timer();
@@ -82,8 +74,10 @@ namespace BlenderRenderController
 
         private void applySettings()
         {
-            processCountNumericUpDown.Value = appSettings.processCount;
-            if(appSettings.renderer == AppStrings.RENDERER_BLENDER)
+            processCountNumericUpDown.Value = p.processCount = appSettings.processCount;
+            p.renderer = appSettings.renderer;
+
+            if (p.renderer == AppStrings.RENDERER_BLENDER)
             {
                 rendererRadioButtonBlender.Checked = true;
             } else
@@ -100,16 +94,16 @@ namespace BlenderRenderController
 
         public void updateUI()
         {
-            chunkEndNumericUpDown.Text = chunkEnd.ToString();
-            chunkStartNumericUpDown.Text = chunkStart.ToString();
-            chunkLengthNumericUpDown.Value = chunkLength;
-            totalStartNumericUpDown.Value = start;
-            totalEndNumericUpDown.Value = end;
+            chunkEndNumericUpDown.Text = p.chunkEnd.ToString();
+            chunkStartNumericUpDown.Text = p.chunkStart.ToString();
+            chunkLengthNumericUpDown.Value = p.chunkLength;
+            totalStartNumericUpDown.Value = p.start;
+            totalEndNumericUpDown.Value = p.end;
 
             //top infos
             if (blendData != null)
             {
-                var durationSeconds = Convert.ToDouble((end - start + 1) / int.Parse(blendData.fps.Split('.')[0]));
+                var durationSeconds = Convert.ToDouble((p.end - p.start + 1) / int.Parse(blendData.fps.Split('.')[0]));
                 TimeSpan t = TimeSpan.FromSeconds(durationSeconds);
 
                 infoDuration.Text = string.Format("{0:D1}h {1:D1}m {2:D1}s {3:D1}ms",
@@ -117,7 +111,7 @@ namespace BlenderRenderController
                                 t.Minutes,
                                 t.Seconds,
                                 t.Milliseconds);
-                infoFramesTotal.Text = (end - start + 1).ToString();
+                infoFramesTotal.Text = (p.end - p.start + 1).ToString();
             }
 
             renderAllButton.Text = (appState == AppStates.RENDERING_CHUNK_ONLY || appState == AppStates.RENDERING_ALL) ? "Stop" : "Render";
@@ -178,7 +172,7 @@ namespace BlenderRenderController
                     totalStartNumericUpDown.Enabled = true;
                     totalEndNumericUpDown.Enabled = true;
                     chunkLengthNumericUpDown.Enabled = true;
-                    concatenatePartsButton.Enabled = Directory.Exists(chunksPath);
+                    concatenatePartsButton.Enabled = Directory.Exists(p.chunksPath);
                     reloadBlenderDataButton.Enabled = true;
                     blendFileBrowseButton.Enabled = true;
                     outputFolderBrowseButton.Enabled = true;
@@ -253,7 +247,7 @@ namespace BlenderRenderController
 
             if(result == DialogResult.OK)
             {
-                blendFilePath = blendFileBrowseDialog.FileName;
+                p.blendFilePath = blendFileBrowseDialog.FileName;
                 loadBlend();
             }
 
@@ -267,8 +261,8 @@ namespace BlenderRenderController
 
             if (result == DialogResult.OK)
             {
-                outputPath = outputFolderTextBox.Text = Path.GetFullPath(dialog.SelectedPath);
-                chunksPath = Path.Combine(outputPath, appSettings.chunksSubfolder);
+                p.outputPath = outputFolderTextBox.Text = Path.GetFullPath(dialog.SelectedPath);
+                p.chunksPath = Path.Combine(p.outputPath, appSettings.chunksSubfolder);
                 updateUI();
             }
         }
@@ -283,12 +277,12 @@ namespace BlenderRenderController
             }
             catch (Exception)
             {
-                outputFolderTextBox.Text = outputPath;
+                outputFolderTextBox.Text = p.outputPath;
                 return;
             }
 
-            outputPath = outputFolderTextBox.Text = Path.GetFullPath(outputFolderTextBox.Text);
-            chunksPath = Path.Combine(outputPath, appSettings.chunksSubfolder);
+            p.outputPath = outputFolderTextBox.Text = Path.GetFullPath(outputFolderTextBox.Text);
+            p.chunksPath = Path.Combine(p.outputPath, appSettings.chunksSubfolder);
             updateUI();
 
         }
@@ -318,40 +312,37 @@ namespace BlenderRenderController
         }
         private void renderCurrentChunk()
         {
-            if (chunkEnd == end) lastChunkStarted = true;
+            if (p.chunkEnd == p.end) lastChunkStarted = true;
 
-            Process p = new Process();
-            processes.Add(p);
+            Process process = new Process();
+            processes.Add(process);
 
-            ProcessStartInfo pStartInfo = new ProcessStartInfo();
-            pStartInfo.RedirectStandardOutput = true;
-            pStartInfo.RedirectStandardError = true;
-            pStartInfo.RedirectStandardInput = true;
-            pStartInfo.UseShellExecute = false;
-            pStartInfo.CreateNoWindow = true;
-            pStartInfo.WorkingDirectory = appSettings.blenderPath;
-            pStartInfo.FileName = Path.Combine(appSettings.blenderPath, "blender.exe");
-
-            string renderer = rendererRadioButtonBlender.Checked ? AppStrings.RENDERER_BLENDER : AppStrings.RENDERER_CYCLES;
-            pStartInfo.Arguments = String.Format("-b \"{0}\" -o {1} -E {2} -s {3} -e {4} -a",
-                                                  blendFilePath,
-                                                  outputPath + "\\" + appSettings.chunksSubfolder + "\\" + blendData.projectName + "-#",
-                                                  renderer,
-                                                  chunkStart,
-                                                  chunkEnd
-                                                  );
-            p.StartInfo = pStartInfo;
-            p.ErrorDataReceived += onRenderProcessErrorDataReceived;
-            p.OutputDataReceived += onRenderProcessDataReceived;
-            p.EnableRaisingEvents = true;
-
-            Trace.WriteLine(String.Format("CEW: {0}", pStartInfo.Arguments));
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.WorkingDirectory = appSettings.blenderPath;
+            process.StartInfo.FileName = Path.Combine(appSettings.blenderPath, "blender.exe");
             
-            p.Exited += new EventHandler(chunkRendered);
+            process.StartInfo.Arguments = String.Format("-b \"{0}\" -o {1} -E {2} -s {3} -e {4} -a",
+                                                  p.blendFilePath,
+                                                  p.outputPath + "\\" + appSettings.chunksSubfolder + "\\" + blendData.projectName + "-#",
+                                                  p.renderer,
+                                                  p.chunkStart,
+                                                  p.chunkEnd
+                                                  );
+            process.ErrorDataReceived += onRenderProcessErrorDataReceived;
+            process.OutputDataReceived += onRenderProcessDataReceived;
+            process.EnableRaisingEvents = true;
+
+            Trace.WriteLine(String.Format("CEW: {0}", process.StartInfo.Arguments));
+            
+            process.Exited += new EventHandler(chunkRendered);
 
             try
             {
-                p.Start();
+                process.Start();
             }
             catch (Exception ex)
             {
@@ -359,10 +350,9 @@ namespace BlenderRenderController
                 stopRender(false);
                 return;
             }
-
-            p.PriorityClass = ProcessPriorityClass.High;
-            p.BeginOutputReadLine();
-            p.BeginErrorReadLine();
+            //process.PriorityClass = ProcessPriorityClass.High;
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
         }
 
         private void onRenderProcessDataReceived(object sender, DataReceivedEventArgs e)
@@ -395,38 +385,40 @@ namespace BlenderRenderController
         private void prevChunkButton_Click(object sender, EventArgs e)
         {
 
-            if (chunkStart - chunkLength - 1 < start)
+            if (p.chunkStart - p.chunkLength - 1 < p.start)
             {
-                chunkStart = start;
-                chunkEnd = start + chunkLength - 1;
+                p.chunkStart = p.start;
+                p.chunkEnd = p.start + p.chunkLength - 1;
             }
 
             else
             {
-                chunkEnd = chunkStart - 1;
-                chunkStart = chunkEnd - chunkLength + 1;
+                p.chunkEnd = p.chunkStart - 1;
+                p.chunkStart = p.chunkEnd - p.chunkLength + 1;
             }
             updateUI();
         }
+
         private void moveToNextChunk()
         {
             //start of next chunk must not be above totalEnd, so we can move to another chunk
-            if (!(chunkEnd + 1 > end))
+            if (!(p.chunkEnd + 1 > p.end))
             {
-                chunkStart = chunkEnd + 1;
+                p.chunkStart = p.chunkEnd + 1;
 
-                if (chunkEnd + chunkLength - 1 > end)
+                if (p.chunkEnd + p.chunkLength - 1 > p.end)
                 {
-                    chunkEnd = end;
+                    p.chunkEnd = p.end;
                 }
                 else
                 {
-                    chunkEnd += chunkLength;
+                    p.chunkEnd += p.chunkLength;
                 }
                 updateUI();
                 
             }
         }
+
         private void nextChunkButton_Click(object sender, EventArgs e)
         {
             moveToNextChunk();
@@ -448,19 +440,18 @@ namespace BlenderRenderController
 
             //we want to start render
             else {
-                if (Directory.Exists(chunksPath) && Directory.GetFiles(chunksPath).Length > 0)
+                if (Directory.Exists(p.chunksPath) && Directory.GetFiles(p.chunksPath).Length > 0)
                 {
                     // Configure the message box to be displayed
                     DialogResult dialogResult = MessageBox.Show("All previously rendered chunks will be deleted.\nDo you want to continue?",
                                                                 "Chunks folder not empty",
                                                                 MessageBoxButtons.YesNo,
                                                                 MessageBoxIcon.Exclamation);
-                    
-                    if (dialogResult == DialogResult.No) {
-                        return;
-                    }
+
+                    if (dialogResult == DialogResult.No) return;
+
                     try {
-                        Helper.clearFolder(chunksPath);
+                        Helper.clearFolder(p.chunksPath);
                     }
                     catch (Exception){
                         MessageBox.Show("It can't be deleted, files are in use by some program.\n");
@@ -471,7 +462,6 @@ namespace BlenderRenderController
                 renderAll();
                 renderAllButton.Text = "Stop";
             }
-
         }
         
         private void renderAll()
@@ -488,17 +478,12 @@ namespace BlenderRenderController
 
         private decimal getChunksTotalCount()
         {
-            return Math.Ceiling((end - start + 1) / chunkLength);
+            return Math.Ceiling((p.end - p.start + 1) / p.chunkLength);
         }
 
         private void stopRender(bool wasComplete)
         {
-
-            //Show time run
             statusLabel.Text = wasComplete ? "Render complete, press Join Chunks to get the final video.\nIf your anim has a sound, press Audio Mixdown before Join Chunks." : "Render cancelled.";
-            TimeSpan runTime = DateTime.Now - startTime;
-            //totalTimeLabel.Text = String.Format("{0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds);
-            //startTime = DateTime.MaxValue;
             
             foreach (var process in processes.ToList())
             {
@@ -508,7 +493,6 @@ namespace BlenderRenderController
                     {
                         process.Kill();
                     }
-
                     process.Dispose();
                 }
                 catch(Exception ex)
@@ -517,33 +501,35 @@ namespace BlenderRenderController
                 }
                 processes.Remove(process);
             }
-            chunkStart = start;
+
             processTimer.Enabled = false;
             lastChunkStarted = false;
             renderProgressBar.Value = 0;
 
-
             appState = AppStates.READY_FOR_RENDER;
+
+            p.chunkStart = p.start;
             checkCurrentChunkStartEnd();
+
             updateUI();
         }
 
         private void updateProcessManagement(object sender, EventArgs e)
         {
-
             //PROGRESS display
             if (appState == AppStates.RENDERING_ALL)
             {
-                renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (end - start + 1)) * 100);
+                renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (p.end - p.start + 1)) * 100);
 
                 var statusText = "";
                 statusText = "Completed " + processesCompletedCount.ToString() + " / " + getChunksTotalCount().ToString();
                 statusText += " chunks, rendered " + framesRendered.Count + " frames in " + processes.Count;
                 statusText += (processes.Count > 1) ? " processes." : " process.";
                 statusLabel.Text = statusText;
-            } else
+            }
+            else
             {
-                renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (chunkEnd - chunkStart + 1)) * 100);
+                renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (p.chunkEnd - p.chunkStart + 1)) * 100);
                 
                 if (framesRendered.Count > 0)
                 {
@@ -551,16 +537,16 @@ namespace BlenderRenderController
                 }
             }
 
-
             //start next chunk if needed
             if (!lastChunkStarted)
             {
-                if (processes.Count < processCountNumericUpDown.Value)
+                if (processes.Count < p.processCount)
                 {
                     renderCurrentChunk();
                     moveToNextChunk();
                 }
             }
+
             //time elapsed display
             TimeSpan runTime = DateTime.Now - startTime;
 			totalTimeLabel.Text = String.Format( "{0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds );
@@ -568,7 +554,7 @@ namespace BlenderRenderController
             if (processes.Count == 0)
             {
 
-                bool wasComplete = (framesRendered.Count == end - start + 1);
+                bool wasComplete = (framesRendered.Count == p.end - p.start + 1);
                 stopRender(wasComplete);
                 checkCurrentChunkStartEnd();
                 return;
@@ -578,9 +564,9 @@ namespace BlenderRenderController
         
         private void concatenatePartsButton_Click(object sender, EventArgs e)
         {
-            if (!Directory.Exists(chunksPath)) return;
+            if (!Directory.Exists(p.chunksPath)) return;
 
-            string chunksTxtPath = Path.Combine(chunksPath, appSettings.chunksTxtFileName);
+            string chunksTxtPath = Path.Combine(p.chunksPath, appSettings.chunksTxtFileName);
             string audioFileName = blendData.projectName + "." + appSettings.audioFormat;
             string audioSettings = string.Empty; //"-c:a aac -b:a 256k";
             string videoExtensionFound = "";
@@ -589,7 +575,7 @@ namespace BlenderRenderController
             foreach (var format in appSettings.allowedFormats)
             {
                 videoExtensionFound = format;
-                fileList = Directory.GetFiles(chunksPath, "*." + videoExtensionFound, SearchOption.TopDirectoryOnly).ToList();
+                fileList = Directory.GetFiles(p.chunksPath, "*." + videoExtensionFound, SearchOption.TopDirectoryOnly).ToList();
                 if (fileList.Count > 0) break;
             }
 
@@ -630,7 +616,7 @@ namespace BlenderRenderController
             var addAudioArguments = "";
             
             //mixdown audio NOT found
-            if (!File.Exists(Path.Combine(outputPath, audioFileName)))
+            if (!File.Exists(Path.Combine(p.outputPath, audioFileName)))
             {
                 statusLabel.Text = "Joining chunks...";
                 audioFileName = string.Empty;
@@ -640,28 +626,27 @@ namespace BlenderRenderController
             else
             {
                 statusLabel.Text = "Joining chunks with mixdown audio...";
-                addAudioArguments = "-i " + Path.Combine(outputPath, audioFileName) + " -map 0:v -map 1:a";
+                addAudioArguments = "-i " + Path.Combine(p.outputPath, audioFileName) + " -map 0:v -map 1:a";
             }
-            Process p = new Process();
-            p.StartInfo.WorkingDirectory = appSettings.ffmpegPath;
-            p.StartInfo.FileName = Path.Combine(appSettings.ffmpegPath, "ffmpeg.exe");
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.UseShellExecute = false;
-
-
-            p.StartInfo.Arguments = 
+            Process process = new Process();
+            process.StartInfo.WorkingDirectory = appSettings.ffmpegPath;
+            process.StartInfo.FileName = Path.Combine(appSettings.ffmpegPath, "ffmpeg.exe");
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.Arguments = 
                 String.Format("-f concat -safe 0 -i {0} {1} -c:v copy {3}.{4} -y",
                 chunksTxtPath,
                 addAudioArguments,
                 audioSettings,
-                Path.Combine(outputPath, blendData.projectName),
+                Path.Combine(p.outputPath, blendData.projectName),
                 videoExtensionFound
             );
-            Trace.WriteLine(p.StartInfo.Arguments);
+            Trace.WriteLine(process.StartInfo.Arguments);
+
             try
             {
-                p.Start();
-                p.WaitForExit();
+                process.Start();
+                process.WaitForExit();
             }
             catch (Exception ex)
             {
@@ -673,12 +658,13 @@ namespace BlenderRenderController
             }
             statusLabel.Text = "Chunks Joined.";
         }
+
 		private void loadBlend() {
 
             statusLabel.Text = "Reading the .blend file...";
             statusLabel.Update();
 
-            if ( !File.Exists( blendFilePath) ) {
+            if ( !File.Exists(p.blendFilePath) ) {
                 // file does not exist
                 //errorMsgs(-104);
                 return;
@@ -693,23 +679,23 @@ namespace BlenderRenderController
                 return;
             }
 
-            Process p = new Process();
-            p.StartInfo.WorkingDirectory       = appSettings.blenderPath;
-            p.StartInfo.FileName               = Path.Combine(appSettings.blenderPath, "blender.exe");
-			p.StartInfo.RedirectStandardOutput = true;
-			p.StartInfo.CreateNoWindow         = true;
-			p.StartInfo.UseShellExecute        = false;
+            Process process = new Process();
+            process.StartInfo.WorkingDirectory       = appSettings.blenderPath;
+            process.StartInfo.FileName               = Path.Combine(appSettings.blenderPath, "blender.exe");
+			process.StartInfo.RedirectStandardOutput = true;
+			process.StartInfo.CreateNoWindow         = true;
+			process.StartInfo.UseShellExecute        = false;
 
-            p.StartInfo.Arguments = String.Format("-b \"{0}\" -P \"{1}\"",
-                                                  blendFilePath,
+            process.StartInfo.Arguments = String.Format("-b \"{0}\" -P \"{1}\"",
+                                                  p.blendFilePath,
                                                   Path.Combine(appSettings.scriptsPath, "get_project_info.py")
                                     );
-
             Trace.WriteLine(appSettings.blenderPath);
             try {
-				p.Start();
+				process.Start();
 			}
 			catch( Exception ex ) {
+                Trace.WriteLine(ex);
                 Helper.showErrors(new List<string> { AppErrorCodes.BLENDER_PATH_NOT_SET });
                 settingsForm.ShowDialog();
                 stopRender(false);
@@ -720,24 +706,18 @@ namespace BlenderRenderController
 			bool          jsonStarted = false;
 			int           curlyStack  = 0;
 
-            while ( !p.StandardOutput.EndOfStream ) {
-				string line = p.StandardOutput.ReadLine();
-
+            while ( !process.StandardOutput.EndOfStream ) {
+				string line = process.StandardOutput.ReadLine();
 				if( line.Contains( "{" ) ) {
 					jsonStarted = true;
 					curlyStack++;
 				}
-
 				if( jsonStarted ) {
-
 					if( !line.ToLower().Contains( "blender quit" ) && curlyStack > 0 ) {
 						jsonInfo.AppendLine( line );
 					}
-
 					if( line.Contains( "}" ) ) {
-
 						curlyStack--;
-
 						if( curlyStack == 0 ) {
 							jsonStarted = false;
 						}
@@ -753,8 +733,8 @@ namespace BlenderRenderController
 
 			if( blendData != null ) {
 
-                start       = blendData.start;
-				end         = blendData.end;
+                p.start       = blendData.start;
+                p.end         = blendData.end;
                 
                 //reset chunk range according to new timeline
                 checkCurrentChunkStartEnd();
@@ -769,22 +749,20 @@ namespace BlenderRenderController
 
                 try
                 {
-                    outputPath = Path.GetFullPath(blendData.outputPath);
-                    outputPath = Path.GetDirectoryName(outputPath);
+                    p.outputPath = Path.GetFullPath(blendData.outputPath);
+                    p.outputPath = Path.GetDirectoryName(p.outputPath);
                 }
                 catch (Exception)
                 {
-
-                    outputPath = Path.Combine(Path.GetDirectoryName(blendFilePath), blendData.outputPath.Replace("//", ""));
+                    p.outputPath = Path.Combine(Path.GetDirectoryName(p.blendFilePath), blendData.outputPath.Replace("//", ""));
                 }
-                outputFolderTextBox.Text = outputPath;
-                chunksPath = Path.Combine(outputPath, appSettings.chunksSubfolder);
-                appSettings.lastBlendsAdd(blendFilePath);
+                outputFolderTextBox.Text = p.outputPath;
+                p.chunksPath = Path.Combine(p.outputPath, appSettings.chunksSubfolder);
+                appSettings.lastBlendsAdd(p.blendFilePath);
                 appSettings.save();
                 appState = AppStates.READY_FOR_RENDER;
 			}
             updateUI();
-
             Trace.WriteLine( ".blend data = " + jsonInfo.ToString() );
 		}
         
@@ -797,7 +775,7 @@ namespace BlenderRenderController
             statusLabel.Text = "Rendering mixdown...";
             statusLabel.Update();
 
-            if (!File.Exists(blendFilePath)) {
+            if (!File.Exists(p.blendFilePath)) {
                 return;
             }
 
@@ -810,32 +788,27 @@ namespace BlenderRenderController
                 return;
             }
 
-
-            if (!Directory.Exists(outputPath)) {
-                Directory.CreateDirectory(outputPath);
+            if (!Directory.Exists(p.outputPath)) {
+                Directory.CreateDirectory(p.outputPath);
             }
 
-            Process p = new Process();
+            Process process = new Process();
+            process.StartInfo.FileName = Path.Combine(appSettings.blenderPath, AppSettings.BLENDER_EXE_NAME);
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
 
-            //p.StartInfo.WorkingDirectory = appSettings.blenderPath;
-            p.StartInfo.FileName = Path.Combine(appSettings.blenderPath, AppSettings.BLENDER_EXE_NAME);
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.CreateNoWindow = true;
-            //Using minimized instead so we get feedback
-            //p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-
-            p.StartInfo.Arguments = String.Format("-b \"{0}\" -s {1} -e {2} -P \"{3}\" -- {4}",
-                                                  blendFilePath,
-                                                  chunkStart,
-                                                  end,
+            process.StartInfo.Arguments = String.Format("-b \"{0}\" -s {1} -e {2} -P \"{3}\" -- {4}",
+                                                  p.blendFilePath,
+                                                  p.chunkStart,
+                                                  p.end,
                                                   Path.Combine(appSettings.scriptsPath, "mixdown_audio.py"),
-                                                  outputPath
-                                    );
-            Trace.WriteLine(p.StartInfo.Arguments);
+                                                  p.outputPath
+                                                  );
+            Trace.WriteLine(process.StartInfo.Arguments);
             try
             {
-                p.Start();
+                process.Start();
             }
             catch (Exception ex)
             {
@@ -846,19 +819,11 @@ namespace BlenderRenderController
                 return;
             }
 
-            p.WaitForExit((int)TimeSpan.FromMinutes(5).TotalMilliseconds);
+            process.WaitForExit((int)TimeSpan.FromMinutes(5).TotalMilliseconds);
 
             Trace.WriteLine("Mixdown completed");
             statusLabel.Text = "Mixdown complete.";
         }
-
-        /* About this app
-        private void creditsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            About about = new About();
-            about.Show();
-        }
-        */
 
         private void tipsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -874,18 +839,6 @@ namespace BlenderRenderController
                 activeWarn.Active = true;
                 toolTip1.Active = true;
             }
-
-        }
-        
-        private void jsonToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //json_info op = new json_info();
-            //op.Show();
-        }
-        
-        private void chunkEndNumericUpDown_ValueChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void isti115ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -902,95 +855,53 @@ namespace BlenderRenderController
         {
             Process.Start("https://github.com/RedRaptor93/BlenderRenderController");
         }
+
         private void jendabekToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/jendabek/BlenderRenderController");
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void totalFrameCountLabel_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void rendererComboBox_CheckedChanged(object sender, EventArgs e)
         {
             if(rendererRadioButtonBlender.Checked)
             {
-                appSettings.renderer = AppStrings.RENDERER_BLENDER;
+                p.renderer = appSettings.renderer = AppStrings.RENDERER_BLENDER;
             }
             else if (rendererRadioButtonCycles.Checked)
             {
-                appSettings.renderer = AppStrings.RENDERER_CYCLES;
+                p.renderer = appSettings.renderer = AppStrings.RENDERER_CYCLES;
             }
-            Trace.WriteLine("aasdsasssssssssssss");
-        }
-
-        private void rendererLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label13_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void chunkEndNumericUpDown_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void chunkEndLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void infoFramesTotal_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void infoFramesTotalLabel_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void outputFolderOpenButton_Click(object sender, EventArgs e)
         {
-            if (Directory.Exists(outputPath)) {
-                Process.Start(outputPath);
+            if (Directory.Exists(p.outputPath)) {
+                Process.Start(p.outputPath);
             } else
             {
                 MessageBox.Show("Folder does not exist.", "",
-                                                                MessageBoxButtons.OK,
-                                                                MessageBoxIcon.Exclamation);
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Exclamation);
             }
         }
-
         private void processCountNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            appSettings.processCount = processCountNumericUpDown.Value;
+            appSettings.processCount = p.processCount = processCountNumericUpDown.Value;
         }
 
         //total start numericUpDown change
         private void totalStartNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            start = totalStartNumericUpDown.Value;
-            if (start > end)
+            p.start = totalStartNumericUpDown.Value;
+            if (p.start > p.end)
             {
-                end = start + chunkLength - 1;
+                p.end = p.start + p.chunkLength - 1;
             }
-            chunkStart = start;
+            p.chunkStart = p.start;
             checkCurrentChunkStartEnd();
             checkChunkLength();
             updateUI();
         }
-
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -999,7 +910,6 @@ namespace BlenderRenderController
 
         private void button1_MouseClick(object sender, MouseEventArgs e)
         {
-            
             settingsForm.StartPosition = FormStartPosition.CenterParent;
             settingsForm.ShowDialog();
         }
@@ -1007,12 +917,12 @@ namespace BlenderRenderController
         //total end numericUpDown change
         private void totalEndNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            end = totalEndNumericUpDown.Value;
-            if (end < start)
+            p.end = totalEndNumericUpDown.Value;
+            if (p.end < p.start)
             {
-                start -= chunkLength - 1;
+                p.start -= p.chunkLength - 1;
             }
-            if (start < 0) start = 0;
+            if (p.start < 0) p.start = 0;
             checkCurrentChunkStartEnd();
             checkChunkLength();
             updateUI();
@@ -1021,8 +931,8 @@ namespace BlenderRenderController
         //chunk length numericUpDown change
         private void chunkLengthNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            chunkStart = start;
-            chunkLength = chunkLengthNumericUpDown.Value;
+            p.chunkStart = p.start;
+            p.chunkLength = chunkLengthNumericUpDown.Value;
             checkCurrentChunkStartEnd();
             checkChunkLength();
             updateUI();
@@ -1030,23 +940,22 @@ namespace BlenderRenderController
 
         private void checkCurrentChunkStartEnd()
         {
-
-            chunkEnd = chunkStart + chunkLength - 1;
-            if (chunkStart < start)
+            p.chunkEnd = p.chunkStart + p.chunkLength - 1;
+            if (p.chunkStart < p.start)
             {
-                chunkStart = start;
+                p.chunkStart = p.start;
             }
-            if (chunkEnd > end)
+            if (p.chunkEnd > p.end)
             {
-                chunkEnd = end;
+                p.chunkEnd = p.end;
             }
-            
             updateUI();
         }
+
         private void checkChunkLength()
         {
-            if(chunkLength - 1 > end - start || chunkEnd > end) {
-                chunkLength = end - start + 1;
+            if(p.chunkLength - 1 > p.end - p.start || p.chunkEnd > p.end) {
+                p.chunkLength = p.end - p.start + 1;
             }
             updateUI();
         }
