@@ -53,6 +53,7 @@ namespace BlenderRenderController
             p.end = totalEndNumericUpDown.Value;
             statusLabel.Text = "Hello 3D world!";
             
+
             processTimer = new Timer();
             processTimer.Interval = appSettings.processCheckInterval;
             processTimer.Tick += new EventHandler(updateProcessManagement);
@@ -269,7 +270,6 @@ namespace BlenderRenderController
 
         private void outputFolderPathTextBox_TextChanged(object sender, EventArgs e)
         {
-
             outputFolderTextBox.Text = outputFolderTextBox.Text.Trim();
 
             try {
@@ -280,11 +280,9 @@ namespace BlenderRenderController
                 outputFolderTextBox.Text = p.outputPath;
                 return;
             }
-
             p.outputPath = outputFolderTextBox.Text = Path.GetFullPath(outputFolderTextBox.Text);
             p.chunksPath = Path.Combine(p.outputPath, appSettings.chunksSubfolder);
             updateUI();
-
         }
 
         //confirm text input by enter & go to next control
@@ -327,7 +325,7 @@ namespace BlenderRenderController
             
             process.StartInfo.Arguments = String.Format("-b \"{0}\" -o {1} -E {2} -s {3} -e {4} -a",
                                                   p.blendFilePath,
-                                                  p.outputPath + "\\" + appSettings.chunksSubfolder + "\\" + blendData.projectName + "-#",
+                                                  Path.Combine(p.chunksPath, blendData.projectName) + "-#",
                                                   p.renderer,
                                                   p.chunkStart,
                                                   p.chunkEnd
@@ -347,6 +345,7 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
+                Logger.add(ex.ToString());
                 stopRender(false);
                 return;
             }
@@ -384,13 +383,11 @@ namespace BlenderRenderController
 
         private void prevChunkButton_Click(object sender, EventArgs e)
         {
-
             if (p.chunkStart - p.chunkLength - 1 < p.start)
             {
                 p.chunkStart = p.start;
                 p.chunkEnd = p.start + p.chunkLength - 1;
             }
-
             else
             {
                 p.chunkEnd = p.chunkStart - 1;
@@ -426,7 +423,6 @@ namespace BlenderRenderController
 
         private void renderAllButton_Click(object sender, EventArgs e)
         {
-
             //we are stopping
             if (processTimer.Enabled) {
                 DialogResult dialogResult = MessageBox.Show("Are you sure you want to stop?",
@@ -453,7 +449,8 @@ namespace BlenderRenderController
                     try {
                         Helper.clearFolder(p.chunksPath);
                     }
-                    catch (Exception){
+                    catch (Exception ex){
+                        Logger.add(ex.ToString());
                         MessageBox.Show("It can't be deleted, files are in use by some program.\n");
                         return;
                     }
@@ -497,6 +494,7 @@ namespace BlenderRenderController
                 }
                 catch(Exception ex)
                 {
+                    Logger.add(ex.ToString());
                     Trace.WriteLine(ex);
                 }
                 processes.Remove(process);
@@ -651,6 +649,7 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
+                Logger.add(ex.ToString());
                 Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
                 settingsForm.ShowDialog();
                 statusLabel.Text = "Joining cancelled.";
@@ -695,6 +694,7 @@ namespace BlenderRenderController
 				process.Start();
 			}
 			catch( Exception ex ) {
+                Logger.add(ex.ToString());
                 Trace.WriteLine(ex);
                 Helper.showErrors(new List<string> { AppErrorCodes.BLENDER_PATH_NOT_SET });
                 settingsForm.ShowDialog();
