@@ -17,16 +17,15 @@ namespace BlenderRenderController
     public class AppSettings
     {
 
-        //these properties are stored (saved/loaded) in external JSON file
-        //they overrides default values of this class
+        //THESE PROPERTIES (in _jsonProperties) ARE STORED AND LOADED automatically from external JSON file
+        private string[] _jsonProperties = { "lastBlends", "processCount", "blenderPath", "ffmpegPath", "renderer"};
+
         private const int _LAST_BLENDS_MAX_COUNT = 10;
         public const string BLENDER_EXE_NAME = "blender.exe";
         public const string FFMPEG_EXE_NAME = "ffmpeg.exe";
 
-        private string[] _jsonProperties = { "lastBlends", "processCount", "blenderPath", "ffmpegPath"};
-
-        private string _blenderPathDefault = "C:\\Program Files\\Blender Foundation\\Blender";
-        private string _ffmpegPathDefault = AppDomain.CurrentDomain.BaseDirectory;
+        public const string BLENDER_PATH_DEFAULT = "C:\\Program Files\\Blender Foundation\\Blender";
+        public const string FFMPEG_PATH_DEFAULT = ""; //EXE dir
 
         private List<string> _lastBlends = new List<string>();
         private string _jsonFileName = "settings.json";
@@ -34,6 +33,7 @@ namespace BlenderRenderController
         private string _scriptsSubfolder = "scripts";
         private string _audioFormat = "ac3";
         private string _chunksTxtFileName = "partList.txt";
+        private string _renderer = AppStrings.RENDERER_BLENDER;
         private decimal _processCount = 4;
         private string[] _allowedFormats = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
 
@@ -49,10 +49,10 @@ namespace BlenderRenderController
             //LOADing data from JSON and set it to properties
             //-----------------------
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);
-            _blenderPath = _blenderPathDefault;
-            _ffmpegPath = _ffmpegPathDefault;
+            _blenderPath = BLENDER_PATH_DEFAULT;
+            _ffmpegPath = FFMPEG_PATH_DEFAULT;
             loadJsonSettings();
-            checkRequiredSettings();
+            checkCorrectConfig();
         }
 
 
@@ -136,14 +136,16 @@ namespace BlenderRenderController
             }
             _lastBlends.Insert(0, blendFilePath);
         }
-        public void checkRequiredSettings()
+        public void checkCorrectConfig(bool showErrors = true)
         {
             List<string> errors = new List<string>();
             
+
             if (!checkBlenderPath())
             {
                 errors.Add(AppErrorCodes.BLENDER_PATH_NOT_SET);
             }
+
             if (!checkFFmpegPath())
             {
                 errors.Add(AppErrorCodes.FFMPEG_PATH_NOT_SET);
@@ -155,17 +157,15 @@ namespace BlenderRenderController
                 return;
             }
             _appConfigured = false;
-            Helper.showErrors(errors);
+            if (showErrors)
+            {
+                Helper.showErrors(errors);
+            }
         }
 
         public bool checkBlenderPath()
         {
             if (File.Exists(Path.Combine(_blenderPath, BLENDER_EXE_NAME))) {
-                return true;
-            }
-            if (File.Exists(Path.Combine(_blenderPathDefault, BLENDER_EXE_NAME))) {
-                _blenderPath = _blenderPathDefault;
-                save();
                 return true;
             }
             return false;
@@ -175,12 +175,6 @@ namespace BlenderRenderController
         {
             if(File.Exists(Path.Combine(_ffmpegPath, FFMPEG_EXE_NAME)))
             {
-                return true;
-            }
-            if (File.Exists(Path.Combine(_ffmpegPathDefault, FFMPEG_EXE_NAME)))
-            {
-                _ffmpegPath = _ffmpegPathDefault;
-                save();
                 return true;
             }
             return false;
@@ -268,6 +262,17 @@ namespace BlenderRenderController
             set
             {
                 _blenderPath = value;
+            }
+        }
+        public string renderer
+        {
+            get
+            {
+                return _renderer;
+            }
+            set
+            {
+                _renderer = value;
             }
         }
         public string ffmpegPath

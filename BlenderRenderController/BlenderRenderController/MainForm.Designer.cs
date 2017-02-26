@@ -50,8 +50,9 @@
             this.reloadBlenderDataButton = new System.Windows.Forms.Button();
             this.mixDownButton = new System.Windows.Forms.Button();
             this.totalTimeLabel = new System.Windows.Forms.Label();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tipsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugShow = new System.Windows.Forms.ToolStripMenuItem();
             this.speToolStripMenuItem = new System.Windows.Forms.ToolStripSeparator();
@@ -93,11 +94,10 @@
             this.blendFileNameLabel = new System.Windows.Forms.Label();
             this.rendererRadioButtonCycles = new System.Windows.Forms.RadioButton();
             this.rendererRadioButtonBlender = new System.Windows.Forms.RadioButton();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
-            this.menuStrip1.SuspendLayout();
+            this.menuStrip.SuspendLayout();
             this.infoPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).BeginInit();
             this.currentChunkInfoPanel.SuspendLayout();
@@ -360,21 +360,22 @@
             this.totalTimeLabel.TabIndex = 19;
             this.totalTimeLabel.Text = "00:00:00";
             // 
-            // menuStrip1
+            // menuStrip
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem,
             this.infoToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.menuStrip1.Size = new System.Drawing.Size(662, 24);
-            this.menuStrip1.TabIndex = 20;
-            this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip.Name = "menuStrip";
+            this.menuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.menuStrip.Size = new System.Drawing.Size(662, 24);
+            this.menuStrip.TabIndex = 20;
+            this.menuStrip.Text = "menuStrip1";
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.settingsToolStripMenuItem,
             this.tipsToolStripMenuItem,
             this.debugShow,
             this.speToolStripMenuItem,
@@ -385,25 +386,32 @@
             this.aboutToolStripMenuItem.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
             this.aboutToolStripMenuItem.ToolTipText = "Extra options";
             // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
             // tipsToolStripMenuItem
             // 
             this.tipsToolStripMenuItem.Checked = true;
             this.tipsToolStripMenuItem.CheckOnClick = true;
             this.tipsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.tipsToolStripMenuItem.Name = "tipsToolStripMenuItem";
-            this.tipsToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.tipsToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.tipsToolStripMenuItem.Text = "Tooltips";
             this.tipsToolStripMenuItem.Click += new System.EventHandler(this.tipsToolStripMenuItem_Click);
             // 
             // debugShow
             // 
             this.debugShow.Name = "debugShow";
-            this.debugShow.Size = new System.Drawing.Size(164, 22);
+            this.debugShow.Size = new System.Drawing.Size(172, 22);
             // 
             // speToolStripMenuItem
             // 
             this.speToolStripMenuItem.Name = "speToolStripMenuItem";
-            this.speToolStripMenuItem.Size = new System.Drawing.Size(161, 6);
+            this.speToolStripMenuItem.Size = new System.Drawing.Size(169, 6);
             // 
             // visitGithubPageToolStripMenuItem
             // 
@@ -415,8 +423,8 @@
             this.visitGithubPageToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.visitGithubPageToolStripMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
             this.visitGithubPageToolStripMenuItem.Name = "visitGithubPageToolStripMenuItem";
-            this.visitGithubPageToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.visitGithubPageToolStripMenuItem.Text = "Visit Github page";
+            this.visitGithubPageToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.visitGithubPageToolStripMenuItem.Text = "Authors on Github";
             // 
             // isti115ToolStripMenuItem
             // 
@@ -839,6 +847,7 @@
             this.rendererRadioButtonCycles.TabIndex = 32;
             this.rendererRadioButtonCycles.Text = "Cycles Render";
             this.rendererRadioButtonCycles.UseVisualStyleBackColor = true;
+            this.rendererRadioButtonCycles.CheckedChanged += new System.EventHandler(this.rendererComboBox_CheckedChanged);
             // 
             // rendererRadioButtonBlender
             // 
@@ -852,16 +861,7 @@
             this.rendererRadioButtonBlender.TabStop = true;
             this.rendererRadioButtonBlender.Text = "Blender Render";
             this.rendererRadioButtonBlender.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(177, 49);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 33;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.button1_MouseClick);
+            this.rendererRadioButtonBlender.CheckedChanged += new System.EventHandler(this.rendererComboBox_CheckedChanged);
             // 
             // MainForm
             // 
@@ -869,7 +869,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(662, 550);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.currentChunkInfoPanel);
             this.Controls.Add(this.rendererRadioButtonBlender);
             this.Controls.Add(this.rendererRadioButtonCycles);
@@ -901,21 +900,21 @@
             this.Controls.Add(this.renderProgressBar);
             this.Controls.Add(this.blendFileBrowseButton);
             this.Controls.Add(this.renderAllButton);
-            this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.menuStrip1;
+            this.MainMenuStrip = this.menuStrip;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(678, 589);
             this.MinimumSize = new System.Drawing.Size(678, 39);
             this.Name = "MainForm";
-            this.Text = "BlenderRenderController";
+            this.Text = "Blender Render Controller";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_Close);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).EndInit();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            this.menuStrip.ResumeLayout(false);
+            this.menuStrip.PerformLayout();
             this.infoPanel.ResumeLayout(false);
             this.infoPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).EndInit();
@@ -948,7 +947,7 @@
 		private System.Windows.Forms.Button reloadBlenderDataButton;
 		private System.Windows.Forms.Button mixDownButton;
 		private System.Windows.Forms.Label totalTimeLabel;
-        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel infoPanel;
@@ -991,7 +990,7 @@
         private System.Windows.Forms.Label blendFileNameLabel;
         private System.Windows.Forms.RadioButton rendererRadioButtonCycles;
         private System.Windows.Forms.RadioButton rendererRadioButtonBlender;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
     }
 }
 

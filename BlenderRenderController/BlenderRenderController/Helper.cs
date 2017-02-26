@@ -53,9 +53,9 @@ namespace BlenderRenderController
             }
             MessageBox.Show(
                     errorText,
-                    "Something is wrong",
+                    "",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
+                    MessageBoxIcon.Asterisk);
 
         }
     }

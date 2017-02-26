@@ -37,6 +37,7 @@
             this.okButton = new System.Windows.Forms.Button();
             this.blenderLabel = new System.Windows.Forms.Label();
             this.ffmpegLabel = new System.Windows.Forms.Label();
+            this.ffmpegDownloadLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // blenderPathTextBox
@@ -121,11 +122,26 @@
             this.ffmpegLabel.TabIndex = 29;
             this.ffmpegLabel.Text = "FFmpeg";
             // 
+            // ffmpegDownloadLabel
+            // 
+            this.ffmpegDownloadLabel.AutoSize = true;
+            this.ffmpegDownloadLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ffmpegDownloadLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ffmpegDownloadLabel.ForeColor = System.Drawing.Color.CornflowerBlue;
+            this.ffmpegDownloadLabel.Location = new System.Drawing.Point(319, 167);
+            this.ffmpegDownloadLabel.Name = "ffmpegDownloadLabel";
+            this.ffmpegDownloadLabel.Size = new System.Drawing.Size(83, 15);
+            this.ffmpegDownloadLabel.TabIndex = 29;
+            this.ffmpegDownloadLabel.Text = "download link";
+            this.ffmpegDownloadLabel.Click += new System.EventHandler(this.ffmpegDownloadLabel_Click);
+            // 
             // SettingsForm
             // 
+            this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(545, 277);
+            this.Controls.Add(this.ffmpegDownloadLabel);
             this.Controls.Add(this.ffmpegLabel);
             this.Controls.Add(this.blenderLabel);
             this.Controls.Add(this.okButton);
@@ -137,6 +153,8 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SettingsForm";
             this.Text = "Settings";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SettingsForm_FormClosed);
+            this.Load += new System.EventHandler(this.onFormLoad);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -151,5 +169,6 @@
         private System.Windows.Forms.Label ffmpegLabel;
         private System.Windows.Forms.TextBox blenderPathTextBox;
         private System.Windows.Forms.TextBox ffmpegPathTextBox;
+        private System.Windows.Forms.Label ffmpegDownloadLabel;
     }
 }

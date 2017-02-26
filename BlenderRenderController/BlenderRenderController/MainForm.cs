@@ -17,8 +17,6 @@ namespace BlenderRenderController
         string blendFilePath, outputPath;
 
         decimal chunkStart, chunkEnd, chunkLength, start, end;
-        const string RENDERER_BLENDER = "BLENDER_RENDER";
-        const string RENDERER_CYCLES = "CYCLES";
 
         bool lastChunkStarted = false;
 
@@ -65,7 +63,7 @@ namespace BlenderRenderController
             applySettings();
             if (!appSettings.appConfigured)
             {
-                appState = AppStates.NOT_CONFIGURED;
+                //appState = AppStates.NOT_CONFIGURED;
                 settingsForm.ShowDialog();
             }
             updateUI();
@@ -73,19 +71,19 @@ namespace BlenderRenderController
 
         private void onSettingsFormClosed(object sender, FormClosedEventArgs e)
         {
-            if(appSettings.appConfigured)
-            {
-                appState = AppStates.AFTER_START;
-            } else
-            {
-                appState = AppStates.NOT_CONFIGURED;
-            }
-            updateUI();
+            
         }
 
         private void applySettings()
         {
             processCountNumericUpDown.Value = appSettings.processCount;
+            if(appSettings.renderer == AppStrings.RENDERER_BLENDER)
+            {
+                rendererRadioButtonBlender.Checked = true;
+            } else
+            {
+                rendererRadioButtonCycles.Checked = true;
+            }
         }
 
         private void onAppExit(object sender, EventArgs e)
@@ -123,6 +121,7 @@ namespace BlenderRenderController
             {
                 case AppStates.AFTER_START:
                     renderAllButton.Enabled = false;
+                    menuStrip.Enabled = true;
                     renderChunkButton.Enabled = false;
                     prevChunkButton.Enabled = false;
                     nextChunkButton.Enabled = false;
@@ -144,6 +143,7 @@ namespace BlenderRenderController
                     break;
                 case AppStates.NOT_CONFIGURED:
                     renderAllButton.Enabled = false;
+                    menuStrip.Enabled = true;
                     renderChunkButton.Enabled = false;
                     prevChunkButton.Enabled = false;
                     nextChunkButton.Enabled = false;
@@ -163,8 +163,9 @@ namespace BlenderRenderController
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
                     break;
-                case AppStates.READY:
+                case AppStates.READY_FOR_RENDER:
                     renderAllButton.Enabled = true;
+                    menuStrip.Enabled = true;
                     renderChunkButton.Enabled = true;
                     prevChunkButton.Enabled = true;
                     nextChunkButton.Enabled = true;
@@ -188,6 +189,7 @@ namespace BlenderRenderController
                 case AppStates.RENDERING_ALL:
                 case AppStates.RENDERING_CHUNK_ONLY:
                     renderAllButton.Enabled = true;
+                    menuStrip.Enabled = false;
                     renderChunkButton.Enabled = false;
                     prevChunkButton.Enabled = false;
                     nextChunkButton.Enabled = false;
@@ -317,7 +319,7 @@ namespace BlenderRenderController
             pStartInfo.WorkingDirectory = appSettings.blenderPath;
             pStartInfo.FileName = Path.Combine(appSettings.blenderPath, "blender.exe");
 
-            string renderer = rendererRadioButtonBlender.Checked ? RENDERER_BLENDER : RENDERER_CYCLES;
+            string renderer = rendererRadioButtonBlender.Checked ? AppStrings.RENDERER_BLENDER : AppStrings.RENDERER_CYCLES;
             pStartInfo.Arguments = String.Format("-b \"{0}\" -o {1} -E {2} -s {3} -e {4} -a",
                                                   blendFilePath,
                                                   outputPath + "\\" + appSettings.chunksSubfolder + "\\" + blendData.projectName + "-#",
@@ -509,7 +511,7 @@ namespace BlenderRenderController
             renderProgressBar.Value = 0;
 
 
-            appState = AppStates.READY;
+            appState = AppStates.READY_FOR_RENDER;
             checkCurrentChunkStartEnd();
             updateUI();
         }
@@ -775,7 +777,7 @@ namespace BlenderRenderController
                 appSettings.lastBlendsAdd(blendFilePath);
                 appSettings.save();
 
-                appState = AppStates.READY;
+                appState = AppStates.READY_FOR_RENDER;
 			}
 
             // Error checker
@@ -917,9 +919,17 @@ namespace BlenderRenderController
 
         }
 
-        private void rendererComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void rendererComboBox_CheckedChanged(object sender, EventArgs e)
         {
-
+            if(rendererRadioButtonBlender.Checked)
+            {
+                appSettings.renderer = AppStrings.RENDERER_BLENDER;
+            }
+            else if (rendererRadioButtonCycles.Checked)
+            {
+                appSettings.renderer = AppStrings.RENDERER_CYCLES;
+            }
+            Trace.WriteLine("aasdsasssssssssssss");
         }
 
         private void rendererLabel_Click(object sender, EventArgs e)
@@ -981,6 +991,11 @@ namespace BlenderRenderController
             checkCurrentChunkStartEnd();
             checkChunkLength();
             updateUI();
+        }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            settingsForm.ShowDialog();
         }
 
         private void button1_MouseClick(object sender, MouseEventArgs e)
