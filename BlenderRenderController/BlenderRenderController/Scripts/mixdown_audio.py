@@ -16,8 +16,9 @@ argv = argv[argv.index("--") + 1:]
 
 #outputPath = bpy.data.scenes[ActiveScene].render.filepath
 outFolderPath = argv[0]
+mixDownPath = outFolderPath + "\\" + projName + ".ac3"
 
-bpy.ops.sound.mixdown( filepath=outFolderPath + "\\" + projName + ".ac3",
+bpy.ops.sound.mixdown( filepath=mixDownPath,
 		               container='AC3',
 					   codec='AC3',
 					   accuracy=1024,

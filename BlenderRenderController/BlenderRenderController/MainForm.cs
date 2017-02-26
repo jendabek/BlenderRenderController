@@ -248,7 +248,7 @@ namespace BlenderRenderController
 
             if(result == DialogResult.OK)
             {
-                p.blendFilePath = blendFileBrowseDialog.FileName;
+                p.blendFilePath = Path.GetFullPath(blendFileBrowseDialog.FileName);
                 loadBlend();
             }
 
@@ -257,7 +257,6 @@ namespace BlenderRenderController
         private void outputFolderBrowseButton_Click(object sender, EventArgs e)
         {
             var dialog = new FolderBrowserDialog();
-            Trace.WriteLine(outputFolderTextBox.Text);
             var result = dialog.ShowDialog();
 
             if (result == DialogResult.OK)
@@ -270,8 +269,8 @@ namespace BlenderRenderController
 
         private void outputFolderPathTextBox_TextChanged(object sender, EventArgs e)
         {
-            outputFolderTextBox.Text = outputFolderTextBox.Text.Trim();
-
+            outputFolderTextBox.Text = Helper.fixPath(outputFolderTextBox.Text);
+            
             try {
                 Path.GetFullPath(outputFolderTextBox.Text);
             }
@@ -280,7 +279,7 @@ namespace BlenderRenderController
                 outputFolderTextBox.Text = p.outputPath;
                 return;
             }
-            p.outputPath = outputFolderTextBox.Text = Path.GetFullPath(outputFolderTextBox.Text);
+            p.outputPath = outputFolderTextBox.Text;
             p.chunksPath = Path.Combine(p.outputPath, appSettings.chunksSubfolder);
             updateUI();
         }
@@ -323,7 +322,7 @@ namespace BlenderRenderController
             process.StartInfo.WorkingDirectory = appSettings.blenderPath;
             process.StartInfo.FileName = Path.Combine(appSettings.blenderPath, "blender.exe");
             
-            process.StartInfo.Arguments = String.Format("-b \"{0}\" -o {1} -E {2} -s {3} -e {4} -a",
+            process.StartInfo.Arguments = String.Format("-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a",
                                                   p.blendFilePath,
                                                   Path.Combine(p.chunksPath, blendData.projectName) + "-#",
                                                   p.renderer,
@@ -611,7 +610,7 @@ namespace BlenderRenderController
             }
             partListWriter.Close();
 
-            var addAudioArguments = "";
+            var audioArguments = "";
             
             //mixdown audio NOT found
             if (!File.Exists(Path.Combine(p.outputPath, audioFileName)))
@@ -624,7 +623,7 @@ namespace BlenderRenderController
             else
             {
                 statusLabel.Text = "Joining chunks with mixdown audio...";
-                addAudioArguments = "-i " + Path.Combine(p.outputPath, audioFileName) + " -map 0:v -map 1:a";
+                audioArguments = "-i \"" + Path.Combine(p.outputPath, audioFileName) + "\" -map 0:v -map 1:a";
             }
             Process process = new Process();
             process.StartInfo.WorkingDirectory = appSettings.ffmpegPath;
@@ -632,9 +631,9 @@ namespace BlenderRenderController
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.Arguments = 
-                String.Format("-f concat -safe 0 -i {0} {1} -c:v copy {3}.{4} -y",
+                String.Format("-f concat -safe 0 -i \"{0}\" {1} -c:v copy \"{3}.{4}\" -y",
                 chunksTxtPath,
-                addAudioArguments,
+                audioArguments,
                 audioSettings,
                 Path.Combine(p.outputPath, blendData.projectName),
                 videoExtensionFound
@@ -756,7 +755,10 @@ namespace BlenderRenderController
                 {
                     p.outputPath = Path.Combine(Path.GetDirectoryName(p.blendFilePath), blendData.outputPath.Replace("//", ""));
                 }
+                //remove trailing slash
+                p.outputPath = Helper.fixPath(p.outputPath);
                 outputFolderTextBox.Text = p.outputPath;
+
                 p.chunksPath = Path.Combine(p.outputPath, appSettings.chunksSubfolder);
                 appSettings.lastBlendsAdd(p.blendFilePath);
                 appSettings.save();
@@ -798,7 +800,7 @@ namespace BlenderRenderController
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;
 
-            process.StartInfo.Arguments = String.Format("-b \"{0}\" -s {1} -e {2} -P \"{3}\" -- {4}",
+            process.StartInfo.Arguments = String.Format("-b \"{0}\" -s {1} -e {2} -P \"{3}\" -- \"{4}\"",
                                                   p.blendFilePath,
                                                   p.chunkStart,
                                                   p.end,
