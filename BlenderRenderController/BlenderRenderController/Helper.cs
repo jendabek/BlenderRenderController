@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BlenderRenderController
 {
-
     static class Helper
     {
-
         /* public static IEnumerable<string> AlphanumericSort(this IEnumerable<string> me)
          {
              string[] Separator = new string[] { "-" };
@@ -32,10 +24,6 @@ namespace BlenderRenderController
                 clearFolder(di.FullName);
                 di.Delete();
             }
-        }
-        static public void print(string text)
-        {
-            Trace.WriteLine(text);
         }
         static public void showErrors(List<string> errorCodes)
         {
@@ -56,7 +44,6 @@ namespace BlenderRenderController
                     "",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Asterisk);
-
         }
     }
 }

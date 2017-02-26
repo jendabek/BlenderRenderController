@@ -770,22 +770,14 @@ namespace BlenderRenderController
 
                     outputPath = Path.Combine(Path.GetDirectoryName(blendFilePath), blendData.outputPath.Replace("//", ""));
                 }
-                
                 outputFolderTextBox.Text = outputPath;
-                
-
                 appSettings.lastBlendsAdd(blendFilePath);
                 appSettings.save();
-
                 appState = AppStates.READY_FOR_RENDER;
 			}
-
-            // Error checker
-            //errorMsgs(ErrorCode);
             updateUI();
 
             Trace.WriteLine( ".blend data = " + jsonInfo.ToString() );
-
 		}
         
 		private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
@@ -821,7 +813,7 @@ namespace BlenderRenderController
             p.StartInfo.FileName = Path.Combine(appSettings.ffmpegPath, "ffmpeg.exe");
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.UseShellExecute = false;
-            p.StartInfo.CreateNoWindow         = true;
+            p.StartInfo.CreateNoWindow = true;
             //Using minimized instead so we get feedback
             //p.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
 
@@ -850,8 +842,6 @@ namespace BlenderRenderController
 
             Trace.WriteLine("Mixdown completed");
             statusLabel.Text = "Mixdown complete.";
-
-
         }
 
         /* About this app

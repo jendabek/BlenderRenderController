@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BlenderRenderController
+﻿namespace BlenderRenderController
 {
     static class AppStates
     {
@@ -21,10 +15,8 @@ namespace BlenderRenderController
     }
     static class AppStrings
     {
-
         public const string RENDERER_BLENDER = "BLENDER_RENDER";
         public const string RENDERER_CYCLES = "CYCLES";
         public const string FFMPEG_DOWNLOAD_URL = "https:\\//ffmpeg.zeranoe.com/builds/";
-        
     }
 }

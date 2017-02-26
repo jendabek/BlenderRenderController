@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Script.Serialization;
-using System.Windows.Forms;
 
 namespace BlenderRenderController
 {
 
     public class AppSettings
     {
-
         //THESE PROPERTIES (in _jsonProperties) ARE STORED AND LOADED automatically from external JSON file
         private string[] _jsonProperties = { "lastBlends", "processCount", "blenderPath", "ffmpegPath", "renderer"};
 
@@ -32,7 +26,7 @@ namespace BlenderRenderController
         private string _chunksSubfolder = "chunks";
         private string _scriptsSubfolder = "scripts";
         private string _audioFormat = "ac3";
-        private string _chunksTxtFileName = "partList.txt";
+        private string _chunksTxtFileName = "chunklist.txt";
         private string _renderer = AppStrings.RENDERER_BLENDER;
         private decimal _processCount = 4;
         private string[] _allowedFormats = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
@@ -42,7 +36,6 @@ namespace BlenderRenderController
         private int _processCheckInterval = 100;
         private bool _appConfigured = false;
         private SettingsForm _settingsForm;
-
 
         public void init()
         {
@@ -61,11 +54,9 @@ namespace BlenderRenderController
             string jsonFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _jsonFileName);
             if (File.Exists(jsonFilePath))
             {
-
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
                 string jsonText = File.ReadAllText(jsonFilePath);
                 var jsonSettings = serializer.Deserialize<Dictionary<string, object>>(jsonText.ToString());
-
 
                 foreach (var propertyName in _jsonProperties)
                 {
@@ -74,15 +65,11 @@ namespace BlenderRenderController
                     {
                         var test = jsonSettings[propertyName];
                     }
-                    catch (Exception)
-                    {
-                        return;
-                    }
+                    catch (Exception) {return;}
 
                     //converting ArrayList object from json to List
                     if (jsonSettings[propertyName] is ArrayList)
                     {
-
                         ArrayList arrayList = (ArrayList)jsonSettings[propertyName];
                         List<string> listValue = arrayList.Cast<string>().ToList();
                         GetType().GetField("_" + propertyName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, listValue);
@@ -104,9 +91,7 @@ namespace BlenderRenderController
 
         public bool save()
         {
-            
             JavaScriptSerializer serializer = new JavaScriptSerializer();
-
             var jsonObject = new Dictionary<string, object>();
             
             foreach (var propertyName in _jsonProperties)
@@ -139,7 +124,7 @@ namespace BlenderRenderController
         public void checkCorrectConfig(bool showErrors = true)
         {
             List<string> errors = new List<string>();
-            
+            _appConfigured = false;
 
             if (!checkBlenderPath())
             {
@@ -156,7 +141,7 @@ namespace BlenderRenderController
                 _appConfigured = true;
                 return;
             }
-            _appConfigured = false;
+
             if (showErrors)
             {
                 Helper.showErrors(errors);
@@ -165,19 +150,12 @@ namespace BlenderRenderController
 
         public bool checkBlenderPath()
         {
-            if (File.Exists(Path.Combine(_blenderPath, BLENDER_EXE_NAME))) {
-                return true;
-            }
-            return false;
+            return File.Exists(Path.Combine(_blenderPath, BLENDER_EXE_NAME));
         }
 
         public bool checkFFmpegPath()
         {
-            if(File.Exists(Path.Combine(_ffmpegPath, FFMPEG_EXE_NAME)))
-            {
-                return true;
-            }
-            return false;
+            return File.Exists(Path.Combine(_ffmpegPath, FFMPEG_EXE_NAME));
         }
         public List<string> lastBlends
         {
