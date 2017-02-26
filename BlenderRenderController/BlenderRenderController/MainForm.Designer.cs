@@ -64,6 +64,7 @@
             this.readmeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.infoPanel = new System.Windows.Forms.Panel();
+            this.infoResolution = new System.Windows.Forms.TextBox();
             this.infoDurationLabel = new System.Windows.Forms.Label();
             this.infoFramerate = new System.Windows.Forms.TextBox();
             this.infoDuration = new System.Windows.Forms.TextBox();
@@ -93,6 +94,8 @@
             this.blendFileNameLabel = new System.Windows.Forms.Label();
             this.rendererRadioButtonCycles = new System.Windows.Forms.RadioButton();
             this.rendererRadioButtonBlender = new System.Windows.Forms.RadioButton();
+            this.label4 = new System.Windows.Forms.Label();
+            this.showMoreInfo = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -333,7 +336,7 @@
             // reloadBlenderDataButton
             // 
             this.reloadBlenderDataButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.reloadBlenderDataButton.Location = new System.Drawing.Point(486, 133);
+            this.reloadBlenderDataButton.Location = new System.Drawing.Point(486, 151);
             this.reloadBlenderDataButton.Name = "reloadBlenderDataButton";
             this.reloadBlenderDataButton.Size = new System.Drawing.Size(158, 27);
             this.reloadBlenderDataButton.TabIndex = 1;
@@ -478,7 +481,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(8, 19);
+            this.label1.Location = new System.Drawing.Point(8, 5);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(76, 15);
             this.label1.TabIndex = 21;
@@ -491,6 +494,9 @@
             // 
             this.infoPanel.BackColor = System.Drawing.SystemColors.Info;
             this.infoPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.infoPanel.Controls.Add(this.showMoreInfo);
+            this.infoPanel.Controls.Add(this.label4);
+            this.infoPanel.Controls.Add(this.infoResolution);
             this.infoPanel.Controls.Add(this.infoDurationLabel);
             this.infoPanel.Controls.Add(this.infoFramerate);
             this.infoPanel.Controls.Add(this.infoDuration);
@@ -505,15 +511,28 @@
             this.infoPanel.ForeColor = System.Drawing.SystemColors.InfoText;
             this.infoPanel.Location = new System.Drawing.Point(32, 80);
             this.infoPanel.Name = "infoPanel";
-            this.infoPanel.Size = new System.Drawing.Size(434, 80);
+            this.infoPanel.Size = new System.Drawing.Size(434, 98);
             this.infoPanel.TabIndex = 22;
+            // 
+            // infoResolution
+            // 
+            this.infoResolution.Cursor = System.Windows.Forms.Cursors.No;
+            this.infoResolution.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.infoResolution.Location = new System.Drawing.Point(11, 68);
+            this.infoResolution.Name = "infoResolution";
+            this.infoResolution.ReadOnly = true;
+            this.infoResolution.Size = new System.Drawing.Size(126, 21);
+            this.infoResolution.TabIndex = 32;
+            this.infoResolution.TabStop = false;
+            this.infoResolution.Text = "...";
+            this.infoResolution.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // infoDurationLabel
             // 
             this.infoDurationLabel.AutoSize = true;
             this.infoDurationLabel.BackColor = System.Drawing.SystemColors.Info;
             this.infoDurationLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoDurationLabel.Location = new System.Drawing.Point(318, 19);
+            this.infoDurationLabel.Location = new System.Drawing.Point(318, 5);
             this.infoDurationLabel.Name = "infoDurationLabel";
             this.infoDurationLabel.Size = new System.Drawing.Size(75, 15);
             this.infoDurationLabel.TabIndex = 31;
@@ -523,7 +542,7 @@
             // 
             this.infoFramerate.Cursor = System.Windows.Forms.Cursors.No;
             this.infoFramerate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoFramerate.Location = new System.Drawing.Point(193, 38);
+            this.infoFramerate.Location = new System.Drawing.Point(193, 24);
             this.infoFramerate.Name = "infoFramerate";
             this.infoFramerate.ReadOnly = true;
             this.infoFramerate.Size = new System.Drawing.Size(36, 21);
@@ -536,7 +555,7 @@
             // 
             this.infoDuration.Cursor = System.Windows.Forms.Cursors.No;
             this.infoDuration.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoDuration.Location = new System.Drawing.Point(321, 38);
+            this.infoDuration.Location = new System.Drawing.Point(321, 24);
             this.infoDuration.Name = "infoDuration";
             this.infoDuration.ReadOnly = true;
             this.infoDuration.Size = new System.Drawing.Size(102, 21);
@@ -549,7 +568,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(190, 19);
+            this.label7.Location = new System.Drawing.Point(190, 5);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(30, 15);
             this.label7.TabIndex = 29;
@@ -560,7 +579,7 @@
             this.infoNoScenes.BackColor = System.Drawing.SystemColors.Control;
             this.infoNoScenes.Cursor = System.Windows.Forms.Cursors.No;
             this.infoNoScenes.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoNoScenes.Location = new System.Drawing.Point(144, 38);
+            this.infoNoScenes.Location = new System.Drawing.Point(144, 24);
             this.infoNoScenes.Name = "infoNoScenes";
             this.infoNoScenes.ReadOnly = true;
             this.infoNoScenes.Size = new System.Drawing.Size(43, 21);
@@ -574,7 +593,7 @@
             // 
             this.infoFramesTotal.Cursor = System.Windows.Forms.Cursors.No;
             this.infoFramesTotal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoFramesTotal.Location = new System.Drawing.Point(235, 38);
+            this.infoFramesTotal.Location = new System.Drawing.Point(235, 24);
             this.infoFramesTotal.Name = "infoFramesTotal";
             this.infoFramesTotal.ReadOnly = true;
             this.infoFramesTotal.Size = new System.Drawing.Size(80, 21);
@@ -589,7 +608,7 @@
             this.infoActiveScene.BackColor = System.Drawing.SystemColors.Control;
             this.infoActiveScene.Cursor = System.Windows.Forms.Cursors.No;
             this.infoActiveScene.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoActiveScene.Location = new System.Drawing.Point(11, 38);
+            this.infoActiveScene.Location = new System.Drawing.Point(11, 24);
             this.infoActiveScene.Name = "infoActiveScene";
             this.infoActiveScene.ReadOnly = true;
             this.infoActiveScene.Size = new System.Drawing.Size(126, 21);
@@ -604,7 +623,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(141, 19);
+            this.label3.Location = new System.Drawing.Point(141, 5);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(48, 15);
             this.label3.TabIndex = 23;
@@ -617,7 +636,7 @@
             this.infoFramesTotalLabel.AutoSize = true;
             this.infoFramesTotalLabel.BackColor = System.Drawing.SystemColors.Info;
             this.infoFramesTotalLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoFramesTotalLabel.Location = new System.Drawing.Point(232, 19);
+            this.infoFramesTotalLabel.Location = new System.Drawing.Point(232, 5);
             this.infoFramesTotalLabel.Name = "infoFramesTotalLabel";
             this.infoFramesTotalLabel.Size = new System.Drawing.Size(79, 15);
             this.infoFramesTotalLabel.TabIndex = 29;
@@ -862,6 +881,28 @@
             this.rendererRadioButtonBlender.UseVisualStyleBackColor = true;
             this.rendererRadioButtonBlender.CheckedChanged += new System.EventHandler(this.rendererComboBox_CheckedChanged);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(8, 50);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(66, 15);
+            this.label4.TabIndex = 33;
+            this.label4.Text = "Resolution";
+            // 
+            // showMoreInfo
+            // 
+            this.showMoreInfo.AutoSize = true;
+            this.showMoreInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.showMoreInfo.Location = new System.Drawing.Point(387, 74);
+            this.showMoreInfo.Name = "showMoreInfo";
+            this.showMoreInfo.Size = new System.Drawing.Size(36, 15);
+            this.showMoreInfo.TabIndex = 34;
+            this.showMoreInfo.TabStop = true;
+            this.showMoreInfo.Text = "more";
+            this.showMoreInfo.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -989,6 +1030,9 @@
         private System.Windows.Forms.RadioButton rendererRadioButtonCycles;
         private System.Windows.Forms.RadioButton rendererRadioButtonBlender;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.TextBox infoResolution;
+        private System.Windows.Forms.LinkLabel showMoreInfo;
+        private System.Windows.Forms.Label label4;
     }
 }
 

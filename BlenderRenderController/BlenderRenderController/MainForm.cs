@@ -346,7 +346,7 @@ namespace BlenderRenderController
             p.EnableRaisingEvents = true;
 
             Trace.WriteLine(String.Format("CEW: {0}", pStartInfo.Arguments));
-            
+
             p.Exited += new EventHandler(chunkRendered);
 
             try
@@ -722,6 +722,14 @@ namespace BlenderRenderController
 
             while ( !p.StandardOutput.EndOfStream ) {
 				string line = p.StandardOutput.ReadLine();
+               
+                // logfile
+                string logfile = Path.Combine(appSettings.scriptsPath, "log.txt");
+                using (StreamWriter sw = File.AppendText(logfile))
+                {
+                    sw.WriteLine(curlyStack);
+                    sw.WriteLine(line);
+                }
 
 				if( line.Contains( "{" ) ) {
 					jsonStarted = true;
@@ -766,6 +774,7 @@ namespace BlenderRenderController
                 infoActiveScene.Text               = blendData.sceneActive;
                 infoFramerate.Text                 = blendData.fps.ToString();
                 infoNoScenes.Text                  = blendData.scenesNum;
+                infoResolution.Text                = blendData.res;
 
                 try
                 {

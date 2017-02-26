@@ -12,6 +12,7 @@ namespace BlenderRenderController
         public int start;
         public int end;
         public string fps;
+        public string res;
         public string outputPath;
         public string projectName;
         public string scenesNum;
