@@ -284,7 +284,7 @@ namespace BlenderRenderController
         private void outputFolderBrowseButton_Click(object sender, EventArgs e)
         {
             var dialog = new FolderBrowserDialog();
-            dialog.SelectedPath = p.chunksPath;
+            dialog.SelectedPath = p.outputPath;
             var result = dialog.ShowDialog();
 
             if (result == DialogResult.OK)
