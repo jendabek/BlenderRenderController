@@ -570,11 +570,10 @@ namespace BlenderRenderController
             this.reloadBlenderDataButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.reloadBlenderDataButton.Location = new System.Drawing.Point(472, 127);
             this.reloadBlenderDataButton.Name = "reloadBlenderDataButton";
-            this.reloadBlenderDataButton.Padding = new System.Windows.Forms.Padding(6, 0, 5, 0);
+            this.reloadBlenderDataButton.Padding = new System.Windows.Forms.Padding(20, 0, 5, 0);
             this.reloadBlenderDataButton.Size = new System.Drawing.Size(172, 34);
             this.reloadBlenderDataButton.TabIndex = 2;
-            this.reloadBlenderDataButton.Text = "Reload && Update Form";
-            this.reloadBlenderDataButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.reloadBlenderDataButton.Text = "Reload Blend";
             this.toolTipInfo.SetToolTip(this.reloadBlenderDataButton, "Re-read info from .blend");
             this.reloadBlenderDataButton.UseVisualStyleBackColor = true;
             this.reloadBlenderDataButton.Click += new System.EventHandler(this.reloadBlenderDataButton_Click);
@@ -784,7 +783,7 @@ namespace BlenderRenderController
             this.currentChunkInfoPanel.Controls.Add(this.label15);
             this.currentChunkInfoPanel.Controls.Add(this.chunkEndLabel);
             this.currentChunkInfoPanel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.currentChunkInfoPanel.Location = new System.Drawing.Point(154, 243);
+            this.currentChunkInfoPanel.Location = new System.Drawing.Point(158, 52);
             this.currentChunkInfoPanel.Name = "currentChunkInfoPanel";
             this.currentChunkInfoPanel.Size = new System.Drawing.Size(268, 122);
             this.currentChunkInfoPanel.TabIndex = 31;

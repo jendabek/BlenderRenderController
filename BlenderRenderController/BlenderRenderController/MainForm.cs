@@ -31,7 +31,7 @@ namespace BlenderRenderController
         SettingsForm settingsForm;
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
-        private int fps;
+        private double fps;
 
         //string[] args = Environment.GetCommandLineArgs();
 
@@ -133,7 +133,7 @@ namespace BlenderRenderController
             //top infos
             if (blendData != null)
             {
-                var durationSeconds = Convert.ToDouble((p.end - p.start + 1) / fps);
+                var durationSeconds = (Convert.ToDouble(p.end - p.start + 1) / fps);
                 TimeSpan t = TimeSpan.FromSeconds(durationSeconds);
 
                 infoDuration.Text = string.Format("{0:D1}h {1:D1}m {2:D1}s {3:D1}ms",
@@ -355,7 +355,6 @@ namespace BlenderRenderController
             if (p.chunkEnd == p.end) lastChunkStarted = true;
 
             Process process = new Process();
-            processes.Add(process);
 
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
@@ -383,6 +382,7 @@ namespace BlenderRenderController
             try
             {
                 process.Start();
+                processes.Add(process);
             }
             catch (Exception ex)
             {
@@ -786,8 +786,8 @@ namespace BlenderRenderController
 
                 p.start       = blendData.start;
                 p.end         = blendData.end;
-
-                fps = Convert.ToInt32(blendData.fps) / (int) Convert.ToDouble(blendData.fpsBase, CultureInfo.InvariantCulture);
+                
+                fps = Convert.ToDouble(blendData.fps) / Convert.ToDouble(blendData.fpsBase, CultureInfo.InvariantCulture);
                 
                 //reset chunk range according to new timeline
                 checkCurrentChunkStartEnd();

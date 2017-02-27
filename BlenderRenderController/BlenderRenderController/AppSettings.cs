@@ -34,7 +34,7 @@ namespace BlenderRenderController
 
         private string _scriptsPath, _blenderPath, _ffmpegPath;
 
-        private int _processCheckInterval = 100;
+        private int _processCheckInterval = 20;
         private bool _appConfigured = false;
         private SettingsForm _settingsForm;
 
