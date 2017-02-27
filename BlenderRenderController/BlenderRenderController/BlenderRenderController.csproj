@@ -70,6 +70,11 @@
     <Compile Include="BlendData.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ProjectData.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,14 +103,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -122,10 +122,20 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="bkp.txt" />
     <Content Include="resources\blend-icon.png" />
     <Content Include="resources\blender-icon.ico" />
-    <Content Include="resources\icon.txt" />
+    <None Include="resources\connect-icon-small.png" />
+    <None Include="resources\folder-icon-small.png" />
+    <None Include="resources\folder-icon-smaller.png" />
+    <None Include="resources\github-logo-small.png" />
+    <Content Include="resources\github-logo.png" />
+    <Content Include="resources\movie_camera-512.png" />
+    <None Include="resources\reload-icon-small.png" />
+    <None Include="resources\render-icon.png" />
+    <None Include="resources\render-icon-small.png" />
+    <Content Include="resources\settings-icon.png" />
+    <None Include="resources\volume-small.png" />
+    <None Include="resources\stop-icon-small.png" />
     <Content Include="scripts\get_project_info.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

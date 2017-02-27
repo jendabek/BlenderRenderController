@@ -31,13 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.blenderPathTextBox = new System.Windows.Forms.TextBox();
             this.blenderExeLabel = new System.Windows.Forms.Label();
-            this.blenderChangePathButton = new System.Windows.Forms.Button();
             this.ffmpegPathTextBox = new System.Windows.Forms.TextBox();
-            this.ffmpegChangePathButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
             this.blenderLabel = new System.Windows.Forms.Label();
             this.ffmpegLabel = new System.Windows.Forms.Label();
             this.ffmpegDownloadLabel = new System.Windows.Forms.Label();
+            this.ffmpegChangePathButton = new System.Windows.Forms.Button();
+            this.blenderChangePathButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // blenderPathTextBox
@@ -60,17 +60,6 @@
             this.blenderExeLabel.TabIndex = 26;
             this.blenderExeLabel.Text = "Paths to required programs";
             // 
-            // blenderChangePathButton
-            // 
-            this.blenderChangePathButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blenderChangePathButton.Location = new System.Drawing.Point(415, 86);
-            this.blenderChangePathButton.Name = "blenderChangePathButton";
-            this.blenderChangePathButton.Size = new System.Drawing.Size(105, 31);
-            this.blenderChangePathButton.TabIndex = 1;
-            this.blenderChangePathButton.Text = "Change";
-            this.blenderChangePathButton.UseVisualStyleBackColor = true;
-            this.blenderChangePathButton.Click += new System.EventHandler(this.blenderChangePathButton_Click);
-            // 
             // ffmpegPathTextBox
             // 
             this.ffmpegPathTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -79,17 +68,6 @@
             this.ffmpegPathTextBox.Size = new System.Drawing.Size(361, 22);
             this.ffmpegPathTextBox.TabIndex = 2;
             this.ffmpegPathTextBox.WordWrap = false;
-            // 
-            // ffmpegChangePathButton
-            // 
-            this.ffmpegChangePathButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ffmpegChangePathButton.Location = new System.Drawing.Point(415, 137);
-            this.ffmpegChangePathButton.Name = "ffmpegChangePathButton";
-            this.ffmpegChangePathButton.Size = new System.Drawing.Size(105, 31);
-            this.ffmpegChangePathButton.TabIndex = 3;
-            this.ffmpegChangePathButton.Text = "Change";
-            this.ffmpegChangePathButton.UseVisualStyleBackColor = true;
-            this.ffmpegChangePathButton.Click += new System.EventHandler(this.ffmpegChangePathButton_Click);
             // 
             // okButton
             // 
@@ -130,10 +108,38 @@
             this.ffmpegDownloadLabel.ForeColor = System.Drawing.Color.CornflowerBlue;
             this.ffmpegDownloadLabel.Location = new System.Drawing.Point(341, 167);
             this.ffmpegDownloadLabel.Name = "ffmpegDownloadLabel";
-            this.ffmpegDownloadLabel.Size = new System.Drawing.Size(61, 15);
+            this.ffmpegDownloadLabel.Size = new System.Drawing.Size(63, 15);
             this.ffmpegDownloadLabel.TabIndex = 29;
-            this.ffmpegDownloadLabel.Text = "download";
+            this.ffmpegDownloadLabel.Text = "Download";
             this.ffmpegDownloadLabel.Click += new System.EventHandler(this.ffmpegDownloadLabel_Click);
+            // 
+            // ffmpegChangePathButton
+            // 
+            this.ffmpegChangePathButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ffmpegChangePathButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
+            this.ffmpegChangePathButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ffmpegChangePathButton.Location = new System.Drawing.Point(415, 137);
+            this.ffmpegChangePathButton.Name = "ffmpegChangePathButton";
+            this.ffmpegChangePathButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 1);
+            this.ffmpegChangePathButton.Size = new System.Drawing.Size(105, 31);
+            this.ffmpegChangePathButton.TabIndex = 3;
+            this.ffmpegChangePathButton.Text = "   Change";
+            this.ffmpegChangePathButton.UseVisualStyleBackColor = true;
+            this.ffmpegChangePathButton.Click += new System.EventHandler(this.ffmpegChangePathButton_Click);
+            // 
+            // blenderChangePathButton
+            // 
+            this.blenderChangePathButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blenderChangePathButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
+            this.blenderChangePathButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.blenderChangePathButton.Location = new System.Drawing.Point(415, 86);
+            this.blenderChangePathButton.Name = "blenderChangePathButton";
+            this.blenderChangePathButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 1);
+            this.blenderChangePathButton.Size = new System.Drawing.Size(105, 31);
+            this.blenderChangePathButton.TabIndex = 1;
+            this.blenderChangePathButton.Text = "   Change";
+            this.blenderChangePathButton.UseVisualStyleBackColor = true;
+            this.blenderChangePathButton.Click += new System.EventHandler(this.blenderChangePathButton_Click);
             // 
             // SettingsForm
             // 

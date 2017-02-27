@@ -39,6 +39,7 @@ namespace BlenderRenderController
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(onAppExit);
 
             InitializeComponent();
+            
 
             settingsForm = new SettingsForm();
             appSettings = new AppSettings();
@@ -163,6 +164,7 @@ namespace BlenderRenderController
                     totalTimeLabel.Visible = false;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
+                    renderAllButton.Image = Properties.Resources.render_icon_small;
                     break;
                 case AppStates.NOT_CONFIGURED:
                     renderAllButton.Enabled = false;
@@ -185,6 +187,7 @@ namespace BlenderRenderController
                     totalTimeLabel.Visible = false;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
+                    renderAllButton.Image = Properties.Resources.render_icon_small;
                     break;
                 case AppStates.READY_FOR_RENDER:
                     renderAllButton.Enabled = true;
@@ -208,6 +211,7 @@ namespace BlenderRenderController
                     totalTimeLabel.Visible = true;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
+                    renderAllButton.Image = Properties.Resources.render_icon_small;
                     break;
                 case AppStates.RENDERING_ALL:
                 case AppStates.RENDERING_CHUNK_ONLY:
@@ -231,6 +235,7 @@ namespace BlenderRenderController
                     timeElapsedLabel.Visible = true;
                     rendererRadioButtonBlender.Enabled = false;
                     rendererRadioButtonCycles.Enabled = false;
+                    renderAllButton.Image = Properties.Resources.stop_icon_small;
                     break;
             }
         }
@@ -767,8 +772,8 @@ namespace BlenderRenderController
                 checkChunkLength();
 
                 statusLabel.Text = "Successfully opened " + blendData.projectName + ".blend.";
-                blendFileLabel.Text = "1. Blend File:";
-                blendFileNameLabel.Text            = " " + blendData.projectName;
+                blendFileLabel.Visible = false;
+                blendFileNameLabel.Text            = blendData.projectName;
                 infoActiveScene.Text               = blendData.sceneActive;
                 infoFramerate.Text                 = blendData.fps.ToString();
                 infoNoScenes.Text                  = blendData.scenesNum;
@@ -858,40 +863,30 @@ namespace BlenderRenderController
             statusLabel.Text = "Mixdown complete.";
         }
 
+        // show / hide tooltips
         private void tipsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // show / hide tooltips
-            if (tipsToolStripMenuItem.Checked == false)
-            {
-                activeWarn.Active = false;
-                toolTip1.Active = false;
-                //toolTip.Active = false;
-            }
-            else if (tipsToolStripMenuItem.Checked == true)
-            {
-                activeWarn.Active = true;
-                toolTip1.Active = true;
-            }
+            toolTipInfo.Active = toolTipWarn.Active = tipsToolStripMenuItem.Checked;
         }
 
         private void isti115ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start("https://github.com/Isti115/BlenderRenderController");
+            Process.Start("https:\\//github.com/Isti115/BlenderRenderController");
         }
 
         private void meTwentyFiveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start("https://github.com/MeTwentyFive/BlenderRenderController");
+            Process.Start("https:\\//github.com/MeTwentyFive/BlenderRenderController");
         }
 
         private void redRaptor93ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start("https://github.com/RedRaptor93/BlenderRenderController");
+            Process.Start("https:\\//github.com/RedRaptor93/BlenderRenderController");
         }
 
         private void jendabekToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start("https://github.com/jendabek/BlenderRenderController");
+            Process.Start("https:\\//github.com/jendabek/BlenderRenderController");
         }
 
         private void rendererComboBox_CheckedChanged(object sender, EventArgs e)

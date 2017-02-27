@@ -59,8 +59,8 @@ namespace BlenderRenderController.ui
                 {
                     pevent.Graphics.DrawLine(separatorPen, lineX, lineYFrom, lineX, lineYTo);
                 }
-
-                base.Padding = new Padding(0, 0, SplitWidth/2, 0);
+                var paddingNew = new Padding(base.Padding.Left, Padding.Top, 6, Padding.Bottom);
+                base.Padding = paddingNew;
             }
         }
     }
