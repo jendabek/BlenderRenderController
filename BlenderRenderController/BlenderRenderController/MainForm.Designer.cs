@@ -48,9 +48,15 @@ namespace BlenderRenderController
             this.totalTimeLabel = new System.Windows.Forms.Label();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.speToolStripMenuItem = new System.Windows.Forms.ToolStripSeparator();
             this.tipsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.isti115MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.jendabekMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.meTwentyFiveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redRaptorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.infoPanel = new System.Windows.Forms.Panel();
             this.infoDurationLabel = new System.Windows.Forms.Label();
@@ -64,6 +70,9 @@ namespace BlenderRenderController
             this.infoFramesTotalLabel = new System.Windows.Forms.Label();
             this.toolTipWarn = new System.Windows.Forms.ToolTip(this.components);
             this.toolTipInfo = new System.Windows.Forms.ToolTip(this.components);
+            this.reloadBlenderDataButton = new System.Windows.Forms.Button();
+            this.concatenatePartsButton = new System.Windows.Forms.Button();
+            this.renderAllButton = new System.Windows.Forms.Button();
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.chunkLengthLabel = new System.Windows.Forms.Label();
             this.chunkStartLabel = new System.Windows.Forms.Label();
@@ -81,19 +90,10 @@ namespace BlenderRenderController
             this.blendFileNameLabel = new System.Windows.Forms.Label();
             this.rendererRadioButtonCycles = new System.Windows.Forms.RadioButton();
             this.rendererRadioButtonBlender = new System.Windows.Forms.RadioButton();
-            this.reloadBlenderDataButton = new System.Windows.Forms.Button();
             this.mixDownButton = new System.Windows.Forms.Button();
             this.openOutputFolderButton = new System.Windows.Forms.Button();
-            this.concatenatePartsButton = new System.Windows.Forms.Button();
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
-            this.renderAllButton = new System.Windows.Forms.Button();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.isti115MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.jendabekMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.meTwentyFiveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.redRaptorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -317,6 +317,14 @@ namespace BlenderRenderController
             this.aboutToolStripMenuItem.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
             this.aboutToolStripMenuItem.ToolTipText = "Extra options";
             // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("settingsToolStripMenuItem.Image")));
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
             // speToolStripMenuItem
             // 
             this.speToolStripMenuItem.Name = "speToolStripMenuItem";
@@ -339,6 +347,60 @@ namespace BlenderRenderController
             this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
             this.infoToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
             this.infoToolStripMenuItem.Text = "Info";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.isti115MenuItem,
+            this.jendabekMenuItem,
+            this.meTwentyFiveMenuItem,
+            this.redRaptorMenuItem});
+            this.toolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.toolStripMenuItem1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.toolStripMenuItem1.Image = global::BlenderRenderController.Properties.Resources.github_logo_small;
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(172, 22);
+            this.toolStripMenuItem1.Text = "Authors on Github";
+            // 
+            // isti115MenuItem
+            // 
+            this.isti115MenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.isti115MenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
+            this.isti115MenuItem.Image = ((System.Drawing.Image)(resources.GetObject("isti115MenuItem.Image")));
+            this.isti115MenuItem.Name = "isti115MenuItem";
+            this.isti115MenuItem.Size = new System.Drawing.Size(150, 22);
+            this.isti115MenuItem.Text = "Isti115";
+            this.isti115MenuItem.Click += new System.EventHandler(this.isti115ToolStripMenuItem_Click);
+            // 
+            // jendabekMenuItem
+            // 
+            this.jendabekMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.jendabekMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
+            this.jendabekMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("jendabekMenuItem.Image")));
+            this.jendabekMenuItem.Name = "jendabekMenuItem";
+            this.jendabekMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.jendabekMenuItem.Text = "jendabek";
+            this.jendabekMenuItem.Click += new System.EventHandler(this.jendabekToolStripMenuItem_Click);
+            // 
+            // meTwentyFiveMenuItem
+            // 
+            this.meTwentyFiveMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.meTwentyFiveMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
+            this.meTwentyFiveMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("meTwentyFiveMenuItem.Image")));
+            this.meTwentyFiveMenuItem.Name = "meTwentyFiveMenuItem";
+            this.meTwentyFiveMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.meTwentyFiveMenuItem.Text = "MeTwentyFive";
+            this.meTwentyFiveMenuItem.Click += new System.EventHandler(this.meTwentyFiveToolStripMenuItem_Click);
+            // 
+            // redRaptorMenuItem
+            // 
+            this.redRaptorMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.redRaptorMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
+            this.redRaptorMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("redRaptorMenuItem.Image")));
+            this.redRaptorMenuItem.Name = "redRaptorMenuItem";
+            this.redRaptorMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.redRaptorMenuItem.Text = "RedRaptor93";
+            this.redRaptorMenuItem.Click += new System.EventHandler(this.redRaptor93ToolStripMenuItem_Click);
             // 
             // label1
             // 
@@ -497,6 +559,53 @@ namespace BlenderRenderController
             // 
             this.toolTipInfo.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.toolTipInfo.ToolTipTitle = "Hint";
+            // 
+            // reloadBlenderDataButton
+            // 
+            this.reloadBlenderDataButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.reloadBlenderDataButton.Image = global::BlenderRenderController.Properties.Resources.reload_icon_small;
+            this.reloadBlenderDataButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.reloadBlenderDataButton.Location = new System.Drawing.Point(472, 133);
+            this.reloadBlenderDataButton.Name = "reloadBlenderDataButton";
+            this.reloadBlenderDataButton.Padding = new System.Windows.Forms.Padding(6, 0, 5, 0);
+            this.reloadBlenderDataButton.Size = new System.Drawing.Size(172, 34);
+            this.reloadBlenderDataButton.TabIndex = 1;
+            this.reloadBlenderDataButton.Text = "Reload && Update Form";
+            this.reloadBlenderDataButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.toolTipInfo.SetToolTip(this.reloadBlenderDataButton, "Re-read info from .blend");
+            this.reloadBlenderDataButton.UseVisualStyleBackColor = true;
+            this.reloadBlenderDataButton.Click += new System.EventHandler(this.reloadBlenderDataButton_Click);
+            // 
+            // concatenatePartsButton
+            // 
+            this.concatenatePartsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.concatenatePartsButton.Image = global::BlenderRenderController.Properties.Resources.connect_icon_small;
+            this.concatenatePartsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.concatenatePartsButton.Location = new System.Drawing.Point(372, 416);
+            this.concatenatePartsButton.Name = "concatenatePartsButton";
+            this.concatenatePartsButton.Padding = new System.Windows.Forms.Padding(12, 0, 7, 0);
+            this.concatenatePartsButton.Size = new System.Drawing.Size(143, 38);
+            this.concatenatePartsButton.TabIndex = 12;
+            this.concatenatePartsButton.Text = "Join Chunks";
+            this.concatenatePartsButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.toolTipInfo.SetToolTip(this.concatenatePartsButton, "Combine segments in FFmpeg");
+            this.concatenatePartsButton.UseVisualStyleBackColor = true;
+            this.concatenatePartsButton.Click += new System.EventHandler(this.concatenatePartsButton_Click);
+            // 
+            // renderAllButton
+            // 
+            this.renderAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderAllButton.Image = global::BlenderRenderController.Properties.Resources.render_icon_small;
+            this.renderAllButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.renderAllButton.Location = new System.Drawing.Point(32, 416);
+            this.renderAllButton.Name = "renderAllButton";
+            this.renderAllButton.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
+            this.renderAllButton.Size = new System.Drawing.Size(168, 38);
+            this.renderAllButton.TabIndex = 10;
+            this.renderAllButton.Text = "Render";
+            this.toolTipInfo.SetToolTip(this.renderAllButton, "Starts rendering the timeline.");
+            this.renderAllButton.UseVisualStyleBackColor = true;
+            this.renderAllButton.Click += new System.EventHandler(this.renderAllButton_Click);
             // 
             // blendFileLabel
             // 
@@ -713,22 +822,6 @@ namespace BlenderRenderController
             this.rendererRadioButtonBlender.Text = "Blender Render";
             this.rendererRadioButtonBlender.UseVisualStyleBackColor = true;
             // 
-            // reloadBlenderDataButton
-            // 
-            this.reloadBlenderDataButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.reloadBlenderDataButton.Image = global::BlenderRenderController.Properties.Resources.reload_icon_small;
-            this.reloadBlenderDataButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.reloadBlenderDataButton.Location = new System.Drawing.Point(472, 133);
-            this.reloadBlenderDataButton.Name = "reloadBlenderDataButton";
-            this.reloadBlenderDataButton.Padding = new System.Windows.Forms.Padding(6, 0, 5, 0);
-            this.reloadBlenderDataButton.Size = new System.Drawing.Size(172, 34);
-            this.reloadBlenderDataButton.TabIndex = 1;
-            this.reloadBlenderDataButton.Text = "Reload && Update Form";
-            this.reloadBlenderDataButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolTipInfo.SetToolTip(this.reloadBlenderDataButton, "Re-read info from .blend");
-            this.reloadBlenderDataButton.UseVisualStyleBackColor = true;
-            this.reloadBlenderDataButton.Click += new System.EventHandler(this.reloadBlenderDataButton_Click);
-            // 
             // mixDownButton
             // 
             this.mixDownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -759,22 +852,6 @@ namespace BlenderRenderController
             this.openOutputFolderButton.UseVisualStyleBackColor = true;
             this.openOutputFolderButton.Click += new System.EventHandler(this.outputFolderOpenButton_Click);
             // 
-            // concatenatePartsButton
-            // 
-            this.concatenatePartsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.concatenatePartsButton.Image = global::BlenderRenderController.Properties.Resources.connect_icon_small;
-            this.concatenatePartsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.concatenatePartsButton.Location = new System.Drawing.Point(372, 416);
-            this.concatenatePartsButton.Name = "concatenatePartsButton";
-            this.concatenatePartsButton.Padding = new System.Windows.Forms.Padding(12, 0, 7, 0);
-            this.concatenatePartsButton.Size = new System.Drawing.Size(143, 38);
-            this.concatenatePartsButton.TabIndex = 12;
-            this.concatenatePartsButton.Text = "Join Chunks";
-            this.concatenatePartsButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolTipInfo.SetToolTip(this.concatenatePartsButton, "Combine segments in FFmpeg");
-            this.concatenatePartsButton.UseVisualStyleBackColor = true;
-            this.concatenatePartsButton.Click += new System.EventHandler(this.concatenatePartsButton_Click);
-            // 
             // outputFolderBrowseButton
             // 
             this.outputFolderBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -803,83 +880,6 @@ namespace BlenderRenderController
             this.blendFileBrowseButton.Text = " Open Blend";
             this.blendFileBrowseButton.UseVisualStyleBackColor = true;
             this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
-            // 
-            // renderAllButton
-            // 
-            this.renderAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderAllButton.Image = global::BlenderRenderController.Properties.Resources.render_icon_small;
-            this.renderAllButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.renderAllButton.Location = new System.Drawing.Point(32, 416);
-            this.renderAllButton.Name = "renderAllButton";
-            this.renderAllButton.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
-            this.renderAllButton.Size = new System.Drawing.Size(168, 38);
-            this.renderAllButton.TabIndex = 10;
-            this.renderAllButton.Text = "Render";
-            this.toolTipInfo.SetToolTip(this.renderAllButton, "Starts rendering the timeline.");
-            this.renderAllButton.UseVisualStyleBackColor = true;
-            this.renderAllButton.Click += new System.EventHandler(this.renderAllButton_Click);
-            // 
-            // settingsToolStripMenuItem
-            // 
-            this.settingsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("settingsToolStripMenuItem.Image")));
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
-            this.settingsToolStripMenuItem.Text = "Settings";
-            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.isti115MenuItem,
-            this.jendabekMenuItem,
-            this.meTwentyFiveMenuItem,
-            this.redRaptorMenuItem});
-            this.toolStripMenuItem1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toolStripMenuItem1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.toolStripMenuItem1.Image = global::BlenderRenderController.Properties.Resources.github_logo_small;
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(172, 22);
-            this.toolStripMenuItem1.Text = "Authors on Github";
-            // 
-            // isti115MenuItem
-            // 
-            this.isti115MenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.isti115MenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.isti115MenuItem.Image = ((System.Drawing.Image)(resources.GetObject("isti115MenuItem.Image")));
-            this.isti115MenuItem.Name = "isti115MenuItem";
-            this.isti115MenuItem.Size = new System.Drawing.Size(150, 22);
-            this.isti115MenuItem.Text = "Isti115";
-            this.isti115MenuItem.Click += new System.EventHandler(this.isti115ToolStripMenuItem_Click);
-            // 
-            // jendabekMenuItem
-            // 
-            this.jendabekMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.jendabekMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.jendabekMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("jendabekMenuItem.Image")));
-            this.jendabekMenuItem.Name = "jendabekMenuItem";
-            this.jendabekMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.jendabekMenuItem.Text = "jendabek";
-            this.jendabekMenuItem.Click += new System.EventHandler(this.jendabekToolStripMenuItem_Click);
-            // 
-            // meTwentyFiveMenuItem
-            // 
-            this.meTwentyFiveMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.meTwentyFiveMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.meTwentyFiveMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("meTwentyFiveMenuItem.Image")));
-            this.meTwentyFiveMenuItem.Name = "meTwentyFiveMenuItem";
-            this.meTwentyFiveMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.meTwentyFiveMenuItem.Text = "MeTwentyFive";
-            this.meTwentyFiveMenuItem.Click += new System.EventHandler(this.meTwentyFiveToolStripMenuItem_Click);
-            // 
-            // redRaptorMenuItem
-            // 
-            this.redRaptorMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.redRaptorMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.redRaptorMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("redRaptorMenuItem.Image")));
-            this.redRaptorMenuItem.Name = "redRaptorMenuItem";
-            this.redRaptorMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.redRaptorMenuItem.Text = "RedRaptor93";
-            this.redRaptorMenuItem.Click += new System.EventHandler(this.redRaptor93ToolStripMenuItem_Click);
             // 
             // MainForm
             // 

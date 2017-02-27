@@ -146,7 +146,7 @@
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(545, 277);
+            this.ClientSize = new System.Drawing.Size(541, 273);
             this.Controls.Add(this.ffmpegDownloadLabel);
             this.Controls.Add(this.ffmpegLabel);
             this.Controls.Add(this.blenderLabel);
@@ -156,8 +156,16 @@
             this.Controls.Add(this.blenderExeLabel);
             this.Controls.Add(this.ffmpegPathTextBox);
             this.Controls.Add(this.blenderPathTextBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(561, 316);
+            this.MinimumSize = new System.Drawing.Size(561, 316);
             this.Name = "SettingsForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Settings";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SettingsForm_FormClosed);
             this.Load += new System.EventHandler(this.onFormLoad);
