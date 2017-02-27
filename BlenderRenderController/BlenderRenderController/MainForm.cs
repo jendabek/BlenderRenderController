@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Web.Script.Serialization;
 using System.Drawing;
+using System.Globalization;
 
 namespace BlenderRenderController
 {
@@ -30,16 +31,18 @@ namespace BlenderRenderController
         SettingsForm settingsForm;
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
+        private int fps;
 
         //string[] args = Environment.GetCommandLineArgs();
 
-
         public MainForm()
         {
-            AppDomain.CurrentDomain.ProcessExit += new EventHandler(onAppExit);
-
             InitializeComponent();
+        }
+        public void MainForm_Shown(object sender, EventArgs e)
+        {
             
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(onAppExit);
 
             settingsForm = new SettingsForm();
             appSettings = new AppSettings();
@@ -81,8 +84,10 @@ namespace BlenderRenderController
         private void applySettings()
         {
             processCountNumericUpDown.Value = p.processCount = appSettings.processCount;
-            p.renderer = appSettings.renderer;
+            chunkLengthNumericUpDown.Value = p.chunkLength = appSettings.chunkLength;
 
+            //renderer
+            p.renderer = appSettings.renderer;
             if (p.renderer == AppStrings.RENDERER_BLENDER)
             {
                 rendererRadioButtonBlender.Checked = true;
@@ -128,7 +133,7 @@ namespace BlenderRenderController
             //top infos
             if (blendData != null)
             {
-                var durationSeconds = Convert.ToDouble((p.end - p.start + 1) / int.Parse(blendData.fps.Split('.')[0]));
+                var durationSeconds = Convert.ToDouble((p.end - p.start + 1) / fps);
                 TimeSpan t = TimeSpan.FromSeconds(durationSeconds);
 
                 infoDuration.Text = string.Format("{0:D1}h {1:D1}m {2:D1}s {3:D1}ms",
@@ -165,6 +170,9 @@ namespace BlenderRenderController
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
                     renderAllButton.Image = Properties.Resources.render_icon_small;
+                    startEndBlendRadio.Enabled = false;
+                    startEndCustomRadio.Enabled = false;
+                    processCountNumericUpDown.Enabled = false;
                     break;
                 case AppStates.NOT_CONFIGURED:
                     renderAllButton.Enabled = false;
@@ -188,6 +196,9 @@ namespace BlenderRenderController
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
                     renderAllButton.Image = Properties.Resources.render_icon_small;
+                    startEndBlendRadio.Enabled = false;
+                    startEndCustomRadio.Enabled = false;
+                    processCountNumericUpDown.Enabled = false;
                     break;
                 case AppStates.READY_FOR_RENDER:
                     renderAllButton.Enabled = true;
@@ -196,15 +207,14 @@ namespace BlenderRenderController
                     prevChunkButton.Enabled = true;
                     nextChunkButton.Enabled = true;
                     mixDownButton.Enabled = true;
-                    totalStartNumericUpDown.Enabled = true;
-                    totalEndNumericUpDown.Enabled = true;
+                    totalStartNumericUpDown.Enabled = startEndCustomRadio.Checked;
+                    totalEndNumericUpDown.Enabled = startEndCustomRadio.Checked;
                     chunkLengthNumericUpDown.Enabled = true;
                     concatenatePartsButton.Enabled = Directory.Exists(p.chunksPath);
                     reloadBlenderDataButton.Enabled = true;
                     blendFileBrowseButton.Enabled = true;
                     outputFolderBrowseButton.Enabled = true;
                     outputFolderTextBox.Enabled = true;
-                    processCountNumericUpDown.Enabled = true;
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = true;
@@ -212,6 +222,9 @@ namespace BlenderRenderController
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
                     renderAllButton.Image = Properties.Resources.render_icon_small;
+                    startEndBlendRadio.Enabled = true;
+                    startEndCustomRadio.Enabled = true;
+                    processCountNumericUpDown.Enabled = true;
                     break;
                 case AppStates.RENDERING_ALL:
                 case AppStates.RENDERING_CHUNK_ONLY:
@@ -229,13 +242,15 @@ namespace BlenderRenderController
                     blendFileBrowseButton.Enabled = false;
                     outputFolderBrowseButton.Enabled = false;
                     outputFolderTextBox.Enabled = false;
-                    processCountNumericUpDown.Enabled = false;
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = true;
                     rendererRadioButtonBlender.Enabled = false;
                     rendererRadioButtonCycles.Enabled = false;
                     renderAllButton.Image = Properties.Resources.stop_icon_small;
+                    startEndBlendRadio.Enabled = false;
+                    startEndCustomRadio.Enabled = false;
+                    processCountNumericUpDown.Enabled = false;
                     break;
             }
         }
@@ -589,7 +604,11 @@ namespace BlenderRenderController
         
         private void concatenatePartsButton_Click(object sender, EventArgs e)
         {
-            if (!Directory.Exists(p.chunksPath)) return;
+            if (!Directory.Exists(p.chunksPath))
+            {
+                concatenatePartsButton.Enabled = false;
+                return;
+            }
 
             string chunksTxtPath = Path.Combine(p.chunksPath, appSettings.chunksTxtFileName);
             string audioFileName = blendData.projectName + "." + appSettings.audioFormat;
@@ -735,6 +754,7 @@ namespace BlenderRenderController
             
 			StringBuilder jsonInfo    = new StringBuilder();
 			bool          jsonStarted = false;
+            double test = 1.8;
 			int           curlyStack  = 0;
 
             while ( !process.StandardOutput.EndOfStream ) {
@@ -766,16 +786,18 @@ namespace BlenderRenderController
 
                 p.start       = blendData.start;
                 p.end         = blendData.end;
+
+                fps = Convert.ToInt32(blendData.fps) / (int) Convert.ToDouble(blendData.fpsBase, CultureInfo.InvariantCulture);
                 
                 //reset chunk range according to new timeline
                 checkCurrentChunkStartEnd();
                 checkChunkLength();
-
+                
                 statusLabel.Text = "Successfully opened " + blendData.projectName + ".blend.";
                 blendFileLabel.Visible = false;
                 blendFileNameLabel.Text            = blendData.projectName;
                 infoActiveScene.Text               = blendData.sceneActive;
-                infoFramerate.Text                 = blendData.fps.ToString();
+                infoFramerate.Text                 = fps.ToString();
                 infoNoScenes.Text                  = blendData.scenesNum;
 
                 try
@@ -954,10 +976,11 @@ namespace BlenderRenderController
         private void chunkLengthNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             p.chunkStart = p.start;
-            p.chunkLength = chunkLengthNumericUpDown.Value;
+            p.chunkLength = appSettings.chunkLength = chunkLengthNumericUpDown.Value;
             checkCurrentChunkStartEnd();
             checkChunkLength();
             updateUI();
+            appSettings.save();
         }
 
         private void checkCurrentChunkStartEnd()
@@ -980,6 +1003,22 @@ namespace BlenderRenderController
                 p.chunkLength = p.end - p.start + 1;
             }
             updateUI();
+        }
+
+        private void startEndCustomRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if(startEndCustomRadio.Checked) {
+                totalStartNumericUpDown.Enabled = totalEndNumericUpDown.Enabled = true;
+            }
+            else
+            {
+                totalStartNumericUpDown.Enabled = totalEndNumericUpDown.Enabled = false;
+                p.start = totalStartNumericUpDown.Value = blendData.start;
+                p.end = totalEndNumericUpDown.Value = blendData.end;
+                checkCurrentChunkStartEnd();
+                checkChunkLength();
+                updateUI();
+            }
         }
     }
 }

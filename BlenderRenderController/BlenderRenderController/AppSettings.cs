@@ -12,7 +12,7 @@ namespace BlenderRenderController
     public class AppSettings
     {
         //THESE PROPERTIES (in _jsonProperties) ARE STORED AND LOADED automatically from external JSON file
-        private string[] _jsonProperties = { "recentBlends", "processCount", "blenderPath", "ffmpegPath", "renderer"};
+        private string[] _jsonProperties = { "recentBlends", "processCount", "blenderPath", "ffmpegPath", "renderer", "chunkLength"};
 
         private const int _RECENT_BLENDS_MAX_COUNT = 10;
         public const string BLENDER_EXE_NAME = "blender.exe";
@@ -28,7 +28,8 @@ namespace BlenderRenderController
         private string _audioFormat = "ac3";
         private string _chunksTxtFileName = "chunklist.txt";
         private string _renderer = AppStrings.RENDERER_BLENDER;
-        private decimal _processCount = 4;
+        private decimal _processCount = Environment.ProcessorCount;
+        private decimal _chunkLength = 50;
         private string[] _allowedFormats = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
 
         private string _scriptsPath, _blenderPath, _ffmpegPath;
@@ -269,6 +270,17 @@ namespace BlenderRenderController
             set
             {
                 _settingsForm = value;
+            }
+        }
+        public decimal chunkLength
+        {
+            get
+            {
+                return _chunkLength;
+            }
+            set
+            {
+                _chunkLength = value;
             }
         }
     }

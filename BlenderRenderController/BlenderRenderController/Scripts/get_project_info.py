@@ -20,7 +20,8 @@ sceneActive = str(scene).partition('("')[-1].rpartition('")')[0]
 # set infos acording to active Scene
 start = bpy.data.scenes[sceneActive].frame_start
 end   = bpy.data.scenes[sceneActive].frame_end
-fps  = bpy.data.scenes[sceneActive].render.fps / bpy.data.scenes[sceneActive].render.fps_base
+fps  = bpy.data.scenes[sceneActive].render.fps
+fpsBase = bpy.data.scenes[sceneActive].render.fps_base
 outputPath = bpy.data.scenes[sceneActive].render.filepath
 
 #altDir = str(outputPath).rpartition('\\')[:-1][0]
@@ -29,6 +30,7 @@ data = {'projectName': projectName,
 		'start': start,
 		'end': end,
 		'fps': fps,
+		'fpsBase': fpsBase,
 		'outputPath': outputPath,
         'scenesNum': scenesNum,
 		'sceneActive': sceneActive
