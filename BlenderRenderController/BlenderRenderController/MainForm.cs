@@ -754,7 +754,6 @@ namespace BlenderRenderController
             
 			StringBuilder jsonInfo    = new StringBuilder();
 			bool          jsonStarted = false;
-            double test = 1.8;
 			int           curlyStack  = 0;
 
             while ( !process.StandardOutput.EndOfStream ) {
@@ -786,6 +785,12 @@ namespace BlenderRenderController
 
                 p.start       = blendData.start;
                 p.end         = blendData.end;
+                p.renderFormat = blendData.renderFormat;
+
+                if(RenderFormats.IMAGES.Contains(p.renderFormat))
+                {
+                    Helper.showErrors(new List<string>{ AppErrorCodes.RENDER_FORMAT_IS_IMAGE }, MessageBoxIcon.Asterisk, p.renderFormat);
+                }
                 
                 fps = Convert.ToDouble(blendData.fps) / Convert.ToDouble(blendData.fpsBase, CultureInfo.InvariantCulture);
                 

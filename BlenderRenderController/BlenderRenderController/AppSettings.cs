@@ -113,7 +113,9 @@ namespace BlenderRenderController
         public void addRecentBlend(string blendFilePath)
         {
             //dont want to show one file many times
-            if (_recentBlends.IndexOf(blendFilePath) != -1) return;
+            if (_recentBlends.Contains(blendFilePath)) {
+                _recentBlends.Remove(blendFilePath);
+            }
 
             //delete last if the list is larger than _LAST_BLENDS_MAX_COUNT
             if (_recentBlends.Count == _RECENT_BLENDS_MAX_COUNT)

@@ -25,7 +25,7 @@ namespace BlenderRenderController
                 di.Delete();
             }
         }
-        static public void showErrors(List<string> errorCodes, MessageBoxIcon icon = MessageBoxIcon.Asterisk)
+        static public void showErrors(List<string> errorCodes, MessageBoxIcon icon = MessageBoxIcon.Asterisk, string arg1 = "")
         {
             var errorText = "";
             foreach (var errorCode in errorCodes)
@@ -42,6 +42,11 @@ namespace BlenderRenderController
                 {
                     errorText += "File does not exists anymore.\n";
                     errorText += "It was removed from the list of recent blends.\n";
+                }
+                if (errorCode == AppErrorCodes.RENDER_FORMAT_IS_IMAGE)
+                {
+                    errorText += "The render format is " + arg1 + " image.\n";
+                    errorText += "You can render an image sequence with this tool but you will need to make a video with other SW.\n";
                 }
             }
             MessageBox.Show(

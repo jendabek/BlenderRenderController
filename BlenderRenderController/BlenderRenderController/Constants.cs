@@ -13,6 +13,7 @@
         public const string BLENDER_PATH_NOT_SET = "blenderPathNotSet";
         public const string FFMPEG_PATH_NOT_SET = "ffmpegPathNotSet";
         public const string BLEND_FILE_NOT_EXISTS = "blendFileNotExists";
+        public const string RENDER_FORMAT_IS_IMAGE = "formatIsImage";
     }
     static class AppStrings
     {
@@ -20,4 +21,10 @@
         public const string RENDERER_CYCLES = "CYCLES";
         public const string FFMPEG_DOWNLOAD_URL = "https:\\//ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-3.2.2-win64-static.zip";
     }
+    static class RenderFormats
+    {
+        public static readonly string[] IMAGES = { "PNG", "BMP", "IRIS", "JPEG", "JPEG2000", "TARGA", "TARGA_RAW", "CINEON", "DPX", "OPEN_EXR_MULTILAYER", "OPEN_EXR", "HDR", "TIFF" };
+        public static readonly string[] VIDEOS = { "AVI_JPEG", "AVI_RAW", "H264", "FFMPEG", "THEORA", "XVID" };
+    }
+
 }

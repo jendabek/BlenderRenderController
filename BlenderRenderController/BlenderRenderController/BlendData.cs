@@ -10,5 +10,6 @@
         public string projectName;
         public string scenesNum;
         public string sceneActive;
+        public string renderFormat;
     }
 }

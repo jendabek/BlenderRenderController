@@ -23,7 +23,7 @@ end   = bpy.data.scenes[sceneActive].frame_end
 fps  = bpy.data.scenes[sceneActive].render.fps
 fpsBase = bpy.data.scenes[sceneActive].render.fps_base
 outputPath = bpy.data.scenes[sceneActive].render.filepath
-
+renderFormat = bpy.data.scenes[sceneActive].render.image_settings.file_format
 #altDir = str(outputPath).rpartition('\\')[:-1][0]
 
 data = {'projectName': projectName,
@@ -33,7 +33,8 @@ data = {'projectName': projectName,
 		'fpsBase': fpsBase,
 		'outputPath': outputPath,
         'scenesNum': scenesNum,
-		'sceneActive': sceneActive
+		'sceneActive': sceneActive,
+		'renderFormat': renderFormat
 };
 
 jsonData = json.dumps(data, indent=4, skipkeys=True, sort_keys=True);
@@ -42,4 +43,3 @@ jsonData = json.dumps(data, indent=4, skipkeys=True, sort_keys=True);
 #    print(jsonData, file=f)
 
 print(jsonData);
-
