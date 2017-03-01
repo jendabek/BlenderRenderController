@@ -95,6 +95,9 @@ namespace BlenderRenderController
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.startEndBlendRadio = new System.Windows.Forms.RadioButton();
             this.startEndCustomRadio = new System.Windows.Forms.RadioButton();
+            this.renderOptionsAutoRadio = new System.Windows.Forms.RadioButton();
+            this.renderOptionsCustomRadio = new System.Windows.Forms.RadioButton();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
@@ -103,6 +106,7 @@ namespace BlenderRenderController
             this.infoPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).BeginInit();
             this.currentChunkInfoPanel.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // renderChunkButton
@@ -254,7 +258,7 @@ namespace BlenderRenderController
             // processCountNumericUpDown
             // 
             this.processCountNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.processCountNumericUpDown.Location = new System.Drawing.Point(498, 240);
+            this.processCountNumericUpDown.Location = new System.Drawing.Point(556, 240);
             this.processCountNumericUpDown.Minimum = new decimal(new int[] {
             1,
             0,
@@ -278,7 +282,7 @@ namespace BlenderRenderController
             // 
             this.processCountLabel.AutoSize = true;
             this.processCountLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.processCountLabel.Location = new System.Drawing.Point(495, 222);
+            this.processCountLabel.Location = new System.Drawing.Point(553, 222);
             this.processCountLabel.Name = "processCountLabel";
             this.processCountLabel.Size = new System.Drawing.Size(86, 15);
             this.processCountLabel.TabIndex = 15;
@@ -624,7 +628,7 @@ namespace BlenderRenderController
             // 
             this.chunkLengthLabel.AutoSize = true;
             this.chunkLengthLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkLengthLabel.Location = new System.Drawing.Point(394, 222);
+            this.chunkLengthLabel.Location = new System.Drawing.Point(452, 222);
             this.chunkLengthLabel.Name = "chunkLengthLabel";
             this.chunkLengthLabel.Size = new System.Drawing.Size(69, 15);
             this.chunkLengthLabel.TabIndex = 13;
@@ -645,7 +649,7 @@ namespace BlenderRenderController
             // chunkLengthNumericUpDown
             // 
             this.chunkLengthNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(397, 240);
+            this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(455, 240);
             this.chunkLengthNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -706,7 +710,7 @@ namespace BlenderRenderController
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label12.Location = new System.Drawing.Point(380, 186);
+            this.label12.Location = new System.Drawing.Point(350, 186);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(144, 20);
             this.label12.TabIndex = 25;
@@ -803,11 +807,11 @@ namespace BlenderRenderController
             // 
             this.rendererRadioButtonCycles.AutoSize = true;
             this.rendererRadioButtonCycles.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(515, 271);
+            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(515, 298);
             this.rendererRadioButtonCycles.Name = "rendererRadioButtonCycles";
-            this.rendererRadioButtonCycles.Size = new System.Drawing.Size(104, 19);
+            this.rendererRadioButtonCycles.Size = new System.Drawing.Size(60, 19);
             this.rendererRadioButtonCycles.TabIndex = 10;
-            this.rendererRadioButtonCycles.Text = "Cycles Render";
+            this.rendererRadioButtonCycles.Text = "Cycles";
             this.rendererRadioButtonCycles.UseVisualStyleBackColor = true;
             this.rendererRadioButtonCycles.Visible = false;
             this.rendererRadioButtonCycles.CheckedChanged += new System.EventHandler(this.rendererComboBox_CheckedChanged);
@@ -817,7 +821,7 @@ namespace BlenderRenderController
             this.rendererRadioButtonBlender.AutoSize = true;
             this.rendererRadioButtonBlender.Checked = true;
             this.rendererRadioButtonBlender.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(397, 271);
+            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(397, 298);
             this.rendererRadioButtonBlender.Name = "rendererRadioButtonBlender";
             this.rendererRadioButtonBlender.Size = new System.Drawing.Size(112, 19);
             this.rendererRadioButtonBlender.TabIndex = 9;
@@ -895,6 +899,40 @@ namespace BlenderRenderController
             this.startEndCustomRadio.UseVisualStyleBackColor = true;
             this.startEndCustomRadio.CheckedChanged += new System.EventHandler(this.startEndCustomRadio_CheckedChanged);
             // 
+            // renderOptionsAutoRadio
+            // 
+            this.renderOptionsAutoRadio.AutoSize = true;
+            this.renderOptionsAutoRadio.Checked = true;
+            this.renderOptionsAutoRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderOptionsAutoRadio.Location = new System.Drawing.Point(3, 0);
+            this.renderOptionsAutoRadio.Name = "renderOptionsAutoRadio";
+            this.renderOptionsAutoRadio.Size = new System.Drawing.Size(49, 19);
+            this.renderOptionsAutoRadio.TabIndex = 9;
+            this.renderOptionsAutoRadio.TabStop = true;
+            this.renderOptionsAutoRadio.Text = "Auto";
+            this.renderOptionsAutoRadio.UseVisualStyleBackColor = true;
+            // 
+            // renderOptionsCustomRadio
+            // 
+            this.renderOptionsCustomRadio.AutoSize = true;
+            this.renderOptionsCustomRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderOptionsCustomRadio.Location = new System.Drawing.Point(3, 21);
+            this.renderOptionsCustomRadio.Name = "renderOptionsCustomRadio";
+            this.renderOptionsCustomRadio.Size = new System.Drawing.Size(67, 19);
+            this.renderOptionsCustomRadio.TabIndex = 10;
+            this.renderOptionsCustomRadio.Text = "Custom";
+            this.renderOptionsCustomRadio.UseVisualStyleBackColor = true;
+            this.renderOptionsCustomRadio.CheckedChanged += new System.EventHandler(this.renderOptionsRadio_CheckedChanged);
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.renderOptionsAutoRadio);
+            this.panel1.Controls.Add(this.renderOptionsCustomRadio);
+            this.panel1.Location = new System.Drawing.Point(367, 221);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(79, 47);
+            this.panel1.TabIndex = 32;
+            // 
             // blendFileBrowseButton
             // 
             this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -950,6 +988,7 @@ namespace BlenderRenderController
             this.Controls.Add(this.blendFileBrowseButton);
             this.Controls.Add(this.renderAllButton);
             this.Controls.Add(this.menuStrip);
+            this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
             this.MaximizeBox = false;
@@ -971,6 +1010,8 @@ namespace BlenderRenderController
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).EndInit();
             this.currentChunkInfoPanel.ResumeLayout(false);
             this.currentChunkInfoPanel.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1043,6 +1084,9 @@ namespace BlenderRenderController
         private System.Windows.Forms.RadioButton startEndBlendRadio;
         private System.Windows.Forms.RadioButton startEndCustomRadio;
         private System.Windows.Forms.Panel infoPanel;
+        private System.Windows.Forms.RadioButton renderOptionsAutoRadio;
+        private System.Windows.Forms.RadioButton renderOptionsCustomRadio;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 

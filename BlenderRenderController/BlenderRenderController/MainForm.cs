@@ -31,7 +31,6 @@ namespace BlenderRenderController
         SettingsForm settingsForm;
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
-        private double fps;
 
         //string[] args = Environment.GetCommandLineArgs();
 
@@ -83,9 +82,9 @@ namespace BlenderRenderController
 
         private void applySettings()
         {
-            processCountNumericUpDown.Value = p.processCount = appSettings.processCount;
-            chunkLengthNumericUpDown.Value = p.chunkLength = appSettings.chunkLength;
-
+            //processCountNumericUpDown.Value = p.processCount = appSettings.processCount;
+            //chunkLengthNumericUpDown.Value = p.chunkLength = appSettings.chunkLength;
+            renderOptionsRadio_CheckedChanged(null, null);
             //renderer
             p.renderer = appSettings.renderer;
             if (p.renderer == AppStrings.RENDERER_BLENDER)
@@ -133,7 +132,7 @@ namespace BlenderRenderController
             //top infos
             if (blendData != null)
             {
-                var durationSeconds = (Convert.ToDouble(p.end - p.start + 1) / fps);
+                var durationSeconds = (Convert.ToDouble(p.end - p.start + 1) / p.fps);
                 TimeSpan t = TimeSpan.FromSeconds(durationSeconds);
 
                 infoDuration.Text = string.Format("{0:D1}h {1:D1}m {2:D1}s {3:D1}ms",
@@ -159,6 +158,7 @@ namespace BlenderRenderController
                     totalStartNumericUpDown.Enabled = false;
                     totalEndNumericUpDown.Enabled = false;
                     chunkLengthNumericUpDown.Enabled = false;
+                    processCountNumericUpDown.Enabled = false;
                     concatenatePartsButton.Enabled = false;
                     reloadBlenderDataButton.Enabled = false;
                     openOutputFolderButton.Enabled = false;
@@ -172,7 +172,8 @@ namespace BlenderRenderController
                     renderAllButton.Image = Properties.Resources.render_icon_small;
                     startEndBlendRadio.Enabled = false;
                     startEndCustomRadio.Enabled = false;
-                    processCountNumericUpDown.Enabled = false;
+                    renderOptionsCustomRadio.Enabled = false;
+                    renderOptionsAutoRadio.Enabled = false;
                     break;
                 case AppStates.NOT_CONFIGURED:
                     renderAllButton.Enabled = false;
@@ -184,6 +185,7 @@ namespace BlenderRenderController
                     totalStartNumericUpDown.Enabled = false;
                     totalEndNumericUpDown.Enabled = false;
                     chunkLengthNumericUpDown.Enabled = false;
+                    processCountNumericUpDown.Enabled = false;
                     concatenatePartsButton.Enabled = false;
                     reloadBlenderDataButton.Enabled = false;
                     blendFileBrowseButton.Enabled = false;
@@ -198,7 +200,8 @@ namespace BlenderRenderController
                     renderAllButton.Image = Properties.Resources.render_icon_small;
                     startEndBlendRadio.Enabled = false;
                     startEndCustomRadio.Enabled = false;
-                    processCountNumericUpDown.Enabled = false;
+                    renderOptionsCustomRadio.Enabled = false;
+                    renderOptionsAutoRadio.Enabled = false;
                     break;
                 case AppStates.READY_FOR_RENDER:
                     renderAllButton.Enabled = true;
@@ -209,7 +212,9 @@ namespace BlenderRenderController
                     mixDownButton.Enabled = true;
                     totalStartNumericUpDown.Enabled = startEndCustomRadio.Checked;
                     totalEndNumericUpDown.Enabled = startEndCustomRadio.Checked;
-                    chunkLengthNumericUpDown.Enabled = true;
+                    chunkLengthNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
+                    processCountNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
+                    startEndCustomRadio.Enabled = true;
                     concatenatePartsButton.Enabled = Directory.Exists(p.chunksPath);
                     reloadBlenderDataButton.Enabled = true;
                     blendFileBrowseButton.Enabled = true;
@@ -223,8 +228,8 @@ namespace BlenderRenderController
                     rendererRadioButtonCycles.Enabled = true;
                     renderAllButton.Image = Properties.Resources.render_icon_small;
                     startEndBlendRadio.Enabled = true;
-                    startEndCustomRadio.Enabled = true;
-                    processCountNumericUpDown.Enabled = true;
+                    renderOptionsCustomRadio.Enabled = true;
+                    renderOptionsAutoRadio.Enabled = true;
                     break;
                 case AppStates.RENDERING_ALL:
                 case AppStates.RENDERING_CHUNK_ONLY:
@@ -237,6 +242,7 @@ namespace BlenderRenderController
                     totalStartNumericUpDown.Enabled = false;
                     totalEndNumericUpDown.Enabled = false;
                     chunkLengthNumericUpDown.Enabled = false;
+                    processCountNumericUpDown.Enabled = false;
                     concatenatePartsButton.Enabled = false;
                     reloadBlenderDataButton.Enabled = false;
                     blendFileBrowseButton.Enabled = false;
@@ -248,9 +254,8 @@ namespace BlenderRenderController
                     rendererRadioButtonBlender.Enabled = false;
                     rendererRadioButtonCycles.Enabled = false;
                     renderAllButton.Image = Properties.Resources.stop_icon_small;
-                    startEndBlendRadio.Enabled = false;
+                    renderOptionsCustomRadio.Enabled = false;
                     startEndCustomRadio.Enabled = false;
-                    processCountNumericUpDown.Enabled = false;
                     break;
             }
         }
@@ -549,7 +554,7 @@ namespace BlenderRenderController
             appState = AppStates.READY_FOR_RENDER;
 
             p.chunkStart = p.start;
-            checkCurrentChunkStartEnd();
+            updateCurrentChunkStartEnd();
 
             updateUI();
         }
@@ -596,7 +601,7 @@ namespace BlenderRenderController
 
                 bool wasComplete = (framesRendered.Count == p.end - p.start + 1);
                 stopRender(wasComplete);
-                checkCurrentChunkStartEnd();
+                updateCurrentChunkStartEnd();
                 return;
             }
             updateUI();
@@ -781,30 +786,15 @@ namespace BlenderRenderController
 				blendData = serializer.Deserialize<BlendData>(jsonInfo.ToString());
             }
 
-			if( blendData != null ) {
+            if (blendData != null) {
 
-                p.start       = blendData.start;
-                p.end         = blendData.end;
-                p.renderFormat = blendData.renderFormat;
-
-                if(RenderFormats.IMAGES.Contains(p.renderFormat))
+                //notify we are going to render an image
+                if (RenderFormats.IMAGES.Contains(p.renderFormat))
                 {
-                    Helper.showErrors(new List<string>{ AppErrorCodes.RENDER_FORMAT_IS_IMAGE }, MessageBoxIcon.Asterisk, p.renderFormat);
+                    Helper.showErrors(new List<string> { AppErrorCodes.RENDER_FORMAT_IS_IMAGE }, MessageBoxIcon.Asterisk, p.renderFormat);
                 }
-                
-                fps = Convert.ToDouble(blendData.fps) / Convert.ToDouble(blendData.fpsBase, CultureInfo.InvariantCulture);
-                
-                //reset chunk range according to new timeline
-                checkCurrentChunkStartEnd();
-                checkChunkLength();
-                
-                statusLabel.Text = "Successfully opened " + blendData.projectName + ".blend.";
-                blendFileLabel.Visible = false;
-                blendFileNameLabel.Text            = blendData.projectName;
-                infoActiveScene.Text               = blendData.sceneActive;
-                infoFramerate.Text                 = fps.ToString();
-                infoNoScenes.Text                  = blendData.scenesNum;
 
+                //FIX RELATIVE RENDER OUTPUT PATHS
                 try
                 {
                     p.outputPath = Path.GetFullPath(blendData.outputPath);
@@ -814,18 +804,38 @@ namespace BlenderRenderController
                 {
                     p.outputPath = Path.Combine(Path.GetDirectoryName(p.blendFilePath), blendData.outputPath.Replace("//", ""));
                 }
-                //remove trailing slash
-                p.outputPath = Helper.fixPath(p.outputPath);
-                outputFolderTextBox.Text = p.outputPath;
 
+                //SETTING PROJECT VARS
+                //remove trailing slash
+                p.outputPath = outputFolderTextBox.Text = Helper.fixPath(p.outputPath);
+                p.renderFormat = blendData.renderFormat;
                 p.chunksPath = Path.Combine(p.outputPath, appSettings.chunksSubfolder);
+                p.fps = Convert.ToDouble(blendData.fps) / Convert.ToDouble(blendData.fpsBase, CultureInfo.InvariantCulture);
+
+                if (startEndBlendRadio.Checked)
+                {
+                    p.start = blendData.start;
+                    p.end = blendData.end;
+                }
+                
+                //INFO TEXTS
+                statusLabel.Text                = "Successfully opened " + blendData.projectName + ".blend.";
+                blendFileLabel.Visible          = false;
+                blendFileNameLabel.Text         = blendData.projectName;
+                infoActiveScene.Text            = blendData.sceneActive;
+                infoFramerate.Text              = p.fps.ToString();
+                infoNoScenes.Text               = blendData.scenesNum;
+
                 appSettings.addRecentBlend(p.blendFilePath);
                 appSettings.save();
+
+                //reset chunk range according to new timeline
+                updateCurrentChunkStartEnd();
+                updateChunkLength();
+
                 updateRecentBlendsMenu();
 
                 appState = AppStates.READY_FOR_RENDER;
-
-                updateRecentBlendsMenu();
             }
             updateUI();
             Trace.WriteLine( ".blend data = " + jsonInfo.ToString() );
@@ -953,8 +963,8 @@ namespace BlenderRenderController
                 p.end = p.start + p.chunkLength - 1;
             }
             p.chunkStart = p.start;
-            checkCurrentChunkStartEnd();
-            checkChunkLength();
+            updateCurrentChunkStartEnd();
+            updateChunkLength();
             updateUI();
         }
 
@@ -972,8 +982,8 @@ namespace BlenderRenderController
                 p.start -= p.chunkLength - 1;
             }
             if (p.start < 0) p.start = 0;
-            checkCurrentChunkStartEnd();
-            checkChunkLength();
+            updateCurrentChunkStartEnd();
+            updateChunkLength();
             updateUI();
         }
 
@@ -982,13 +992,13 @@ namespace BlenderRenderController
         {
             p.chunkStart = p.start;
             p.chunkLength = appSettings.chunkLength = chunkLengthNumericUpDown.Value;
-            checkCurrentChunkStartEnd();
-            checkChunkLength();
+            updateCurrentChunkStartEnd();
+            updateChunkLength();
             updateUI();
             appSettings.save();
         }
 
-        private void checkCurrentChunkStartEnd()
+        private void updateCurrentChunkStartEnd()
         {
             p.chunkEnd = p.chunkStart + p.chunkLength - 1;
             if (p.chunkStart < p.start)
@@ -1002,9 +1012,12 @@ namespace BlenderRenderController
             updateUI();
         }
 
-        private void checkChunkLength()
+        private void updateChunkLength()
         {
-            if(p.chunkLength - 1 > p.end - p.start || p.chunkEnd > p.end) {
+            if (renderOptionsAutoRadio.Checked) {
+                p.chunkLength = Math.Ceiling((p.end - p.start + 1) / p.processCount);
+            }
+            if (p.chunkLength - 1 > p.end - p.start || p.chunkEnd > p.end) {
                 p.chunkLength = p.end - p.start + 1;
             }
             updateUI();
@@ -1020,8 +1033,24 @@ namespace BlenderRenderController
                 totalStartNumericUpDown.Enabled = totalEndNumericUpDown.Enabled = false;
                 p.start = totalStartNumericUpDown.Value = blendData.start;
                 p.end = totalEndNumericUpDown.Value = blendData.end;
-                checkCurrentChunkStartEnd();
-                checkChunkLength();
+                updateCurrentChunkStartEnd();
+                updateChunkLength();
+                updateUI();
+            }
+        }
+
+        private void renderOptionsRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (renderOptionsCustomRadio.Checked)
+            {
+                chunkLengthNumericUpDown.Enabled = processCountNumericUpDown.Enabled = true;
+            }
+            else
+            {
+                chunkLengthNumericUpDown.Enabled = chunkLengthNumericUpDown.Enabled = false;
+                processCountNumericUpDown.Value = Environment.ProcessorCount;
+                updateCurrentChunkStartEnd();
+                updateChunkLength();
                 updateUI();
             }
         }
