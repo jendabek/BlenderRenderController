@@ -143,7 +143,7 @@ namespace BlenderRenderController
                 infoFramesTotal.Text = (p.end - p.start + 1).ToString();
             }
 
-            renderAllButton.Text = (appState == AppStates.RENDERING_CHUNK_ONLY || appState == AppStates.RENDERING_ALL) ? "Stop" : "Render";
+            renderAllButton.Text = (appState == AppStates.RENDERING_CHUNK_ONLY || appState == AppStates.RENDERING_ALL) ? "Stop Render" : "Render chunks";
             //enabling / disabling UI according to current app state
             switch (appState)
             {

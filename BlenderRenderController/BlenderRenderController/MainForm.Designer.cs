@@ -605,10 +605,11 @@ namespace BlenderRenderController
             this.renderAllButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.renderAllButton.Location = new System.Drawing.Point(32, 416);
             this.renderAllButton.Name = "renderAllButton";
-            this.renderAllButton.Padding = new System.Windows.Forms.Padding(25, 0, 0, 0);
-            this.renderAllButton.Size = new System.Drawing.Size(168, 38);
+            this.renderAllButton.Padding = new System.Windows.Forms.Padding(10, 0, 5, 0);
+            this.renderAllButton.Size = new System.Drawing.Size(177, 38);
             this.renderAllButton.TabIndex = 13;
-            this.renderAllButton.Text = "Render";
+            this.renderAllButton.Text = "Render chunks";
+            this.renderAllButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.toolTipInfo.SetToolTip(this.renderAllButton, "Starts rendering the timeline.");
             this.renderAllButton.UseVisualStyleBackColor = true;
             this.renderAllButton.Click += new System.EventHandler(this.renderAllButton_Click);
@@ -835,7 +836,7 @@ namespace BlenderRenderController
             this.mixDownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.mixDownButton.Image = global::BlenderRenderController.Properties.Resources.volume_small;
             this.mixDownButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.mixDownButton.Location = new System.Drawing.Point(206, 416);
+            this.mixDownButton.Location = new System.Drawing.Point(215, 416);
             this.mixDownButton.Name = "mixDownButton";
             this.mixDownButton.Padding = new System.Windows.Forms.Padding(8, 0, 10, 0);
             this.mixDownButton.Size = new System.Drawing.Size(110, 38);
