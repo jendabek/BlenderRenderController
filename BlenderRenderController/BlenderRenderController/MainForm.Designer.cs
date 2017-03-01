@@ -98,6 +98,10 @@ namespace BlenderRenderController
             this.renderOptionsAutoRadio = new System.Windows.Forms.RadioButton();
             this.renderOptionsCustomRadio = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.afterRenderJoinMixdownRadio = new System.Windows.Forms.RadioButton();
+            this.afterRenderJoinRadio = new System.Windows.Forms.RadioButton();
+            this.afterRenderDoNothingRadio = new System.Windows.Forms.RadioButton();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
@@ -107,6 +111,7 @@ namespace BlenderRenderController
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).BeginInit();
             this.currentChunkInfoPanel.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // renderChunkButton
@@ -124,7 +129,7 @@ namespace BlenderRenderController
             // 
             // renderProgressBar
             // 
-            this.renderProgressBar.Location = new System.Drawing.Point(32, 475);
+            this.renderProgressBar.Location = new System.Drawing.Point(32, 547);
             this.renderProgressBar.Name = "renderProgressBar";
             this.renderProgressBar.Size = new System.Drawing.Size(612, 14);
             this.renderProgressBar.Step = 1;
@@ -188,7 +193,7 @@ namespace BlenderRenderController
             this.statusLabel.AutoSize = true;
             this.statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.statusLabel.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.statusLabel.Location = new System.Drawing.Point(32, 503);
+            this.statusLabel.Location = new System.Drawing.Point(32, 575);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(145, 16);
             this.statusLabel.TabIndex = 11;
@@ -293,7 +298,7 @@ namespace BlenderRenderController
             // 
             this.totalTimeLabel.AutoSize = true;
             this.totalTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.totalTimeLabel.Location = new System.Drawing.Point(588, 503);
+            this.totalTimeLabel.Location = new System.Drawing.Point(588, 575);
             this.totalTimeLabel.Name = "totalTimeLabel";
             this.totalTimeLabel.Size = new System.Drawing.Size(56, 16);
             this.totalTimeLabel.TabIndex = 19;
@@ -584,13 +589,13 @@ namespace BlenderRenderController
             // 
             // concatenatePartsButton
             // 
-            this.concatenatePartsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.concatenatePartsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.concatenatePartsButton.Image = global::BlenderRenderController.Properties.Resources.connect_icon_small;
             this.concatenatePartsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.concatenatePartsButton.Location = new System.Drawing.Point(372, 416);
+            this.concatenatePartsButton.Location = new System.Drawing.Point(517, 414);
             this.concatenatePartsButton.Name = "concatenatePartsButton";
-            this.concatenatePartsButton.Padding = new System.Windows.Forms.Padding(12, 0, 7, 0);
-            this.concatenatePartsButton.Size = new System.Drawing.Size(143, 38);
+            this.concatenatePartsButton.Padding = new System.Windows.Forms.Padding(8, 0, 7, 0);
+            this.concatenatePartsButton.Size = new System.Drawing.Size(127, 38);
             this.concatenatePartsButton.TabIndex = 15;
             this.concatenatePartsButton.Text = "Join Chunks";
             this.concatenatePartsButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -603,12 +608,12 @@ namespace BlenderRenderController
             this.renderAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.renderAllButton.Image = global::BlenderRenderController.Properties.Resources.render_icon_small;
             this.renderAllButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.renderAllButton.Location = new System.Drawing.Point(32, 416);
+            this.renderAllButton.Location = new System.Drawing.Point(32, 414);
             this.renderAllButton.Name = "renderAllButton";
             this.renderAllButton.Padding = new System.Windows.Forms.Padding(10, 0, 5, 0);
-            this.renderAllButton.Size = new System.Drawing.Size(177, 38);
+            this.renderAllButton.Size = new System.Drawing.Size(166, 38);
             this.renderAllButton.TabIndex = 13;
-            this.renderAllButton.Text = "Render chunks";
+            this.renderAllButton.Text = "Start Render";
             this.renderAllButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.toolTipInfo.SetToolTip(this.renderAllButton, "Starts rendering the timeline.");
             this.renderAllButton.UseVisualStyleBackColor = true;
@@ -748,11 +753,11 @@ namespace BlenderRenderController
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label5.Location = new System.Drawing.Point(368, 382);
+            this.label5.Location = new System.Drawing.Point(383, 382);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(58, 20);
+            this.label5.Size = new System.Drawing.Size(116, 20);
             this.label5.TabIndex = 25;
-            this.label5.Text = "6. Join";
+            this.label5.Text = "6. After render";
             // 
             // label15
             // 
@@ -769,7 +774,7 @@ namespace BlenderRenderController
             // 
             this.timeElapsedLabel.AutoSize = true;
             this.timeElapsedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.timeElapsedLabel.Location = new System.Drawing.Point(492, 503);
+            this.timeElapsedLabel.Location = new System.Drawing.Point(492, 575);
             this.timeElapsedLabel.Name = "timeElapsedLabel";
             this.timeElapsedLabel.Size = new System.Drawing.Size(96, 16);
             this.timeElapsedLabel.TabIndex = 19;
@@ -808,7 +813,7 @@ namespace BlenderRenderController
             // 
             this.rendererRadioButtonCycles.AutoSize = true;
             this.rendererRadioButtonCycles.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(515, 298);
+            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(484, 270);
             this.rendererRadioButtonCycles.Name = "rendererRadioButtonCycles";
             this.rendererRadioButtonCycles.Size = new System.Drawing.Size(60, 19);
             this.rendererRadioButtonCycles.TabIndex = 10;
@@ -822,7 +827,7 @@ namespace BlenderRenderController
             this.rendererRadioButtonBlender.AutoSize = true;
             this.rendererRadioButtonBlender.Checked = true;
             this.rendererRadioButtonBlender.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(397, 298);
+            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(370, 270);
             this.rendererRadioButtonBlender.Name = "rendererRadioButtonBlender";
             this.rendererRadioButtonBlender.Size = new System.Drawing.Size(112, 19);
             this.rendererRadioButtonBlender.TabIndex = 9;
@@ -836,7 +841,7 @@ namespace BlenderRenderController
             this.mixDownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.mixDownButton.Image = global::BlenderRenderController.Properties.Resources.volume_small;
             this.mixDownButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.mixDownButton.Location = new System.Drawing.Point(215, 416);
+            this.mixDownButton.Location = new System.Drawing.Point(401, 414);
             this.mixDownButton.Name = "mixDownButton";
             this.mixDownButton.Padding = new System.Windows.Forms.Padding(8, 0, 10, 0);
             this.mixDownButton.Size = new System.Drawing.Size(110, 38);
@@ -851,12 +856,11 @@ namespace BlenderRenderController
             this.openOutputFolderButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.openOutputFolderButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
             this.openOutputFolderButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.openOutputFolderButton.Location = new System.Drawing.Point(521, 416);
+            this.openOutputFolderButton.Location = new System.Drawing.Point(604, 505);
             this.openOutputFolderButton.Name = "openOutputFolderButton";
             this.openOutputFolderButton.Padding = new System.Windows.Forms.Padding(10, 0, 5, 0);
-            this.openOutputFolderButton.Size = new System.Drawing.Size(123, 38);
+            this.openOutputFolderButton.Size = new System.Drawing.Size(40, 38);
             this.openOutputFolderButton.TabIndex = 16;
-            this.openOutputFolderButton.Text = "Open Folder";
             this.openOutputFolderButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.openOutputFolderButton.UseVisualStyleBackColor = true;
             this.openOutputFolderButton.Click += new System.EventHandler(this.outputFolderOpenButton_Click);
@@ -934,6 +938,54 @@ namespace BlenderRenderController
             this.panel1.Size = new System.Drawing.Size(79, 47);
             this.panel1.TabIndex = 32;
             // 
+            // afterRenderJoinMixdownRadio
+            // 
+            this.afterRenderJoinMixdownRadio.AutoSize = true;
+            this.afterRenderJoinMixdownRadio.Checked = true;
+            this.afterRenderJoinMixdownRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.afterRenderJoinMixdownRadio.Location = new System.Drawing.Point(3, 9);
+            this.afterRenderJoinMixdownRadio.Name = "afterRenderJoinMixdownRadio";
+            this.afterRenderJoinMixdownRadio.Size = new System.Drawing.Size(283, 19);
+            this.afterRenderJoinMixdownRadio.TabIndex = 33;
+            this.afterRenderJoinMixdownRadio.TabStop = true;
+            this.afterRenderJoinMixdownRadio.Text = "Automatically join chunks && use mixdown audio";
+            this.afterRenderJoinMixdownRadio.UseVisualStyleBackColor = true;
+            this.afterRenderJoinMixdownRadio.CheckedChanged += new System.EventHandler(this.afterRenderActionRadio_CheckedChanged);
+            // 
+            // afterRenderJoinRadio
+            // 
+            this.afterRenderJoinRadio.AutoSize = true;
+            this.afterRenderJoinRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.afterRenderJoinRadio.Location = new System.Drawing.Point(3, 31);
+            this.afterRenderJoinRadio.Name = "afterRenderJoinRadio";
+            this.afterRenderJoinRadio.Size = new System.Drawing.Size(272, 19);
+            this.afterRenderJoinRadio.TabIndex = 33;
+            this.afterRenderJoinRadio.Text = "Automatically join chunks && use chunks audio";
+            this.afterRenderJoinRadio.UseVisualStyleBackColor = true;
+            this.afterRenderJoinRadio.CheckedChanged += new System.EventHandler(this.afterRenderActionRadio_CheckedChanged);
+            // 
+            // afterRenderDoNothingRadio
+            // 
+            this.afterRenderDoNothingRadio.AutoSize = true;
+            this.afterRenderDoNothingRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.afterRenderDoNothingRadio.Location = new System.Drawing.Point(3, 53);
+            this.afterRenderDoNothingRadio.Name = "afterRenderDoNothingRadio";
+            this.afterRenderDoNothingRadio.Size = new System.Drawing.Size(133, 19);
+            this.afterRenderDoNothingRadio.TabIndex = 33;
+            this.afterRenderDoNothingRadio.Text = "Render only chunks";
+            this.afterRenderDoNothingRadio.UseVisualStyleBackColor = true;
+            this.afterRenderDoNothingRadio.CheckedChanged += new System.EventHandler(this.afterRenderActionRadio_CheckedChanged);
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.afterRenderDoNothingRadio);
+            this.panel2.Controls.Add(this.afterRenderJoinMixdownRadio);
+            this.panel2.Controls.Add(this.afterRenderJoinRadio);
+            this.panel2.Location = new System.Drawing.Point(32, 452);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(328, 83);
+            this.panel2.TabIndex = 34;
+            // 
             // blendFileBrowseButton
             // 
             this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -954,7 +1006,7 @@ namespace BlenderRenderController
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(662, 550);
+            this.ClientSize = new System.Drawing.Size(662, 621);
             this.Controls.Add(this.startEndBlendRadio);
             this.Controls.Add(this.startEndCustomRadio);
             this.Controls.Add(this.currentChunkInfoPanel);
@@ -990,10 +1042,11 @@ namespace BlenderRenderController
             this.Controls.Add(this.renderAllButton);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panel2);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(678, 589);
+            this.MaximumSize = new System.Drawing.Size(678, 660);
             this.MinimumSize = new System.Drawing.Size(678, 39);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -1013,6 +1066,8 @@ namespace BlenderRenderController
             this.currentChunkInfoPanel.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1088,6 +1143,10 @@ namespace BlenderRenderController
         private System.Windows.Forms.RadioButton renderOptionsAutoRadio;
         private System.Windows.Forms.RadioButton renderOptionsCustomRadio;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.RadioButton afterRenderJoinMixdownRadio;
+        private System.Windows.Forms.RadioButton afterRenderJoinRadio;
+        private System.Windows.Forms.RadioButton afterRenderDoNothingRadio;
+        private System.Windows.Forms.Panel panel2;
     }
 }
 

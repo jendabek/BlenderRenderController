@@ -19,6 +19,9 @@
     {
         public const string RENDERER_BLENDER = "BLENDER_RENDER";
         public const string RENDERER_CYCLES = "CYCLES";
+        public const string AFTER_RENDER_JOIN_MIXDOWN = "afterRenderJoinMixdown";
+        public const string AFTER_RENDER_JOIN = "afterRenderJoin";
+        public const string AFTER_RENDER_NOTHING = "afterRenderDoNothing";
         public const string FFMPEG_DOWNLOAD_URL = "https:\\//ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-3.2.2-win64-static.zip";
     }
     static class RenderFormats

@@ -85,6 +85,21 @@ namespace BlenderRenderController
             //processCountNumericUpDown.Value = p.processCount = appSettings.processCount;
             //chunkLengthNumericUpDown.Value = p.chunkLength = appSettings.chunkLength;
             renderOptionsRadio_CheckedChanged(null, null);
+            p.afterRenderAction = appSettings.afterRenderAction;
+
+            switch (p.afterRenderAction)
+            {
+                case AppStrings.AFTER_RENDER_JOIN_MIXDOWN:
+                    afterRenderJoinMixdownRadio.Checked = true;
+                    break;
+                case AppStrings.AFTER_RENDER_JOIN:
+                    afterRenderJoinRadio.Checked = true;
+                    break;
+                case AppStrings.AFTER_RENDER_NOTHING:
+                    afterRenderDoNothingRadio.Checked = true;
+                    break;
+            }
+
             //renderer
             p.renderer = appSettings.renderer;
             if (p.renderer == AppStrings.RENDERER_BLENDER)
@@ -143,7 +158,8 @@ namespace BlenderRenderController
                 infoFramesTotal.Text = (p.end - p.start + 1).ToString();
             }
 
-            renderAllButton.Text = (appState == AppStates.RENDERING_CHUNK_ONLY || appState == AppStates.RENDERING_ALL) ? "Stop Render" : "Render chunks";
+            renderAllButton.Text = (appState == AppStates.RENDERING_CHUNK_ONLY || appState == AppStates.RENDERING_ALL) ? "Stop Render" : "Start Render";
+            
             //enabling / disabling UI according to current app state
             switch (appState)
             {
@@ -174,6 +190,9 @@ namespace BlenderRenderController
                     startEndCustomRadio.Enabled = false;
                     renderOptionsCustomRadio.Enabled = false;
                     renderOptionsAutoRadio.Enabled = false;
+                    afterRenderDoNothingRadio.Enabled = false;
+                    afterRenderJoinMixdownRadio.Enabled = false;
+                    afterRenderJoinRadio.Enabled = false;
                     break;
                 case AppStates.NOT_CONFIGURED:
                     renderAllButton.Enabled = false;
@@ -202,6 +221,9 @@ namespace BlenderRenderController
                     startEndCustomRadio.Enabled = false;
                     renderOptionsCustomRadio.Enabled = false;
                     renderOptionsAutoRadio.Enabled = false;
+                    afterRenderDoNothingRadio.Enabled = false;
+                    afterRenderJoinMixdownRadio.Enabled = false;
+                    afterRenderJoinRadio.Enabled = false;
                     break;
                 case AppStates.READY_FOR_RENDER:
                     renderAllButton.Enabled = true;
@@ -214,7 +236,6 @@ namespace BlenderRenderController
                     totalEndNumericUpDown.Enabled = startEndCustomRadio.Checked;
                     chunkLengthNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
                     processCountNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
-                    startEndCustomRadio.Enabled = true;
                     concatenatePartsButton.Enabled = Directory.Exists(p.chunksPath);
                     reloadBlenderDataButton.Enabled = true;
                     blendFileBrowseButton.Enabled = true;
@@ -228,8 +249,12 @@ namespace BlenderRenderController
                     rendererRadioButtonCycles.Enabled = true;
                     renderAllButton.Image = Properties.Resources.render_icon_small;
                     startEndBlendRadio.Enabled = true;
+                    startEndCustomRadio.Enabled = true;
                     renderOptionsCustomRadio.Enabled = true;
                     renderOptionsAutoRadio.Enabled = true;
+                    afterRenderDoNothingRadio.Enabled = true;
+                    afterRenderJoinMixdownRadio.Enabled = true;
+                    afterRenderJoinRadio.Enabled = true;
                     break;
                 case AppStates.RENDERING_ALL:
                 case AppStates.RENDERING_CHUNK_ONLY:
@@ -255,7 +280,12 @@ namespace BlenderRenderController
                     rendererRadioButtonCycles.Enabled = false;
                     renderAllButton.Image = Properties.Resources.stop_icon_small;
                     renderOptionsCustomRadio.Enabled = false;
+                    renderOptionsAutoRadio.Enabled = false;
+                    startEndBlendRadio.Enabled = false;
                     startEndCustomRadio.Enabled = false;
+                    afterRenderDoNothingRadio.Enabled = false;
+                    afterRenderJoinMixdownRadio.Enabled = false;
+                    afterRenderJoinRadio.Enabled = false;
                     break;
             }
         }
@@ -478,7 +508,6 @@ namespace BlenderRenderController
                                                                 MessageBoxIcon.Exclamation);
                 if (dialogResult == DialogResult.No) return;
                 stopRender(false);
-                renderAllButton.Text = "Render";
             }
 
             //we want to start render
@@ -504,7 +533,6 @@ namespace BlenderRenderController
                     renderAllButton_Click(null, null);
                 }
                 renderAll();
-                renderAllButton.Text = "Stop";
             }
         }
         
@@ -527,7 +555,7 @@ namespace BlenderRenderController
 
         private void stopRender(bool wasComplete)
         {
-            statusLabel.Text = wasComplete ? "Render complete, press Join Chunks to get the final video.\nIf your anim has a sound, press Audio Mixdown before Join Chunks." : "Render cancelled.";
+            statusLabel.Text = wasComplete ? "Render complete." : "Render cancelled.";
             
             foreach (var process in processes.ToList())
             {
@@ -598,16 +626,49 @@ namespace BlenderRenderController
 
             if (processes.Count == 0)
             {
-
-                bool wasComplete = (framesRendered.Count == p.end - p.start + 1);
-                stopRender(wasComplete);
-                updateCurrentChunkStartEnd();
-                return;
+                afterRender();
             }
+        }
+        private void afterRender()
+        {
+            bool wasComplete = (framesRendered.Count == p.end - p.start + 1);
+
+            if(wasComplete)
+            {
+                //if we rendered the project (and not chunk only)
+                //and some of automatic join checkbox is checked
+                //we continue with join (with mixdown if the checkbox is checked)
+                if (appState == AppStates.RENDERING_ALL && (p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN_MIXDOWN || p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN))
+                {
+                    if (p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN_MIXDOWN)
+                    {
+                        mixdown();
+                    }
+                    concatenate();
+                    stopRender(true);
+
+                    DialogResult openOutputFolderQuestion = MessageBox.Show("Open the folder with the video?",
+                           "Open folder",
+                           MessageBoxButtons.YesNo,
+                           MessageBoxIcon.Question);
+                    if (openOutputFolderQuestion == DialogResult.Yes)
+                    {
+                        openOutputFolder();
+                    }
+                } else
+                {
+                    stopRender(true);
+                }
+            }
+            else
+            {
+                stopRender(false);
+            }
+            updateCurrentChunkStartEnd();
             updateUI();
         }
         
-        private void concatenatePartsButton_Click(object sender, EventArgs e)
+        private void concatenate()
         {
             if (!Directory.Exists(p.chunksPath))
             {
@@ -667,7 +728,7 @@ namespace BlenderRenderController
             //mixdown audio NOT found
             if (!File.Exists(Path.Combine(p.outputPath, audioFileName)))
             {
-                statusLabel.Text = "Joining chunks...";
+                statusLabel.Text = "Joining chunks, please wait...";
                 audioFileName = string.Empty;
                 audioSettings = string.Empty;
             }
@@ -845,9 +906,9 @@ namespace BlenderRenderController
             loadBlend();
 		}
 
-        private void MixdownAudio_Click(object sender, EventArgs e) {
+        private void mixdown() {
 
-            statusLabel.Text = "Rendering mixdown...";
+            statusLabel.Text = "Rendering mixdown, it can take a while for larger projects...";
             statusLabel.Update();
 
             if (!File.Exists(p.blendFilePath)) {
@@ -875,7 +936,7 @@ namespace BlenderRenderController
 
             process.StartInfo.Arguments = String.Format("-b \"{0}\" -s {1} -e {2} -P \"{3}\" -- \"{4}\"",
                                                   p.blendFilePath,
-                                                  p.chunkStart,
+                                                  p.start,
                                                   p.end,
                                                   Path.Combine(appSettings.scriptsPath, "mixdown_audio.py"),
                                                   p.outputPath
@@ -894,9 +955,9 @@ namespace BlenderRenderController
                 return;
             }
 
-            process.WaitForExit((int)TimeSpan.FromMinutes(5).TotalMilliseconds);
+            process.WaitForExit();
 
-            Trace.WriteLine("Mixdown completed");
+            Trace.WriteLine("Mixdown complete");
             statusLabel.Text = "Mixdown complete.";
         }
 
@@ -940,9 +1001,15 @@ namespace BlenderRenderController
 
         private void outputFolderOpenButton_Click(object sender, EventArgs e)
         {
-            if (Directory.Exists(p.outputPath)) {
+            openOutputFolder();
+        }
+        private void openOutputFolder()
+        {
+            if (Directory.Exists(p.outputPath))
+            {
                 Process.Start(p.outputPath);
-            } else
+            }
+            else
             {
                 MessageBox.Show("Folder does not exist.", "",
                                 MessageBoxButtons.OK,
@@ -952,6 +1019,16 @@ namespace BlenderRenderController
         private void processCountNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             appSettings.processCount = p.processCount = processCountNumericUpDown.Value;
+        }
+
+        private void concatenatePartsButton_Click(object sender, EventArgs e)
+        {
+            concatenate();
+        }
+
+        private void MixdownAudio_Click(object sender, EventArgs e)
+        {
+            mixdown();
         }
 
         //total start numericUpDown change
@@ -1053,6 +1130,26 @@ namespace BlenderRenderController
                 updateChunkLength();
                 updateUI();
             }
+        }
+
+        private void afterRenderActionRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            var radios = new List<RadioButton>()
+            {
+                afterRenderJoinMixdownRadio,
+                afterRenderJoinRadio,
+                afterRenderDoNothingRadio
+            };
+            var afterRenderAction = "";
+            foreach (var radio in radios)
+            {
+                if (radio.Checked)
+                {
+                    p.afterRenderAction = appSettings.afterRenderAction = radio.Name.Replace("Radio", "");
+                    break;
+                }
+            }
+            updateUI();
         }
     }
 }
