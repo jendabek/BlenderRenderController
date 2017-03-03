@@ -83,6 +83,16 @@ namespace BlenderRenderController.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap donate_icon {
+            get {
+                object obj = ResourceManager.GetObject("donate_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap folder_icon_small {
             get {
                 object obj = ResourceManager.GetObject("folder_icon_small", resourceCulture);
@@ -116,6 +126,16 @@ namespace BlenderRenderController.Properties {
         internal static System.Drawing.Bitmap github_logo_small {
             get {
                 object obj = ResourceManager.GetObject("github_logo_small", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap info_icon {
+            get {
+                object obj = ResourceManager.GetObject("info_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

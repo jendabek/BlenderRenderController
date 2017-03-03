@@ -12,7 +12,7 @@ namespace BlenderRenderController
     public class AppSettings
     {
         //THESE PROPERTIES (in _jsonProperties) ARE STORED AND LOADED automatically from external JSON file
-        private string[] _jsonProperties = { "recentBlends", "blenderPath", "ffmpegPath", "renderer", "afterRenderAction"};
+        private string[] _jsonProperties = { "recentBlends", "blenderPath", "ffmpegPath", "renderer", "afterRenderAction", "displayTooltips"};
 
         private const int _RECENT_BLENDS_MAX_COUNT = 10;
         public const string BLENDER_EXE_NAME = "blender.exe";
@@ -31,6 +31,7 @@ namespace BlenderRenderController
         private string _renderer = AppStrings.RENDERER_BLENDER;
         private decimal _processCount;
         private decimal _chunkLength;
+        private bool _displayTooltips = true;
         private string[] _allowedFormats = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
 
         private string _scriptsPath, _blenderPath, _ffmpegPath;
@@ -297,6 +298,19 @@ namespace BlenderRenderController
             set
             {
                 _afterRenderAction = value;
+            }
+        }
+
+        public bool displayTooltips
+        {
+            get
+            {
+                return _displayTooltips;
+            }
+
+            set
+            {
+                _displayTooltips = value;
             }
         }
     }

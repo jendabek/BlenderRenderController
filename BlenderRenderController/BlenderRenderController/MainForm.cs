@@ -82,10 +82,15 @@ namespace BlenderRenderController
 
         private void applySettings()
         {
-            //processCountNumericUpDown.Value = p.processCount = appSettings.processCount;
-            //chunkLengthNumericUpDown.Value = p.chunkLength = appSettings.chunkLength;
             renderOptionsRadio_CheckedChanged(null, null);
             p.afterRenderAction = appSettings.afterRenderAction;
+
+            //tooltips
+            toolTipInfo.Active =
+            toolTipWarn.Active =
+            renderInfoLabel.Visible =
+            tipsToolStripMenuItem.Checked =
+            appSettings.displayTooltips;
 
             switch (p.afterRenderAction)
             {
@@ -193,6 +198,7 @@ namespace BlenderRenderController
                     afterRenderDoNothingRadio.Enabled = false;
                     afterRenderJoinMixdownRadio.Enabled = false;
                     afterRenderJoinRadio.Enabled = false;
+                    renderInfoLabel.Enabled = false;
                     break;
                 case AppStates.NOT_CONFIGURED:
                     renderAllButton.Enabled = false;
@@ -224,6 +230,7 @@ namespace BlenderRenderController
                     afterRenderDoNothingRadio.Enabled = false;
                     afterRenderJoinMixdownRadio.Enabled = false;
                     afterRenderJoinRadio.Enabled = false;
+                    renderInfoLabel.Enabled = false;
                     break;
                 case AppStates.READY_FOR_RENDER:
                     renderAllButton.Enabled = true;
@@ -255,6 +262,7 @@ namespace BlenderRenderController
                     afterRenderDoNothingRadio.Enabled = true;
                     afterRenderJoinMixdownRadio.Enabled = true;
                     afterRenderJoinRadio.Enabled = true;
+                    renderInfoLabel.Enabled = true;
                     break;
                 case AppStates.RENDERING_ALL:
                 case AppStates.RENDERING_CHUNK_ONLY:
@@ -635,8 +643,8 @@ namespace BlenderRenderController
 
             if(wasComplete)
             {
-                //if we rendered the project (and not chunk only)
-                //and some of automatic join checkbox is checked
+                //if we rendered the project (not chunk only)
+                //and some of automatic join checkboxes is checked
                 //we continue with join (with mixdown if the checkbox is checked)
                 if (appState == AppStates.RENDERING_ALL && (p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN_MIXDOWN || p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN))
                 {
@@ -880,7 +888,7 @@ namespace BlenderRenderController
                 }
                 
                 //INFO TEXTS
-                statusLabel.Text                = "Successfully opened " + blendData.projectName + ".blend.";
+                statusLabel.Text                = "Opened " + blendData.projectName + ".blend";
                 blendFileLabel.Visible          = false;
                 blendFileNameLabel.Text         = blendData.projectName;
                 infoActiveScene.Text            = blendData.sceneActive;
@@ -964,7 +972,12 @@ namespace BlenderRenderController
         // show / hide tooltips
         private void tipsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            toolTipInfo.Active = toolTipWarn.Active = tipsToolStripMenuItem.Checked;
+            toolTipInfo.Active =
+            toolTipWarn.Active =
+            renderInfoLabel.Visible =
+            appSettings.displayTooltips =
+            tipsToolStripMenuItem.Checked;
+            appSettings.save();
         }
 
         private void isti115ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1011,7 +1024,7 @@ namespace BlenderRenderController
             }
             else
             {
-                MessageBox.Show("Folder does not exist.", "",
+                MessageBox.Show("Output folder does not exist.", "",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Exclamation);
             }
@@ -1093,6 +1106,12 @@ namespace BlenderRenderController
         {
             if (renderOptionsAutoRadio.Checked) {
                 p.chunkLength = Math.Ceiling((p.end - p.start + 1) / p.processCount);
+
+                //it could fix some blender rendering issues with small chunks & high fps
+                if (p.chunkLength < (decimal) p.fps)
+                {
+                    p.chunkLength = (decimal) p.fps;
+                }
             }
             if (p.chunkLength - 1 > p.end - p.start || p.chunkEnd > p.end) {
                 p.chunkLength = p.end - p.start + 1;
@@ -1140,7 +1159,6 @@ namespace BlenderRenderController
                 afterRenderJoinRadio,
                 afterRenderDoNothingRadio
             };
-            var afterRenderAction = "";
             foreach (var radio in radios)
             {
                 if (radio.Checked)
@@ -1150,6 +1168,26 @@ namespace BlenderRenderController
                 }
             }
             updateUI();
+        }
+
+        private void donateButton_Click(object sender, EventArgs e)
+        {
+            string url = "";
+
+            string business = "jendabek@gmail.com";  // your paypal email
+            string description = "Donation for Blender Render Controller";            // '%20' represents a space. remember HTML!
+            string country = "CZE";                  // AU, US, etc.
+            string currency = "USD";                 // AUD, USD, etc.
+
+            url += "https://www.paypal.com/cgi-bin/webscr" +
+                "?cmd=" + "_donations" +
+                "&business=" + business +
+                "&lc=" + country +
+                "&item_name=" + description +
+                "&currency_code=" + currency +
+                "&bn=" + "PP%2dDonationsBF";
+
+            Process.Start(url);
         }
     }
 }

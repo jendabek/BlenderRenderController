@@ -124,6 +124,9 @@
   <data name="connect_icon_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\connect-icon-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="donate_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\donate-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="folder_icon_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\folder-icon-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -135,6 +138,9 @@
   </data>
   <data name="github_logo_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\github-logo-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="info_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\info-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="reload_icon_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\reload-icon-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

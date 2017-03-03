@@ -163,7 +163,7 @@
         Z1Q4sf9/EeknC+zhDEyOmTgpbuKk2KkT+FtJWfo/RKP5L/ZiwQOojRh0AAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="isti115MenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="jendabekMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAABGdBTUEAALGPC/xhBQAAABl0RVh0U29m
         dHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAI3SURBVEhLldXNSxVRGMfxi6AlUSlhZFKEborUVbno
@@ -179,7 +179,7 @@
         xap72xQAAAAASUVORK5CYII=
 </value>
   </data>
-  <data name="jendabekMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="isti115MenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAABGdBTUEAALGPC/xhBQAAABl0RVh0U29m
         dHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAI3SURBVEhLldXNSxVRGMfxi6AlUSlhZFKEborUVbno
@@ -230,6 +230,50 @@
   <metadata name="toolTipWarn.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>132, 17</value>
   </metadata>
+  <data name="chunkLengthLabel.ToolTip" xml:space="preserve">
+    <value>Video is divided into "chunks" (segments or parts), each process works on different one.
+Chunk Size sets the length (frame count) of these parts.
+
+"Auto" = framecount / number of processes - this allows to render whole video
+by chosen number of processes without unnecesarray process stopping / starting.
+
+</value>
+  </data>
+  <data name="chunkLengthNumericUpDown.ToolTip" xml:space="preserve">
+    <value>Video is divided into "chunks" (segments or parts), each process works on different one.
+Chunk Size sets the length (frame count) of these parts.
+
+"Auto" = framecount / number of processes - this allows to render whole video
+by chosen number of processes without unnecesarray process stopping / starting.
+</value>
+  </data>
+  <data name="afterRenderJoinMixdownRadio.ToolTip" xml:space="preserve">
+    <value>!Warning - previously rendered video will be overwritten!
+
+1. Will render all chunks,
+2. Will render an audio mixdown
+3. Will concatenate chunks together using mixdown audio to get the final video.
+
+Strongly recommended method - it avoids audio issues.</value>
+  </data>
+  <data name="afterRenderJoinRadio.ToolTip" xml:space="preserve">
+    <value>!Warning - previously rendered video will be overwritten!
+
+1. Will render all chunks,
+2. Will concatenate chunks together using audio from rendered chunks.
+
+If an audio mixdown file is found in the render folder,
+it will be used instead of audio from rendered chunks.
+</value>
+  </data>
+  <data name="renderInfoLabel.ToolTip" xml:space="preserve">
+    <value>Make sure that Blender itself can render your project (or customized frame range) well.
+If there is an issue in a video produced by this tool, it is the most likely caused by an incorrect Blender rendering.
+If you experience issues with sound, make sure you use the method with mixdown audio (checkboxes above).
+
+
+</value>
+  </data>
   <data name="blendFileBrowseButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAABGdBTUEAALGPC/xhBQAAABl0RVh0U29m

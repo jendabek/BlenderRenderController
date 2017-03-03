@@ -128,7 +128,10 @@
     <None Include="resources\folder-icon-small.png" />
     <None Include="resources\folder-icon-smaller.png" />
     <None Include="resources\github-logo-small.png" />
+    <None Include="resources\donate-paypal-1x.png" />
+    <None Include="resources\donate-icon.png" />
     <Content Include="resources\github-logo.png" />
+    <None Include="resources\info-icon.png" />
     <Content Include="resources\movie_camera-512.png" />
     <None Include="resources\reload-icon-small.png" />
     <None Include="resources\render-icon.png" />
