@@ -73,6 +73,16 @@ namespace BlenderRenderController.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap bug_icon {
+            get {
+                object obj = ResourceManager.GetObject("bug_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap connect_icon_small {
             get {
                 object obj = ResourceManager.GetObject("connect_icon_small", resourceCulture);

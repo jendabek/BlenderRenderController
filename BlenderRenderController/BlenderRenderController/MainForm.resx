@@ -267,7 +267,7 @@ it will be used instead of audio from rendered chunks.
 </value>
   </data>
   <data name="renderInfoLabel.ToolTip" xml:space="preserve">
-    <value>Make sure that Blender itself can render your project (or customized frame range) well.
+    <value>Make sure that Blender itself can render your project (or the selected frame range) well.
 If there is an issue in a video produced by this tool, it is the most likely caused by an incorrect Blender rendering.
 If you experience issues with sound, make sure you use the method with mixdown audio (checkboxes above).
 

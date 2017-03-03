@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Web.Script.Serialization;
 using System.Drawing;
 using System.Globalization;
+using System.Reflection;
 
 namespace BlenderRenderController
 {
@@ -41,7 +42,12 @@ namespace BlenderRenderController
         public void MainForm_Shown(object sender, EventArgs e)
         {
             
+            //add version numbers to window title
+            string assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            versionLabel.Text = " v" + assemblyVersion.Split('.')[0] + "." + assemblyVersion.Split('.')[1] + "." + assemblyVersion.Split('.')[2];
+
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(onAppExit);
+
 
             settingsForm = new SettingsForm();
             appSettings = new AppSettings();
@@ -1011,6 +1017,10 @@ namespace BlenderRenderController
                 p.renderer = appSettings.renderer = AppStrings.RENDERER_CYCLES;
             }
         }
+        private void toolStripMenuItemBug_Click(object sender, EventArgs e)
+        {
+            Process.Start("https:\\//github.com/jendabek/BlenderRenderController/issues");
+        }
 
         private void outputFolderOpenButton_Click(object sender, EventArgs e)
         {
@@ -1189,5 +1199,6 @@ namespace BlenderRenderController
 
             Process.Start(url);
         }
+
     }
 }
