@@ -85,7 +85,6 @@ namespace BlenderRenderController
             this.reloadBlenderDataButton = new System.Windows.Forms.Button();
             this.mixDownButton = new System.Windows.Forms.Button();
             this.concatenatePartsButton = new System.Windows.Forms.Button();
-            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -107,6 +106,7 @@ namespace BlenderRenderController
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.versionLabel = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
+            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -592,6 +592,7 @@ namespace BlenderRenderController
             this.currentChunkInfoPanel.Name = "currentChunkInfoPanel";
             this.currentChunkInfoPanel.Size = new System.Drawing.Size(268, 122);
             this.currentChunkInfoPanel.TabIndex = 31;
+            this.currentChunkInfoPanel.Visible = false;
             // 
             // chunkEndNumericUpDown
             // 
@@ -811,22 +812,6 @@ namespace BlenderRenderController
         "utput folder).");
             this.concatenatePartsButton.UseVisualStyleBackColor = true;
             this.concatenatePartsButton.Click += new System.EventHandler(this.concatenatePartsButton_Click);
-            // 
-            // blendFileBrowseButton
-            // 
-            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
-            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
-            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
-            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
-            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
-            this.blendFileBrowseButton.SplitWidth = 30;
-            this.blendFileBrowseButton.TabIndex = 1;
-            this.blendFileBrowseButton.Text = "Open Blend";
-            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
-            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
-            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
             // 
             // blendFileLabel
             // 
@@ -1072,6 +1057,22 @@ namespace BlenderRenderController
             // 
             this.fileSystemWatcher1.EnableRaisingEvents = true;
             this.fileSystemWatcher1.SynchronizingObject = this;
+            // 
+            // blendFileBrowseButton
+            // 
+            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
+            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
+            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
+            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
+            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
+            this.blendFileBrowseButton.SplitWidth = 30;
+            this.blendFileBrowseButton.TabIndex = 1;
+            this.blendFileBrowseButton.Text = "Open Blend";
+            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
+            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
+            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
             // 
             // MainForm
             // 
