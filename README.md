@@ -1,13 +1,13 @@
 # Blender Render Controller, jendabek ver.
 
 ## What is this?
-Blender Render Controller is a tool to help speed up the render process in Blender's Video Sequence Editor(VSE).
+Blender Render Controller is a tool to help speed up the render process in Blender's Video Sequence Editor (VSE).
 
 VSE is pretty good for editing videos, it's precise and relatively easy to learn, making it a compelling choice next to other free video editing tools. There are some downsides too, main of which been that the renderer is SINGLE THREADED. Meaning that it won't take full advantage of all logical cores in your system, so rendering your finished project is SUPER SLOW compared to other video editors.
 
-This tool offers a work-around until the Blender developers make a better renderer for VSE, 
+This tool offers a work-around until the Blender developers make a better renderer for VSE. 
 
-This tool offers a work-around by calling multiple instances of `blender.exe`, each rendering a different segments (chunks) of the project at the same time, making use of processing power that would otherwise go unused. After all parts are rendered, they're joined together in FFMpeg and BAM, your video is ready much faster then previously possible.
+This tool offers a work-around by calling multiple instances of `blender.exe`, each rendering a different segments (chunks) of the project at the same time, making use of processing power that would otherwise go unused. After all parts are rendered, they're joined together in FFmpeg and BAM, your video is ready much faster then previously possible.
 
 ## How much difference does it make?
 Quite a lot! I did some testing shown below (Blender Render Controller shown in orange):
@@ -24,7 +24,7 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
 
 ### Dependencies
 - Blender, obviously
-- FFmpeg, required for joining the parts together.
+- FFmpeg, required for joining the parts together. You don't need to care about this if you download Full version which has FFmpeg already included.'
 
 1. Save your .blend file with the settings you want (output path, resolution, etc)
  
