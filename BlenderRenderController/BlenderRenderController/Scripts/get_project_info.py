@@ -24,13 +24,15 @@ fps  = bpy.data.scenes[sceneActive].render.fps
 fpsBase = bpy.data.scenes[sceneActive].render.fps_base
 outputPath = bpy.data.scenes[sceneActive].render.filepath
 renderFormat = bpy.data.scenes[sceneActive].render.image_settings.file_format
-#altDir = str(outputPath).rpartition('\\')[:-1][0]
+resolution = "{0}x{1}".format(bpy.data.scenes[sceneActive].render.resolution_x,
+                              bpy.data.scenes[sceneActive].render.resolution_y)
 
 data = {'projectName': projectName,
 		'start': start,
 		'end': end,
 		'fps': fps,
 		'fpsBase': fpsBase,
+        'resolution': resolution,
 		'outputPath': outputPath,
         'scenesNum': scenesNum,
 		'sceneActive': sceneActive,

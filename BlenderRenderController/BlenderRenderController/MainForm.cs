@@ -33,7 +33,8 @@ namespace BlenderRenderController
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
 
-        //string[] args = Environment.GetCommandLineArgs();
+        // CMD args
+        string[] CMDargs = Environment.GetCommandLineArgs();
 
         public MainForm()
         {
@@ -313,7 +314,7 @@ namespace BlenderRenderController
         private void MainForm_Load(object sender, EventArgs e)
         {
             // Arguments
-            /*if (args.Length > 1)
+           /* if (CMDargs.Length > 1)
             {
                 //test arguments
                 //for (int i = 0; i < args.Length; i++)
@@ -322,12 +323,12 @@ namespace BlenderRenderController
                 //    MessageBox.Show(teste);
                 //}
 
-                // arg 1 = .blend path
-                blendFilePath = args[1];
-                //blendFilePathTextBox.Text = blendFilePath;
+                var CMDpath = CMDargs[1];
+                p.blendFilePath = CMDpath;
+                //blendFilePathTextBox.Text = p.blendFilePath;
                 loadBlend();
-            }*/
-
+            }
+            */
             
         }
 
@@ -898,8 +899,9 @@ namespace BlenderRenderController
                 blendFileLabel.Visible          = false;
                 blendFileNameLabel.Text         = blendData.projectName;
                 infoActiveScene.Text            = blendData.sceneActive;
-                infoFramerate.Text              = p.fps.ToString();
+                infoFramerate.Text              = p.fps.ToString("###.##");
                 infoNoScenes.Text               = blendData.scenesNum;
+                infoResolution.Text             = blendData.resolution;
 
                 appSettings.addRecentBlend(p.blendFilePath);
                 appSettings.save();
@@ -1199,6 +1201,5 @@ namespace BlenderRenderController
 
             Process.Start(url);
         }
-
     }
 }

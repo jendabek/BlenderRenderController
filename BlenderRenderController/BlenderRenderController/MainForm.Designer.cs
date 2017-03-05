@@ -59,7 +59,10 @@ namespace BlenderRenderController
             this.redRaptorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.infoPanel = new System.Windows.Forms.Panel();
+            this.infoMore = new System.Windows.Forms.LinkLabel();
+            this.label4 = new System.Windows.Forms.Label();
             this.infoDurationLabel = new System.Windows.Forms.Label();
+            this.infoResolution = new System.Windows.Forms.TextBox();
             this.infoFramerate = new System.Windows.Forms.TextBox();
             this.infoDuration = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -85,6 +88,7 @@ namespace BlenderRenderController
             this.reloadBlenderDataButton = new System.Windows.Forms.Button();
             this.mixDownButton = new System.Windows.Forms.Button();
             this.concatenatePartsButton = new System.Windows.Forms.Button();
+            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -106,7 +110,6 @@ namespace BlenderRenderController
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.versionLabel = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
-            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -319,7 +322,7 @@ namespace BlenderRenderController
             this.infoToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(662, 24);
+            this.menuStrip.Size = new System.Drawing.Size(810, 24);
             this.menuStrip.TabIndex = 20;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -431,7 +434,7 @@ namespace BlenderRenderController
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(8, 20);
+            this.label1.Location = new System.Drawing.Point(8, 3);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(76, 15);
             this.label1.TabIndex = 21;
@@ -444,7 +447,10 @@ namespace BlenderRenderController
             // 
             this.infoPanel.BackColor = System.Drawing.SystemColors.Info;
             this.infoPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.infoPanel.Controls.Add(this.infoMore);
+            this.infoPanel.Controls.Add(this.label4);
             this.infoPanel.Controls.Add(this.infoDurationLabel);
+            this.infoPanel.Controls.Add(this.infoResolution);
             this.infoPanel.Controls.Add(this.infoFramerate);
             this.infoPanel.Controls.Add(this.infoDuration);
             this.infoPanel.Controls.Add(this.label7);
@@ -459,23 +465,58 @@ namespace BlenderRenderController
             this.infoPanel.Size = new System.Drawing.Size(425, 87);
             this.infoPanel.TabIndex = 22;
             // 
+            // infoMore
+            // 
+            this.infoMore.AutoSize = true;
+            this.infoMore.Location = new System.Drawing.Point(373, 64);
+            this.infoMore.Name = "infoMore";
+            this.infoMore.Size = new System.Drawing.Size(40, 13);
+            this.infoMore.TabIndex = 33;
+            this.infoMore.TabStop = true;
+            this.infoMore.Text = "More...";
+            this.infoMore.Visible = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(8, 44);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(66, 15);
+            this.label4.TabIndex = 33;
+            this.label4.Text = "Resolution";
+            // 
             // infoDurationLabel
             // 
             this.infoDurationLabel.AutoSize = true;
             this.infoDurationLabel.BackColor = System.Drawing.SystemColors.Info;
             this.infoDurationLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoDurationLabel.Location = new System.Drawing.Point(289, 20);
+            this.infoDurationLabel.Location = new System.Drawing.Point(289, 3);
             this.infoDurationLabel.Name = "infoDurationLabel";
             this.infoDurationLabel.Size = new System.Drawing.Size(75, 15);
             this.infoDurationLabel.TabIndex = 31;
             this.infoDurationLabel.Text = "Length Total";
+            // 
+            // infoResolution
+            // 
+            this.infoResolution.BackColor = System.Drawing.SystemColors.Control;
+            this.infoResolution.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.infoResolution.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.infoResolution.Location = new System.Drawing.Point(11, 62);
+            this.infoResolution.Name = "infoResolution";
+            this.infoResolution.ReadOnly = true;
+            this.infoResolution.Size = new System.Drawing.Size(104, 20);
+            this.infoResolution.TabIndex = 32;
+            this.infoResolution.TabStop = false;
+            this.infoResolution.Text = "...";
+            this.infoResolution.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // infoFramerate
             // 
             this.infoFramerate.BackColor = System.Drawing.SystemColors.Control;
             this.infoFramerate.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.infoFramerate.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.infoFramerate.Location = new System.Drawing.Point(170, 39);
+            this.infoFramerate.Location = new System.Drawing.Point(170, 22);
             this.infoFramerate.Name = "infoFramerate";
             this.infoFramerate.ReadOnly = true;
             this.infoFramerate.Size = new System.Drawing.Size(36, 20);
@@ -489,7 +530,7 @@ namespace BlenderRenderController
             this.infoDuration.BackColor = System.Drawing.SystemColors.Control;
             this.infoDuration.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.infoDuration.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.infoDuration.Location = new System.Drawing.Point(292, 39);
+            this.infoDuration.Location = new System.Drawing.Point(292, 22);
             this.infoDuration.Name = "infoDuration";
             this.infoDuration.ReadOnly = true;
             this.infoDuration.Size = new System.Drawing.Size(121, 20);
@@ -502,7 +543,7 @@ namespace BlenderRenderController
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(167, 20);
+            this.label7.Location = new System.Drawing.Point(167, 3);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(30, 15);
             this.label7.TabIndex = 29;
@@ -513,7 +554,7 @@ namespace BlenderRenderController
             this.infoNoScenes.BackColor = System.Drawing.SystemColors.Control;
             this.infoNoScenes.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.infoNoScenes.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.infoNoScenes.Location = new System.Drawing.Point(121, 39);
+            this.infoNoScenes.Location = new System.Drawing.Point(121, 22);
             this.infoNoScenes.Name = "infoNoScenes";
             this.infoNoScenes.ReadOnly = true;
             this.infoNoScenes.Size = new System.Drawing.Size(43, 20);
@@ -528,7 +569,7 @@ namespace BlenderRenderController
             this.infoFramesTotal.BackColor = System.Drawing.SystemColors.Control;
             this.infoFramesTotal.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.infoFramesTotal.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.infoFramesTotal.Location = new System.Drawing.Point(212, 39);
+            this.infoFramesTotal.Location = new System.Drawing.Point(212, 22);
             this.infoFramesTotal.Name = "infoFramesTotal";
             this.infoFramesTotal.ReadOnly = true;
             this.infoFramesTotal.Size = new System.Drawing.Size(74, 20);
@@ -542,7 +583,7 @@ namespace BlenderRenderController
             this.infoActiveScene.BackColor = System.Drawing.SystemColors.Control;
             this.infoActiveScene.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.infoActiveScene.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.infoActiveScene.Location = new System.Drawing.Point(11, 39);
+            this.infoActiveScene.Location = new System.Drawing.Point(11, 22);
             this.infoActiveScene.Name = "infoActiveScene";
             this.infoActiveScene.ReadOnly = true;
             this.infoActiveScene.Size = new System.Drawing.Size(104, 20);
@@ -557,7 +598,7 @@ namespace BlenderRenderController
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(118, 20);
+            this.label3.Location = new System.Drawing.Point(118, 3);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(48, 15);
             this.label3.TabIndex = 23;
@@ -569,7 +610,7 @@ namespace BlenderRenderController
             this.infoFramesTotalLabel.AutoSize = true;
             this.infoFramesTotalLabel.BackColor = System.Drawing.SystemColors.Info;
             this.infoFramesTotalLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoFramesTotalLabel.Location = new System.Drawing.Point(209, 20);
+            this.infoFramesTotalLabel.Location = new System.Drawing.Point(209, 3);
             this.infoFramesTotalLabel.Name = "infoFramesTotalLabel";
             this.infoFramesTotalLabel.Size = new System.Drawing.Size(79, 15);
             this.infoFramesTotalLabel.TabIndex = 29;
@@ -588,7 +629,7 @@ namespace BlenderRenderController
             this.currentChunkInfoPanel.Controls.Add(this.label15);
             this.currentChunkInfoPanel.Controls.Add(this.chunkEndLabel);
             this.currentChunkInfoPanel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.currentChunkInfoPanel.Location = new System.Drawing.Point(155, 268);
+            this.currentChunkInfoPanel.Location = new System.Drawing.Point(542, 395);
             this.currentChunkInfoPanel.Name = "currentChunkInfoPanel";
             this.currentChunkInfoPanel.Size = new System.Drawing.Size(268, 122);
             this.currentChunkInfoPanel.TabIndex = 31;
@@ -812,6 +853,22 @@ namespace BlenderRenderController
         "utput folder).");
             this.concatenatePartsButton.UseVisualStyleBackColor = true;
             this.concatenatePartsButton.Click += new System.EventHandler(this.concatenatePartsButton_Click);
+            // 
+            // blendFileBrowseButton
+            // 
+            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
+            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
+            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
+            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
+            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
+            this.blendFileBrowseButton.SplitWidth = 30;
+            this.blendFileBrowseButton.TabIndex = 1;
+            this.blendFileBrowseButton.Text = "Open Blend";
+            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
+            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
+            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
             // 
             // blendFileLabel
             // 
@@ -1058,22 +1115,6 @@ namespace BlenderRenderController
             this.fileSystemWatcher1.EnableRaisingEvents = true;
             this.fileSystemWatcher1.SynchronizingObject = this;
             // 
-            // blendFileBrowseButton
-            // 
-            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
-            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
-            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
-            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
-            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
-            this.blendFileBrowseButton.SplitWidth = 30;
-            this.blendFileBrowseButton.TabIndex = 1;
-            this.blendFileBrowseButton.Text = "Open Blend";
-            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
-            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
-            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1228,6 +1269,9 @@ namespace BlenderRenderController
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemBug;
         private System.Windows.Forms.Label versionLabel;
         private System.IO.FileSystemWatcher fileSystemWatcher1;
+        private System.Windows.Forms.TextBox infoResolution;
+        private System.Windows.Forms.LinkLabel infoMore;
+        private System.Windows.Forms.Label label4;
     }
 }
 

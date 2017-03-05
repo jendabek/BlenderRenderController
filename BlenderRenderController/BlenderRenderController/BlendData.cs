@@ -6,6 +6,7 @@
         public int end;
         public string fps;
         public string fpsBase;
+        public string resolution;
         public string outputPath;
         public string projectName;
         public string scenesNum;
