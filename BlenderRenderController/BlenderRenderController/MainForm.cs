@@ -899,7 +899,7 @@ namespace BlenderRenderController
                 blendFileLabel.Visible          = false;
                 blendFileNameLabel.Text         = blendData.projectName;
                 infoActiveScene.Text            = blendData.sceneActive;
-                infoFramerate.Text              = p.fps.ToString();
+                infoFramerate.Text              = p.fps.ToString("###.##");
                 infoNoScenes.Text               = blendData.scenesNum;
                 infoResolution.Text             = blendData.resolution;
 
