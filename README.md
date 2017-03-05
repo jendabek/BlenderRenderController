@@ -1,66 +1,52 @@
-# Readme as written by RedRaptor93
+# Blender Render Controller, jendabek ver.
 
-# What is this?
-This branch has some modifications I've done to make Isti115's program more useful and remove some annoying limitations that conflicted with my work-flow. I think it all made the program much more stable and useful, so I'm share it ;). I plan to make gradual improvements as I'm learning and this is my first programing project
+## What is this?
+Blender Render Controller is a tool to help speed up the render process in Blender's Video Sequence Editor(VSE).
 
-##HOW TO USE
-coming soon... someday, maybe...
+VSE is pretty good for editing videos, it's precise and relatively easy to learn, making it a compelling choice next to other free video editing tools. There are some downsides too, main of which been that the renderer is SINGLE THREADED. Meaning that it won't take full advantage of all logical cores in your system, so rendering your finished project is SUPER SLOW compared to other video editors.
 
-##CHANGES
+This tool offers a work-around until the Blender developers make a better renderer for VSE, 
 
-####03/02/17
+This tool offers a work-around by calling multiple instances of `blender.exe`, each rendering a different segments (chunks) of the project at the same time, making use of processing power that would otherwise go unused. After all parts are rendered, they're joined together in FFMpeg and BAM, your video is ready much faster then previously possible.
 
-- Upload to GitHub
-- blend.json is deleted when program closes
-- CMD arguments! Running the following in a CMD window will automatically set to specified file: 
-```
-BlenderRenderController.exe “filepath to .blend”
-```
-- added error message if blendFilePath does not exist
+## How much difference does it make?
+Quite a lot! I did some testing shown below (Blender Render Controller shown in orange):
 
-####02/02/17
+![Test3](https://app.box.com/representation/file_version_147671500287/image_2048/1.png?shared_name=u90snyjbzslz0zszwges1helzmyz6b8y)
 
-- Added detailed error messages
+![Test1](https://app.box.com/representation/file_version_147672318497/image_2048/1.png?shared_name=i1bwfn03tie6ieehwnz7mbp4lu700gzy)
 
-- Render and join buttons are disabled if an error is detected
+PC used: i7 4790, 16GB DDR3 RAM @ 1600Mhz
 
-- Added icon
+Really shows the importance of those extra cores huh? Even if you don't use Blender VSE often, that’s a LOT of time saved. And the time added by joining the videos together is negligible (less then 1min).
 
-####29/01/17
+## HOW TO USE
 
-- the program now reads project's info from blend file's ACTIVE SCENE, and shows the name and number of total scenes
+### Dependencies
+- Blender, obviously
+- FFmpeg, required for joining the parts together.
 
-- fixed some unhanded exceptions evolving output file paths
+1. Save your .blend file with the settings you want (output path, resolution, etc)
+ 
+2. Open BlenderRenderController, browse for the desired .blend file.
+ 
+3. BRC will automatically calculate the Start frame, End frame and Chuck size according to the time length of the project and number of processes respectively, you can change these values manually if you want.
 
-- different bars for blend output and ffmpeg join
+	- Tip: For optimum performance, the N# of processes should match the N# of logical cores in you system.
+ 
+4. Choose the render method:
 
-  - External programs cannot easily change the output file name or location of the render, so there is now a separated bar showing the       output location where blender will render and a tooltip informing to change the location in Blender.
-  
-- [get_project_info.py] now saves the json file in the scripts folder, this is necessary to avoid exceptions if output path in blend       file is NOT valid.
+	- ´Automatically join chunks && use mixdown audio´ Renders chunks, makes a separated audio file and Joins it all together, recommended if you have audio tracks in your project
 
-- Added tooltips, a strip menu w/ some options, plus general adjustments to UI to accommodate new features
+	- ´Automatically join chunks´ Same as above, minus audio mixdown.
 
-##TO DO
+	- ´Render just chunks´ Just renders the Chunks.
+ 
+5. Click “Start Render” and wait for the render to be done.
 
-Note that I'm still a learner, I don't know how to do most of these things, so don't expect them anytime soon, of course if anyone is willing to help, I'm all ears.
+## CREDITS
 
-- Automatically calculate segment’s end frame
-
-- Add an INI file to save settings
-	- Project history
-	- Set own default values for process count, frame step*
-	- ability to point to blender.exe and Ffmpeg.exe, eliminating the need to set PATH (?)
-
-- Make a more precise timer
-
-- How to use section
-
-- *Change how segments are calculated, on top of a “start” and “end” frame, a frame step value - would control the segments length (end_frame = start_frame + frame_step)
-
-- ~~find and delete json file on start up or closure~~
-
-- Integrate w/ Blender via plugin
-
-- ~~call Render Controller and pass project’s info automatically (command line args)~~
-
-- Support for more file formats
+- Isti115
+- meTwentyFive
+- redRaptor93
+- jendabek
