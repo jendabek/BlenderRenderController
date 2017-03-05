@@ -43,7 +43,6 @@ namespace BlenderRenderController
         public void init()
         {
             //LOADing data from JSON and set it to properties
-            //-----------------------
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);
             _blenderPath = BLENDER_PATH_DEFAULT;
             _ffmpegPath = FFMPEG_PATH_DEFAULT;
