@@ -23,9 +23,11 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
 ## HOW TO USE
 
 ### Dependencies
-- Blender, obviously
-- FFmpeg, required for joining the parts together. You don't need to care about this if you download Full version which has FFmpeg already included.'
+- Blender, obviously.
+- FFmpeg, required for joining the parts together. You don't need to care about it if you download Full version which has FFmpeg already included.
 
+
+### Steps
 1. Save your .blend file with the settings you want (output path, resolution, etc)
  
 2. Open BlenderRenderController, browse for the desired .blend file.
