@@ -7,7 +7,7 @@ VSE is pretty good for editing videos, it's precise and relatively easy to learn
 
 This tool offers a work-around until the Blender developers make a better renderer for VSE. 
 
-This tool offers a work-around by calling multiple instances of `blender.exe`, each rendering a different segments (chunks) of the project at the same time, making use of processing power that would otherwise go unused. After all parts are rendered, they're joined together in FFmpeg and BAM, your video is ready much faster then previously possible.
+This tool offers a work-around by calling multiple instances of *blender.exe*, each rendering a different segments (chunks) of the project at the same time, making use of processing power that would otherwise go unused. After all parts are rendered, they're joined together in FFmpeg and BAM, your video is ready much faster then previously possible.
 
 ## How much difference does it make?
 Quite a lot! I did some testing shown below (Blender Render Controller shown in orange):
@@ -38,13 +38,13 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
  
 4. Choose the render method:
 
-	- "Automatically join chunks & use mixdown audio" Renders chunks, makes a separated audio file and Joins it all together, recommended if you have audio tracks in your project.
+	- *Automatically join chunks & use mixdown audio* Renders chunks, makes a separated audio file and Joins it all together, recommended if you have audio tracks in your project.
 
-	- "Automatically join chunks" Same as above, minus audio mixdown.
+	- *Automatically join chunks* Same as above, minus audio mixdown.
 
-	- "Render just chunks" Just renders the Chunks.
+	- *Render just chunks* Just renders the Chunks.
  
-5. Click “Start Render” and wait for the render to be done.
+5. Click *Start Render* and wait for the render to be done.
 
 ## CREDITS
 
