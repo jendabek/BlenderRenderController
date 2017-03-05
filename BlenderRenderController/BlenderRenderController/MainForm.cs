@@ -1117,11 +1117,11 @@ namespace BlenderRenderController
             if (renderOptionsAutoRadio.Checked) {
                 p.chunkLength = Math.Ceiling((p.end - p.start + 1) / p.processCount);
 
-                //it could fix some blender rendering issues with small chunks & high fps
+                /*//it could fix some blender rendering issues with small chunks & high fps
                 if (p.chunkLength < (decimal) p.fps)
                 {
                     p.chunkLength = Math.Ceiling((decimal) p.fps);
-                }
+                }*/
             }
             if (p.chunkLength - 1 > p.end - p.start || p.chunkEnd > p.end) {
                 p.chunkLength = p.end - p.start + 1;
