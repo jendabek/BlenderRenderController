@@ -28,7 +28,7 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
 
 
 ### Steps
-1. Save your .blend file with the settings you want (output path, resolution, etc)
+1. Save your .blend file with the settings you want (output path, resolution, etc.).
  
 2. Open BlenderRenderController, browse for the desired .blend file.
  
@@ -38,11 +38,11 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
  
 4. Choose the render method:
 
-	- ´Automatically join chunks && use mixdown audio´ Renders chunks, makes a separated audio file and Joins it all together, recommended if you have audio tracks in your project
+	- "Automatically join chunks & use mixdown audio" Renders chunks, makes a separated audio file and Joins it all together, recommended if you have audio tracks in your project.
 
-	- ´Automatically join chunks´ Same as above, minus audio mixdown.
+	- "Automatically join chunks" Same as above, minus audio mixdown.
 
-	- ´Render just chunks´ Just renders the Chunks.
+	- "Render just chunks" Just renders the Chunks.
  
 5. Click “Start Render” and wait for the render to be done.
 
