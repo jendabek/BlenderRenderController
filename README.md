@@ -1,4 +1,8 @@
-# Blender Render Controller, Jan Kadeřábek version
+# Blender Render Controller - *Jan Kadeřábek version*
+
+## Download &#8615;
+[Latest release HERE](https://github.com/jendabek/BlenderRenderController/releases/latest)
+
 ## What is this?
 <img align="right" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/documents/assets/blender-render-controller.png" width="480"/>
 Blender Render Controller is a tool to help speed up the render process in Blender's Video Sequence Editor (VSE).
