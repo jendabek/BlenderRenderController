@@ -56,4 +56,3 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
 - Isti115
 - meTwentyFive
 - redRaptor93
-- jendabek
