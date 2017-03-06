@@ -977,7 +977,7 @@ namespace BlenderRenderController
             statusLabel.Text = "Mixdown complete.";
         }
 
-        // show / hide tooltips
+        // TOOL STRIP METHODS
         private void tipsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             toolTipInfo.Active =
@@ -986,6 +986,12 @@ namespace BlenderRenderController
             appSettings.displayTooltips =
             tipsToolStripMenuItem.Checked;
             appSettings.save();
+        }
+
+        private void clearRecentProjectsListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            appSettings.clearRecentBlend();
+            updateRecentBlendsMenu();
         }
 
         private void isti115ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1008,6 +1014,16 @@ namespace BlenderRenderController
             Process.Start("https:\\//github.com/jendabek/BlenderRenderController");
         }
 
+        private void toolStripMenuItemBug_Click(object sender, EventArgs e)
+        {
+            Process.Start("https:\\//github.com/jendabek/BlenderRenderController/issues");
+        }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            settingsForm.ShowDialog();
+        }
+
         private void rendererComboBox_CheckedChanged(object sender, EventArgs e)
         {
             if(rendererRadioButtonBlender.Checked)
@@ -1018,10 +1034,6 @@ namespace BlenderRenderController
             {
                 p.renderer = appSettings.renderer = AppStrings.RENDERER_CYCLES;
             }
-        }
-        private void toolStripMenuItemBug_Click(object sender, EventArgs e)
-        {
-            Process.Start("https:\\//github.com/jendabek/BlenderRenderController/issues");
         }
 
         private void outputFolderOpenButton_Click(object sender, EventArgs e)
@@ -1070,10 +1082,6 @@ namespace BlenderRenderController
             updateUI();
         }
 
-        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            settingsForm.ShowDialog();
-        }
 
         //total end numericUpDown change
         private void totalEndNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -1201,5 +1209,6 @@ namespace BlenderRenderController
 
             Process.Start(url);
         }
+
     }
 }

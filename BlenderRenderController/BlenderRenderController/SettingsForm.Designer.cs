@@ -38,6 +38,7 @@
             this.ffmpegDownloadLabel = new System.Windows.Forms.Label();
             this.ffmpegChangePathButton = new System.Windows.Forms.Button();
             this.blenderChangePathButton = new System.Windows.Forms.Button();
+            this.clearRecentBnt = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // blenderPathTextBox
@@ -141,12 +142,24 @@
             this.blenderChangePathButton.UseVisualStyleBackColor = true;
             this.blenderChangePathButton.Click += new System.EventHandler(this.blenderChangePathButton_Click);
             // 
+            // clearRecentBnt
+            // 
+            this.clearRecentBnt.Location = new System.Drawing.Point(41, 220);
+            this.clearRecentBnt.Name = "clearRecentBnt";
+            this.clearRecentBnt.Size = new System.Drawing.Size(93, 38);
+            this.clearRecentBnt.TabIndex = 30;
+            this.clearRecentBnt.Text = "Clear Recent";
+            this.clearRecentBnt.UseVisualStyleBackColor = true;
+            this.clearRecentBnt.Visible = false;
+            this.clearRecentBnt.Click += new System.EventHandler(this.clearRecentBnt_Click);
+            // 
             // SettingsForm
             // 
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(545, 277);
+            this.Controls.Add(this.clearRecentBnt);
             this.Controls.Add(this.ffmpegDownloadLabel);
             this.Controls.Add(this.ffmpegLabel);
             this.Controls.Add(this.blenderLabel);
@@ -184,5 +197,6 @@
         private System.Windows.Forms.TextBox blenderPathTextBox;
         private System.Windows.Forms.TextBox ffmpegPathTextBox;
         private System.Windows.Forms.Label ffmpegDownloadLabel;
+        private System.Windows.Forms.Button clearRecentBnt;
     }
 }
