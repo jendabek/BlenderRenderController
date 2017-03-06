@@ -881,6 +881,18 @@ namespace BlenderRenderController
                     p.outputPath = Path.Combine(Path.GetDirectoryName(p.blendFilePath), blendData.outputPath.Replace("//", ""));
                 }
 
+                // Halt if p.outputPath is null
+                if (string.IsNullOrEmpty(p.outputPath))
+                {
+                    var errors = new List<string>();
+                    errors.Add(AppErrorCodes.BLEND_OUTPUT_INVALID);
+                    Helper.showErrors(errors, MessageBoxIcon.Error);
+                    statusLabel.Text = "Failed to open file...";
+                    statusLabel.Update();
+                    return;
+                }
+
+
                 //SETTING PROJECT VARS
                 //remove trailing slash
                 p.outputPath = outputFolderTextBox.Text = Helper.fixPath(p.outputPath);

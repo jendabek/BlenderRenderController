@@ -103,9 +103,6 @@ namespace BlenderRenderController
             // does clear the recent blends list, but only takes effect 
             // after closing and re-opening
             _appSettings.clearRecentBlend();
-            // .....
-            // needs a equivalent of updateRecentBlendsMenu() to take effect
-            // immediately
         }
     }
 }
