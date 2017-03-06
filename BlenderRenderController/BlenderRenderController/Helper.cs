@@ -25,6 +25,7 @@ namespace BlenderRenderController
                 di.Delete();
             }
         }
+        
         static public void showErrors(List<string> errorCodes, MessageBoxIcon icon = MessageBoxIcon.Asterisk, string arg1 = "")
         {
             var errorText = "";
@@ -50,7 +51,8 @@ namespace BlenderRenderController
                 }
                 if (errorCode == AppErrorCodes.BLEND_OUTPUT_INVALID)
                 {
-                    errorText += "Could not resolve project's output path";
+                    errorText += "Unable to read output path, it may be invalid.\n";
+                    errorText += "Make sure your project has a valid output path.\n";
                 }
             }
             MessageBox.Show(
