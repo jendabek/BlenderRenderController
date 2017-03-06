@@ -7,7 +7,7 @@ VSE is pretty good for editing videos, it's precise and relatively easy to learn
 
 This tool offers a work-around until the Blender developers make a better renderer for VSE. 
 
-This tool offers a work-around by calling multiple instances of *blender.exe*, each rendering a different segments (chunks) of the project at the same time, making use of processing power that would otherwise go unused. After all parts are rendered, they're joined together in FFmpeg and BAM, your video is ready much faster then previously possible.
+It renders a different segments (chunks) of the project at the same time by multiple blender.exe instances, making use of processing power that would otherwise go unused. After all parts are rendered, they're joined together in FFmpeg and BAM, your video is ready much faster then previously possible.
 
 ## How much difference does it make?
 Quite a lot! I did some testing shown below (Blender Render Controller shown in orange):
@@ -24,25 +24,25 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
 
 ### Dependencies
 - Blender, obviously.
-- FFmpeg, required for joining the parts together. You don't need to care about it if you download Full version which has FFmpeg already included.
+- FFmpeg, required for joining the parts together. You don't need to care about it if you download the Full version which has FFmpeg already included.
 
 
 ### Steps
-1. Save your .blend file with the settings you want (output path, resolution, etc.).
+1. Create your Blender VSE project normally within the Blender
  
-2. Open BlenderRenderController, browse for the desired .blend file.
+2. Open BlenderRenderController, browse for the .blend file.
  
-3. BRC will automatically calculate the Start frame, End frame and Chuck size according to the time length of the project and number of processes respectively, you can change these values manually if you want.
+3. BRC will automatically calculate the *Start Frame*, *End Frame* and *Chunk Size* according to the length of the project and number of processes (processor cores) respectively, you can change these values manually if you want.
 
 	- Tip: For optimum performance, the N# of processes should match the N# of logical cores in you system.
  
 4. Choose the render method:
 
-	- *Automatically join chunks & use mixdown audio* Renders chunks, makes a separated audio file and Joins it all together, recommended if you have audio tracks in your project.
+	- *Automatically join chunks & use mixdown audio* - renders chunks, makes a separated audio file and joins it all together, recommended if you have audio tracks in your project.
 
-	- *Automatically join chunks* Same as above, minus audio mixdown.
+	- *Automatically join chunks* - same as above, minus audio mixdown.
 
-	- *Render just chunks* Just renders the Chunks.
+	- *Render just chunks* - just renders the Chunks.
  
 5. Click *Start Render* and wait for the render to be done.
 
