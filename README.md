@@ -24,7 +24,7 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
 
 ### Dependencies
 - Blender, obviously.
-- FFmpeg, required for joining the parts together. You don't need to care about it if you download the Full version which has FFmpeg already included.
+- [FFmpeg](https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-latest-win64-static.zip), required for joining the parts together. You don't need to care about it if you download the Full version which has FFmpeg already included.
 
 
 ### Steps
