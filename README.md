@@ -28,7 +28,7 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
 
 
 ### Steps
-1. Create your Blender VSE project normally within the Blender
+1. Create your Blender VSE project normally within the Blender.
  
 2. Open BlenderRenderController, browse for the .blend file.
  
