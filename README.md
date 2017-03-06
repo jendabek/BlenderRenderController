@@ -32,7 +32,7 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
  
 2. Open BlenderRenderController, browse for the .blend file.
  
-3. BRC will automatically calculate the *Start Frame*, *End Frame* and *Chunk Size* according to the length of the project and number of processes (processor cores) respectively, you can change these values manually if you want.
+3. BRC will automatically calculate the *Start Frame*, *End Frame* and *Chunk Size* according to the length of the project and number of logical cores in your CPU respectively, you can change these values manually if you want.
 
 	- Tip: For optimum performance, the N# of processes should match the N# of logical cores in you system.
  
