@@ -1,6 +1,6 @@
 # Blender Render Controller, jendabek ver.
 <p align="left">
-	<img src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/documents/assets/blender-render-controller.png" width="664"/>
+	<img src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/blender-render-controller.png" width="664"/>
 </p>
 ## What is this?
 Blender Render Controller is a tool to help speed up the render process in Blender's Video Sequence Editor (VSE).
