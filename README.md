@@ -1,7 +1,7 @@
 # Blender Render Controller - *Jan Kadeřábek version*
 
 ## Download &#8615;
-[Latest release HERE](https://github.com/jendabek/BlenderRenderController/releases/latest)
+Latest release [HERE](https://github.com/jendabek/BlenderRenderController/releases/latest).
 
 ## What is this?
 <img align="right" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/documents/assets/blender-render-controller.png" width="480"/>
