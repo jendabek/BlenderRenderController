@@ -23,7 +23,8 @@ After all parts are rendered, they're joined together in FFmpeg, your **video is
 
 PC used: i7 4790, 16GB DDR3 RAM @ 1600Mhz
 
-Really shows the importance of those extra cores huh? Even if you don't use Blender VSE often, that’s a LOT of time saved. And the time added by joining the videos together is negligible (less then 1min).
+Really shows the importance of those extra cores huh? And of course, more processor cores = bigger difference.
+Even if you don't use Blender VSE often, that’s a LOT of time saved. And the time added by joining the videos together is negligible (less then 1min).
 
 ## HOW TO USE
 
