@@ -57,3 +57,7 @@ Even if you don't use Blender VSE often, that’s a LOT of time saved. And the t
 - Isti115
 - meTwentyFive
 - redRaptor93
+
+## Support the development &#9829;
+
+[<img align="left" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/donate-github.png" width="110"/>](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=jendabek@gmail.com&lc=CZE&item_name=Donation for Blender Render Controller&currency_code=USD&bn=PP%2dDonationsBF)
