@@ -69,8 +69,8 @@ namespace BlenderRenderController
             this.infoNoScenes = new System.Windows.Forms.TextBox();
             this.infoFramesTotal = new System.Windows.Forms.TextBox();
             this.infoActiveScene = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.infoFramesTotalLabel = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.currentChunkInfoPanel = new System.Windows.Forms.Panel();
             this.chunkEndNumericUpDown = new System.Windows.Forms.TextBox();
             this.chunkStartNumericUpDown = new System.Windows.Forms.TextBox();
@@ -88,6 +88,7 @@ namespace BlenderRenderController
             this.reloadBlenderDataButton = new System.Windows.Forms.Button();
             this.mixDownButton = new System.Windows.Forms.Button();
             this.concatenatePartsButton = new System.Windows.Forms.Button();
+            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -109,7 +110,6 @@ namespace BlenderRenderController
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.versionLabel = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
-            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -595,6 +595,17 @@ namespace BlenderRenderController
             this.toolTipWarn.SetToolTip(this.infoActiveScene, "This program will only render the ACTIVE scene, if you \r\nhave more then one scene" +
         " on your project sure you \r\nsave it with the scene you want OPEN.");
             // 
+            // infoFramesTotalLabel
+            // 
+            this.infoFramesTotalLabel.AutoSize = true;
+            this.infoFramesTotalLabel.BackColor = System.Drawing.SystemColors.Info;
+            this.infoFramesTotalLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.infoFramesTotalLabel.Location = new System.Drawing.Point(105, 15);
+            this.infoFramesTotalLabel.Name = "infoFramesTotalLabel";
+            this.infoFramesTotalLabel.Size = new System.Drawing.Size(79, 15);
+            this.infoFramesTotalLabel.TabIndex = 29;
+            this.infoFramesTotalLabel.Text = "Frames Total";
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -606,17 +617,6 @@ namespace BlenderRenderController
             this.label3.Text = "Scenes";
             this.toolTipWarn.SetToolTip(this.label3, "Number of scenes in project.");
             this.label3.Visible = false;
-            // 
-            // infoFramesTotalLabel
-            // 
-            this.infoFramesTotalLabel.AutoSize = true;
-            this.infoFramesTotalLabel.BackColor = System.Drawing.SystemColors.Info;
-            this.infoFramesTotalLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoFramesTotalLabel.Location = new System.Drawing.Point(105, 15);
-            this.infoFramesTotalLabel.Name = "infoFramesTotalLabel";
-            this.infoFramesTotalLabel.Size = new System.Drawing.Size(79, 15);
-            this.infoFramesTotalLabel.TabIndex = 29;
-            this.infoFramesTotalLabel.Text = "Frames Total";
             // 
             // currentChunkInfoPanel
             // 
@@ -856,6 +856,22 @@ namespace BlenderRenderController
             this.concatenatePartsButton.UseVisualStyleBackColor = true;
             this.concatenatePartsButton.Click += new System.EventHandler(this.concatenatePartsButton_Click);
             // 
+            // blendFileBrowseButton
+            // 
+            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
+            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
+            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
+            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
+            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
+            this.blendFileBrowseButton.SplitWidth = 30;
+            this.blendFileBrowseButton.TabIndex = 1;
+            this.blendFileBrowseButton.Text = "Open Blend";
+            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
+            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
+            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
+            // 
             // blendFileLabel
             // 
             this.blendFileLabel.AutoSize = true;
@@ -1051,7 +1067,6 @@ namespace BlenderRenderController
             this.donateButton.Text = "Donate";
             this.donateButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.donateButton.UseVisualStyleBackColor = true;
-            this.donateButton.Visible = false;
             this.donateButton.Click += new System.EventHandler(this.donateButton_Click);
             // 
             // openOutputFolderButton
@@ -1101,28 +1116,12 @@ namespace BlenderRenderController
             this.fileSystemWatcher1.EnableRaisingEvents = true;
             this.fileSystemWatcher1.SynchronizingObject = this;
             // 
-            // blendFileBrowseButton
-            // 
-            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
-            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
-            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
-            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
-            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
-            this.blendFileBrowseButton.SplitWidth = 30;
-            this.blendFileBrowseButton.TabIndex = 1;
-            this.blendFileBrowseButton.Text = "Open Blend";
-            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
-            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
-            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(662, 686);
+            this.ClientSize = new System.Drawing.Size(662, 601);
             this.Controls.Add(this.versionLabel);
             this.Controls.Add(this.renderInfoLabel);
             this.Controls.Add(this.startEndBlendRadio);

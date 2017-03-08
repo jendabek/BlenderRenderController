@@ -1200,6 +1200,7 @@ namespace BlenderRenderController
                 "&bn=" + "PP%2dDonationsBF";
 
             Process.Start(url);
+            Console.WriteLine(url);
         }
     }
 }
