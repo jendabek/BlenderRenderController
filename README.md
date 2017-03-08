@@ -4,7 +4,7 @@
 Latest release [HERE](https://github.com/jendabek/BlenderRenderController/releases/latest).
 
 ## What is this?
-<img align="right" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/documents/extras/blender-render-controller.png" width="480"/>
+<img align="right" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/blender-render-controller.png" width="480"/>
 Blender Render Controller is a tool (currently Windows only) to help speed up the rendering of Blender's Video Sequence Editor (VSE) projects.
 
 VSE is pretty good for editing videos, it's precise and relatively easy to learn, making it a compelling choice next to other free video editing tools. There are some downsides too, main of which been that the renderer is **single threaded**. Meaning that it won't take full advantage of all logical cores in your system, so rendering your finished project is **super slow** compared to other video editors.
