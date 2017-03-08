@@ -14,6 +14,9 @@ This tool offers a work-around for this limitation until the Blender developers 
 It renders a different segments (chunks) of the project at the same time by multiple blender.exe instances, **making use of full processing power of your PC**.
 After all parts are rendered, they're joined together in FFmpeg, your **video is ready much faster** then previously possible.
 
+### Video demonstration
+[<img src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/intro-720.png" width="480"/>](https://www.youtube.com/watch?v=Kdvq1CzOPfM)
+
 ## How much difference does it make?
 **Quite a lot!** I did some testing shown below (Blender Render Controller shown in orange):
 
