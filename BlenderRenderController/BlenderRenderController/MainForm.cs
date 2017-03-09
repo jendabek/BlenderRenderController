@@ -646,9 +646,10 @@ namespace BlenderRenderController
         }
         private void afterRender()
         {
-            bool wasComplete = (framesRendered.Count == p.end - p.start + 1);
+            //bool wasComplete = (framesRendered.Count == p.end - p.start + 1);
+            bool wasComplete = (framesRendered.Count > Math.Round(Convert.ToDouble(p.end - p.start + 1)) * 0.75);
 
-            if(wasComplete)
+            if (wasComplete)
             {
                 //if we rendered the project (not chunk only)
                 //and some of automatic join checkboxes is checked
@@ -1220,6 +1221,7 @@ namespace BlenderRenderController
                 "&bn=" + "PP%2dDonationsBF";
 
             Process.Start(url);
+            Console.WriteLine(url);
         }
 
     }

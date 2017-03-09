@@ -1,17 +1,24 @@
-# Blender Render Controller, jendabek ver.
+# Blender Render Controller - *Jan Kadeřábek version*
+
+## Download &#8615;
+Latest release [HERE](https://github.com/jendabek/BlenderRenderController/releases/latest).
 
 ## What is this?
-<img src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/documents/assets/blender-render-controller.png" width="350"/>
-Blender Render Controller is a tool to help speed up the render process in Blender's Video Sequence Editor (VSE).
+<img align="right" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/blender-render-controller.png" width="480"/>
+Blender Render Controller is a tool (currently Windows only) to help speed up the rendering of Blender's Video Sequence Editor (VSE) projects.
 
-VSE is pretty good for editing videos, it's precise and relatively easy to learn, making it a compelling choice next to other free video editing tools. There are some downsides too, main of which been that the renderer is SINGLE THREADED. Meaning that it won't take full advantage of all logical cores in your system, so rendering your finished project is SUPER SLOW compared to other video editors.
+VSE is pretty good for editing videos, it's precise and relatively easy to learn, making it a compelling choice next to other free video editing tools. There are some downsides too, main of which been that the renderer is **single threaded**. Meaning that it won't take full advantage of all logical cores in your system, so rendering your finished project is **super slow** compared to other video editors.
 
-This tool offers a work-around until the Blender developers make a better renderer for VSE. 
+This tool offers a work-around for this limitation until the Blender developers make a better renderer for VSE. 
 
-It renders a different segments (chunks) of the project at the same time by multiple blender.exe instances, making use of processing power that would otherwise go unused. After all parts are rendered, they're joined together in FFmpeg and BAM, your video is ready much faster then previously possible.
+It renders a different segments (chunks) of the project at the same time by multiple blender.exe instances, **making use of full processing power of your PC**.
+After all parts are rendered, they're joined together in FFmpeg, your **video is ready much faster** then previously possible.
+
+### Video demonstration
+[<img src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/intro-720.png" width="480"/>](https://www.youtube.com/watch?v=Kdvq1CzOPfM)
 
 ## How much difference does it make?
-Quite a lot! I did some testing shown below (Blender Render Controller shown in orange):
+**Quite a lot!** I did some testing shown below (Blender Render Controller shown in orange):
 
 ![Test3](https://app.box.com/representation/file_version_147671500287/image_2048/1.png?shared_name=u90snyjbzslz0zszwges1helzmyz6b8y)
 
@@ -19,7 +26,8 @@ Quite a lot! I did some testing shown below (Blender Render Controller shown in 
 
 PC used: i7 4790, 16GB DDR3 RAM @ 1600Mhz
 
-Really shows the importance of those extra cores huh? Even if you don't use Blender VSE often, that’s a LOT of time saved. And the time added by joining the videos together is negligible (less then 1min).
+Really shows the importance of those extra cores huh? And of course, more processor cores = bigger difference.
+Even if you don't use Blender VSE often, that’s a LOT of time saved. And the time added by joining the videos together is negligible (less then 1min).
 
 ## HOW TO USE
 
@@ -33,7 +41,7 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
  
 2. Open BlenderRenderController, browse for the .blend file.
  
-3. BRC will automatically calculate the *Start Frame*, *End Frame* and *Chunk Size* according to the length of the project and number of processes (processor cores) respectively, you can change these values manually if you want.
+3. BRC will automatically calculate the *Start Frame*, *End Frame* and *Chunk Size* according to the length of the project and number of logical cores in your CPU respectively, you can change these values manually if you want.
 
 	- Tip: For optimum performance, the N# of processes should match the N# of logical cores in you system.
  
@@ -52,4 +60,7 @@ Really shows the importance of those extra cores huh? Even if you don't use Blen
 - Isti115
 - meTwentyFive
 - redRaptor93
-- jendabek
+
+## Support the development &#9829;
+
+[<img align="left" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/donate-github.png" width="110"/>](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=jendabek@gmail.com&lc=CZE&item_name=Donation for Blender Render Controller&currency_code=USD&bn=PP%2dDonationsBF)
