@@ -2,6 +2,7 @@ import os
 import json
 import bpy
 import re
+import math
 from bpy import context
 from bpy import ops
 from bpy import data
@@ -24,8 +25,9 @@ fps  = bpy.data.scenes[sceneActive].render.fps
 fpsBase = bpy.data.scenes[sceneActive].render.fps_base
 outputPath = bpy.data.scenes[sceneActive].render.filepath
 renderFormat = bpy.data.scenes[sceneActive].render.image_settings.file_format
-resolution = "{0}x{1}".format(bpy.data.scenes[sceneActive].render.resolution_x,
-                              bpy.data.scenes[sceneActive].render.resolution_y)
+resolutionPercentage = bpy.data.scenes[sceneActive].render.resolution_percentage
+resolution = "{0} x {1}".format(math.floor(bpy.data.scenes[sceneActive].render.resolution_x * resolutionPercentage / 100),
+                              math.floor(bpy.data.scenes[sceneActive].render.resolution_y * resolutionPercentage / 100))
 
 data = {'projectName': projectName,
 		'start': start,
@@ -33,6 +35,7 @@ data = {'projectName': projectName,
 		'fps': fps,
 		'fpsBase': fpsBase,
         'resolution': resolution,
+		'resolutionPercentage': resolutionPercentage,
 		'outputPath': outputPath,
         'scenesNum': scenesNum,
 		'sceneActive': sceneActive,
