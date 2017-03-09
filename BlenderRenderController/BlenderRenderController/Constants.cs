@@ -14,6 +14,7 @@
         public const string FFMPEG_PATH_NOT_SET = "ffmpegPathNotSet";
         public const string BLEND_FILE_NOT_EXISTS = "blendFileNotExists";
         public const string RENDER_FORMAT_IS_IMAGE = "formatIsImage";
+        public const string BLEND_OUTPUT_INVALID = "blendOutputInvalid";
     }
     static class AppStrings
     {

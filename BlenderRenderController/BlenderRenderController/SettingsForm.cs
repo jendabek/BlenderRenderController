@@ -97,5 +97,12 @@ namespace BlenderRenderController
         {
             Process.Start(AppStrings.FFMPEG_DOWNLOAD_URL);
         }
+
+        private void clearRecentBnt_Click(object sender, EventArgs e)
+        {
+            // does clear the recent blends list, but only takes effect 
+            // after closing and re-opening
+            _appSettings.clearRecentBlend();
+        }
     }
 }
