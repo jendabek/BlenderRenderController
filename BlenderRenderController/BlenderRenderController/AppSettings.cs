@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web.Script.Serialization;
+using System.Windows.Forms;
 
 namespace BlenderRenderController
 {
@@ -131,8 +132,8 @@ namespace BlenderRenderController
             if (_recentBlends.Count > 0)
             {
                 var response = System.Windows.Forms.MessageBox.Show(
-                                 "This will clear all files in the recent list, are you sure?", " ",
-                                 System.Windows.Forms.MessageBoxButtons.OKCancel);
+                                 "This will clear all files in the recent blends list, are you sure?", "Clear recent blends?",
+                                 MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
 
                 switch (response)
                 {
