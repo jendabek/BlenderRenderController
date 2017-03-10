@@ -78,8 +78,6 @@ namespace BlenderRenderController
             this.afterRenderDoNothingRadio = new System.Windows.Forms.RadioButton();
             this.renderInfoLabel = new System.Windows.Forms.Label();
             this.renderAllButton = new System.Windows.Forms.Button();
-            this.reloadBlenderDataButton = new System.Windows.Forms.Button();
-            this.mixDownButton = new System.Windows.Forms.Button();
             this.concatenatePartsButton = new System.Windows.Forms.Button();
             this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             this.blendFileLabel = new System.Windows.Forms.Label();
@@ -100,13 +98,10 @@ namespace BlenderRenderController
             this.panel2 = new System.Windows.Forms.Panel();
             this.versionLabel = new System.Windows.Forms.Label();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
-            this.renderInfoLabel = new System.Windows.Forms.Label();
-            this.renderAllButton = new System.Windows.Forms.Button();
             this.donateButton = new System.Windows.Forms.Button();
             this.reloadBlenderDataButton = new System.Windows.Forms.Button();
             this.mixDownButton = new System.Windows.Forms.Button();
             this.openOutputFolderButton = new System.Windows.Forms.Button();
-            this.concatenatePartsButton = new System.Windows.Forms.Button();
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
 
 
@@ -119,8 +114,6 @@ namespace BlenderRenderController
             this.meTwentyFiveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redRaptorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 
-            this.versionLabel = new System.Windows.Forms.Label();
-            this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
 
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
@@ -734,22 +727,6 @@ namespace BlenderRenderController
             this.renderInfoLabel.TabIndex = 35;
             this.toolTipInfo.SetToolTip(this.renderInfoLabel, resources.GetString("renderInfoLabel.ToolTip"));
             // 
-            // renderAllButton
-            // 
-            this.renderAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderAllButton.Image = global::BlenderRenderController.Properties.Resources.render_icon_small;
-            this.renderAllButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.renderAllButton.Location = new System.Drawing.Point(32, 478);
-            this.renderAllButton.Name = "renderAllButton";
-            this.renderAllButton.Padding = new System.Windows.Forms.Padding(10, 0, 12, 0);
-            this.renderAllButton.Size = new System.Drawing.Size(160, 47);
-            this.renderAllButton.TabIndex = 13;
-            this.renderAllButton.Text = "Start Render";
-            this.renderAllButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolTipInfo.SetToolTip(this.renderAllButton, "Saves a lot of your time.");
-            this.renderAllButton.UseVisualStyleBackColor = true;
-            this.renderAllButton.Click += new System.EventHandler(this.renderAllButton_Click);
-            // 
             // reloadBlenderDataButton
             // 
             this.reloadBlenderDataButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1057,37 +1034,6 @@ namespace BlenderRenderController
             this.donateButton.UseVisualStyleBackColor = true;
             this.donateButton.Click += new System.EventHandler(this.donateButton_Click);
             // 
-            // reloadBlenderDataButton
-            // 
-            this.reloadBlenderDataButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.reloadBlenderDataButton.Image = global::BlenderRenderController.Properties.Resources.reload_icon_small;
-            this.reloadBlenderDataButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.reloadBlenderDataButton.Location = new System.Drawing.Point(472, 132);
-            this.reloadBlenderDataButton.Name = "reloadBlenderDataButton";
-            this.reloadBlenderDataButton.Padding = new System.Windows.Forms.Padding(20, 0, 5, 0);
-            this.reloadBlenderDataButton.Size = new System.Drawing.Size(172, 34);
-            this.reloadBlenderDataButton.TabIndex = 2;
-            this.reloadBlenderDataButton.Text = "Reload Blend";
-            this.toolTipInfo.SetToolTip(this.reloadBlenderDataButton, "It reads data from the .blend again and update the form accordingly.");
-            this.reloadBlenderDataButton.UseVisualStyleBackColor = true;
-            this.reloadBlenderDataButton.Click += new System.EventHandler(this.reloadBlenderDataButton_Click);
-            // 
-            // mixDownButton
-            // 
-            this.mixDownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.mixDownButton.Image = global::BlenderRenderController.Properties.Resources.volume_small;
-            this.mixDownButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.mixDownButton.Location = new System.Drawing.Point(378, 395);
-            this.mixDownButton.Name = "mixDownButton";
-            this.mixDownButton.Padding = new System.Windows.Forms.Padding(8, 0, 7, 0);
-            this.mixDownButton.Size = new System.Drawing.Size(155, 38);
-            this.mixDownButton.TabIndex = 14;
-            this.mixDownButton.Text = "Render Mixdown";
-            this.mixDownButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolTipInfo.SetToolTip(this.mixDownButton, "Renders an audio file for the final video.");
-            this.mixDownButton.UseVisualStyleBackColor = true;
-            this.mixDownButton.Click += new System.EventHandler(this.MixdownAudio_Click);
-            // 
             // openOutputFolderButton
             // 
             this.openOutputFolderButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1102,24 +1048,6 @@ namespace BlenderRenderController
             this.openOutputFolderButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.openOutputFolderButton.UseVisualStyleBackColor = true;
             this.openOutputFolderButton.Click += new System.EventHandler(this.outputFolderOpenButton_Click);
-            // 
-            // concatenatePartsButton
-            // 
-            this.concatenatePartsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.concatenatePartsButton.Image = global::BlenderRenderController.Properties.Resources.connect_icon_small;
-            this.concatenatePartsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.concatenatePartsButton.Location = new System.Drawing.Point(378, 438);
-            this.concatenatePartsButton.Name = "concatenatePartsButton";
-            this.concatenatePartsButton.Padding = new System.Windows.Forms.Padding(7, 0, 7, 0);
-            this.concatenatePartsButton.Size = new System.Drawing.Size(128, 38);
-            this.concatenatePartsButton.TabIndex = 15;
-            this.concatenatePartsButton.Text = "Join Chunks";
-            this.concatenatePartsButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolTipInfo.SetToolTip(this.concatenatePartsButton, "!Warning - previous video will be overwritten!\r\n\r\nJoins rendered chunks to get th" +
-        "e final video.\r\nMixdown audio will be used if it is rendered (and found in the o" +
-        "utput folder).");
-            this.concatenatePartsButton.UseVisualStyleBackColor = true;
-            this.concatenatePartsButton.Click += new System.EventHandler(this.concatenatePartsButton_Click);
             // 
             // outputFolderBrowseButton
             // 
