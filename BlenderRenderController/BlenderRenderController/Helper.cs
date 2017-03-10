@@ -51,8 +51,7 @@ namespace BlenderRenderController
                 }
                 if (errorCode == AppErrorCodes.BLEND_OUTPUT_INVALID)
                 {
-                    errorText += "Unable to read output path, it may be invalid.\n";
-                    errorText += "Make sure your project has a valid output path.\n";
+                    errorText += "Unable to read output path, using project location.";
                 }
             }
             MessageBox.Show(
