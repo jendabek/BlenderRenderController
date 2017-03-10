@@ -137,6 +137,9 @@
     <None Include="resources\donate-paypal-1x.png" />
     <None Include="resources\donate-icon.png" />
     <None Include="resources\bug-icon.png" />
+    <None Include="resources\clear_recent_icon.bmp" />
+    <None Include="resources\Broom-50.png" />
+    <None Include="resources\Broom-64.png" />
     <Content Include="resources\github-logo.png" />
     <None Include="resources\info-icon.png" />
     <Content Include="resources\movie_camera-512.png" />

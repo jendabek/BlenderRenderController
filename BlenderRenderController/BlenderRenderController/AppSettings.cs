@@ -125,6 +125,31 @@ namespace BlenderRenderController
             }
             _recentBlends.Insert(0, blendFilePath);
         }
+
+        public void clearRecentBlend()
+        {
+            if (_recentBlends.Count > 0)
+            {
+                var response = System.Windows.Forms.MessageBox.Show(
+                                 "This will clear all files in the recent list, are you sure?", " ",
+                                 System.Windows.Forms.MessageBoxButtons.OKCancel);
+
+                switch (response)
+                {
+                    case System.Windows.Forms.DialogResult.OK:
+                        _recentBlends.Clear();
+                        break;
+                    case System.Windows.Forms.DialogResult.Cancel:
+                        break;
+                    default:
+                        System.Windows.Forms.MessageBox.Show("Something wrong happend.");
+                        break;
+                }
+            }
+            else
+                return;
+        }
+
         public void checkCorrectConfig(bool showErrors = true)
         {
             List<string> errors = new List<string>();

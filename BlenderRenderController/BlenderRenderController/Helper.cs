@@ -25,6 +25,7 @@ namespace BlenderRenderController
                 di.Delete();
             }
         }
+        
         static public void showErrors(List<string> errorCodes, MessageBoxIcon icon = MessageBoxIcon.Asterisk, string arg1 = "")
         {
             var errorText = "";
@@ -48,6 +49,11 @@ namespace BlenderRenderController
                     errorText += "The render format is " + arg1 + " image.\n";
                     errorText += "You can render an image sequence with this tool but you will need to make a video with other SW.\n";
                 }
+                if (errorCode == AppErrorCodes.BLEND_OUTPUT_INVALID)
+                {
+                    errorText += "Unable to read output path, it may be invalid.\n";
+                    errorText += "Make sure your project has a valid output path.\n";
+                }
             }
             MessageBox.Show(
                     errorText,
@@ -57,7 +63,8 @@ namespace BlenderRenderController
         }
         static public string fixPath(string path)
         {
-            return path.Trim().TrimEnd('\\');
+            var fixedPath = path.Trim().TrimEnd('\\');
+            return fixedPath;
         }
     }
 }
