@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BlenderRenderController
 {
-    static class Logger
+    static class oldLogger
     {
         private static AppSettings appSettings;
         private const string LOG_FILE_PATH = "log.txt";
