@@ -7,25 +7,7 @@ using System.Threading.Tasks;
 
 namespace BlenderRenderController.newLogger
 {
-    static class oldLogger
-    {
-        private static AppSettings appSettings;
-        private const string LOG_FILE_PATH = "log.txt";
-
-        public static void init(AppSettings appSettingsInstance)
-        {
-            appSettings = appSettingsInstance;
-        }
-        public static void add(string line)
-        {
-            using (StreamWriter sw = File.AppendText(LOG_FILE_PATH))
-            {
-                sw.WriteLine(line);
-            }
-        }
-    }
-
-    public class LogService : ILogger
+       public class LogService : ILogger
     {
         private readonly IList<ILogger> _loggerServices = new List<ILogger>();
 
