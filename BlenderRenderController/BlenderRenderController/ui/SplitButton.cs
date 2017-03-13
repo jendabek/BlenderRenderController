@@ -25,9 +25,10 @@ namespace BlenderRenderController.ui
         {
             var splitRect = new Rectangle(this.Width - this.SplitWidth, 0, this.SplitWidth, this.Height);
             // Figure out if the button click was on the button itself or the menu split
-            if (Menu != null &&
-                mouseEvent.Button == MouseButtons.Left &&
-                splitRect.Contains(mouseEvent.Location))
+            if (Menu != null
+                && Menu.Items.Count > 0
+                && mouseEvent.Button == MouseButtons.Left
+                && splitRect.Contains(mouseEvent.Location))
             {
                 Menu.Show(this, 0, this.Height);    // Shows menu under button   
             }
@@ -41,7 +42,7 @@ namespace BlenderRenderController.ui
         {
             base.OnPaint(pevent);
 
-            if (this.Menu != null && this.Menu.Items.Count > 0 && this.SplitWidth > 0)
+            if (Menu != null && Menu.Items.Count > 0 && SplitWidth > 0)
             {
                 // Draw the arrow glyph on the right side of the button
                 int arrowX = ClientRectangle.Width - 20;
@@ -59,8 +60,12 @@ namespace BlenderRenderController.ui
                 {
                     pevent.Graphics.DrawLine(separatorPen, lineX, lineYFrom, lineX, lineYTo);
                 }
-                var paddingNew = new Padding(base.Padding.Left, Padding.Top, 6, Padding.Bottom);
+                var paddingNew = new Padding(Padding.Left, Padding.Top, 6, Padding.Bottom);
                 base.Padding = paddingNew;
+            } else
+            {
+                var paddingNew = new Padding(Padding.Left, Padding.Top, 0, Padding.Bottom);
+                Padding = paddingNew;
             }
         }
     }
