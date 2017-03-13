@@ -30,9 +30,9 @@ namespace BlenderRenderController.newLogger
 
             string type = logType.ToString();
 
-            using (StreamWriter sw = new StreamWriter(LogsConstants.LOG_FILE_NAME, true))
+            using (StreamWriter sw = new StreamWriter(LogFormats.LOG_FILE_NAME, true))
             {
-                var logLine = $"{type}: {message} -- [{_time}]\n";
+                var logLine = $"{type} [{_time}]: {message}\n";
                 sw.WriteLine(logLine); 
             }
 

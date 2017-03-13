@@ -1235,5 +1235,22 @@ namespace BlenderRenderController
             Console.WriteLine(url);
         }
 
+        private void infoMore_Click(object sender, EventArgs e)
+        {
+            //try
+            //{
+            //    exeption_test();
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show("Test Exeption thrown...");
+            //    _fileLog.LogError(ex.ToString());
+            //}
+        }
+
+        private void exeption_test()
+        {
+            throw new Exception("this is a test Exeption");
+        }
     }
 }
