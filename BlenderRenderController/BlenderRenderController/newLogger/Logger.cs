@@ -65,6 +65,11 @@ namespace BlenderRenderController.newLogger
             INFO, ERROR, WARNING
         }
 
+        public ConsoleLogger(bool verbose = false)
+        {
+            this.Verbose = verbose;
+        }
+
         private void Log(string message, LogType logType)
         {
             if ((!Verbose) && (logType == LogType.INFO))
@@ -89,7 +94,8 @@ namespace BlenderRenderController.newLogger
 
         public void LogWarn(string message)
         {
-            throw new NotImplementedException();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Log(message, LogType.WARNING);
         }
     }
 

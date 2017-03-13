@@ -11,11 +11,12 @@ using System.Drawing;
 using System.Globalization;
 using System.Reflection;
 
+using BlenderRenderController.newLogger;
+
 namespace BlenderRenderController
 {
     public partial class MainForm : Form
     {
-        
         bool lastChunkStarted = false;
 
         string appState = AppStates.AFTER_START;
@@ -32,7 +33,7 @@ namespace BlenderRenderController
         SettingsForm settingsForm;
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
-        newLogger.FileLogger _fileLog;
+        LogService _log = new LogService();
 
         // CMD args
         string[] CMDargs = Environment.GetCommandLineArgs();
@@ -73,7 +74,12 @@ namespace BlenderRenderController
             recentBlendsMenu = new ContextMenuStrip();
             blendFileBrowseButton.Menu = recentBlendsMenu;
 
-            _fileLog = new newLogger.FileLogger(appSettings.verboseLog);
+            // initialize logger service
+            _log.RegisterLogSevice(new FileLogger(appSettings.verboseLog));
+            _log.RegisterLogSevice(new ConsoleLogger(appSettings.verboseLog));
+
+
+            //_fileLog = new newLogger.FileLogger(appSettings.verboseLog);
             
             applySettings();
             if (!appSettings.appConfigured)
@@ -131,6 +137,7 @@ namespace BlenderRenderController
             stopRender(false);
             appSettings.save();
         }
+
         public void updateRecentBlendsMenu()
         {
             //last blends
@@ -312,7 +319,7 @@ namespace BlenderRenderController
         private void MainForm_Close(object sender, FormClosedEventArgs e)
         {
             //jsonDel();
-            _fileLog.LogInfo("Program Closed");
+            _log.Warning("Program Closed");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -441,7 +448,7 @@ namespace BlenderRenderController
             {
                 Trace.WriteLine(ex);
                 //oldLogger.add(ex.ToString());
-                _fileLog.LogError(ex.ToString());
+                _log.Error(ex.ToString());
                 stopRender(false);
                 return;
             }
@@ -546,7 +553,7 @@ namespace BlenderRenderController
                     }
                     catch (Exception ex){
                         //oldLogger.add(ex.ToString());
-                        _fileLog.LogError(ex.ToString());
+                        _log.Error(ex.ToString());
                         MessageBox.Show("It can't be deleted, files are in use by some program.\n");
                         return;
                     }
@@ -589,7 +596,7 @@ namespace BlenderRenderController
                 }
                 catch(Exception ex)
                 {
-                    _fileLog.LogError(ex.ToString());
+                    _log.Error(ex.ToString());
                     //oldLogger.add(ex.ToString());
                     Trace.WriteLine(ex);
                 }
@@ -784,7 +791,7 @@ namespace BlenderRenderController
             {
                 Trace.WriteLine(ex);
                 //oldLogger.add(ex.ToString());
-                _fileLog.LogError(ex.ToString());
+                _log.Error(ex.ToString());
                 Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
                 settingsForm.ShowDialog();
                 statusLabel.Text = "Joining cancelled.";
@@ -834,7 +841,7 @@ namespace BlenderRenderController
 			}
 			catch( Exception ex ) {
                 //oldLogger.add(ex.ToString());
-                _fileLog.LogError(ex.ToString());
+                _log.Error(ex.ToString());
                 Trace.WriteLine(ex);
                 Helper.showErrors(new List<string> { AppErrorCodes.BLENDER_PATH_NOT_SET });
                 settingsForm.ShowDialog();
@@ -892,7 +899,7 @@ namespace BlenderRenderController
                         warn.Add(AppErrorCodes.BLEND_OUTPUT_INVALID);
                         Helper.showErrors(warn);
                         p.outputPath = Path.GetDirectoryName(p.blendFilePath);
-                        _fileLog.LogInfo("Could not resolve output path... Using .blend file path");
+                        _log.Info("Could not resolve output path... Using .blend file path");
                     }
 
                 }
@@ -936,7 +943,7 @@ namespace BlenderRenderController
             }
             updateUI();
             Trace.WriteLine( ".blend data = " + jsonInfo.ToString() );
-            _fileLog.LogInfo(".blend loaded successfully");
+            _log.Info(".blend loaded successfully");
 		}
         
 		private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
@@ -947,7 +954,7 @@ namespace BlenderRenderController
 
             statusLabel.Text = "Rendering mixdown, it can take a while for larger projects...";
             statusLabel.Update();
-            _fileLog.LogInfo("mixdown started");
+            _log.Info("mixdown started");
 
             if (!File.Exists(p.blendFilePath)) {
                 return;
@@ -996,7 +1003,7 @@ namespace BlenderRenderController
             process.WaitForExit();
 
             string message = "Mixdown complete";
-            Trace.WriteLine(message); _fileLog.LogInfo(message);
+            Trace.WriteLine(message); _log.Info(message);
             statusLabel.Text = message;
             
         }
@@ -1244,7 +1251,7 @@ namespace BlenderRenderController
             //catch (Exception ex)
             //{
             //    MessageBox.Show("Test Exeption thrown...");
-            //    _fileLog.LogError(ex.ToString());
+            //    _log.Error(ex.ToString());
             //}
         }
 

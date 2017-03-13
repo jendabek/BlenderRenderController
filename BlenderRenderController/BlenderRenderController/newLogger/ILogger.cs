@@ -1,4 +1,6 @@
-﻿namespace BlenderRenderController.newLogger
+﻿using System;
+
+namespace BlenderRenderController.newLogger
 {
     public interface ILogger
     {
