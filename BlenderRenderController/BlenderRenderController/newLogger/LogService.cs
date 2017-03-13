@@ -25,7 +25,7 @@ namespace BlenderRenderController.newLogger
         }
     }
 
-    public class LogService
+    public class LogService : ILogger
     {
         private readonly IList<ILogger> _loggerServices = new List<ILogger>();
 
@@ -42,20 +42,19 @@ namespace BlenderRenderController.newLogger
         public void Error(string message)
         {
             foreach (var service in _loggerServices)
-                service.LogError(message);
-        }
-
-        public void Warning(string message)
-        {
-            foreach (var service in _loggerServices)
-                service.LogWarn(message);
+                service.Error(message);
         }
 
         public void Info(string message)
         {
             foreach (var service in _loggerServices)
-                service.LogInfo(message);
+                service.Info(message);
         }
 
+        public void Warn(string message)
+        {
+            foreach (var service in _loggerServices)
+                service.Warn(message);
+        }
     }
 }

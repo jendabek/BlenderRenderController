@@ -75,8 +75,8 @@ namespace BlenderRenderController
             blendFileBrowseButton.Menu = recentBlendsMenu;
 
             // initialize logger service
-            _log.RegisterLogSevice(new FileLogger(appSettings.verboseLog));
-            _log.RegisterLogSevice(new ConsoleLogger(appSettings.verboseLog));
+            _log.RegisterLogSevice(new FileLogger());
+            _log.RegisterLogSevice(new ConsoleLogger());
 
 
             //_fileLog = new newLogger.FileLogger(appSettings.verboseLog);
@@ -319,7 +319,7 @@ namespace BlenderRenderController
         private void MainForm_Close(object sender, FormClosedEventArgs e)
         {
             //jsonDel();
-            _log.Warning("Program Closed");
+            _log.Warn("Program Closed");
         }
 
         private void MainForm_Load(object sender, EventArgs e)

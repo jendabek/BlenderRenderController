@@ -10,22 +10,24 @@ namespace BlenderRenderController.newLogger
     public class FileLogger : ILogger
     {
         private readonly DateTime _time = DateTime.Now;
-        public bool Verbose { get; set; }
+        private bool _verbose;
 
         public enum LogType
         {
             INFO, ERROR, WARNING
         }
 
-        public FileLogger(bool verbose = false)
+        public FileLogger()
         {
-            this.Verbose = verbose;
+            var appSettings = new AppSettings();
+            appSettings.init();
+            this._verbose = appSettings.verboseLog;
         }
 
         private void Log(string message, LogType logType)
         {
             // Ignore 'INFO' logs if Verbose == false
-            if ((!Verbose) && (logType != LogType.ERROR))
+            if ((!_verbose) && (logType != LogType.ERROR))
                 return;
 
             string type = logType.ToString();
@@ -38,17 +40,17 @@ namespace BlenderRenderController.newLogger
 
         }
 
-        public void LogInfo(string message)
+        public void Info(string message)
         {
             Log(message, LogType.INFO);
         }
 
-        public void LogError(string message)
+        public void Error(string message)
         {
             Log(message, LogType.ERROR);
         }
 
-        public void LogWarn(string message)
+        public void Warn(string message)
         {
             Log(message, LogType.WARNING);
         }
@@ -57,22 +59,23 @@ namespace BlenderRenderController.newLogger
     public class ConsoleLogger : ILogger
     {
         private readonly DateTime _time = DateTime.Now;
-
-        public bool Verbose{ get; set; }
+        private bool _verbose;
 
         public enum LogType
         {
             INFO, ERROR, WARNING
         }
 
-        public ConsoleLogger(bool verbose = false)
+        public ConsoleLogger()
         {
-            this.Verbose = verbose;
+            var appSettings = new AppSettings();
+            appSettings.init();
+            this._verbose = appSettings.verboseLog;
         }
 
         private void Log(string message, LogType logType)
         {
-            if ((!Verbose) && (logType == LogType.INFO))
+            if ((!_verbose) && (logType == LogType.INFO))
                 return;
 
             string type = logType.ToString();
@@ -80,19 +83,19 @@ namespace BlenderRenderController.newLogger
             Console.WriteLine(logLine);
         }
 
-        public void LogError(string message)
+        public void Error(string message)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Log(message, LogType.ERROR);
         }
 
-        public void LogInfo(string message)
+        public void Info(string message)
         {
             Console.ForegroundColor = ConsoleColor.White;
             Log(message, LogType.INFO);
         }
 
-        public void LogWarn(string message)
+        public void Warn(string message)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Log(message, LogType.WARNING);

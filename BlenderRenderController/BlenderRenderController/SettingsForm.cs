@@ -38,6 +38,7 @@ namespace BlenderRenderController
                     ffmpegDownloadLabel.Visible = false;
                 }
             }
+
             chkBoxVerboseLog.Checked = _appSettings.verboseLog;
         }
 
