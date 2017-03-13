@@ -33,7 +33,6 @@ namespace BlenderRenderController
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
         newLogger.FileLogger _fileLog;
-        newLogger.ConsoleLogger _consoleLog;
 
         // CMD args
         string[] CMDargs = Environment.GetCommandLineArgs();
@@ -334,7 +333,6 @@ namespace BlenderRenderController
                 loadBlend();
             }
             */
-            _fileLog.LogInfo("Program loaded");
         }
 
         private void blendFileBrowseButton_Click(object sender, EventArgs e)
@@ -959,8 +957,8 @@ namespace BlenderRenderController
             {
                 // Error scriptsfolder not found
                 string caption = "Error";
-                string message = "Scripts folder not found. Separate audio mixdown and automatic project info detection will not work, but you can still use the basic rendering functionality.";
-                MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                string msg = "Scripts folder not found. Separate audio mixdown and automatic project info detection will not work, but you can still use the basic rendering functionality.";
+                MessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 

@@ -25,7 +25,7 @@ namespace BlenderRenderController.newLogger
         private void Log(string message, LogType logType)
         {
             // Ignore 'INFO' logs if Verbose == false
-            if ((!Verbose) && (logType == LogType.INFO))
+            if ((!Verbose) && (logType != LogType.ERROR))
                 return;
 
             string type = logType.ToString();
@@ -46,6 +46,11 @@ namespace BlenderRenderController.newLogger
         public void LogError(string message)
         {
             Log(message, LogType.ERROR);
+        }
+
+        public void LogWarn(string message)
+        {
+            Log(message, LogType.WARNING);
         }
     }
 
@@ -80,6 +85,11 @@ namespace BlenderRenderController.newLogger
         {
             Console.ForegroundColor = ConsoleColor.White;
             Log(message, LogType.INFO);
+        }
+
+        public void LogWarn(string message)
+        {
+            throw new NotImplementedException();
         }
     }
 
