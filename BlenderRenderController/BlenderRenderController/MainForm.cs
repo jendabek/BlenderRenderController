@@ -85,7 +85,7 @@ namespace BlenderRenderController
             applySettings();
             if (!appSettings.appConfigured)
             {
-                //appState = AppStates.NOT_CONFIGURED;
+                //appState = AppStates.NOT_CONFIGURED;/
                 settingsForm.ShowDialog();
             }
             updateRecentBlendsMenu();
