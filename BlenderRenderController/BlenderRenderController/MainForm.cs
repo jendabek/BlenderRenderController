@@ -32,6 +32,8 @@ namespace BlenderRenderController
         SettingsForm settingsForm;
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
+        newLogger.FileLogger _fileLog;
+        newLogger.ConsoleLogger _consoleLog;
 
         // CMD args
         string[] CMDargs = Environment.GetCommandLineArgs();
@@ -71,6 +73,8 @@ namespace BlenderRenderController
 
             recentBlendsMenu = new ContextMenuStrip();
             blendFileBrowseButton.Menu = recentBlendsMenu;
+
+            _fileLog = new newLogger.FileLogger(appSettings.verboseLog);
             
             applySettings();
             if (!appSettings.appConfigured)
@@ -437,7 +441,8 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                oldLogger.add(ex.ToString());
+                //oldLogger.add(ex.ToString());
+                _fileLog.LogError(ex.ToString());
                 stopRender(false);
                 return;
             }
@@ -541,7 +546,8 @@ namespace BlenderRenderController
                         Helper.clearFolder(p.chunksPath);
                     }
                     catch (Exception ex){
-                        oldLogger.add(ex.ToString());
+                        //oldLogger.add(ex.ToString());
+                        _fileLog.LogError(ex.ToString());
                         MessageBox.Show("It can't be deleted, files are in use by some program.\n");
                         return;
                     }
@@ -584,7 +590,8 @@ namespace BlenderRenderController
                 }
                 catch(Exception ex)
                 {
-                    oldLogger.add(ex.ToString());
+                    _fileLog.LogError(ex.ToString());
+                    //oldLogger.add(ex.ToString());
                     Trace.WriteLine(ex);
                 }
                 processes.Remove(process);
@@ -777,7 +784,8 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                oldLogger.add(ex.ToString());
+                //oldLogger.add(ex.ToString());
+                _fileLog.LogError(ex.ToString());
                 Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
                 settingsForm.ShowDialog();
                 statusLabel.Text = "Joining cancelled.";
@@ -826,7 +834,8 @@ namespace BlenderRenderController
 				process.Start();
 			}
 			catch( Exception ex ) {
-                oldLogger.add(ex.ToString());
+                //oldLogger.add(ex.ToString());
+                _fileLog.LogError(ex.ToString());
                 Trace.WriteLine(ex);
                 Helper.showErrors(new List<string> { AppErrorCodes.BLENDER_PATH_NOT_SET });
                 settingsForm.ShowDialog();
@@ -884,6 +893,7 @@ namespace BlenderRenderController
                         warn.Add(AppErrorCodes.BLEND_OUTPUT_INVALID);
                         Helper.showErrors(warn);
                         p.outputPath = Path.GetDirectoryName(p.blendFilePath);
+                        _fileLog.LogInfo("Could not resolve output path... Using .blend file path");
                     }
 
                 }

@@ -10,26 +10,27 @@ namespace BlenderRenderController.newLogger
     public class FileLogger : ILogger
     {
         private readonly DateTime _time = DateTime.Now;
-        public bool IsActive { get; set; }
+        public bool Verbose { get; set; }
 
         public enum LogType
         {
             INFO, ERROR, WARNING
         }
 
-        public FileLogger(bool isActive = false)
+        public FileLogger(bool verbose = false)
         {
-            this.IsActive = isActive;
+            this.Verbose = verbose;
         }
 
         private void Log(string message, LogType logType)
         {
-            if (!IsActive)
+            // Ignore 'INFO' logs if Verbose == false
+            if ((!Verbose) && (logType == LogType.INFO))
                 return;
 
             string type = logType.ToString();
 
-            using (StreamWriter sw = new StreamWriter(LogConstants.LOG_FILE_NAME, true))
+            using (StreamWriter sw = new StreamWriter(LogsConstants.LOG_FILE_NAME, true))
             {
                 var logLine = $"{type}: {message} -- [{_time}]\n";
                 sw.WriteLine(logLine); 
@@ -52,7 +53,7 @@ namespace BlenderRenderController.newLogger
     {
         private readonly DateTime _time = DateTime.Now;
 
-        public bool IsActive{ get; set; }
+        public bool Verbose{ get; set; }
 
         public enum LogType
         {
@@ -61,7 +62,7 @@ namespace BlenderRenderController.newLogger
 
         private void Log(string message, LogType logType)
         {
-            if (!IsActive)
+            if ((!Verbose) && (logType == LogType.INFO))
                 return;
 
             string type = logType.ToString();
@@ -82,14 +83,6 @@ namespace BlenderRenderController.newLogger
         }
     }
 
-    static class LogConstants
-    {
-        public const string LOG_FILE_NAME = "log.txt";
-
-        public const string LOG_TITLE = "Red's Logger";
-        public const string STOPWATCH = "[STOPWATCH]";
-        public const string MENU_CHOICES = "[MENU_CHOICES]";
-    }
 }
 
 //if (logMode == 0)

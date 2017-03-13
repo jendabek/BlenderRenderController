@@ -2,7 +2,7 @@
 {
     public interface ILogger
     {
-        bool IsActive { get; set; }
+        bool Verbose { get; set; }
 
         void LogError(string message);
         void LogInfo(string message);

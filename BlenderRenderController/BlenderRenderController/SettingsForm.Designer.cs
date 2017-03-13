@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.blenderPathTextBox = new System.Windows.Forms.TextBox();
             this.blenderExeLabel = new System.Windows.Forms.Label();
@@ -38,7 +39,8 @@
             this.ffmpegDownloadLabel = new System.Windows.Forms.Label();
             this.ffmpegChangePathButton = new System.Windows.Forms.Button();
             this.blenderChangePathButton = new System.Windows.Forms.Button();
-            this.clearRecentBnt = new System.Windows.Forms.Button();
+            this.chkBoxVerboseLog = new System.Windows.Forms.CheckBox();
+            this.settingsToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // blenderPathTextBox
@@ -142,16 +144,19 @@
             this.blenderChangePathButton.UseVisualStyleBackColor = true;
             this.blenderChangePathButton.Click += new System.EventHandler(this.blenderChangePathButton_Click);
             // 
-            // clearRecentBnt
+            // chkBoxVerboseLog
             // 
-            this.clearRecentBnt.Location = new System.Drawing.Point(41, 220);
-            this.clearRecentBnt.Name = "clearRecentBnt";
-            this.clearRecentBnt.Size = new System.Drawing.Size(93, 38);
-            this.clearRecentBnt.TabIndex = 30;
-            this.clearRecentBnt.Text = "Clear Recent";
-            this.clearRecentBnt.UseVisualStyleBackColor = true;
-            this.clearRecentBnt.Visible = false;
-            this.clearRecentBnt.Click += new System.EventHandler(this.clearRecentBnt_Click);
+            this.chkBoxVerboseLog.AutoSize = true;
+            this.chkBoxVerboseLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkBoxVerboseLog.Location = new System.Drawing.Point(41, 239);
+            this.chkBoxVerboseLog.Name = "chkBoxVerboseLog";
+            this.chkBoxVerboseLog.Size = new System.Drawing.Size(102, 19);
+            this.chkBoxVerboseLog.TabIndex = 30;
+            this.chkBoxVerboseLog.Text = "Detailed Logs";
+            this.settingsToolTip.SetToolTip(this.chkBoxVerboseLog, "Log program operation, could be useful for troubleshooting.\r\n\r\nObs: Error message" +
+        "s will always be logged.");
+            this.chkBoxVerboseLog.UseVisualStyleBackColor = true;
+            this.chkBoxVerboseLog.Click += new System.EventHandler(this.chkBoxVerboseLog_Click);
             // 
             // SettingsForm
             // 
@@ -159,7 +164,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(545, 277);
-            this.Controls.Add(this.clearRecentBnt);
+            this.Controls.Add(this.chkBoxVerboseLog);
             this.Controls.Add(this.ffmpegDownloadLabel);
             this.Controls.Add(this.ffmpegLabel);
             this.Controls.Add(this.blenderLabel);
@@ -197,6 +202,7 @@
         private System.Windows.Forms.TextBox blenderPathTextBox;
         private System.Windows.Forms.TextBox ffmpegPathTextBox;
         private System.Windows.Forms.Label ffmpegDownloadLabel;
-        private System.Windows.Forms.Button clearRecentBnt;
+        private System.Windows.Forms.CheckBox chkBoxVerboseLog;
+        private System.Windows.Forms.ToolTip settingsToolTip;
     }
 }
