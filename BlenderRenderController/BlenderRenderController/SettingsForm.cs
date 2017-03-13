@@ -9,6 +9,7 @@ namespace BlenderRenderController
     {
         private AppSettings _appSettings;
         private OpenFileDialog _changePathDialog;
+        newLogger.FileLogger _fileLog;
 
         public SettingsForm()
         {
@@ -36,6 +37,7 @@ namespace BlenderRenderController
                 }
             }
             chkBoxVerboseLog.Checked = _appSettings.verboseLog;
+            _fileLog = new newLogger.FileLogger(_appSettings.verboseLog);
         }
 
         private void blenderChangePathButton_Click(object sender, EventArgs e)
@@ -80,7 +82,7 @@ namespace BlenderRenderController
 
             if(_appSettings.appConfigured)
             {
-                _appSettings.save();
+                _appSettings.save(); _fileLog.LogInfo("Settings saved");
                 Close();
             }
         }

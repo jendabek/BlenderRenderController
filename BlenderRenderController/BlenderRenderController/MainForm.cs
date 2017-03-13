@@ -313,6 +313,7 @@ namespace BlenderRenderController
         private void MainForm_Close(object sender, FormClosedEventArgs e)
         {
             //jsonDel();
+            _fileLog.LogInfo("Program Closed");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -333,7 +334,7 @@ namespace BlenderRenderController
                 loadBlend();
             }
             */
-            
+            _fileLog.LogInfo("Program loaded");
         }
 
         private void blendFileBrowseButton_Click(object sender, EventArgs e)
@@ -937,6 +938,7 @@ namespace BlenderRenderController
             }
             updateUI();
             Trace.WriteLine( ".blend data = " + jsonInfo.ToString() );
+            _fileLog.LogInfo(".blend loaded successfully");
 		}
         
 		private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
@@ -947,6 +949,7 @@ namespace BlenderRenderController
 
             statusLabel.Text = "Rendering mixdown, it can take a while for larger projects...";
             statusLabel.Update();
+            _fileLog.LogInfo("mixdown started");
 
             if (!File.Exists(p.blendFilePath)) {
                 return;
@@ -994,8 +997,10 @@ namespace BlenderRenderController
 
             process.WaitForExit();
 
-            Trace.WriteLine("Mixdown complete");
-            statusLabel.Text = "Mixdown complete.";
+            string message = "Mixdown complete";
+            Trace.WriteLine(message); _fileLog.LogInfo(message);
+            statusLabel.Text = message;
+            
         }
 
         // TOOL STRIP METHODS
