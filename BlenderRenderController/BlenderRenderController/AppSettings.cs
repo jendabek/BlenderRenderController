@@ -81,7 +81,7 @@ namespace BlenderRenderController
                     //converting Int32 to decimal
                     else if (jsonSettings[propertyName] is Int32)
                     {
-                        decimal decimalValue = (decimal)(int)jsonSettings[propertyName];
+                        decimal decimalValue = (int)jsonSettings[propertyName];
                         GetType().GetField("_" + propertyName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, decimalValue);
                     }
                     //just a string
@@ -132,24 +132,22 @@ namespace BlenderRenderController
         {
             if (_recentBlends.Count > 0)
             {
-                var response = System.Windows.Forms.MessageBox.Show(
+                var response = MessageBox.Show(
                                  "This will clear all files in the recent blends list, are you sure?", "Clear recent blends?",
                                  MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
 
                 switch (response)
                 {
-                    case System.Windows.Forms.DialogResult.OK:
+                    case DialogResult.OK:
                         _recentBlends.Clear();
                         break;
-                    case System.Windows.Forms.DialogResult.Cancel:
+                    case DialogResult.Cancel:
                         break;
                     default:
-                        System.Windows.Forms.MessageBox.Show("Something wrong happend.");
+                        MessageBox.Show("Something wrong happend.");
                         break;
                 }
             }
-            else
-                return;
         }
 
         public void checkCorrectConfig(bool showErrors = true)

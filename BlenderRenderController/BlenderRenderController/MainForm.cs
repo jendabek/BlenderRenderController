@@ -34,6 +34,7 @@ namespace BlenderRenderController
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
         LogService _log = new LogService();
+        ui.PlatformService _platService = new ui.PlatformService();
 
         // CMD args
         string[] CMDargs = Environment.GetCommandLineArgs();
@@ -41,6 +42,11 @@ namespace BlenderRenderController
         public MainForm()
         {
             InitializeComponent();
+
+            var os = Environment.OSVersion.Platform;
+            if (os != PlatformID.Win32NT)
+                UiPlatAdjust(os);
+            
         }
         public void MainForm_Shown(object sender, EventArgs e)
         {
@@ -160,8 +166,6 @@ namespace BlenderRenderController
 
         public void updateUI()
         {
-            chunkEndNumericUpDown.Text = p.chunkEnd.ToString();
-            chunkStartNumericUpDown.Text = p.chunkStart.ToString();
             chunkLengthNumericUpDown.Value = p.chunkLength;
             totalStartNumericUpDown.Value = p.start;
             totalEndNumericUpDown.Value = p.end;
@@ -188,9 +192,6 @@ namespace BlenderRenderController
                 case AppStates.AFTER_START:
                     renderAllButton.Enabled = false;
                     menuStrip.Enabled = true;
-                    renderChunkButton.Enabled = false;
-                    prevChunkButton.Enabled = false;
-                    nextChunkButton.Enabled = false;
                     blendFileBrowseButton.Enabled = true;
                     mixDownButton.Enabled = false;
                     totalStartNumericUpDown.Enabled = false;
@@ -220,9 +221,6 @@ namespace BlenderRenderController
                 case AppStates.NOT_CONFIGURED:
                     renderAllButton.Enabled = false;
                     menuStrip.Enabled = true;
-                    renderChunkButton.Enabled = false;
-                    prevChunkButton.Enabled = false;
-                    nextChunkButton.Enabled = false;
                     mixDownButton.Enabled = false;
                     totalStartNumericUpDown.Enabled = false;
                     totalEndNumericUpDown.Enabled = false;
@@ -252,9 +250,6 @@ namespace BlenderRenderController
                 case AppStates.READY_FOR_RENDER:
                     renderAllButton.Enabled = true;
                     menuStrip.Enabled = true;
-                    renderChunkButton.Enabled = true;
-                    prevChunkButton.Enabled = true;
-                    nextChunkButton.Enabled = true;
                     mixDownButton.Enabled = true;
                     totalStartNumericUpDown.Enabled = startEndCustomRadio.Checked;
                     totalEndNumericUpDown.Enabled = startEndCustomRadio.Checked;
@@ -285,9 +280,6 @@ namespace BlenderRenderController
                 case AppStates.RENDERING_CHUNK_ONLY:
                     renderAllButton.Enabled = true;
                     menuStrip.Enabled = false;
-                    renderChunkButton.Enabled = false;
-                    prevChunkButton.Enabled = false;
-                    nextChunkButton.Enabled = false;
                     mixDownButton.Enabled = false;
                     totalStartNumericUpDown.Enabled = false;
                     totalEndNumericUpDown.Enabled = false;
@@ -311,6 +303,36 @@ namespace BlenderRenderController
                     afterRenderDoNothingRadio.Enabled = false;
                     afterRenderJoinMixdownRadio.Enabled = false;
                     afterRenderJoinRadio.Enabled = false;
+                    break;
+            }
+        }
+
+        void UiPlatAdjust(PlatformID platform)
+        {
+            switch (platform)
+            {
+                case PlatformID.Unix:
+                    totalEndNumericUpDown.BackColor =
+                    totalStartNumericUpDown.BackColor =
+                    chunkLengthNumericUpDown.BackColor =
+                    processCountNumericUpDown.BackColor = 
+                    outputFolderTextBox.BackColor = Color.White;
+                    infoActiveScene.BackColor =
+                    infoDuration.BackColor =
+                    infoFramerate.BackColor =
+                    infoFramesTotal.BackColor =
+                    infoResolution.BackColor = Color.FromArgb(240, 240, 240);
+                    blendFileBrowseButton.BackColor =
+                    reloadBlenderDataButton.BackColor =
+                    outputFolderBrowseButton.BackColor =
+                    mixDownButton.BackColor =
+                    openOutputFolderButton.BackColor =
+                    donateButton.BackColor = Color.FromArgb(225, 225, 225);
+                    break;
+                case PlatformID.MacOSX:
+                    break;
+                default:
+                    MessageBox.Show("Something went wrong...");
                     break;
             }
         }
@@ -1258,6 +1280,12 @@ namespace BlenderRenderController
         private void exeption_test()
         {
             throw new Exception("this is a test Exeption");
+        }
+
+        private void UiMain()
+        {
+            outputFolderTextBox.BackColor = Color.White;
+
         }
     }
 }
