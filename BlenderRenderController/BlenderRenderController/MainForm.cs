@@ -90,6 +90,7 @@ namespace BlenderRenderController
             }
             updateRecentBlendsMenu();
             updateUI();
+            _log.Info("Program Started");
         }
 
         private void onSettingsFormClosed(object sender, FormClosedEventArgs e)
@@ -306,7 +307,7 @@ namespace BlenderRenderController
         private void MainForm_Close(object sender, FormClosedEventArgs e)
         {
             //jsonDel();
-            _log.Warn("Program Closed");
+            _log.Info("Program Closed");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -1247,10 +1248,5 @@ namespace BlenderRenderController
             throw new Exception("this is a test Exeption");
         }
 
-        private void UiMain()
-        {
-            outputFolderTextBox.BackColor = Color.White;
-
-        }
     }
 }

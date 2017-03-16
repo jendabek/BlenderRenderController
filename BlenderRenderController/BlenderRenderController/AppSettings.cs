@@ -43,15 +43,17 @@ namespace BlenderRenderController
         private bool _appConfigured = false;
         private SettingsForm _settingsForm;
         LogService _log = new LogService();
-
+        PlatformID Os = Environment.OSVersion.Platform;
 
         public void init()
         {
+            _log.RegisterLogSevice(new FileLogger());
+            _log.Info($"Os is {Os}");
             //LOADing data from JSON and set it to properties
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);
             _blenderPath = BLENDER_PATH_DEFAULT;
             _ffmpegPath = FFMPEG_PATH_DEFAULT;
-            loadJsonSettings();
+            loadJsonSettings(); _log.Info("Settings Json loaded.");
             checkCorrectConfig();
         }
 
@@ -110,6 +112,7 @@ namespace BlenderRenderController
             try
             {
                 File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _jsonFileName), serializer.Serialize(jsonObject));
+                //_log.Info("Settings saved.");
                 return true;
             }
             catch (Exception)

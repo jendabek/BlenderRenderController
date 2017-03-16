@@ -11,6 +11,9 @@ namespace BlenderRenderController.newLogger
     {
         private readonly DateTime _time = DateTime.Now;
         private bool _verbose;
+        private string _lastLog;
+        private string _repeatLine;
+        private int _numLastLogs;
 
         public enum LogType
         {
@@ -22,6 +25,7 @@ namespace BlenderRenderController.newLogger
             var appSettings = new AppSettings();
             appSettings.RemoteLoadJsonSettings();
             this._verbose = appSettings.verboseLog;
+            this._repeatLine = $"Last message repeted {_numLastLogs} times";
         }
 
         private void Log(string message, LogType logType)
@@ -34,8 +38,8 @@ namespace BlenderRenderController.newLogger
 
             using (StreamWriter sw = new StreamWriter(LogFormats.LOG_FILE_NAME, true))
             {
-                var logLine = $"{type} [{_time}]: {message}\n";
-                sw.WriteLine(logLine); 
+                var logLine = $"{type} [{_time}]: {message}";
+                sw.WriteLine(logLine);
             }
 
         }
@@ -79,7 +83,7 @@ namespace BlenderRenderController.newLogger
                 return;
 
             string type = logType.ToString();
-            var logLine = $"{type}: {message} -- [{_time}]\n";
+            var logLine = $"{type}: {message} -- [{_time}]";
             Console.WriteLine(logLine);
         }
 
