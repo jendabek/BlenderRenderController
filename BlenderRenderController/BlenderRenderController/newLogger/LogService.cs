@@ -13,6 +13,13 @@ namespace BlenderRenderController.newLogger
 
         public void RegisterLogSevice(ILogger service)
         {
+            if (service == null)
+                throw new ArgumentException("Log service passed is null.");
+
+            if (_loggerServices.Contains(service))
+                // avoid duplicates services
+                return;
+            
             _loggerServices.Add(service);
         }
 

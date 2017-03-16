@@ -53,6 +53,10 @@ namespace BlenderRenderController
                 {
                     errorText += "Unable to read output path, using project location.";
                 }
+                if (errorCode == AppErrorCodes.UNKNOWN_OS)
+                {
+                    errorText += "Could not identify operating system, BRC might not work properly.";
+                }
             }
             MessageBox.Show(
                     errorText,

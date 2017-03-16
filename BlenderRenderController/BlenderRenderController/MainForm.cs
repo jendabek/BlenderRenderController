@@ -34,18 +34,17 @@ namespace BlenderRenderController
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
         LogService _log = new LogService();
-        ui.PlatformService _platService = new ui.PlatformService();
+        PlatformID Os = Environment.OSVersion.Platform;
 
         // CMD args
         string[] CMDargs = Environment.GetCommandLineArgs();
+
 
         public MainForm()
         {
             InitializeComponent();
 
-            var os = Environment.OSVersion.Platform;
-            if (os != PlatformID.Win32NT)
-                UiPlatAdjust(os);
+            PlatAdjust(Os);	
             
         }
         public void MainForm_Shown(object sender, EventArgs e)
@@ -80,13 +79,10 @@ namespace BlenderRenderController
             recentBlendsMenu = new ContextMenuStrip();
             blendFileBrowseButton.Menu = recentBlendsMenu;
 
-            // initialize logger service
+            // Logger service
             _log.RegisterLogSevice(new FileLogger());
             _log.RegisterLogSevice(new ConsoleLogger());
 
-
-            //_fileLog = new newLogger.FileLogger(appSettings.verboseLog);
-            
             applySettings();
             if (!appSettings.appConfigured)
             {
@@ -307,27 +303,29 @@ namespace BlenderRenderController
             }
         }
 
-        void UiPlatAdjust(PlatformID platform)
+        public void UiPlatAdjust(PlatformID platform)
         {
             switch (platform)
             {
-                case PlatformID.Unix:
-                    totalEndNumericUpDown.BackColor =
+			case PlatformID.Unix:
+				totalEndNumericUpDown.BackColor =
                     totalStartNumericUpDown.BackColor =
                     chunkLengthNumericUpDown.BackColor =
                     processCountNumericUpDown.BackColor = 
                     outputFolderTextBox.BackColor = Color.White;
-                    infoActiveScene.BackColor =
+				infoActiveScene.BackColor =
                     infoDuration.BackColor =
                     infoFramerate.BackColor =
                     infoFramesTotal.BackColor =
-                    infoResolution.BackColor = Color.FromArgb(240, 240, 240);
-                    blendFileBrowseButton.BackColor =
+                    infoResolution.BackColor = Color.FromArgb (240, 240, 240);
+				blendFileBrowseButton.BackColor =
                     reloadBlenderDataButton.BackColor =
                     outputFolderBrowseButton.BackColor =
                     mixDownButton.BackColor =
                     openOutputFolderButton.BackColor =
-                    donateButton.BackColor = Color.FromArgb(225, 225, 225);
+                    donateButton.BackColor = Color.FromArgb (225, 225, 225);
+
+				//this.Icon.Dispose ();
                     break;
                 case PlatformID.MacOSX:
                     break;
@@ -347,21 +345,23 @@ namespace BlenderRenderController
         private void MainForm_Load(object sender, EventArgs e)
         {
             // Arguments
-           /* if (CMDargs.Length > 1)
-            {
-                //test arguments
-                //for (int i = 0; i < args.Length; i++)
-                //{
-                //    string teste = string.Format("Arg[{0}] = [{1}] \r\n", i, args[i]);
-                //    MessageBox.Show(teste);
-                //}
+            /* if (CMDargs.Length > 1)
+             {
+                 //test arguments
+                 //for (int i = 0; i < args.Length; i++)
+                 //{
+                 //    string teste = string.Format("Arg[{0}] = [{1}] \r\n", i, args[i]);
+                 //    MessageBox.Show(teste);
+                 //}
 
-                var CMDpath = CMDargs[1];
-                p.blendFilePath = CMDpath;
-                //blendFilePathTextBox.Text = p.blendFilePath;
-                loadBlend();
-            }
-            */
+                 var CMDpath = CMDargs[1];
+                 p.blendFilePath = CMDpath;
+                 //blendFilePathTextBox.Text = p.blendFilePath;
+                 loadBlend();
+             }
+             */
+            // initialize logger service
+
         }
 
         private void blendFileBrowseButton_Click(object sender, EventArgs e)
@@ -444,7 +444,7 @@ namespace BlenderRenderController
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.WorkingDirectory = appSettings.blenderPath;
-            process.StartInfo.FileName = Path.Combine(appSettings.blenderPath, "blender.exe");
+            process.StartInfo.FileName = Path.Combine(appSettings.blenderPath, appSettings.BlenderExeName);
             
             process.StartInfo.Arguments = String.Format("-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a",
                                                   p.blendFilePath,
@@ -791,7 +791,7 @@ namespace BlenderRenderController
             }
             Process process = new Process();
             process.StartInfo.WorkingDirectory = appSettings.ffmpegPath;
-            process.StartInfo.FileName = Path.Combine(appSettings.ffmpegPath, "ffmpeg.exe");
+            process.StartInfo.FileName = Path.Combine(appSettings.ffmpegPath, appSettings.FFmpegExeName);
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.Arguments = 
@@ -848,7 +848,7 @@ namespace BlenderRenderController
 
             Process process = new Process();
             process.StartInfo.WorkingDirectory       = appSettings.blenderPath;
-            process.StartInfo.FileName               = Path.Combine(appSettings.blenderPath, "blender.exe");
+            process.StartInfo.FileName               = Path.Combine(appSettings.blenderPath, appSettings.BlenderExeName);
 			process.StartInfo.RedirectStandardOutput = true;
 			process.StartInfo.CreateNoWindow         = true;
 			process.StartInfo.UseShellExecute        = false;
@@ -1282,10 +1282,5 @@ namespace BlenderRenderController
             throw new Exception("this is a test Exeption");
         }
 
-        private void UiMain()
-        {
-            outputFolderTextBox.BackColor = Color.White;
-
-        }
     }
 }
