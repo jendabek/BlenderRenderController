@@ -41,6 +41,7 @@ namespace BlenderRenderController
         public MainForm()
         {
             InitializeComponent();
+
         }
         public void MainForm_Shown(object sender, EventArgs e)
         {
@@ -84,11 +85,12 @@ namespace BlenderRenderController
             applySettings();
             if (!appSettings.appConfigured)
             {
-                //appState = AppStates.NOT_CONFIGURED;
+                //appState = AppStates.NOT_CONFIGURED;/
                 settingsForm.ShowDialog();
             }
             updateRecentBlendsMenu();
             updateUI();
+            _log.Info("Program Started");
         }
 
         private void onSettingsFormClosed(object sender, FormClosedEventArgs e)
@@ -160,8 +162,6 @@ namespace BlenderRenderController
 
         public void updateUI()
         {
-            chunkEndNumericUpDown.Text = p.chunkEnd.ToString();
-            chunkStartNumericUpDown.Text = p.chunkStart.ToString();
             chunkLengthNumericUpDown.Value = p.chunkLength;
             totalStartNumericUpDown.Value = p.start;
             totalEndNumericUpDown.Value = p.end;
@@ -188,9 +188,6 @@ namespace BlenderRenderController
                 case AppStates.AFTER_START:
                     renderAllButton.Enabled = false;
                     menuStrip.Enabled = true;
-                    renderChunkButton.Enabled = false;
-                    prevChunkButton.Enabled = false;
-                    nextChunkButton.Enabled = false;
                     blendFileBrowseButton.Enabled = true;
                     mixDownButton.Enabled = false;
                     totalStartNumericUpDown.Enabled = false;
@@ -220,9 +217,6 @@ namespace BlenderRenderController
                 case AppStates.NOT_CONFIGURED:
                     renderAllButton.Enabled = false;
                     menuStrip.Enabled = true;
-                    renderChunkButton.Enabled = false;
-                    prevChunkButton.Enabled = false;
-                    nextChunkButton.Enabled = false;
                     mixDownButton.Enabled = false;
                     totalStartNumericUpDown.Enabled = false;
                     totalEndNumericUpDown.Enabled = false;
@@ -252,9 +246,6 @@ namespace BlenderRenderController
                 case AppStates.READY_FOR_RENDER:
                     renderAllButton.Enabled = true;
                     menuStrip.Enabled = true;
-                    renderChunkButton.Enabled = true;
-                    prevChunkButton.Enabled = true;
-                    nextChunkButton.Enabled = true;
                     mixDownButton.Enabled = true;
                     totalStartNumericUpDown.Enabled = startEndCustomRadio.Checked;
                     totalEndNumericUpDown.Enabled = startEndCustomRadio.Checked;
@@ -285,9 +276,6 @@ namespace BlenderRenderController
                 case AppStates.RENDERING_CHUNK_ONLY:
                     renderAllButton.Enabled = true;
                     menuStrip.Enabled = false;
-                    renderChunkButton.Enabled = false;
-                    prevChunkButton.Enabled = false;
-                    nextChunkButton.Enabled = false;
                     mixDownButton.Enabled = false;
                     totalStartNumericUpDown.Enabled = false;
                     totalEndNumericUpDown.Enabled = false;
@@ -319,7 +307,7 @@ namespace BlenderRenderController
         private void MainForm_Close(object sender, FormClosedEventArgs e)
         {
             //jsonDel();
-            _log.Warn("Program Closed");
+            _log.Info("Program Closed");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -1259,5 +1247,6 @@ namespace BlenderRenderController
         {
             throw new Exception("this is a test Exeption");
         }
+
     }
 }

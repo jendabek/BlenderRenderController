@@ -32,15 +32,11 @@ namespace BlenderRenderController
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.renderChunkButton = new System.Windows.Forms.Button();
             this.renderProgressBar = new System.Windows.Forms.ProgressBar();
             this.totalStartNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.startFrameLabel = new System.Windows.Forms.Label();
-            this.chunkEndLabel = new System.Windows.Forms.Label();
             this.outputFolderTextBox = new System.Windows.Forms.TextBox();
             this.statusLabel = new System.Windows.Forms.Label();
-            this.nextChunkButton = new System.Windows.Forms.Button();
-            this.prevChunkButton = new System.Windows.Forms.Button();
             this.totalFrameCountLabel = new System.Windows.Forms.Label();
             this.totalEndNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.processCountNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -72,11 +68,6 @@ namespace BlenderRenderController
             this.infoActiveScene = new System.Windows.Forms.TextBox();
             this.infoFramesTotalLabel = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.currentChunkInfoPanel = new System.Windows.Forms.Panel();
-            this.chunkEndNumericUpDown = new System.Windows.Forms.TextBox();
-            this.chunkStartNumericUpDown = new System.Windows.Forms.TextBox();
-            this.chunkStartLabel = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
             this.toolTipWarn = new System.Windows.Forms.ToolTip(this.components);
             this.toolTipInfo = new System.Windows.Forms.ToolTip(this.components);
             this.chunkLengthLabel = new System.Windows.Forms.Label();
@@ -89,6 +80,7 @@ namespace BlenderRenderController
             this.mixDownButton = new System.Windows.Forms.Button();
             this.concatenatePartsButton = new System.Windows.Forms.Button();
             this.renderAllButton = new System.Windows.Forms.Button();
+            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -110,31 +102,16 @@ namespace BlenderRenderController
             this.donateButton = new System.Windows.Forms.Button();
             this.openOutputFolderButton = new System.Windows.Forms.Button();
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
-            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
             this.menuStrip.SuspendLayout();
             this.infoPanel.SuspendLayout();
-            this.currentChunkInfoPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // renderChunkButton
-            // 
-            this.renderChunkButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderChunkButton.Location = new System.Drawing.Point(21, 75);
-            this.renderChunkButton.Name = "renderChunkButton";
-            this.renderChunkButton.Size = new System.Drawing.Size(101, 34);
-            this.renderChunkButton.TabIndex = 0;
-            this.renderChunkButton.TabStop = false;
-            this.renderChunkButton.Text = "Render Chunk";
-            this.toolTipInfo.SetToolTip(this.renderChunkButton, "Render current segment");
-            this.renderChunkButton.UseVisualStyleBackColor = true;
-            this.renderChunkButton.Click += new System.EventHandler(this.renderChunkButton_Click);
             // 
             // renderProgressBar
             // 
@@ -172,21 +149,9 @@ namespace BlenderRenderController
             this.startFrameLabel.TabIndex = 6;
             this.startFrameLabel.Text = "Start Frame";
             // 
-            // chunkEndLabel
-            // 
-            this.chunkEndLabel.AutoSize = true;
-            this.chunkEndLabel.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.chunkEndLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkEndLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.chunkEndLabel.Location = new System.Drawing.Point(130, 70);
-            this.chunkEndLabel.Name = "chunkEndLabel";
-            this.chunkEndLabel.Size = new System.Drawing.Size(68, 15);
-            this.chunkEndLabel.TabIndex = 7;
-            this.chunkEndLabel.Text = "End Frame";
-            this.toolTipInfo.SetToolTip(this.chunkEndLabel, "Segment\'s end frame");
-            // 
             // outputFolderTextBox
             // 
+            this.outputFolderTextBox.BackColor = System.Drawing.Color.White;
             this.outputFolderTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.outputFolderTextBox.Location = new System.Drawing.Point(32, 321);
             this.outputFolderTextBox.Name = "outputFolderTextBox";
@@ -210,32 +175,6 @@ namespace BlenderRenderController
             this.statusLabel.Text = "Some status message.";
             this.toolTipInfo.SetToolTip(this.statusLabel, "Progress");
             this.statusLabel.Visible = false;
-            // 
-            // nextChunkButton
-            // 
-            this.nextChunkButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nextChunkButton.Location = new System.Drawing.Point(74, 39);
-            this.nextChunkButton.Name = "nextChunkButton";
-            this.nextChunkButton.Size = new System.Drawing.Size(47, 27);
-            this.nextChunkButton.TabIndex = 12;
-            this.nextChunkButton.TabStop = false;
-            this.nextChunkButton.Text = ">";
-            this.toolTipInfo.SetToolTip(this.nextChunkButton, "Segment select");
-            this.nextChunkButton.UseVisualStyleBackColor = true;
-            this.nextChunkButton.Click += new System.EventHandler(this.nextChunkButton_Click);
-            // 
-            // prevChunkButton
-            // 
-            this.prevChunkButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.prevChunkButton.Location = new System.Drawing.Point(21, 39);
-            this.prevChunkButton.Name = "prevChunkButton";
-            this.prevChunkButton.Size = new System.Drawing.Size(47, 27);
-            this.prevChunkButton.TabIndex = 12;
-            this.prevChunkButton.TabStop = false;
-            this.prevChunkButton.Text = "<";
-            this.toolTipInfo.SetToolTip(this.prevChunkButton, "Segment select");
-            this.prevChunkButton.UseVisualStyleBackColor = true;
-            this.prevChunkButton.Click += new System.EventHandler(this.prevChunkButton_Click);
             // 
             // totalFrameCountLabel
             // 
@@ -323,7 +262,7 @@ namespace BlenderRenderController
             this.infoToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(807, 24);
+            this.menuStrip.Size = new System.Drawing.Size(662, 24);
             this.menuStrip.TabIndex = 20;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -631,74 +570,6 @@ namespace BlenderRenderController
             this.toolTipWarn.SetToolTip(this.label3, "Number of scenes in project.");
             this.label3.Visible = false;
             // 
-            // currentChunkInfoPanel
-            // 
-            this.currentChunkInfoPanel.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.currentChunkInfoPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.currentChunkInfoPanel.Controls.Add(this.renderChunkButton);
-            this.currentChunkInfoPanel.Controls.Add(this.chunkEndNumericUpDown);
-            this.currentChunkInfoPanel.Controls.Add(this.prevChunkButton);
-            this.currentChunkInfoPanel.Controls.Add(this.chunkStartNumericUpDown);
-            this.currentChunkInfoPanel.Controls.Add(this.nextChunkButton);
-            this.currentChunkInfoPanel.Controls.Add(this.chunkStartLabel);
-            this.currentChunkInfoPanel.Controls.Add(this.label15);
-            this.currentChunkInfoPanel.Controls.Add(this.chunkEndLabel);
-            this.currentChunkInfoPanel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.currentChunkInfoPanel.Location = new System.Drawing.Point(539, 395);
-            this.currentChunkInfoPanel.Name = "currentChunkInfoPanel";
-            this.currentChunkInfoPanel.Size = new System.Drawing.Size(268, 122);
-            this.currentChunkInfoPanel.TabIndex = 31;
-            this.currentChunkInfoPanel.Visible = false;
-            // 
-            // chunkEndNumericUpDown
-            // 
-            this.chunkEndNumericUpDown.Cursor = System.Windows.Forms.Cursors.No;
-            this.chunkEndNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkEndNumericUpDown.Location = new System.Drawing.Point(133, 87);
-            this.chunkEndNumericUpDown.Name = "chunkEndNumericUpDown";
-            this.chunkEndNumericUpDown.ReadOnly = true;
-            this.chunkEndNumericUpDown.Size = new System.Drawing.Size(117, 21);
-            this.chunkEndNumericUpDown.TabIndex = 30;
-            this.chunkEndNumericUpDown.TabStop = false;
-            this.chunkEndNumericUpDown.Text = "...";
-            this.chunkEndNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // chunkStartNumericUpDown
-            // 
-            this.chunkStartNumericUpDown.Cursor = System.Windows.Forms.Cursors.No;
-            this.chunkStartNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkStartNumericUpDown.Location = new System.Drawing.Point(133, 43);
-            this.chunkStartNumericUpDown.Name = "chunkStartNumericUpDown";
-            this.chunkStartNumericUpDown.ReadOnly = true;
-            this.chunkStartNumericUpDown.Size = new System.Drawing.Size(117, 21);
-            this.chunkStartNumericUpDown.TabIndex = 30;
-            this.chunkStartNumericUpDown.TabStop = false;
-            this.chunkStartNumericUpDown.Text = "...";
-            this.chunkStartNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // chunkStartLabel
-            // 
-            this.chunkStartLabel.AutoSize = true;
-            this.chunkStartLabel.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.chunkStartLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkStartLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.chunkStartLabel.Location = new System.Drawing.Point(130, 26);
-            this.chunkStartLabel.Name = "chunkStartLabel";
-            this.chunkStartLabel.Size = new System.Drawing.Size(71, 15);
-            this.chunkStartLabel.TabIndex = 30;
-            this.chunkStartLabel.Text = "Start Frame";
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label15.Location = new System.Drawing.Point(19, 12);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(90, 16);
-            this.label15.TabIndex = 25;
-            this.label15.Text = "Current Chunk";
-            // 
             // toolTipWarn
             // 
             this.toolTipWarn.AutomaticDelay = 1000;
@@ -868,6 +739,22 @@ namespace BlenderRenderController
             this.toolTipInfo.SetToolTip(this.renderAllButton, "Saves a lot of your time.");
             this.renderAllButton.UseVisualStyleBackColor = true;
             this.renderAllButton.Click += new System.EventHandler(this.renderAllButton_Click);
+            // 
+            // blendFileBrowseButton
+            // 
+            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
+            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
+            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
+            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
+            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
+            this.blendFileBrowseButton.SplitWidth = 30;
+            this.blendFileBrowseButton.TabIndex = 1;
+            this.blendFileBrowseButton.Text = "Open Blend";
+            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
+            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
+            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
             // 
             // blendFileLabel
             // 
@@ -1113,32 +1000,15 @@ namespace BlenderRenderController
             this.outputFolderBrowseButton.UseVisualStyleBackColor = true;
             this.outputFolderBrowseButton.Click += new System.EventHandler(this.outputFolderBrowseButton_Click);
             // 
-            // blendFileBrowseButton
-            // 
-            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
-            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
-            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
-            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
-            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
-            this.blendFileBrowseButton.SplitWidth = 30;
-            this.blendFileBrowseButton.TabIndex = 1;
-            this.blendFileBrowseButton.Text = "Open Blend";
-            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
-            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
-            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(662, 618);
+            this.ClientSize = new System.Drawing.Size(662, 601);
             this.Controls.Add(this.versionLabel);
             this.Controls.Add(this.renderInfoLabel);
             this.Controls.Add(this.startEndBlendRadio);
-            this.Controls.Add(this.currentChunkInfoPanel);
             this.Controls.Add(this.startEndCustomRadio);
             this.Controls.Add(this.rendererRadioButtonBlender);
             this.Controls.Add(this.rendererRadioButtonCycles);
@@ -1178,7 +1048,7 @@ namespace BlenderRenderController
             this.MainMenuStrip = this.menuStrip;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(678, 640);
-            this.MinimumSize = new System.Drawing.Size(678, 39);
+            this.MinimumSize = new System.Drawing.Size(678, 640);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Blender Render Controller";
@@ -1192,8 +1062,6 @@ namespace BlenderRenderController
             this.menuStrip.PerformLayout();
             this.infoPanel.ResumeLayout(false);
             this.infoPanel.PerformLayout();
-            this.currentChunkInfoPanel.ResumeLayout(false);
-            this.currentChunkInfoPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -1206,18 +1074,13 @@ namespace BlenderRenderController
         }
 
         #endregion
-
-        private System.Windows.Forms.Button renderChunkButton;
         private SplitButton blendFileBrowseButton;
         private System.Windows.Forms.ProgressBar renderProgressBar;
         private System.Windows.Forms.NumericUpDown totalStartNumericUpDown;
         private System.Windows.Forms.Label startFrameLabel;
-        private System.Windows.Forms.Label chunkEndLabel;
         private System.Windows.Forms.Button outputFolderBrowseButton;
         private System.Windows.Forms.TextBox outputFolderTextBox;
         private System.Windows.Forms.Label statusLabel;
-        private System.Windows.Forms.Button nextChunkButton;
-        private System.Windows.Forms.Button prevChunkButton;
         private System.Windows.Forms.Label totalFrameCountLabel;
         private System.Windows.Forms.NumericUpDown totalEndNumericUpDown;
         private System.Windows.Forms.NumericUpDown processCountNumericUpDown;
@@ -1242,7 +1105,6 @@ namespace BlenderRenderController
         private System.Windows.Forms.Label chunkLengthLabel;
         private System.Windows.Forms.TextBox infoFramerate;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label chunkStartLabel;
         private System.Windows.Forms.TextBox infoDuration;
         private System.Windows.Forms.TextBox infoFramesTotal;
         private System.Windows.Forms.Label infoFramesTotalLabel;
@@ -1251,18 +1113,13 @@ namespace BlenderRenderController
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label infoDurationLabel;
-        private System.Windows.Forms.TextBox chunkStartNumericUpDown;
-        private System.Windows.Forms.TextBox chunkEndNumericUpDown;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label timeElapsedLabel;
-        private System.Windows.Forms.Panel currentChunkInfoPanel;
         private System.Windows.Forms.Button openOutputFolderButton;
         private System.Windows.Forms.Label blendFileNameLabel;
         private System.Windows.Forms.RadioButton rendererRadioButtonCycles;
         private System.Windows.Forms.RadioButton rendererRadioButtonBlender;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-        private System.Windows.Forms.FontDialog fontDialog1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem isti115MenuItem;
         private System.Windows.Forms.ToolStripMenuItem jendabekMenuItem;
