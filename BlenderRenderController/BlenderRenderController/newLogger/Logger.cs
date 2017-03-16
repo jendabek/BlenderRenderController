@@ -20,7 +20,7 @@ namespace BlenderRenderController.newLogger
         public FileLogger()
         {
             var appSettings = new AppSettings();
-            appSettings.init();
+            appSettings.RemoteLoadJsonSettings();
             this._verbose = appSettings.verboseLog;
         }
 
@@ -69,7 +69,7 @@ namespace BlenderRenderController.newLogger
         public ConsoleLogger()
         {
             var appSettings = new AppSettings();
-            appSettings.init();
+            appSettings.RemoteLoadJsonSettings();
             this._verbose = appSettings.verboseLog;
         }
 

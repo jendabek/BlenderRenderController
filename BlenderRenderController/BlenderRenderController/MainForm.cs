@@ -34,7 +34,6 @@ namespace BlenderRenderController
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
         LogService _log = new LogService();
-        ui.PlatformService _platService = new ui.PlatformService();
 
         // CMD args
         string[] CMDargs = Environment.GetCommandLineArgs();
@@ -43,10 +42,6 @@ namespace BlenderRenderController
         {
             InitializeComponent();
 
-            var os = Environment.OSVersion.Platform;
-            if (os != PlatformID.Win32NT)
-                UiPlatAdjust(os);
-            
         }
         public void MainForm_Shown(object sender, EventArgs e)
         {
@@ -303,36 +298,6 @@ namespace BlenderRenderController
                     afterRenderDoNothingRadio.Enabled = false;
                     afterRenderJoinMixdownRadio.Enabled = false;
                     afterRenderJoinRadio.Enabled = false;
-                    break;
-            }
-        }
-
-        void UiPlatAdjust(PlatformID platform)
-        {
-            switch (platform)
-            {
-                case PlatformID.Unix:
-                    totalEndNumericUpDown.BackColor =
-                    totalStartNumericUpDown.BackColor =
-                    chunkLengthNumericUpDown.BackColor =
-                    processCountNumericUpDown.BackColor = 
-                    outputFolderTextBox.BackColor = Color.White;
-                    infoActiveScene.BackColor =
-                    infoDuration.BackColor =
-                    infoFramerate.BackColor =
-                    infoFramesTotal.BackColor =
-                    infoResolution.BackColor = Color.FromArgb(240, 240, 240);
-                    blendFileBrowseButton.BackColor =
-                    reloadBlenderDataButton.BackColor =
-                    outputFolderBrowseButton.BackColor =
-                    mixDownButton.BackColor =
-                    openOutputFolderButton.BackColor =
-                    donateButton.BackColor = Color.FromArgb(225, 225, 225);
-                    break;
-                case PlatformID.MacOSX:
-                    break;
-                default:
-                    MessageBox.Show("Something went wrong...");
                     break;
             }
         }

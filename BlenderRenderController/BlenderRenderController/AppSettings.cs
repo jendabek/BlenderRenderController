@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlenderRenderController.newLogger;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -41,6 +42,8 @@ namespace BlenderRenderController
         private int _processCheckInterval = 20;
         private bool _appConfigured = false;
         private SettingsForm _settingsForm;
+        LogService _log = new LogService();
+
 
         public void init()
         {
@@ -52,6 +55,8 @@ namespace BlenderRenderController
             checkCorrectConfig();
         }
 
+        // for the log services
+        public void RemoteLoadJsonSettings() { loadJsonSettings(); }
 
         private void loadJsonSettings()
         {
