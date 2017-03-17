@@ -935,7 +935,23 @@ namespace BlenderRenderController
                 p.outputPath = outputFolderTextBox.Text = Helper.fixPath(p.outputPath);
                 p.renderFormat = blendData.renderFormat;
                 p.chunksPath = Path.Combine(p.outputPath, appSettings.chunksSubfolder);
-                p.fps = Convert.ToDouble(blendData.fps) / Convert.ToDouble(blendData.fpsBase, CultureInfo.InvariantCulture);
+
+				double fpsBaseD;
+				double fpsD;
+
+                // Fixes FpsBase separator been "," insted of "." on Linux
+				if (blendData.fpsBase.Contains(","))
+                {
+                    var tmp = System.Text.RegularExpressions.Regex.Replace(blendData.fpsBase, ",", ".");
+                    fpsBaseD = Convert.ToDouble(tmp, CultureInfo.InvariantCulture);
+				}
+				else 
+				    fpsBaseD = Convert.ToDouble(blendData.fpsBase, CultureInfo.InvariantCulture);
+				
+
+                fpsD = Convert.ToDouble (blendData.fps);
+
+				p.fps = fpsD / fpsBaseD;
 
                 if (startEndBlendRadio.Checked)
                 {
