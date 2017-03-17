@@ -47,6 +47,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationIcon>resources\blender_icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -124,8 +127,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="resources\blender_ic_linux.png" />
-    <None Include="resources\blender_ic_96.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -133,7 +134,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="blender_icon.ico" />
     <Content Include="resources\blend-icon.png" />
     <Content Include="resources\blender_icon.ico" />
     <None Include="resources\connect-icon-small.png" />
@@ -148,7 +148,6 @@
     <None Include="resources\Broom-64.png" />
     <Content Include="resources\github-logo.png" />
     <None Include="resources\info-icon.png" />
-    <None Include="resources\MainIcon.ico" />
     <Content Include="resources\movie_camera-512.png" />
     <None Include="resources\reload-icon-small.png" />
     <None Include="resources\render-icon.png" />

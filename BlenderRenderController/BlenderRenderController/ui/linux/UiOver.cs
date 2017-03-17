@@ -14,7 +14,7 @@ namespace BlenderRenderController
 			switch (os)
 			{
                 case PlatformID.Win32NT:
-                    //WinIconFix();
+                    WinIconFix();
                     break;
 			    case PlatformID.MacOSX:
 				    // future Mac Ajustments?
@@ -64,6 +64,7 @@ namespace BlenderRenderController
             new System.Resources.ResourceManager(type.Namespace + ".Properties.Resources", this.GetType().Assembly);
 
             this.Icon = (System.Drawing.Icon)resources.GetObject("blender_icon");
+            this.ShowIcon = true;
         }
     }
 
