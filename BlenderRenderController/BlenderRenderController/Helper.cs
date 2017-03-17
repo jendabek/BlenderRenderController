@@ -33,11 +33,11 @@ namespace BlenderRenderController
             {
                 if(errorCode == AppErrorCodes.BLENDER_PATH_NOT_SET)
                 {
-                    errorText += "Please set correct path to Blender (blender.exe).\n";
+                    errorText += $"Please set correct path to Blender ({new AppSettings().BlenderExeName}).\n";
                 }
                 if (errorCode == AppErrorCodes.FFMPEG_PATH_NOT_SET)
                 {
-                    errorText += "Please set correct path to FFmpeg (ffmpeg.exe).\n";
+                    errorText += $"Please set correct path to FFmpeg ({new AppSettings().FFmpegExeName}).\n";
                 }
                 if (errorCode == AppErrorCodes.BLEND_FILE_NOT_EXISTS)
                 {
