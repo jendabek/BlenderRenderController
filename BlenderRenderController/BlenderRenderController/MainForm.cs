@@ -11,11 +11,12 @@ using System.Drawing;
 using System.Globalization;
 using System.Reflection;
 
+using BlenderRenderController.newLogger;
+
 namespace BlenderRenderController
 {
     public partial class MainForm : Form
     {
-        
         bool lastChunkStarted = false;
 
         string appState = AppStates.AFTER_START;
@@ -32,6 +33,7 @@ namespace BlenderRenderController
         SettingsForm settingsForm;
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
+        LogService _log = new LogService();
 
         // CMD args
         string[] CMDargs = Environment.GetCommandLineArgs();
@@ -39,6 +41,7 @@ namespace BlenderRenderController
         public MainForm()
         {
             InitializeComponent();
+
         }
         public void MainForm_Shown(object sender, EventArgs e)
         {
@@ -71,15 +74,23 @@ namespace BlenderRenderController
 
             recentBlendsMenu = new ContextMenuStrip();
             blendFileBrowseButton.Menu = recentBlendsMenu;
+
+            // initialize logger service
+            _log.RegisterLogSevice(new FileLogger());
+            _log.RegisterLogSevice(new ConsoleLogger());
+
+
+            //_fileLog = new newLogger.FileLogger(appSettings.verboseLog);
             
             applySettings();
             if (!appSettings.appConfigured)
             {
-                //appState = AppStates.NOT_CONFIGURED;
+                //appState = AppStates.NOT_CONFIGURED;/
                 settingsForm.ShowDialog();
             }
             updateRecentBlendsMenu();
             updateUI();
+            _log.Info("Program Started");
         }
 
         private void onSettingsFormClosed(object sender, FormClosedEventArgs e)
@@ -128,6 +139,7 @@ namespace BlenderRenderController
             stopRender(false);
             appSettings.save();
         }
+
         public void updateRecentBlendsMenu()
         {
             //last blends
@@ -150,8 +162,6 @@ namespace BlenderRenderController
 
         public void updateUI()
         {
-            chunkEndNumericUpDown.Text = p.chunkEnd.ToString();
-            chunkStartNumericUpDown.Text = p.chunkStart.ToString();
             chunkLengthNumericUpDown.Value = p.chunkLength;
             totalStartNumericUpDown.Value = p.start;
             totalEndNumericUpDown.Value = p.end;
@@ -178,9 +188,6 @@ namespace BlenderRenderController
                 case AppStates.AFTER_START:
                     renderAllButton.Enabled = false;
                     menuStrip.Enabled = true;
-                    renderChunkButton.Enabled = false;
-                    prevChunkButton.Enabled = false;
-                    nextChunkButton.Enabled = false;
                     blendFileBrowseButton.Enabled = true;
                     mixDownButton.Enabled = false;
                     totalStartNumericUpDown.Enabled = false;
@@ -210,9 +217,6 @@ namespace BlenderRenderController
                 case AppStates.NOT_CONFIGURED:
                     renderAllButton.Enabled = false;
                     menuStrip.Enabled = true;
-                    renderChunkButton.Enabled = false;
-                    prevChunkButton.Enabled = false;
-                    nextChunkButton.Enabled = false;
                     mixDownButton.Enabled = false;
                     totalStartNumericUpDown.Enabled = false;
                     totalEndNumericUpDown.Enabled = false;
@@ -242,9 +246,6 @@ namespace BlenderRenderController
                 case AppStates.READY_FOR_RENDER:
                     renderAllButton.Enabled = true;
                     menuStrip.Enabled = true;
-                    renderChunkButton.Enabled = true;
-                    prevChunkButton.Enabled = true;
-                    nextChunkButton.Enabled = true;
                     mixDownButton.Enabled = true;
                     totalStartNumericUpDown.Enabled = startEndCustomRadio.Checked;
                     totalEndNumericUpDown.Enabled = startEndCustomRadio.Checked;
@@ -275,9 +276,6 @@ namespace BlenderRenderController
                 case AppStates.RENDERING_CHUNK_ONLY:
                     renderAllButton.Enabled = true;
                     menuStrip.Enabled = false;
-                    renderChunkButton.Enabled = false;
-                    prevChunkButton.Enabled = false;
-                    nextChunkButton.Enabled = false;
                     mixDownButton.Enabled = false;
                     totalStartNumericUpDown.Enabled = false;
                     totalEndNumericUpDown.Enabled = false;
@@ -309,6 +307,7 @@ namespace BlenderRenderController
         private void MainForm_Close(object sender, FormClosedEventArgs e)
         {
             //jsonDel();
+            _log.Info("Program Closed");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -329,7 +328,6 @@ namespace BlenderRenderController
                 loadBlend();
             }
             */
-            
         }
 
         private void blendFileBrowseButton_Click(object sender, EventArgs e)
@@ -437,7 +435,8 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                Logger.add(ex.ToString());
+                //oldLogger.add(ex.ToString());
+                _log.Error(ex.ToString());
                 stopRender(false);
                 return;
             }
@@ -541,7 +540,8 @@ namespace BlenderRenderController
                         Helper.clearFolder(p.chunksPath);
                     }
                     catch (Exception ex){
-                        Logger.add(ex.ToString());
+                        //oldLogger.add(ex.ToString());
+                        _log.Error(ex.ToString());
                         MessageBox.Show("It can't be deleted, files are in use by some program.\n");
                         return;
                     }
@@ -584,7 +584,8 @@ namespace BlenderRenderController
                 }
                 catch(Exception ex)
                 {
-                    Logger.add(ex.ToString());
+                    _log.Error(ex.ToString());
+                    //oldLogger.add(ex.ToString());
                     Trace.WriteLine(ex);
                 }
                 processes.Remove(process);
@@ -777,7 +778,8 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                Logger.add(ex.ToString());
+                //oldLogger.add(ex.ToString());
+                _log.Error(ex.ToString());
                 Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
                 settingsForm.ShowDialog();
                 statusLabel.Text = "Joining cancelled.";
@@ -826,7 +828,8 @@ namespace BlenderRenderController
 				process.Start();
 			}
 			catch( Exception ex ) {
-                Logger.add(ex.ToString());
+                //oldLogger.add(ex.ToString());
+                _log.Error(ex.ToString());
                 Trace.WriteLine(ex);
                 Helper.showErrors(new List<string> { AppErrorCodes.BLENDER_PATH_NOT_SET });
                 settingsForm.ShowDialog();
@@ -884,6 +887,7 @@ namespace BlenderRenderController
                         warn.Add(AppErrorCodes.BLEND_OUTPUT_INVALID);
                         Helper.showErrors(warn);
                         p.outputPath = Path.GetDirectoryName(p.blendFilePath);
+                        _log.Info("Could not resolve output path... Using .blend file path");
                     }
 
                 }
@@ -927,6 +931,7 @@ namespace BlenderRenderController
             }
             updateUI();
             Trace.WriteLine( ".blend data = " + jsonInfo.ToString() );
+            _log.Info(".blend loaded successfully");
 		}
         
 		private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
@@ -937,6 +942,7 @@ namespace BlenderRenderController
 
             statusLabel.Text = "Rendering mixdown, it can take a while for larger projects...";
             statusLabel.Update();
+            _log.Info("mixdown started");
 
             if (!File.Exists(p.blendFilePath)) {
                 return;
@@ -946,8 +952,8 @@ namespace BlenderRenderController
             {
                 // Error scriptsfolder not found
                 string caption = "Error";
-                string message = "Scripts folder not found. Separate audio mixdown and automatic project info detection will not work, but you can still use the basic rendering functionality.";
-                MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                string msg = "Scripts folder not found. Separate audio mixdown and automatic project info detection will not work, but you can still use the basic rendering functionality.";
+                MessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -984,8 +990,10 @@ namespace BlenderRenderController
 
             process.WaitForExit();
 
-            Trace.WriteLine("Mixdown complete");
-            statusLabel.Text = "Mixdown complete.";
+            string message = "Mixdown complete";
+            Trace.WriteLine(message); _log.Info(message);
+            statusLabel.Text = message;
+            
         }
 
         // TOOL STRIP METHODS
@@ -1220,6 +1228,24 @@ namespace BlenderRenderController
 
             Process.Start(url);
             Console.WriteLine(url);
+        }
+
+        private void infoMore_Click(object sender, EventArgs e)
+        {
+            //try
+            //{
+            //    exeption_test();
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show("Test Exeption thrown...");
+            //    _log.Error(ex.ToString());
+            //}
+        }
+
+        private void exeption_test()
+        {
+            throw new Exception("this is a test Exeption");
         }
 
     }

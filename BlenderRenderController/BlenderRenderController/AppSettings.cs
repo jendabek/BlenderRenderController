@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlenderRenderController.newLogger;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,7 @@ namespace BlenderRenderController
     public class AppSettings
     {
         //THESE PROPERTIES (in _jsonProperties) ARE STORED AND LOADED automatically from external JSON file
-        private string[] _jsonProperties = { "recentBlends", "blenderPath", "ffmpegPath", "renderer", "afterRenderAction", "displayTooltips"};
+        private string[] _jsonProperties = { "recentBlends", "blenderPath", "ffmpegPath", "renderer", "afterRenderAction", "displayTooltips", "verboseLog"};
 
         private const int _RECENT_BLENDS_MAX_COUNT = 10;
         public const string BLENDER_EXE_NAME = "blender.exe";
@@ -33,6 +34,7 @@ namespace BlenderRenderController
         private decimal _processCount;
         private decimal _chunkLength;
         private bool _displayTooltips = true;
+        private bool _verboseLog = false;
         private string[] _allowedFormats = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
 
         private string _scriptsPath, _blenderPath, _ffmpegPath;
@@ -40,17 +42,23 @@ namespace BlenderRenderController
         private int _processCheckInterval = 20;
         private bool _appConfigured = false;
         private SettingsForm _settingsForm;
+        LogService _log = new LogService();
+        PlatformID Os = Environment.OSVersion.Platform;
 
         public void init()
         {
+            _log.RegisterLogSevice(new FileLogger());
+            _log.Info($"Os is {Os}");
             //LOADing data from JSON and set it to properties
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);
             _blenderPath = BLENDER_PATH_DEFAULT;
             _ffmpegPath = FFMPEG_PATH_DEFAULT;
-            loadJsonSettings();
+            loadJsonSettings(); _log.Info("Settings Json loaded.");
             checkCorrectConfig();
         }
 
+        // for the log services
+        public void RemoteLoadJsonSettings() { loadJsonSettings(); }
 
         private void loadJsonSettings()
         {
@@ -80,7 +88,7 @@ namespace BlenderRenderController
                     //converting Int32 to decimal
                     else if (jsonSettings[propertyName] is Int32)
                     {
-                        decimal decimalValue = (decimal)(int)jsonSettings[propertyName];
+                        decimal decimalValue = (int)jsonSettings[propertyName];
                         GetType().GetField("_" + propertyName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, decimalValue);
                     }
                     //just a string
@@ -104,6 +112,7 @@ namespace BlenderRenderController
             try
             {
                 File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _jsonFileName), serializer.Serialize(jsonObject));
+                //_log.Info("Settings saved.");
                 return true;
             }
             catch (Exception)
@@ -131,24 +140,22 @@ namespace BlenderRenderController
         {
             if (_recentBlends.Count > 0)
             {
-                var response = System.Windows.Forms.MessageBox.Show(
+                var response = MessageBox.Show(
                                  "This will clear all files in the recent blends list, are you sure?", "Clear recent blends?",
                                  MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
 
                 switch (response)
                 {
-                    case System.Windows.Forms.DialogResult.OK:
+                    case DialogResult.OK:
                         _recentBlends.Clear();
                         break;
-                    case System.Windows.Forms.DialogResult.Cancel:
+                    case DialogResult.Cancel:
                         break;
                     default:
-                        System.Windows.Forms.MessageBox.Show("Something wrong happend.");
+                        MessageBox.Show("Something wrong happend.");
                         break;
                 }
             }
-            else
-                return;
         }
 
         public void checkCorrectConfig(bool showErrors = true)
@@ -337,6 +344,12 @@ namespace BlenderRenderController
             {
                 _displayTooltips = value;
             }
+        }
+
+        public bool verboseLog
+        {
+            get { return _verboseLog; }
+            set { _verboseLog = value; }
         }
     }
 }

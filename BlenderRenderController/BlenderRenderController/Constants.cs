@@ -30,5 +30,10 @@
         public static readonly string[] IMAGES = { "PNG", "BMP", "IRIS", "JPEG", "JPEG2000", "TARGA", "TARGA_RAW", "CINEON", "DPX", "OPEN_EXR_MULTILAYER", "OPEN_EXR", "HDR", "TIFF" };
         public static readonly string[] VIDEOS = { "AVI_JPEG", "AVI_RAW", "H264", "FFMPEG", "THEORA", "XVID" };
     }
+    static class LogFormats
+    {
+        public const string LOG_FILE_NAME = "log.txt";
+
+    }
 
 }

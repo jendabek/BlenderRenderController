@@ -3,12 +3,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 
+using BlenderRenderController.newLogger;
+
 namespace BlenderRenderController
 {
     public partial class SettingsForm : Form
     {
         private AppSettings _appSettings;
         private OpenFileDialog _changePathDialog;
+        private LogService _log = new LogService();
 
         public SettingsForm()
         {
@@ -35,6 +38,8 @@ namespace BlenderRenderController
                     ffmpegDownloadLabel.Visible = false;
                 }
             }
+
+            chkBoxVerboseLog.Checked = _appSettings.verboseLog;
         }
 
         private void blenderChangePathButton_Click(object sender, EventArgs e)
@@ -79,7 +84,7 @@ namespace BlenderRenderController
 
             if(_appSettings.appConfigured)
             {
-                _appSettings.save();
+                _appSettings.save(); _log.Info("Settings saved");
                 Close();
             }
         }
@@ -103,6 +108,12 @@ namespace BlenderRenderController
             // does clear the recent blends list, but only takes effect 
             // after closing and re-opening
             _appSettings.clearRecentBlend();
+        }
+
+        private void chkBoxVerboseLog_Click(object sender, EventArgs e)
+        {
+            _appSettings.verboseLog = (sender as CheckBox).Checked;
+            _appSettings.save();
         }
     }
 }
