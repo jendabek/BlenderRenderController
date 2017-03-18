@@ -735,12 +735,13 @@ namespace BlenderRenderController
             });
 
             //write txt for FFmpeg concatenation
-            StreamWriter partListWriter = new StreamWriter(chunksTxtPath);
-            foreach (var filePath in fileListSorted)
+            using (StreamWriter partListWriter = new StreamWriter(chunksTxtPath))
             {
-                partListWriter.WriteLine("file '{0}'", filePath);
+                foreach (var filePath in fileListSorted)
+                {
+                    partListWriter.WriteLine("file '{0}'", filePath);
+                }
             }
-            partListWriter.Close();
 
             var audioArguments = "";
             
