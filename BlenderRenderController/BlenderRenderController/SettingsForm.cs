@@ -36,9 +36,11 @@ namespace BlenderRenderController
                 //if(_appSettings.ffmpegPath == AppSettings.FFMPEG_PATH_DEFAULT)
 				if(_appSettings.ffmpegPath == _appSettings.FFmpegPathDefault)
                 {
-                    ffmpegPathTextBox.Visible = false;
-                    ffmpegChangePathButton.Visible = false;
-                    ffmpegLabel.Visible = false;
+                    ffmpegPathTextBox.Visible = true;
+					ffmpegPathTextBox.Enabled = false;
+                    ffmpegChangePathButton.Visible = true;
+					ffmpegChangePathButton.Enabled = false;
+                    ffmpegLabel.Visible = true;
                     ffmpegDownloadLabel.Visible = false;
                 }
             }

@@ -981,7 +981,7 @@ namespace BlenderRenderController
             }
 
             Process process = new Process();
-            process.StartInfo.FileName = Path.Combine(appSettings.blenderPath, AppSettings.BLENDER_EXE_NAME);
+            process.StartInfo.FileName = Path.Combine(appSettings.blenderPath, appSettings.BlenderExeName);
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;

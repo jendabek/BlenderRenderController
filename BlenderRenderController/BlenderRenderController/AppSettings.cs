@@ -127,6 +127,7 @@ namespace BlenderRenderController
         {
             _log.RegisterLogSevice(new FileLogger());
             _log.RegisterLogSevice(new ConsoleLogger());
+
             //LOADing data from JSON and set it to properties
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);
             _blenderPath = BlenderPathDefault;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace BlenderRenderController
 {
@@ -8,29 +9,39 @@ namespace BlenderRenderController
 
     partial class MainForm
     {
-		void PlatAdjust(PlatformID os)
+		private void PlatAdjust(PlatformID os)
 		{
+            // diferenciate between MacOs and Linux
+            PlatformID _plat;
+            if (os != PlatformID.Win32NT)
+            {
+                var detectOS = new OsDetection();
+                _plat = detectOS.LinuxOrMac();
+            }
+            else
+                _plat = os;
+
 			// exec ajustments for the selected platform
-			switch (os)
+			switch (_plat)
 			{
                 case PlatformID.Win32NT:
                     WinIconFix();
                     break;
 			    case PlatformID.MacOSX:
-				    // future Mac Ajustments?
-				    //break;
+                    UiColors();
+                    break;
 			    case PlatformID.Unix:
-				    UiUnix();
+                    this.ClientSize =
+                    this.MaximumSize = new System.Drawing.Size(780, 640);
+                    UiColors();
 				    break;
 			    default:
 				    break;
 			}
 		}
 
-        private void UiUnix()
+        private void UiColors()
         {
-			this.ClientSize = 
-			this.MaximumSize = new System.Drawing.Size (780, 640);
 
             totalEndNumericUpDown.BackColor = 
             totalStartNumericUpDown.BackColor =
@@ -70,26 +81,23 @@ namespace BlenderRenderController
 
     partial class SettingsForm
     {
-        void PlatAdjust(PlatformID os)
+        private void PlatAdjust(PlatformID os)
         {
             // exec ajustments for the selected platform
             switch (os)
             {
                 case PlatformID.Win32NT:
                     break;
-			case PlatformID.MacOSX:
-                // future Mac Ajustments?
-                //break;
-			case PlatformID.Unix:
-				UiUnix ();
-				//SetUnixIcon ();
+		    	case PlatformID.MacOSX:
+			    case PlatformID.Unix:
+			    	UiColors();
                     break;
                 default:
                     break;
             }
         }
 
-        private void UiUnix()
+        private void UiColors()
         {
             blenderPathTextBox.BackColor = 
             ffmpegPathTextBox.BackColor = System.Drawing.Color.White;
@@ -101,16 +109,30 @@ namespace BlenderRenderController
             okButton.BackColor = System.Drawing.Color.FromArgb(225, 225, 225);
         }
 
-        private void SetUnixIcon()
+    }
+
+    public class OsDetection
+    {
+        const string MACOS = "Darwin";
+        const string LINUX = "Linux";
+
+        public PlatformID LinuxOrMac()
         {
-			Type type = this.GetType();
-			System.Resources.ResourceManager resources =
-				new System.Resources.ResourceManager(type.Namespace + ".Properties.Resources", this.GetType().Assembly);
+            Process p = new Process();
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.FileName = "uname";
 
-			//this.Icon = (System.Drawing.Icon)resources.GetObject("blender_icon");
-			this.Icon = (System.Drawing.Icon)resources.GetObject("blender_ic_linux");
+            p.Start();
+
+            string ver = p.StandardOutput.ReadLine();
+            p.WaitForExit();
+
+            if (ver == MACOS)
+                return PlatformID.MacOSX;
+
+            return PlatformID.Unix;
         }
-
-        
     }
 }
