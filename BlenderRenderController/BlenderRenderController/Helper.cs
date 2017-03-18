@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using BlenderRenderController.newLogger;
 
 namespace BlenderRenderController
 {
@@ -10,6 +11,8 @@ namespace BlenderRenderController
          {
              string[] Separator = new string[] { "-" };
          }*/
+        static LogService _log = new LogService();
+
         static public void clearFolder(string FolderName)
         {
             DirectoryInfo dir = new DirectoryInfo(FolderName);
@@ -28,6 +31,8 @@ namespace BlenderRenderController
         
         static public void showErrors(List<string> errorCodes, MessageBoxIcon icon = MessageBoxIcon.Asterisk, string arg1 = "")
         {
+            RegsterLog();
+
             var errorText = "";
             foreach (var errorCode in errorCodes)
             {
@@ -63,11 +68,18 @@ namespace BlenderRenderController
                     "",
                     MessageBoxButtons.OK,
                     icon);
+            _log.Warn("-Helper- " + errorText);
         }
         static public string fixPath(string path)
         {
             var fixedPath = path.Trim().TrimEnd('\\');
             return fixedPath;
+        }
+
+        static void RegsterLog()
+        {
+            _log.RegisterLogSevice(new ConsoleLogger());
+            _log.RegisterLogSevice(new FileLogger());
         }
     }
 }

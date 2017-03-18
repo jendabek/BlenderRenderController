@@ -82,6 +82,8 @@ namespace BlenderRenderController
             // Logger service
             _log.RegisterLogSevice(new FileLogger());
             _log.RegisterLogSevice(new ConsoleLogger());
+            _log.Warn($"Program Started.");
+            _log.Info($"OS is {Os}");
 
             applySettings();
             if (!appSettings.appConfigured)
@@ -303,38 +305,6 @@ namespace BlenderRenderController
             }
         }
 
-        public void UiPlatAdjust(PlatformID platform)
-        {
-            switch (platform)
-            {
-			case PlatformID.Unix:
-				totalEndNumericUpDown.BackColor =
-                    totalStartNumericUpDown.BackColor =
-                    chunkLengthNumericUpDown.BackColor =
-                    processCountNumericUpDown.BackColor = 
-                    outputFolderTextBox.BackColor = Color.White;
-				infoActiveScene.BackColor =
-                    infoDuration.BackColor =
-                    infoFramerate.BackColor =
-                    infoFramesTotal.BackColor =
-                    infoResolution.BackColor = Color.FromArgb (240, 240, 240);
-				blendFileBrowseButton.BackColor =
-                    reloadBlenderDataButton.BackColor =
-                    outputFolderBrowseButton.BackColor =
-                    mixDownButton.BackColor =
-                    openOutputFolderButton.BackColor =
-                    donateButton.BackColor = Color.FromArgb (225, 225, 225);
-
-				//this.Icon.Dispose ();
-                    break;
-                case PlatformID.MacOSX:
-                    break;
-                default:
-                    MessageBox.Show("Something went wrong...");
-                    break;
-            }
-        }
-
         // Deletes json on form close
         private void MainForm_Close(object sender, FormClosedEventArgs e)
         {
@@ -463,13 +433,12 @@ namespace BlenderRenderController
 
             try
             {
-                process.Start();
+                process.Start(); 
                 processes.Add(process);
             }
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                //oldLogger.add(ex.ToString());
                 _log.Error(ex.ToString());
                 stopRender(false);
                 return;
@@ -556,6 +525,7 @@ namespace BlenderRenderController
                                                                 MessageBoxIcon.Exclamation);
                 if (dialogResult == DialogResult.No) return;
                 stopRender(false);
+                _log.Warn("RENDER ABORTED");
             }
 
             //we want to start render
@@ -587,6 +557,7 @@ namespace BlenderRenderController
         
         private void renderAll()
         {
+            _log.Info("RENDER STARTED");
             appState = AppStates.RENDERING_ALL;
             startTime = DateTime.Now;
             totalTimeLabel.Text = "00:00:00";
@@ -595,11 +566,6 @@ namespace BlenderRenderController
             framesRendered.Clear();
             processTimer.Enabled = true;
             updateUI();
-        }
-
-        private decimal getChunksTotalCount()
-        {
-            return Math.Ceiling((p.end - p.start + 1) / p.chunkLength);
         }
 
         private void stopRender(bool wasComplete)
@@ -639,13 +605,15 @@ namespace BlenderRenderController
 
         private void updateProcessManagement(object sender, EventArgs e)
         {
+            Func<decimal> chunksTotalCount = () => Math.Ceiling((p.end - p.start + 1) / p.chunkLength);
+
             //PROGRESS display
             if (appState == AppStates.RENDERING_ALL)
             {
                 renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (p.end - p.start + 1)) * 100);
 
                 var statusText = "";
-                statusText = "Completed " + processesCompletedCount.ToString() + " / " + getChunksTotalCount().ToString();
+                statusText = "Completed " + processesCompletedCount.ToString() + " / " + chunksTotalCount().ToString();
                 statusText += " chunks, rendered " + framesRendered.Count + " frames in " + processes.Count;
                 statusText += (processes.Count > 1) ? " processes." : " process.";
                 statusLabel.Text = statusText;
@@ -806,7 +774,7 @@ namespace BlenderRenderController
 
             try
             {
-                process.Start();
+                process.Start();        _log.Info(statusLabel.Text);
                 process.WaitForExit();
             }
             catch (Exception ex)
@@ -819,10 +787,12 @@ namespace BlenderRenderController
                 statusLabel.Text = "Joining cancelled.";
                 return;
             }
-            statusLabel.Text = "Chunks Joined.";
+            var msg = "Chunks Joined.";
+            statusLabel.Text = msg; _log.Info(msg);
         }
 
 		private void loadBlend() {
+            _log.Info("Loading .blend");
 
             statusLabel.Text = "Reading the .blend file...";
             statusLabel.Update();
@@ -921,7 +891,6 @@ namespace BlenderRenderController
                         warn.Add(AppErrorCodes.BLEND_OUTPUT_INVALID);
                         Helper.showErrors(warn);
                         p.outputPath = Path.GetDirectoryName(p.blendFilePath);
-                        _log.Info("Could not resolve output path... Using .blend file path");
                     }
 
                 }
@@ -992,7 +961,7 @@ namespace BlenderRenderController
 
             statusLabel.Text = "Rendering mixdown, it can take a while for larger projects...";
             statusLabel.Update();
-            _log.Info("mixdown started");
+            _log.Info("Mixdown started");
 
             if (!File.Exists(p.blendFilePath)) {
                 return;
