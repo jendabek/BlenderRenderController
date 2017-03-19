@@ -19,6 +19,7 @@ namespace BlenderRenderController
         private const int _RECENT_BLENDS_MAX_COUNT = 10;
         public const string BLENDER_EXE_NAME = "blender.exe";
         public const string FFMPEG_EXE_NAME = "ffmpeg.exe";
+        public const string APP_TITLE = "Blender Render Controller";
 
         public const string BLENDER_PATH_DEFAULT = "C:\\Program Files\\Blender Foundation\\Blender";
         public const string FFMPEG_PATH_DEFAULT = ""; //EXE dir

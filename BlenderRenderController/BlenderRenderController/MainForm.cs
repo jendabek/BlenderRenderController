@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Web.Script.Serialization;
-using System.Drawing;
 using System.Globalization;
 using System.Reflection;
 
@@ -26,7 +25,6 @@ namespace BlenderRenderController
         List<int> framesRendered = new List<int>();
         int framesRenderedCount_PrevSecond = 0;
         int processesCompletedCount = 0;
-
         BlendData blendData;
         ProjectData p;
         DateTime startTime;
@@ -43,7 +41,6 @@ namespace BlenderRenderController
         public MainForm()
         {
             InitializeComponent();
-
         }
         public void MainForm_Shown(object sender, EventArgs e)
         {
@@ -69,6 +66,8 @@ namespace BlenderRenderController
             p.start = totalStartNumericUpDown.Value;
             p.end = totalEndNumericUpDown.Value;
             statusLabel.Text = "Hello 3D world!";
+
+            Text = AppSettings.APP_TITLE;
             
             processTimer = new Timer();
             processTimer.Interval = appSettings.processCheckInterval;
@@ -566,6 +565,17 @@ namespace BlenderRenderController
             ETALabel.Text = Helper.secondsToString(0, true);
             framesRenderedCount_PrevSecond = 0;
 
+            //taskbar progress
+            try
+            {
+                TaskbarProgress.SetState(Handle, TaskbarProgress.TaskbarStates.Indeterminate);
+                TaskbarProgress.SetValue(Handle, 0, 100);
+            }
+            catch (Exception)
+            {
+                
+            }
+
             updateUI();
         }
 
@@ -600,6 +610,15 @@ namespace BlenderRenderController
             processTimer.Enabled = false;
             lastChunkStarted = false;
             renderProgressBar.Value = 0;
+            Text = AppSettings.APP_TITLE;
+
+            try
+            {
+                TaskbarProgress.SetState(Handle, TaskbarProgress.TaskbarStates.NoProgress);
+            }
+            catch (Exception)
+            {
+            }
 
             appState = AppStates.READY_FOR_RENDER;
 
@@ -612,9 +631,10 @@ namespace BlenderRenderController
         private void updateProcessManagement(object sender, EventArgs e)
         {
             //PROGRESS display
+            int progressPercentage = 0;
             if (appState == AppStates.RENDERING_ALL)
             {
-                renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (p.end - p.start + 1)) * 100);
+                progressPercentage = (int)Math.Floor((framesRendered.Count / (p.end - p.start + 1)) * 100);
 
                 var statusText = "";
                 statusText = "Completed " + processesCompletedCount.ToString() + " / " + getChunksTotalCount().ToString();
@@ -624,13 +644,27 @@ namespace BlenderRenderController
             }
             else
             {
-                renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (p.chunkEnd - p.chunkStart + 1)) * 100);
+                progressPercentage = (int)Math.Floor((framesRendered.Count / (p.chunkEnd - p.chunkStart + 1)) * 100);
                 
                 if (framesRendered.Count > 0)
                 {
                     statusLabel.Text = "Rendering chunk frame " + framesRendered.ElementAt(framesRendered.Count - 1) + ".";
                 }
             }
+            //taskbar progress
+            try
+            {
+                TaskbarProgress.SetValue(Handle, progressPercentage, 100);
+            }
+            catch (Exception)
+            {
+
+            }
+            //progress bar
+            renderProgressBar.Value = progressPercentage;
+
+            //title progress
+            Text = progressPercentage.ToString() + "% rendered - " + AppSettings.APP_TITLE;
 
             //start next chunk if needed
             if (!lastChunkStarted)
@@ -664,7 +698,7 @@ namespace BlenderRenderController
                 int speedAverage = speeds / renderingSpeedsFPS.Count;
                 if(speedAverage > 0)
                 {
-                    int framesRemaining = Convert.ToInt16(p.end - p.start) - framesRendered.Count;
+                    int framesRemaining = (int)(p.end - p.start) - framesRendered.Count;
                     int secondsRemaining = framesRemaining / speedAverage;
                     ETALabel.Text = Helper.secondsToString(secondsRemaining, true);
                 }
