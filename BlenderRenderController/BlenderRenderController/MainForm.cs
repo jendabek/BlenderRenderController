@@ -305,10 +305,8 @@ namespace BlenderRenderController
             }
         }
 
-        // Deletes json on form close
         private void MainForm_Close(object sender, FormClosedEventArgs e)
         {
-            //jsonDel();
             _log.Warn("Program Closed");
         }
 
@@ -544,7 +542,6 @@ namespace BlenderRenderController
                         Helper.clearFolder(p.chunksPath);
                     }
                     catch (Exception ex){
-                        //oldLogger.add(ex.ToString());
                         _log.Error(ex.ToString());
                         MessageBox.Show("It can't be deleted, files are in use by some program.\n");
                         return;
@@ -585,7 +582,6 @@ namespace BlenderRenderController
                 catch(Exception ex)
                 {
                     _log.Error(ex.ToString());
-                    //oldLogger.add(ex.ToString());
                     Trace.WriteLine(ex);
                 }
                 processes.Remove(process);
@@ -833,7 +829,6 @@ namespace BlenderRenderController
 				process.Start();
 			}
 			catch( Exception ex ) {
-                //oldLogger.add(ex.ToString());
                 _log.Error(ex.ToString());
                 Trace.WriteLine(ex);
                 Helper.showErrors(new List<string> { AppErrorCodes.BLENDER_PATH_NOT_SET });

@@ -18,17 +18,6 @@ namespace BlenderRenderController
 
         private const int _RECENT_BLENDS_MAX_COUNT = 10;
 
-        public const string BLENDER_EXE_NAME = "blender.exe";
-        public const string FFMPEG_EXE_NAME = "ffmpeg.exe";
-        public const string BLENDER_PATH_DEFAULT = "C:\\Program Files\\Blender Foundation\\Blender";
-        public const string FFMPEG_PATH_DEFAULT = ""; //EXE dir
-
-        public const string BLENDER_EXE_NAME_LINUX = "blender";
-        public const string FFMPEG_EXE_NAME_LINUX = "ffmpeg";
-        public const string BLENDER_PATH_DEFAULT_LINUX = "/usr/bin"; // installed from apt-get
-        public const string FFMPEG_PATH_DEFAULT_LINUX = "/usr/bin";
-
-
         private List<string> _recentBlends = new List<string>();
         private string _jsonFileName = "settings.json";
         private string _chunksSubfolder = "chunks";
@@ -60,13 +49,13 @@ namespace BlenderRenderController
                 switch (Os)
                 {
                     case PlatformID.Win32NT:
-                        return BLENDER_EXE_NAME;
+                        return "blender.exe";
                     case PlatformID.MacOSX:
                     case PlatformID.Unix:
-                        return BLENDER_EXE_NAME_LINUX;
+                        return "blender";
                     default:
                         // use linux name if OS is not Id'ed
-                        return BLENDER_EXE_NAME_LINUX;
+                        return "blender";
                 }
             }
         }
@@ -78,12 +67,12 @@ namespace BlenderRenderController
                 switch (Os)
                 {
                     case PlatformID.Win32NT:
-                        return FFMPEG_EXE_NAME;
+                        return "ffmpeg.exe";
                     case PlatformID.Unix:
                     case PlatformID.MacOSX:
-                        return FFMPEG_EXE_NAME_LINUX;
+                        return "ffmpeg";
                     default:
-                        return FFMPEG_EXE_NAME_LINUX;
+                        return "ffmpeg";
                 }
             }
         }
@@ -95,12 +84,12 @@ namespace BlenderRenderController
                 switch (Os)
                 {
                     case PlatformID.Win32NT:
-                        return BLENDER_PATH_DEFAULT;
+                        return "C:\\Program Files\\Blender Foundation\\Blender";
                     case PlatformID.Unix:
                     case PlatformID.MacOSX:
-                        return BLENDER_PATH_DEFAULT_LINUX;
+                        return "/usr/bin";
                     default:
-                        return BLENDER_PATH_DEFAULT_LINUX;
+                        return "/usr/bin";
                 }
             }
         }
@@ -112,12 +101,12 @@ namespace BlenderRenderController
                 switch (Os)
                 {
                     case PlatformID.Win32NT:
-                        return FFMPEG_PATH_DEFAULT;
+                        return ""; // app dir
                     case PlatformID.Unix:
                     case PlatformID.MacOSX:
-                        return FFMPEG_PATH_DEFAULT_LINUX;
+                        return "/usr/bin";
                     default:
-                        return FFMPEG_PATH_DEFAULT_LINUX;
+                        return "/usr/bin";
                 }
             }
         }

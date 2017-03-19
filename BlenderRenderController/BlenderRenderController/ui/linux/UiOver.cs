@@ -12,17 +12,14 @@ namespace BlenderRenderController
 		private void PlatAdjust(PlatformID os)
 		{
             // diferenciate between MacOs and Linux
-            PlatformID _plat;
-            if (os != PlatformID.Win32NT)
+            if (os == PlatformID.Unix)
             {
                 var detectOS = new OsDetection();
-                _plat = detectOS.LinuxOrMac();
+                os = detectOS.LinuxOrMac();
             }
-            else
-                _plat = os;
 
 			// exec ajustments for the selected platform
-			switch (_plat)
+			switch (os)
 			{
                 case PlatformID.Win32NT:
                     WinIconFix();
