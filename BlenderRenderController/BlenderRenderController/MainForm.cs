@@ -681,21 +681,29 @@ namespace BlenderRenderController
             string lastTotalTimeText = totalTimeLabel.Text;
             totalTimeLabel.Text = Helper.secondsToString(runTime.TotalSeconds, true);
 
-            //time estimation after 1 sec
-            if (lastTotalTimeText != totalTimeLabel.Text)
+            //ESTIMATED TIME
+            //-----
+            if (lastTotalTimeText != totalTimeLabel.Text) //amateurish way to run once a second without an additional timer
             {
+                //we add rendering speed in previous second to renderingSpeedsFPS list
                 renderingSpeedsFPS.Add(framesRendered.Count - framesRenderedCount_PrevSecond);
-                if(renderingSpeedsFPS.Count > appSettings.renderETAFromSecondsAgo)
+
+                //removing the most latest speed from the list if the list is larger than appSettings.renderETAFromSecondsAgo
+                if (renderingSpeedsFPS.Count > appSettings.renderETAFromSecondsAgo)
                 {
                     renderingSpeedsFPS.RemoveAt(0);
                 }
                 framesRenderedCount_PrevSecond = framesRendered.Count;
+                
+                //computing speed average based on speed in previous seconds (stored in renderingSpeedsFPS)
                 int speeds = 0;
                 foreach (int speed in renderingSpeedsFPS)
                 {
                     speeds += speed;
                 }
                 int speedAverage = speeds / renderingSpeedsFPS.Count;
+
+                //getting remaining time & displaying it
                 if(speedAverage > 0)
                 {
                     int framesRemaining = (int)(p.end - p.start) - framesRendered.Count;
