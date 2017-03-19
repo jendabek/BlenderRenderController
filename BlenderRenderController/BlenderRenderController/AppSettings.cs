@@ -40,6 +40,7 @@ namespace BlenderRenderController
         private string _scriptsPath, _blenderPath, _ffmpegPath;
 
         private int _processCheckInterval = 20;
+        private int _renderETAFromSecondsAgo = 20;
         private bool _appConfigured = false;
         private SettingsForm _settingsForm;
         LogService _log = new LogService();
@@ -350,6 +351,14 @@ namespace BlenderRenderController
         {
             get { return _verboseLog; }
             set { _verboseLog = value; }
+        }
+
+        public int renderETAFromSecondsAgo
+        {
+            get
+            {
+                return _renderETAFromSecondsAgo;
+            }
         }
     }
 }

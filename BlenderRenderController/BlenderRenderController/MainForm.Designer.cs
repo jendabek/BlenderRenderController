@@ -80,7 +80,6 @@ namespace BlenderRenderController
             this.mixDownButton = new System.Windows.Forms.Button();
             this.concatenatePartsButton = new System.Windows.Forms.Button();
             this.renderAllButton = new System.Windows.Forms.Button();
-            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -102,6 +101,9 @@ namespace BlenderRenderController
             this.donateButton = new System.Windows.Forms.Button();
             this.openOutputFolderButton = new System.Windows.Forms.Button();
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
+            this.ETALabel = new System.Windows.Forms.Label();
+            this.ETALabelTitle = new System.Windows.Forms.Label();
+            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -740,22 +742,6 @@ namespace BlenderRenderController
             this.renderAllButton.UseVisualStyleBackColor = true;
             this.renderAllButton.Click += new System.EventHandler(this.renderAllButton_Click);
             // 
-            // blendFileBrowseButton
-            // 
-            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
-            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
-            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
-            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
-            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
-            this.blendFileBrowseButton.SplitWidth = 30;
-            this.blendFileBrowseButton.TabIndex = 1;
-            this.blendFileBrowseButton.Text = "Open Blend";
-            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
-            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
-            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
-            // 
             // blendFileLabel
             // 
             this.blendFileLabel.AutoSize = true;
@@ -1000,12 +986,48 @@ namespace BlenderRenderController
             this.outputFolderBrowseButton.UseVisualStyleBackColor = true;
             this.outputFolderBrowseButton.Click += new System.EventHandler(this.outputFolderBrowseButton_Click);
             // 
+            // ETALabel
+            // 
+            this.ETALabel.AutoSize = true;
+            this.ETALabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.ETALabel.Location = new System.Drawing.Point(588, 587);
+            this.ETALabel.Name = "ETALabel";
+            this.ETALabel.Size = new System.Drawing.Size(56, 16);
+            this.ETALabel.TabIndex = 19;
+            this.ETALabel.Text = "00:00:00";
+            // 
+            // ETALabelTitle
+            // 
+            this.ETALabelTitle.AutoSize = true;
+            this.ETALabelTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ETALabelTitle.Location = new System.Drawing.Point(550, 587);
+            this.ETALabelTitle.Name = "ETALabelTitle";
+            this.ETALabelTitle.Size = new System.Drawing.Size(38, 16);
+            this.ETALabelTitle.TabIndex = 19;
+            this.ETALabelTitle.Text = "ETA:";
+            // 
+            // blendFileBrowseButton
+            // 
+            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
+            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
+            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
+            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
+            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
+            this.blendFileBrowseButton.SplitWidth = 30;
+            this.blendFileBrowseButton.TabIndex = 1;
+            this.blendFileBrowseButton.Text = "Open Blend";
+            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
+            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
+            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(662, 601);
+            this.ClientSize = new System.Drawing.Size(662, 621);
             this.Controls.Add(this.versionLabel);
             this.Controls.Add(this.renderInfoLabel);
             this.Controls.Add(this.startEndBlendRadio);
@@ -1021,7 +1043,9 @@ namespace BlenderRenderController
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.infoPanel);
+            this.Controls.Add(this.ETALabelTitle);
             this.Controls.Add(this.timeElapsedLabel);
+            this.Controls.Add(this.ETALabel);
             this.Controls.Add(this.totalTimeLabel);
             this.Controls.Add(this.donateButton);
             this.Controls.Add(this.reloadBlenderDataButton);
@@ -1047,8 +1071,8 @@ namespace BlenderRenderController
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(678, 640);
-            this.MinimumSize = new System.Drawing.Size(678, 640);
+            this.MaximumSize = new System.Drawing.Size(678, 660);
+            this.MinimumSize = new System.Drawing.Size(678, 660);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Blender Render Controller";
@@ -1144,6 +1168,8 @@ namespace BlenderRenderController
         private System.Windows.Forms.LinkLabel infoMore;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem clearRecentProjectsListToolStripMenuItem;
+        private System.Windows.Forms.Label ETALabel;
+        private System.Windows.Forms.Label ETALabelTitle;
     }
 }
 

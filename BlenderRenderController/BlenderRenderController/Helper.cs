@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
@@ -64,6 +65,26 @@ namespace BlenderRenderController
         {
             var fixedPath = path.Trim().TrimEnd('\\');
             return fixedPath;
+        }
+        static public string secondsToString(double seconds, bool digital = false)
+        {
+            TimeSpan t = TimeSpan.FromSeconds(seconds);
+            string timeString;
+            if (!digital) {
+                timeString = string.Format("{0:D1}h {1:D1}m {2:D1}s {3:D1}ms",
+                                t.Hours,
+                                t.Minutes,
+                                t.Seconds,
+                                t.Milliseconds);
+            }
+            else
+            {
+                timeString = string.Format("{0:D2}:{1:D2}:{2:D2}",
+                                t.Hours,
+                                t.Minutes,
+                                t.Seconds);
+            }
+            return timeString;
         }
     }
 }

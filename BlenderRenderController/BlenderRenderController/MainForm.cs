@@ -24,6 +24,7 @@ namespace BlenderRenderController
         //processes
         List<Process> processes = new List<Process>();
         List<int> framesRendered = new List<int>();
+        int framesRenderedCount_PrevSecond = 0;
         int processesCompletedCount = 0;
 
         BlendData blendData;
@@ -33,6 +34,7 @@ namespace BlenderRenderController
         SettingsForm settingsForm;
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
+        List<int> renderingSpeedsFPS = new List<int>();
         LogService _log = new LogService();
 
         // CMD args
@@ -170,13 +172,7 @@ namespace BlenderRenderController
             if (blendData != null)
             {
                 var durationSeconds = (Convert.ToDouble(p.end - p.start + 1) / p.fps);
-                TimeSpan t = TimeSpan.FromSeconds(durationSeconds);
-
-                infoDuration.Text = string.Format("{0:D1}h {1:D1}m {2:D1}s {3:D1}ms",
-                                t.Hours,
-                                t.Minutes,
-                                t.Seconds,
-                                t.Milliseconds);
+                infoDuration.Text = Helper.secondsToString(durationSeconds, false);
                 infoFramesTotal.Text = (p.end - p.start + 1).ToString();
             }
 
@@ -201,6 +197,7 @@ namespace BlenderRenderController
                     outputFolderTextBox.Enabled = false;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = false;
+                    ETALabel.Visible = ETALabelTitle.Visible = false;
                     totalTimeLabel.Visible = false;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
@@ -230,6 +227,7 @@ namespace BlenderRenderController
                     outputFolderTextBox.Enabled = false;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = false;
+                    ETALabel.Visible = ETALabelTitle.Visible = false;
                     totalTimeLabel.Visible = false;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
@@ -259,6 +257,7 @@ namespace BlenderRenderController
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = true;
+                    ETALabel.Visible = ETALabelTitle.Visible = true;
                     totalTimeLabel.Visible = true;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
@@ -289,6 +288,7 @@ namespace BlenderRenderController
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = true;
+                    ETALabel.Visible = ETALabelTitle.Visible = true;
                     rendererRadioButtonBlender.Enabled = false;
                     rendererRadioButtonCycles.Enabled = false;
                     renderAllButton.Image = Properties.Resources.stop_icon_small;
@@ -555,11 +555,17 @@ namespace BlenderRenderController
         {
             appState = AppStates.RENDERING_ALL;
             startTime = DateTime.Now;
-            totalTimeLabel.Text = "00:00:00";
+            renderingSpeedsFPS.Clear();
             statusLabel.Text = "Starting render...";
             processesCompletedCount = 0;
             framesRendered.Clear();
             processTimer.Enabled = true;
+
+            //render ETA reset
+            totalTimeLabel.Text = Helper.secondsToString(0, true);
+            ETALabel.Text = Helper.secondsToString(0, true);
+            framesRenderedCount_PrevSecond = 0;
+
             updateUI();
         }
 
@@ -638,7 +644,31 @@ namespace BlenderRenderController
 
             //time elapsed display
             TimeSpan runTime = DateTime.Now - startTime;
-			totalTimeLabel.Text = String.Format( "{0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds );
+            string lastTotalTimeText = totalTimeLabel.Text;
+            totalTimeLabel.Text = Helper.secondsToString(runTime.TotalSeconds, true);
+
+            //time estimation after 1 sec
+            if (lastTotalTimeText != totalTimeLabel.Text)
+            {
+                renderingSpeedsFPS.Add(framesRendered.Count - framesRenderedCount_PrevSecond);
+                if(renderingSpeedsFPS.Count > appSettings.renderETAFromSecondsAgo)
+                {
+                    renderingSpeedsFPS.RemoveAt(0);
+                }
+                framesRenderedCount_PrevSecond = framesRendered.Count;
+                int speeds = 0;
+                foreach (int speed in renderingSpeedsFPS)
+                {
+                    speeds += speed;
+                }
+                int speedAverage = speeds / renderingSpeedsFPS.Count;
+                if(speedAverage > 0)
+                {
+                    int framesRemaining = Convert.ToInt16(p.end - p.start) - framesRendered.Count;
+                    int secondsRemaining = framesRemaining / speedAverage;
+                    ETALabel.Text = Helper.secondsToString(secondsRemaining, true);
+                }
+            }
 
             if (processes.Count == 0)
             {
@@ -1247,6 +1277,6 @@ namespace BlenderRenderController
         {
             throw new Exception("this is a test Exeption");
         }
-
+        
     }
 }
