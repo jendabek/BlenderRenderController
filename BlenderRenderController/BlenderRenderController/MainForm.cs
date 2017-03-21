@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -888,16 +888,19 @@ namespace BlenderRenderController
             process.StartInfo.WorkingDirectory       = appSettings.blenderPath;
             process.StartInfo.FileName               = Path.Combine(appSettings.blenderPath, "blender.exe");
 			process.StartInfo.RedirectStandardOutput = true;
-			process.StartInfo.CreateNoWindow         = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.CreateNoWindow         = true;
 			process.StartInfo.UseShellExecute        = false;
 
             process.StartInfo.Arguments = String.Format("-b \"{0}\" -P \"{1}\"",
                                                   p.blendFilePath,
                                                   Path.Combine(appSettings.scriptsPath, "get_project_info.py")
                                     );
-            Trace.WriteLine(appSettings.blenderPath);
+            Trace.WriteLine(process.StartInfo.Arguments);
+            //MessageBox.Show(AppDomain.CurrentDomain.BaseDirectory);
+            
             try {
-				process.Start();
+			    process.Start();
 			}
 			catch( Exception ex ) {
                 //oldLogger.add(ex.ToString());
@@ -912,6 +915,20 @@ namespace BlenderRenderController
 			StringBuilder jsonInfo    = new StringBuilder();
 			bool          jsonStarted = false;
 			int           curlyStack  = 0;
+
+            string streamErrorLines = "";
+            while (!process.StandardError.EndOfStream)
+            {
+                streamErrorLines += process.StandardError.ReadLine();
+            }
+            if(streamErrorLines.Length > 0)
+            {
+                _log.Error(streamErrorLines);
+                Console.WriteLine(streamErrorLines);
+                stopRender(false);
+                MessageBox.Show(streamErrorLines);
+                return;
+            }
 
             while ( !process.StandardOutput.EndOfStream ) {
 				string line = process.StandardOutput.ReadLine();
@@ -931,8 +948,7 @@ namespace BlenderRenderController
 					}
 				}
 			}
-
-			blendData = null;
+            blendData = null;
 			if( jsonInfo.Length > 0 ) { 
 				JavaScriptSerializer serializer = new JavaScriptSerializer();
 				blendData = serializer.Deserialize<BlendData>(jsonInfo.ToString());
@@ -1000,11 +1016,15 @@ namespace BlenderRenderController
                 updateRecentBlendsMenu();
 
                 appState = AppStates.READY_FOR_RENDER;
+                _log.Info(".blend loaded successfully");
+            } else
+            {
+                _log.Error(".blend was NOT loaded");
             }
+            Trace.WriteLine( ".blend data = " + jsonInfo.ToString());
+            _log.Info(".blend data = " + jsonInfo.ToString());
             updateUI();
-            Trace.WriteLine( ".blend data = " + jsonInfo.ToString() );
-            _log.Info(".blend loaded successfully");
-		}
+        }
         
 		private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
             loadBlend();
@@ -1255,7 +1275,7 @@ namespace BlenderRenderController
             else
             {
                 chunkLengthNumericUpDown.Enabled = chunkLengthNumericUpDown.Enabled = false;
-                processCountNumericUpDown.Value = Environment.ProcessorCount;
+                processCountNumericUpDown.Value = p.processCount = Environment.ProcessorCount;
                 updateCurrentChunkStartEnd();
                 updateChunkLength();
                 updateUI();
