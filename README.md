@@ -20,9 +20,9 @@ After all parts are rendered, they're joined together in FFmpeg, your **video is
 ## How much difference does it make?
 **Quite a lot!** I did some testing shown below (Blender Render Controller shown in orange):
 
-![Test3](https://app.box.com/representation/file_version_147671500287/image_2048/1.png?shared_name=u90snyjbzslz0zszwges1helzmyz6b8y)
+![Test3](https://github.com/RedRaptor93/BlenderRenderController/blob/multiPlat/BlenderRenderController/extras/brc%20graph%201080p.png)
 
-![Test1](https://app.box.com/representation/file_version_147672318497/image_2048/1.png?shared_name=i1bwfn03tie6ieehwnz7mbp4lu700gzy)
+![Test1](https://github.com/RedRaptor93/BlenderRenderController/blob/multiPlat/BlenderRenderController/extras/brc%20graph%20720p.png)
 
 PC used: i7 4790, 16GB DDR3 RAM @ 1600Mhz
 
