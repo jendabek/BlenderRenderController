@@ -15,6 +15,7 @@
         public const string BLEND_FILE_NOT_EXISTS = "blendFileNotExists";
         public const string RENDER_FORMAT_IS_IMAGE = "formatIsImage";
         public const string BLEND_OUTPUT_INVALID = "blendOutputInvalid";
+        public const string UNKNOWN_OS = "unknownOS";
     }
     static class AppStrings
     {

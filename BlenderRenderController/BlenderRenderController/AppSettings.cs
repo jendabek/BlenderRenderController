@@ -17,12 +17,6 @@ namespace BlenderRenderController
         private string[] _jsonProperties = { "recentBlends", "blenderPath", "ffmpegPath", "renderer", "afterRenderAction", "displayTooltips", "verboseLog"};
 
         private const int _RECENT_BLENDS_MAX_COUNT = 10;
-        public const string BLENDER_EXE_NAME = "blender.exe";
-        public const string FFMPEG_EXE_NAME = "ffmpeg.exe";
-        public const string APP_TITLE = "Blender Render Controller";
-
-        public const string BLENDER_PATH_DEFAULT = "C:\\Program Files\\Blender Foundation\\Blender";
-        public const string FFMPEG_PATH_DEFAULT = ""; //EXE dir
 
         private List<string> _recentBlends = new List<string>();
         private string _jsonFileName = "settings.json";
@@ -44,19 +38,94 @@ namespace BlenderRenderController
         private int _renderETAFromSecondsAgo = 20;
         private bool _appConfigured = false;
         private SettingsForm _settingsForm;
-        LogService _log = new LogService();
-        PlatformID Os = Environment.OSVersion.Platform;
 
+        // Platform specific vars
+        PlatformID Os = Environment.OSVersion.Platform;
+        public string BlenderExeName
+        {
+            get
+            {
+                switch (Os)
+                {
+                    case PlatformID.Win32NT:
+                        return "blender.exe";
+                    case PlatformID.MacOSX:
+                    case PlatformID.Unix:
+                        return "blender";
+                    default:
+                        // use linux name if OS is not Id'ed
+                        return "blender";
+                }
+            }
+        }
+
+        public string FFmpegExeName
+        {
+            get
+            {
+                switch (Os)
+                {
+                    case PlatformID.Win32NT:
+                        return "ffmpeg.exe";
+                    case PlatformID.Unix:
+                    case PlatformID.MacOSX:
+                        return "ffmpeg";
+                    default:
+                        return "ffmpeg";
+                }
+            }
+        }
+
+        public string BlenderPathDefault
+        {
+            get
+            {
+                switch (Os)
+                {
+                    case PlatformID.Win32NT:
+                        return "C:\\Program Files\\Blender Foundation\\Blender";
+                    case PlatformID.Unix:
+                    case PlatformID.MacOSX:
+                        return "/usr/bin";
+                    default:
+                        return "/usr/bin";
+                }
+            }
+        }
+
+        public string FFmpegPathDefault
+        {
+            get
+            {
+                switch (Os)
+                {
+                    case PlatformID.Win32NT:
+                        return ""; // app dir
+                    case PlatformID.Unix:
+                    case PlatformID.MacOSX:
+                        return "/usr/bin";
+                    default:
+                        return "/usr/bin";
+                }
+            }
+        }
+
+        private LogService _log = new LogService();
         public void init()
         {
             _log.RegisterLogSevice(new FileLogger());
-            _log.Info($"Os is {Os}");
+            _log.RegisterLogSevice(new ConsoleLogger());
+
             //LOADing data from JSON and set it to properties
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);
-            _blenderPath = BLENDER_PATH_DEFAULT;
-            _ffmpegPath = FFMPEG_PATH_DEFAULT;
-            loadJsonSettings(); _log.Info("Settings Json loaded.");
+            _blenderPath = BlenderPathDefault;
+            _ffmpegPath = FFmpegPathDefault;
+            loadJsonSettings();
             checkCorrectConfig();
+        }
+
+
+          
         }
 
         // for the log services
@@ -189,12 +258,12 @@ namespace BlenderRenderController
 
         public bool checkBlenderPath()
         {
-            return File.Exists(Path.Combine(_blenderPath, BLENDER_EXE_NAME));
+            return File.Exists(Path.Combine(_blenderPath, BlenderExeName));
         }
 
         public bool checkFFmpegPath()
         {
-            return File.Exists(Path.Combine(_ffmpegPath, FFMPEG_EXE_NAME));
+            return File.Exists(Path.Combine(_ffmpegPath, FFmpegExeName));
         }
         public List<string> recentBlends
         {

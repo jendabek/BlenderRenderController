@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using BlenderRenderController.newLogger;
 
 namespace BlenderRenderController
 {
@@ -11,6 +12,8 @@ namespace BlenderRenderController
          {
              string[] Separator = new string[] { "-" };
          }*/
+        static LogService _log = new LogService();
+
         static public void clearFolder(string FolderName)
         {
             DirectoryInfo dir = new DirectoryInfo(FolderName);
@@ -29,16 +32,18 @@ namespace BlenderRenderController
         
         static public void showErrors(List<string> errorCodes, MessageBoxIcon icon = MessageBoxIcon.Asterisk, string arg1 = "")
         {
+            RegsterLog();
+
             var errorText = "";
             foreach (var errorCode in errorCodes)
             {
                 if(errorCode == AppErrorCodes.BLENDER_PATH_NOT_SET)
                 {
-                    errorText += "Please set correct path to Blender (blender.exe).\n";
+                    errorText += $"Please set correct path to Blender ({new AppSettings().BlenderExeName}).\n";
                 }
                 if (errorCode == AppErrorCodes.FFMPEG_PATH_NOT_SET)
                 {
-                    errorText += "Please set correct path to FFmpeg (ffmpeg.exe).\n";
+                    errorText += $"Please set correct path to FFmpeg ({new AppSettings().FFmpegExeName}).\n";
                 }
                 if (errorCode == AppErrorCodes.BLEND_FILE_NOT_EXISTS)
                 {
@@ -54,18 +59,31 @@ namespace BlenderRenderController
                 {
                     errorText += "Unable to read output path, using project location.";
                 }
+                if (errorCode == AppErrorCodes.UNKNOWN_OS)
+                {
+                    errorText += "Could not identify operating system, BRC might not work properly.";
+                }
             }
             MessageBox.Show(
                     errorText,
                     "",
                     MessageBoxButtons.OK,
                     icon);
+            _log.Warn("-Helper- " + errorText);
         }
         static public string fixPath(string path)
         {
             var fixedPath = path.Trim().TrimEnd('\\');
             return fixedPath;
         }
+
+
+        static void RegsterLog()
+        {
+            _log.RegisterLogSevice(new ConsoleLogger());
+            _log.RegisterLogSevice(new FileLogger());
+        }
+      
         static public string secondsToString(double seconds, bool digital = false)
         {
             TimeSpan t = TimeSpan.FromSeconds(seconds);
@@ -85,6 +103,7 @@ namespace BlenderRenderController
                                 t.Seconds);
             }
             return timeString;
+
         }
     }
 }
