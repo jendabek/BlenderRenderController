@@ -11,6 +11,9 @@ namespace BlenderRenderController.newLogger
     {
         private readonly DateTime _time = DateTime.Now;
         private bool _verbose;
+        private string _lastLog;
+        private string _repeatLine;
+        private int _numLastLogs;
 
         public enum LogType
         {
@@ -22,6 +25,7 @@ namespace BlenderRenderController.newLogger
             var appSettings = new AppSettings();
             appSettings.RemoteLoadJsonSettings();
             this._verbose = appSettings.verboseLog;
+            this._repeatLine = $"Last message repeted {_numLastLogs} times";
         }
 
         private void Log(string message, LogType logType)

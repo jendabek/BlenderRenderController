@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace BlenderRenderController.newLogger
 {
+
     public class LogService : ILogger
     {
         private readonly IList<ILogger> _loggerServices = new List<ILogger>();
@@ -19,7 +20,7 @@ namespace BlenderRenderController.newLogger
             if (_loggerServices.Contains(service))
                 // avoid duplicates services
                 return;
-            
+
             _loggerServices.Add(service);
         }
 

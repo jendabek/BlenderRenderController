@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Web.Script.Serialization;
-using System.Drawing;
 using System.Globalization;
 using System.Reflection;
 
@@ -24,8 +23,8 @@ namespace BlenderRenderController
         //processes
         List<Process> processes = new List<Process>();
         List<int> framesRendered = new List<int>();
+        int framesRenderedCount_PrevSecond = 0;
         int processesCompletedCount = 0;
-
         BlendData blendData;
         ProjectData p;
         DateTime startTime;
@@ -33,6 +32,7 @@ namespace BlenderRenderController
         SettingsForm settingsForm;
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
+        List<int> renderingSpeedsFPS = new List<int>();
         LogService _log = new LogService();
         PlatformID Os = Environment.OSVersion.Platform;
 
@@ -45,7 +45,6 @@ namespace BlenderRenderController
             InitializeComponent();
 
             PlatAdjust(Os);	
-            
         }
         public void MainForm_Shown(object sender, EventArgs e)
         {
@@ -71,6 +70,8 @@ namespace BlenderRenderController
             p.start = totalStartNumericUpDown.Value;
             p.end = totalEndNumericUpDown.Value;
             statusLabel.Text = "Hello 3D world!";
+
+            Text = AppSettings.APP_TITLE;
             
             processTimer = new Timer();
             processTimer.Interval = appSettings.processCheckInterval;
@@ -88,11 +89,12 @@ namespace BlenderRenderController
             applySettings();
             if (!appSettings.appConfigured)
             {
-                //appState = AppStates.NOT_CONFIGURED;
+                //appState = AppStates.NOT_CONFIGURED;/
                 settingsForm.ShowDialog();
             }
             updateRecentBlendsMenu();
             updateUI();
+            _log.Info("Program Started");
         }
 
         private void onSettingsFormClosed(object sender, FormClosedEventArgs e)
@@ -172,13 +174,7 @@ namespace BlenderRenderController
             if (blendData != null)
             {
                 var durationSeconds = (Convert.ToDouble(p.end - p.start + 1) / p.fps);
-                TimeSpan t = TimeSpan.FromSeconds(durationSeconds);
-
-                infoDuration.Text = string.Format("{0:D1}h {1:D1}m {2:D1}s {3:D1}ms",
-                                t.Hours,
-                                t.Minutes,
-                                t.Seconds,
-                                t.Milliseconds);
+                infoDuration.Text = Helper.secondsToString(durationSeconds, false);
                 infoFramesTotal.Text = (p.end - p.start + 1).ToString();
             }
 
@@ -203,6 +199,7 @@ namespace BlenderRenderController
                     outputFolderTextBox.Enabled = false;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = false;
+                    ETALabel.Visible = ETALabelTitle.Visible = false;
                     totalTimeLabel.Visible = false;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
@@ -232,6 +229,7 @@ namespace BlenderRenderController
                     outputFolderTextBox.Enabled = false;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = false;
+                    ETALabel.Visible = ETALabelTitle.Visible = false;
                     totalTimeLabel.Visible = false;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
@@ -261,6 +259,7 @@ namespace BlenderRenderController
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = true;
+                    ETALabel.Visible = ETALabelTitle.Visible = true;
                     totalTimeLabel.Visible = true;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
@@ -291,6 +290,7 @@ namespace BlenderRenderController
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
                     timeElapsedLabel.Visible = true;
+                    ETALabel.Visible = ETALabelTitle.Visible = true;
                     rendererRadioButtonBlender.Enabled = false;
                     rendererRadioButtonCycles.Enabled = false;
                     renderAllButton.Image = Properties.Resources.stop_icon_small;
@@ -307,7 +307,7 @@ namespace BlenderRenderController
 
         private void MainForm_Close(object sender, FormClosedEventArgs e)
         {
-            _log.Warn("Program Closed");
+            _log.Info("Program Closed");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -557,11 +557,28 @@ namespace BlenderRenderController
             _log.Info("RENDER STARTED");
             appState = AppStates.RENDERING_ALL;
             startTime = DateTime.Now;
-            totalTimeLabel.Text = "00:00:00";
+            renderingSpeedsFPS.Clear();
             statusLabel.Text = "Starting render...";
             processesCompletedCount = 0;
             framesRendered.Clear();
             processTimer.Enabled = true;
+
+            //render ETA reset
+            totalTimeLabel.Text = Helper.secondsToString(0, true);
+            ETALabel.Text = Helper.secondsToString(0, true);
+            framesRenderedCount_PrevSecond = 0;
+
+            //taskbar progress
+            try
+            {
+                TaskbarProgress.SetState(Handle, TaskbarProgress.TaskbarStates.Indeterminate);
+                TaskbarProgress.SetValue(Handle, 0, 100);
+            }
+            catch (Exception)
+            {
+                
+            }
+
             updateUI();
         }
 
@@ -590,6 +607,15 @@ namespace BlenderRenderController
             processTimer.Enabled = false;
             lastChunkStarted = false;
             renderProgressBar.Value = 0;
+            Text = AppSettings.APP_TITLE;
+
+            try
+            {
+                TaskbarProgress.SetState(Handle, TaskbarProgress.TaskbarStates.NoProgress);
+            }
+            catch (Exception)
+            {
+            }
 
             appState = AppStates.READY_FOR_RENDER;
 
@@ -604,9 +630,10 @@ namespace BlenderRenderController
             Func<decimal> chunksTotalCount = () => Math.Ceiling((p.end - p.start + 1) / p.chunkLength);
 
             //PROGRESS display
+            int progressPercentage = 0;
             if (appState == AppStates.RENDERING_ALL)
             {
-                renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (p.end - p.start + 1)) * 100);
+                progressPercentage = (int)Math.Floor((framesRendered.Count / (p.end - p.start + 1)) * 100);
 
                 var statusText = "";
                 statusText = "Completed " + processesCompletedCount.ToString() + " / " + chunksTotalCount().ToString();
@@ -616,13 +643,27 @@ namespace BlenderRenderController
             }
             else
             {
-                renderProgressBar.Value = (int)Math.Floor((framesRendered.Count / (p.chunkEnd - p.chunkStart + 1)) * 100);
+                progressPercentage = (int)Math.Floor((framesRendered.Count / (p.chunkEnd - p.chunkStart + 1)) * 100);
                 
                 if (framesRendered.Count > 0)
                 {
                     statusLabel.Text = "Rendering chunk frame " + framesRendered.ElementAt(framesRendered.Count - 1) + ".";
                 }
             }
+            //taskbar progress
+            try
+            {
+                TaskbarProgress.SetValue(Handle, progressPercentage, 100);
+            }
+            catch (Exception)
+            {
+
+            }
+            //progress bar
+            renderProgressBar.Value = progressPercentage;
+
+            //title progress
+            Text = progressPercentage.ToString() + "% rendered - " + AppSettings.APP_TITLE;
 
             //start next chunk if needed
             if (!lastChunkStarted)
@@ -636,7 +677,39 @@ namespace BlenderRenderController
 
             //time elapsed display
             TimeSpan runTime = DateTime.Now - startTime;
-			totalTimeLabel.Text = String.Format( "{0,2:D2}:{1,2:D2}:{2,2:D2}", (int)runTime.TotalHours, runTime.Minutes, runTime.Seconds );
+            string lastTotalTimeText = totalTimeLabel.Text;
+            totalTimeLabel.Text = Helper.secondsToString(runTime.TotalSeconds, true);
+
+            //ESTIMATED TIME
+            //-----
+            if (lastTotalTimeText != totalTimeLabel.Text) //amateurish way to run once a second without an additional timer
+            {
+                //we add rendering speed in previous second to renderingSpeedsFPS list
+                renderingSpeedsFPS.Add(framesRendered.Count - framesRenderedCount_PrevSecond);
+
+                //removing the most latest speed from the list if the list is larger than appSettings.renderETAFromSecondsAgo
+                if (renderingSpeedsFPS.Count > appSettings.renderETAFromSecondsAgo)
+                {
+                    renderingSpeedsFPS.RemoveAt(0);
+                }
+                framesRenderedCount_PrevSecond = framesRendered.Count;
+                
+                //computing speed average based on speed in previous seconds (stored in renderingSpeedsFPS)
+                int speeds = 0;
+                foreach (int speed in renderingSpeedsFPS)
+                {
+                    speeds += speed;
+                }
+                int speedAverage = speeds / renderingSpeedsFPS.Count;
+
+                //getting remaining time & displaying it
+                if(speedAverage > 0)
+                {
+                    int framesRemaining = (int)(p.end - p.start) - framesRendered.Count;
+                    int secondsRemaining = framesRemaining / speedAverage;
+                    ETALabel.Text = Helper.secondsToString(secondsRemaining, true);
+                }
+            }
 
             if (processes.Count == 0)
             {
@@ -1262,6 +1335,5 @@ namespace BlenderRenderController
         {
             throw new Exception("this is a test Exeption");
         }
-
     }
 }

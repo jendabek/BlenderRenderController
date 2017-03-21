@@ -35,10 +35,9 @@ namespace BlenderRenderController
         private string _scriptsPath, _blenderPath, _ffmpegPath;
 
         private int _processCheckInterval = 20;
+        private int _renderETAFromSecondsAgo = 20;
         private bool _appConfigured = false;
         private SettingsForm _settingsForm;
-        private LogService _log = new LogService();
-
 
         // Platform specific vars
         PlatformID Os = Environment.OSVersion.Platform;
@@ -111,7 +110,7 @@ namespace BlenderRenderController
             }
         }
 
-
+        private LogService _log = new LogService();
         public void init()
         {
             _log.RegisterLogSevice(new FileLogger());
@@ -121,11 +120,15 @@ namespace BlenderRenderController
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);
             _blenderPath = BlenderPathDefault;
             _ffmpegPath = FFmpegPathDefault;
-
             loadJsonSettings();
             checkCorrectConfig();
         }
 
+
+          
+        }
+
+        // for the log services
         public void RemoteLoadJsonSettings() { loadJsonSettings(); }
 
         private void loadJsonSettings()
@@ -180,6 +183,7 @@ namespace BlenderRenderController
             try
             {
                 File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _jsonFileName), serializer.Serialize(jsonObject));
+                //_log.Info("Settings saved.");
                 return true;
             }
             catch (Exception)
@@ -417,6 +421,14 @@ namespace BlenderRenderController
         {
             get { return _verboseLog; }
             set { _verboseLog = value; }
+        }
+
+        public int renderETAFromSecondsAgo
+        {
+            get
+            {
+                return _renderETAFromSecondsAgo;
+            }
         }
     }
 }
