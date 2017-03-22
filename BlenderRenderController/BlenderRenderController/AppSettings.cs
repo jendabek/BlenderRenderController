@@ -17,6 +17,7 @@ namespace BlenderRenderController
         private string[] _jsonProperties = { "recentBlends", "blenderPath", "ffmpegPath", "renderer", "afterRenderAction", "displayTooltips", "verboseLog"};
 
         private const int _RECENT_BLENDS_MAX_COUNT = 10;
+        public const string APP_TITLE = "Blender Render Controller";
 
         private List<string> _recentBlends = new List<string>();
         private string _jsonFileName = "settings.json";
@@ -124,9 +125,6 @@ namespace BlenderRenderController
             checkCorrectConfig();
         }
 
-
-          
-        }
 
         // for the log services
         public void RemoteLoadJsonSettings() { loadJsonSettings(); }

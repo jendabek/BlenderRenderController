@@ -1340,6 +1340,8 @@ namespace BlenderRenderController
 
         private void infoMore_Click(object sender, EventArgs e)
         {
+            // for testing exeption logging
+
             //try
             //{
             //    exeption_test();
