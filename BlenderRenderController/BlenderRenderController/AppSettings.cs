@@ -125,7 +125,6 @@ namespace BlenderRenderController
             checkCorrectConfig();
         }
 
-
         // for the log services
         public void RemoteLoadJsonSettings() { loadJsonSettings(); }
 
