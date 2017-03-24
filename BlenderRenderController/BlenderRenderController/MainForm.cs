@@ -890,7 +890,7 @@ namespace BlenderRenderController
             process.StartInfo.WorkingDirectory       = appSettings.blenderPath;
             process.StartInfo.FileName               = Path.Combine(appSettings.blenderPath, appSettings.BlenderExeName);
 			process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.RedirectStandardError  = true;
             process.StartInfo.CreateNoWindow         = true;
 			process.StartInfo.UseShellExecute        = false;
 
@@ -918,14 +918,16 @@ namespace BlenderRenderController
 			int           curlyStack  = 0;
 
             string streamErrorLines = "";
+            //string[] streamErrors;
+
             while (!process.StandardError.EndOfStream)
             {
                 streamErrorLines += process.StandardError.ReadLine();
+                //streamErrors.a += process.StandardError.ReadLine();
             }
-            if(streamErrorLines.Length > 0)
+            if (streamErrorLines.Length > 0)
             {
                 _log.Error(streamErrorLines);
-                Console.WriteLine(streamErrorLines);
                 stopRender(false);
                 MessageBox.Show(streamErrorLines);
                 return;
