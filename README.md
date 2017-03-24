@@ -33,7 +33,8 @@ Even if you don't use Blender VSE often, that’s a LOT of time saved. And the t
 
 ### Dependencies
 - Blender, obviously.
-- [FFmpeg](https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-latest-win64-static.zip), required for joining the parts together. You don't need to care about it if you download the Full version which has FFmpeg already included.
+- [FFmpeg](https://ffmpeg.zeranoe.com/builds/), required for joining the parts together. You don't need to care about it if you download the Full version which has FFmpeg already included.
+- .NET framework 4.5
 
 
 ### Steps
@@ -55,12 +56,18 @@ Even if you don't use Blender VSE often, that’s a LOT of time saved. And the t
  
 5. Click *Start Render* and wait for the render to be done.
 
+### Known Issues
+
+- *"Fatal python error"* when opening projects in Windows 7
+	- Work-around: Launch _BlenderRenderController.exe_ from the command line, you can make a _.bat_ file for convenience.
+
 ## CREDITS
 
 - Isti115
 - meTwentyFive
-- redRaptor93
+- RedRaptor93
 
 ## Support the development &#9829;
-
-[<img align="left" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/donate-github.png" width="110"/>](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=jendabek@gmail.com&lc=CZE&item_name=Donation for Blender Render Controller&currency_code=USD&bn=PP%2dDonationsBF)
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=jendabek@gmail.com&lc=CZE&item_name=Donation%20for%20Blender Render%20Controller&currency_code=USD&bn=PP%2dDonationsBF">
+<img align="left" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/donate-github.png" width="110"/>
+</a>
