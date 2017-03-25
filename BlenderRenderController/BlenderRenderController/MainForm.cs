@@ -902,9 +902,9 @@ namespace BlenderRenderController
             //MessageBox.Show(AppDomain.CurrentDomain.BaseDirectory);
             
             try {
-			    process.Start();
+			          process.Start();
                 process.WaitForExit();
-			}
+		 	}
 			catch( Exception ex ) {
                 _log.Error(ex.ToString());
                 Trace.WriteLine(ex);
@@ -944,6 +944,20 @@ namespace BlenderRenderController
             StringBuilder jsonInfo    = new StringBuilder();
 			bool          jsonStarted = false;
 			int           curlyStack  = 0;
+
+            string streamErrorLines = "";
+            while (!process.StandardError.EndOfStream)
+            {
+                streamErrorLines += process.StandardError.ReadLine();
+            }
+            if(streamErrorLines.Length > 0)
+            {
+                _log.Error(streamErrorLines);
+                Console.WriteLine(streamErrorLines);
+                stopRender(false);
+                MessageBox.Show(streamErrorLines);
+                return;
+            }
 
             while ( !process.StandardOutput.EndOfStream ) {
 				string line = process.StandardOutput.ReadLine();
@@ -1055,6 +1069,7 @@ namespace BlenderRenderController
             _log.Info(".blend data = " + jsonInfo.ToString());
             updateUI();
         }
+
 
         private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
             loadBlend();
