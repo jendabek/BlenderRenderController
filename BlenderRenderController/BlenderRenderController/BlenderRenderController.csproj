@@ -102,12 +102,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Constants.cs" />
-    
+    <Compile Include="ui\ErrorBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\ErrorBox.Designer.cs">
+      <DependentUpon>ErrorBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\linux\UiOver.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="TaskbarProgress.cs" />
-
     <Compile Include="ui\SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -123,6 +127,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\ErrorBox.resx">
+      <DependentUpon>ErrorBox.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
