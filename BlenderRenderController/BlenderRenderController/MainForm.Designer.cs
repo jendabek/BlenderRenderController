@@ -80,6 +80,7 @@ namespace BlenderRenderController
             this.mixDownButton = new System.Windows.Forms.Button();
             this.concatenatePartsButton = new System.Windows.Forms.Button();
             this.renderAllButton = new System.Windows.Forms.Button();
+            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -103,7 +104,8 @@ namespace BlenderRenderController
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.ETALabel = new System.Windows.Forms.Label();
             this.ETALabelTitle = new System.Windows.Forms.Label();
-            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
+            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showErrorBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -313,7 +315,8 @@ namespace BlenderRenderController
             // 
             this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemBug,
-            this.toolStripMenuItem1});
+            this.toolStripMenuItem1,
+            this.debugToolStripMenuItem});
             this.infoToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
             this.infoToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
@@ -742,6 +745,22 @@ namespace BlenderRenderController
             this.renderAllButton.UseVisualStyleBackColor = true;
             this.renderAllButton.Click += new System.EventHandler(this.renderAllButton_Click);
             // 
+            // blendFileBrowseButton
+            // 
+            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
+            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
+            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
+            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
+            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
+            this.blendFileBrowseButton.SplitWidth = 30;
+            this.blendFileBrowseButton.TabIndex = 1;
+            this.blendFileBrowseButton.Text = "Open Blend";
+            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
+            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
+            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
+            // 
             // blendFileLabel
             // 
             this.blendFileLabel.AutoSize = true;
@@ -1006,21 +1025,21 @@ namespace BlenderRenderController
             this.ETALabelTitle.TabIndex = 19;
             this.ETALabelTitle.Text = "ETA:";
             // 
-            // blendFileBrowseButton
+            // debugToolStripMenuItem
             // 
-            this.blendFileBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blendFileBrowseButton.Image = ((System.Drawing.Image)(resources.GetObject("blendFileBrowseButton.Image")));
-            this.blendFileBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.blendFileBrowseButton.Location = new System.Drawing.Point(472, 79);
-            this.blendFileBrowseButton.Name = "blendFileBrowseButton";
-            this.blendFileBrowseButton.Padding = new System.Windows.Forms.Padding(10, 2, 0, 0);
-            this.blendFileBrowseButton.Size = new System.Drawing.Size(172, 47);
-            this.blendFileBrowseButton.SplitWidth = 30;
-            this.blendFileBrowseButton.TabIndex = 1;
-            this.blendFileBrowseButton.Text = "Open Blend";
-            this.toolTipInfo.SetToolTip(this.blendFileBrowseButton, "Browse for your Blender Video Editor project.");
-            this.blendFileBrowseButton.UseVisualStyleBackColor = true;
-            this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
+            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showErrorBoxToolStripMenuItem});
+            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.debugToolStripMenuItem.Text = "Debug";
+            this.debugToolStripMenuItem.Visible = false;
+            // 
+            // showErrorBoxToolStripMenuItem
+            // 
+            this.showErrorBoxToolStripMenuItem.Name = "showErrorBoxToolStripMenuItem";
+            this.showErrorBoxToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.showErrorBoxToolStripMenuItem.Text = "Show errorBox";
+            this.showErrorBoxToolStripMenuItem.Click += new System.EventHandler(this.showErrorBoxToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -1068,8 +1087,6 @@ namespace BlenderRenderController
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
-			//this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(678, 660);
@@ -1171,6 +1188,8 @@ namespace BlenderRenderController
         private System.Windows.Forms.ToolStripMenuItem clearRecentProjectsListToolStripMenuItem;
         private System.Windows.Forms.Label ETALabel;
         private System.Windows.Forms.Label ETALabelTitle;
+        private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showErrorBoxToolStripMenuItem;
     }
 }
 
