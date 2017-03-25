@@ -902,8 +902,9 @@ namespace BlenderRenderController
             //MessageBox.Show(AppDomain.CurrentDomain.BaseDirectory);
             
             try {
-			    process.Start();
-			}
+			          process.Start();
+                process.WaitForExit();
+		 	}
 			catch( Exception ex ) {
                 _log.Error(ex.ToString());
                 Trace.WriteLine(ex);
@@ -912,8 +913,35 @@ namespace BlenderRenderController
                 stopRender(false);
                 return;
 			}
-            
-			StringBuilder jsonInfo    = new StringBuilder();
+
+            // detect errors
+            var streamErrors = new List<string>();
+
+            while (!process.StandardError.EndOfStream)
+            {
+                streamErrors.Add(process.StandardError.ReadLine());
+                //streamErrors.Add("\n");
+            }
+
+            if (streamErrors.Count > 0)
+            {
+                // if output is null (Win7 bug) show error.
+                var output = process.StandardOutput.ReadLine();
+                if (string.IsNullOrEmpty(output))
+                {
+                    var e = new ui.ErrorBox("Failed to open project, information request returned null",
+                                             streamErrors);
+                    e.Text = "Error";
+                    e.ShowDialog(this);
+                    stopRender(false);
+                    return;
+                }
+                else
+                    _log.Error(streamErrors);
+            }
+
+
+            StringBuilder jsonInfo    = new StringBuilder();
 			bool          jsonStarted = false;
 			int           curlyStack  = 0;
 
@@ -1041,8 +1069,9 @@ namespace BlenderRenderController
             _log.Info(".blend data = " + jsonInfo.ToString());
             updateUI();
         }
-        
-		private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
+
+
+        private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
             loadBlend();
 		}
 
@@ -1354,6 +1383,12 @@ namespace BlenderRenderController
         private void exeption_test()
         {
             throw new Exception("this is a test Exeption");
+        }
+
+        private void showErrorBoxToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var er = new ui.ErrorBox();
+            er.ShowDialog();
         }
     }
 }

@@ -30,17 +30,32 @@ namespace BlenderRenderController.newLogger
             foreach (var service in _loggerServices)
                 service.Error(message);
         }
+        public void Error(List<string> messages)
+        {
+            foreach (var msg in messages)
+                this.Error(msg + "\n");
+        }
 
         public void Info(string message)
         {
             foreach (var service in _loggerServices)
                 service.Info(message);
         }
+        public void Info(List<string> messages)
+        {
+            foreach (var msg in messages)
+                this.Info(msg + "\n");
+        }
 
         public void Warn(string message)
         {
             foreach (var service in _loggerServices)
                 service.Warn(message);
+        }
+        public void Warn(List<string> messages)
+        {
+            foreach (var msg in messages)
+                this.Warn(msg + "\n");
         }
     }
 }
