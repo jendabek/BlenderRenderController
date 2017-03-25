@@ -934,11 +934,10 @@ namespace BlenderRenderController
                     e.Text = "Error";
                     e.ShowDialog(this);
                     stopRender(false);
-                    //MessageBox.Show("Failed to open project, information request returned null", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                //else
-                //    MessageBox.Show("Something wrong happend", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    _log.Error(streamErrors);
             }
 
 

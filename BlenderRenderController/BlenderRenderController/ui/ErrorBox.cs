@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlenderRenderController.newLogger;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,6 +14,8 @@ namespace BlenderRenderController.ui
     public partial class ErrorBox : Form
     {
         private string _result;
+
+        private LogService _log = new LogService();
 
         public string Result
         {
@@ -31,15 +34,18 @@ namespace BlenderRenderController.ui
 
             ErrorIcon.Image = SystemIcons.Hand.ToBitmap();
             ErrorIcon.SizeMode = PictureBoxSizeMode.CenterImage;
+
+            _log.RegisterLogSevice(new FileLogger());
+            _log.RegisterLogSevice(new ConsoleLogger());
         }
 
         public ErrorBox(string label, List<string> contents, Buttons bnts = Buttons.Ok)
             : this()
         {
+            _log.Error(contents);
 
             ErrorBoxLabel.Text = label;
             ErrorContentBox.Lines = contents.ToArray();
-            //ErrorContentBox.Text = contents;
 
             switch (bnts)
             {
