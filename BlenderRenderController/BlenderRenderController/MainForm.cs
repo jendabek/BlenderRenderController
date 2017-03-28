@@ -844,7 +844,7 @@ namespace BlenderRenderController
             {
                 Trace.WriteLine(ex);
                 _log.Error(ex.ToString());
-                Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
+                Helper.showErrors(AppErrorCodes.FFMPEG_PATH_NOT_SET);
                 settingsForm.ShowDialog();
                 statusLabel.Text = "Joining cancelled.";
                 return;
@@ -860,9 +860,7 @@ namespace BlenderRenderController
             statusLabel.Update();
 
             if ( !File.Exists(p.blendFilePath) ) {
-                var errors = new List<string>();
-                errors.Add(AppErrorCodes.BLEND_FILE_NOT_EXISTS);
-                Helper.showErrors(errors, MessageBoxIcon.Exclamation);
+                Helper.showErrors(AppErrorCodes.BLEND_FILE_NOT_EXISTS, MessageBoxIcon.Exclamation);
 
                 appSettings.recentBlends.Remove(p.blendFilePath);
                 updateRecentBlendsMenu();
@@ -899,7 +897,7 @@ namespace BlenderRenderController
 			catch( Exception ex ) {
                 _log.Error(ex.ToString());
                 Trace.WriteLine(ex);
-                Helper.showErrors(new List<string> { AppErrorCodes.BLENDER_PATH_NOT_SET });
+                Helper.showErrors(AppErrorCodes.BLENDER_PATH_NOT_SET );
                 settingsForm.ShowDialog();
                 stopRender(false);
                 return;
@@ -980,7 +978,7 @@ namespace BlenderRenderController
                 //notify we are going to render an image
                 if (RenderFormats.IMAGES.Contains(p.renderFormat))
                 {
-                    Helper.showErrors(new List<string> { AppErrorCodes.RENDER_FORMAT_IS_IMAGE }, MessageBoxIcon.Asterisk, p.renderFormat);
+                    Helper.showErrors(AppErrorCodes.RENDER_FORMAT_IS_IMAGE, MessageBoxIcon.Asterisk, p.renderFormat);
                 }
 
                 //FIX RELATIVE RENDER OUTPUT PATHS
@@ -1109,7 +1107,7 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
+                Helper.showErrors(AppErrorCodes.FFMPEG_PATH_NOT_SET);
                 settingsForm.ShowDialog();
                 statusLabel.Text = "Mixdown cancelled.";
                 return;
