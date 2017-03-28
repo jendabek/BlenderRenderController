@@ -328,8 +328,6 @@ namespace BlenderRenderController
                  loadBlend();
              }
              */
-            // initialize logger service
-
         }
 
         private void blendFileBrowseButton_Click(object sender, EventArgs e)
@@ -729,9 +727,8 @@ namespace BlenderRenderController
                 if (appState == AppStates.RENDERING_ALL && (p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN_MIXDOWN || p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN))
                 {
                     if (p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN_MIXDOWN)
-                    {
                         mixdown();
-                    }
+
                     concatenate();
                     stopRender(true);
 
@@ -740,18 +737,14 @@ namespace BlenderRenderController
                            MessageBoxButtons.YesNo,
                            MessageBoxIcon.Question);
                     if (openOutputFolderQuestion == DialogResult.Yes)
-                    {
                         openOutputFolder();
-                    }
-                } else
-                {
-                    stopRender(true);
                 }
+                else
+                    stopRender(true);
             }
             else
-            {
                 stopRender(false);
-            }
+
             updateCurrentChunkStartEnd();
             updateUI();
         }
@@ -850,7 +843,6 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                //oldLogger.add(ex.ToString());
                 _log.Error(ex.ToString());
                 Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
                 settingsForm.ShowDialog();
