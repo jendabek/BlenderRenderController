@@ -11,8 +11,8 @@ VSE is pretty good for editing videos, it's precise and relatively easy to learn
 
 This tool offers a work-around for this limitation until the Blender developers make a better renderer for VSE. 
 
-It renders a different segments (chunks) of the project at the same time by multiple blender.exe instances, **making use of full processing power of your PC**.
-After all parts are rendered, they're joined together in FFmpeg, your **video is ready much faster** then previously possible.
+It renders different segments (chunks) of the project at the same time by calling multiple blender.exe instances, **making use of full processing power of your PC**.
+After all parts are rendered, they're joined together in FFmpeg, and your **video is ready much faster** then previously possible.
 
 ### Video demonstration
 [<img src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/intro-720.png" width="480"/>](https://www.youtube.com/watch?v=Kdvq1CzOPfM)
@@ -33,12 +33,12 @@ Even if you don't use Blender VSE often, that’s a LOT of time saved. And the t
 
 ### Dependencies
 - Blender, obviously.
-- [FFmpeg](https://ffmpeg.zeranoe.com/builds/), required for joining the parts together. You don't need to care about it if you download the Full version which has FFmpeg already included.
+- [FFmpeg](https://ffmpeg.zeranoe.com/builds/), required for joining the parts together. You don't need to worry about it if you download the Full version which has FFmpeg already included.
 - .NET framework 4.5
 
 
 ### Steps
-1. Create your Blender VSE project normally within the Blender.
+1. Create your Blender VSE project normally within Blender.
  
 2. Open BlenderRenderController, browse for the .blend file.
  
