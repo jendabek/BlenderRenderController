@@ -328,8 +328,6 @@ namespace BlenderRenderController
                  loadBlend();
              }
              */
-            // initialize logger service
-
         }
 
         private void blendFileBrowseButton_Click(object sender, EventArgs e)
@@ -729,9 +727,8 @@ namespace BlenderRenderController
                 if (appState == AppStates.RENDERING_ALL && (p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN_MIXDOWN || p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN))
                 {
                     if (p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN_MIXDOWN)
-                    {
                         mixdown();
-                    }
+
                     concatenate();
                     stopRender(true);
 
@@ -740,18 +737,14 @@ namespace BlenderRenderController
                            MessageBoxButtons.YesNo,
                            MessageBoxIcon.Question);
                     if (openOutputFolderQuestion == DialogResult.Yes)
-                    {
                         openOutputFolder();
-                    }
-                } else
-                {
-                    stopRender(true);
                 }
+                else
+                    stopRender(true);
             }
             else
-            {
                 stopRender(false);
-            }
+
             updateCurrentChunkStartEnd();
             updateUI();
         }
@@ -850,9 +843,8 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                //oldLogger.add(ex.ToString());
                 _log.Error(ex.ToString());
-                Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
+                Helper.showErrors(AppErrorCodes.FFMPEG_PATH_NOT_SET);
                 settingsForm.ShowDialog();
                 statusLabel.Text = "Joining cancelled.";
                 return;
@@ -868,9 +860,7 @@ namespace BlenderRenderController
             statusLabel.Update();
 
             if ( !File.Exists(p.blendFilePath) ) {
-                var errors = new List<string>();
-                errors.Add(AppErrorCodes.BLEND_FILE_NOT_EXISTS);
-                Helper.showErrors(errors, MessageBoxIcon.Exclamation);
+                Helper.showErrors(AppErrorCodes.BLEND_FILE_NOT_EXISTS, MessageBoxIcon.Exclamation);
 
                 appSettings.recentBlends.Remove(p.blendFilePath);
                 updateRecentBlendsMenu();
@@ -890,95 +880,95 @@ namespace BlenderRenderController
             process.StartInfo.WorkingDirectory       = appSettings.blenderPath;
             process.StartInfo.FileName               = Path.Combine(appSettings.blenderPath, appSettings.BlenderExeName);
 			process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.RedirectStandardError  = true;
             process.StartInfo.CreateNoWindow         = true;
 			process.StartInfo.UseShellExecute        = false;
 
             process.StartInfo.Arguments = String.Format("-b \"{0}\" -P \"{1}\"",
                                                   p.blendFilePath,
-                                                  Path.Combine(appSettings.scriptsPath, "get_project_info.py")
-                                    );
+                                                  Path.Combine(appSettings.scriptsPath, "get_project_info.py"));
+
             Trace.WriteLine(process.StartInfo.Arguments);
-            //MessageBox.Show(AppDomain.CurrentDomain.BaseDirectory);
-            
+
             try {
-			          process.Start();
-                process.WaitForExit();
-		 	}
+			    process.Start();
+                //process.WaitForExit();
+			}
 			catch( Exception ex ) {
                 _log.Error(ex.ToString());
                 Trace.WriteLine(ex);
-                Helper.showErrors(new List<string> { AppErrorCodes.BLENDER_PATH_NOT_SET });
+                Helper.showErrors(AppErrorCodes.BLENDER_PATH_NOT_SET );
                 settingsForm.ShowDialog();
                 stopRender(false);
                 return;
 			}
 
-            // detect errors
+            // Get values from streams
+            var streamOutput = new List<string>();
             var streamErrors = new List<string>();
 
+            while (!process.StandardOutput.EndOfStream)
+                streamOutput.Add(process.StandardOutput.ReadLine());
+
             while (!process.StandardError.EndOfStream)
-            {
                 streamErrors.Add(process.StandardError.ReadLine());
-                //streamErrors.Add("\n");
-            }
 
+            // log errors
             if (streamErrors.Count > 0)
-            {
-                // if output is null (Win7 bug) show error.
-                var output = process.StandardOutput.ReadLine();
-                if (string.IsNullOrEmpty(output))
-                {
-                    var e = new ui.ErrorBox("Failed to open project, information request returned null",
-                                             streamErrors);
-                    e.Text = "Error";
-                    e.ShowDialog(this);
-                    stopRender(false);
-                    return;
-                }
-                else
                     _log.Error(streamErrors);
-            }
 
+
+            if (streamOutput.Count == 0)
+            {
+                var e = new ui.ErrorBox("Could not open project, no information was received",
+                                         streamErrors);
+                e.Text = "Error";
+                e.ShowDialog(this);
+                stopRender(false);
+                return;
+            }
 
             StringBuilder jsonInfo    = new StringBuilder();
 			bool          jsonStarted = false;
 			int           curlyStack  = 0;
 
-            string streamErrorLines = "";
-            while (!process.StandardError.EndOfStream)
+            foreach (var line in streamOutput)
             {
-                streamErrorLines += process.StandardError.ReadLine();
-            }
-            if(streamErrorLines.Length > 0)
-            {
-                _log.Error(streamErrorLines);
-                Console.WriteLine(streamErrorLines);
-                stopRender(false);
-                MessageBox.Show(streamErrorLines);
-                return;
+                if (line.Contains("{"))
+                {
+                    jsonStarted = true;
+                    curlyStack++;
+                }
+                if (jsonStarted)
+                {
+                    if (!line.ToLower().Contains("blender quit") && curlyStack > 0)
+                    {
+                        jsonInfo.AppendLine(line);
+                    }
+                    if (line.Contains("}"))
+                    {
+                        curlyStack--;
+                        if (curlyStack == 0)
+                        {
+                            jsonStarted = false;
+                        }
+                    }
+                }
             }
 
-            while ( !process.StandardOutput.EndOfStream ) {
-				string line = process.StandardOutput.ReadLine();
-				if( line.Contains( "{" ) ) {
-					jsonStarted = true;
-					curlyStack++;
-				}
-				if( jsonStarted ) {
-					if( !line.ToLower().Contains( "blender quit" ) && curlyStack > 0 ) {
-						jsonInfo.AppendLine( line );
-					}
-					if( line.Contains( "}" ) ) {
-						curlyStack--;
-						if( curlyStack == 0 ) {
-							jsonStarted = false;
-						}
-					}
-				}
-			}
             blendData = null;
-			if( jsonInfo.Length > 0 ) { 
+			if( jsonInfo.Length > 0 ) {
+
+                // for when praser fails
+                if (jsonInfo.ToString() == "{}")
+                {
+                    var e = new ui.ErrorBox("Could not open project, failed to parse project info", streamErrors);
+                    e.Text = "Error";
+                    e.ShowDialog(this);
+                    stopRender(false);
+                    return;
+                }
+
 				JavaScriptSerializer serializer = new JavaScriptSerializer();
 				blendData = serializer.Deserialize<BlendData>(jsonInfo.ToString());
             }
@@ -988,7 +978,7 @@ namespace BlenderRenderController
                 //notify we are going to render an image
                 if (RenderFormats.IMAGES.Contains(p.renderFormat))
                 {
-                    Helper.showErrors(new List<string> { AppErrorCodes.RENDER_FORMAT_IS_IMAGE }, MessageBoxIcon.Asterisk, p.renderFormat);
+                    Helper.showErrors(AppErrorCodes.RENDER_FORMAT_IS_IMAGE, MessageBoxIcon.Asterisk, p.renderFormat);
                 }
 
                 //FIX RELATIVE RENDER OUTPUT PATHS
@@ -1000,16 +990,15 @@ namespace BlenderRenderController
                     // use blendFile location if p.outputpath is null, display a warning about it
                     if (string.IsNullOrEmpty(p.outputPath))
                     {
-                        var warn = new List<string>();
-                        warn.Add(AppErrorCodes.BLEND_OUTPUT_INVALID);
-                        Helper.showErrors(warn);
+                        Helper.showErrors(AppErrorCodes.BLEND_OUTPUT_INVALID);
                         p.outputPath = Path.GetDirectoryName(p.blendFilePath);
                     }
 
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     p.outputPath = Path.Combine(Path.GetDirectoryName(p.blendFilePath), blendData.outputPath.Replace("//", ""));
+                    _log.Error(ex.Message);
                 }
 
                 //SETTING PROJECT VARS
@@ -1070,7 +1059,6 @@ namespace BlenderRenderController
             updateUI();
         }
 
-
         private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
             loadBlend();
 		}
@@ -1119,7 +1107,7 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
+                Helper.showErrors(AppErrorCodes.FFMPEG_PATH_NOT_SET);
                 settingsForm.ShowDialog();
                 statusLabel.Text = "Mixdown cancelled.";
                 return;
