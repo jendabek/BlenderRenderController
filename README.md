@@ -59,6 +59,8 @@ Even if you don't use Blender VSE often, that’s a LOT of time saved. And the t
 ### Known Issues
 
 - *"Fatal python error"* when opening projects in Windows 7
+	- This is caused some incompatibility with Win7 UAC, runnig as administrator won't work either.
+	- This will probably affect you if one of the required programs is installed in a protected folder (like "Program Files")
 	- Work-around: Launch _BlenderRenderController.exe_ from the command line, you can make a _.bat_ file for convenience.
 
 ## CREDITS
