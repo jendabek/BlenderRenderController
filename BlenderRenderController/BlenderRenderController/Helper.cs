@@ -90,11 +90,11 @@ namespace BlenderRenderController
             }
             if (code == AppErrorCodes.BLEND_OUTPUT_INVALID)
             {
-                errorText += "Unable to read output path, using project location.";
+                errorText += "Unable to read output path, using project location.\n";
             }
             if (code == AppErrorCodes.UNKNOWN_OS)
             {
-                errorText += "Could not identify operating system, BRC might not work properly.";
+                errorText += "Could not identify operating system, BRC might not work properly.\n";
             }
 
             return errorText;
@@ -102,8 +102,14 @@ namespace BlenderRenderController
 
         static public string fixPath(string path)
         {
-            var fixedPath = path.Trim().TrimEnd('\\');
-            return fixedPath;
+            if (string.IsNullOrEmpty(path))
+            {
+                var ex = new ArgumentNullException(path, "Path passed is null and cannot be fixed.");
+                _log.Error(ex.Message);
+                throw ex;
+            }
+
+            return path.Trim().TrimEnd('\\');
         }
 
 

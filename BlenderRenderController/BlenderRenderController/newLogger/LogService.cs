@@ -33,7 +33,7 @@ namespace BlenderRenderController.newLogger
         public void Error(List<string> messages)
         {
             foreach (var msg in messages)
-                this.Error(msg + "\n");
+                this.Error(msg);
         }
 
         public void Info(string message)
@@ -44,7 +44,7 @@ namespace BlenderRenderController.newLogger
         public void Info(List<string> messages)
         {
             foreach (var msg in messages)
-                this.Info(msg + "\n");
+                this.Info(msg);
         }
 
         public void Warn(string message)
@@ -55,7 +55,7 @@ namespace BlenderRenderController.newLogger
         public void Warn(List<string> messages)
         {
             foreach (var msg in messages)
-                this.Warn(msg + "\n");
+                this.Warn(msg);
         }
     }
 }

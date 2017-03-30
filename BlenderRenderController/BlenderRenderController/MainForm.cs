@@ -37,7 +37,7 @@ namespace BlenderRenderController
         PlatformID Os = Environment.OSVersion.Platform;
 
         // CMD args
-        string[] CMDargs = Environment.GetCommandLineArgs();
+        //string[] CMDargs = Environment.GetCommandLineArgs();
 
 
         public MainForm()
@@ -1050,10 +1050,10 @@ namespace BlenderRenderController
 
                 appState = AppStates.READY_FOR_RENDER;
                 _log.Info(".blend loaded successfully");
-            } else
-            {
-                _log.Error(".blend was NOT loaded");
             }
+            else
+                _log.Error(".blend was NOT loaded");
+
             Trace.WriteLine( ".blend data = " + jsonInfo.ToString());
             _log.Info(".blend data = " + jsonInfo.ToString());
             updateUI();

@@ -144,7 +144,12 @@ namespace BlenderRenderController
                     {
                         var test = jsonSettings[propertyName];
                     }
-                    catch (Exception) {return;}
+                    catch (Exception ex)
+                    {
+                        _log.Info(propertyName + " is not a valid property");
+                        _log.Warn(ex.Message);
+                        return;
+                    }
 
                     //converting ArrayList object from json to List
                     if (jsonSettings[propertyName] is ArrayList)
