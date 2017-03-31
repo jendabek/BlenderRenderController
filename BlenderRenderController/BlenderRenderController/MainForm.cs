@@ -833,6 +833,7 @@ namespace BlenderRenderController
                 Path.Combine(p.outputPath, blendData.projectName),
                 videoExtensionFound
             );
+
             Trace.WriteLine(process.StartInfo.Arguments);
 
             try
@@ -883,6 +884,8 @@ namespace BlenderRenderController
             process.StartInfo.RedirectStandardError  = true;
             process.StartInfo.CreateNoWindow         = true;
 			process.StartInfo.UseShellExecute        = false;
+            process.StartInfo.StandardOutputEncoding = 
+            process.StartInfo.StandardErrorEncoding  = Encoding.UTF8;
 
             process.StartInfo.Arguments = String.Format("-b \"{0}\" -P \"{1}\"",
                                                   p.blendFilePath,
@@ -1089,6 +1092,7 @@ namespace BlenderRenderController
             Process process = new Process();
             process.StartInfo.FileName = Path.Combine(appSettings.blenderPath, appSettings.BlenderExeName);
             process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.StandardOutputEncoding = Encoding.UTF8;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;
 
