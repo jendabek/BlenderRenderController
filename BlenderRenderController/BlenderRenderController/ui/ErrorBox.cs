@@ -82,5 +82,15 @@ namespace BlenderRenderController.ui
             // play error sound
             System.Media.SystemSounds.Hand.Play();
         }
+
+        private void ErrorBox_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _log.Error(".blend was NOT loaded");
+
+            if (String.IsNullOrEmpty(_result))
+                return;
+
+            _log.Error($"-ErrorBox- {_result} was pressed");
+        }
     }
 }
