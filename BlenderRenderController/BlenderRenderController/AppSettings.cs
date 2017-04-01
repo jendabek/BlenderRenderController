@@ -111,11 +111,10 @@ namespace BlenderRenderController
             }
         }
 
-        private LogService _log = new LogService();
         public void init()
         {
-            _log.RegisterLogSevice(new FileLogger());
-            _log.RegisterLogSevice(new ConsoleLogger());
+            LogService.Log.RegisterLogSevice(new FileLogger());
+            LogService.Log.RegisterLogSevice(new ConsoleLogger());
 
             //LOADing data from JSON and set it to properties
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);
@@ -146,8 +145,8 @@ namespace BlenderRenderController
                     }
                     catch (Exception ex)
                     {
-                        _log.Info(propertyName + " is not a valid property");
-                        _log.Warn(ex.Message);
+                        LogService.Log.Info(propertyName + " is not a valid property");
+                        LogService.Log.Warn(ex.Message);
                         return;
                     }
 
@@ -185,7 +184,6 @@ namespace BlenderRenderController
             try
             {
                 File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _jsonFileName), serializer.Serialize(jsonObject));
-                //_log.Info("Settings saved.");
                 return true;
             }
             catch (Exception)

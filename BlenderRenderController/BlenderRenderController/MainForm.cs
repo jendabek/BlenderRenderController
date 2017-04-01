@@ -33,7 +33,6 @@ namespace BlenderRenderController
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
         List<int> renderingSpeedsFPS = new List<int>();
-        LogService _log = new LogService();
         PlatformID Os = Environment.OSVersion.Platform;
 
         // CMD args
@@ -81,10 +80,10 @@ namespace BlenderRenderController
             blendFileBrowseButton.Menu = recentBlendsMenu;
 
             // Logger service
-            _log.RegisterLogSevice(new FileLogger());
-            _log.RegisterLogSevice(new ConsoleLogger());
-            _log.Warn($"Program Started.");
-            _log.Info($"OS is {Os}");
+            LogService.Log.RegisterLogSevice(new FileLogger());
+            LogService.Log.RegisterLogSevice(new ConsoleLogger());
+            LogService.Log.Warn("Program Started.");
+            LogService.Log.Info($"OS is {Os}");
 
             applySettings();
             if (!appSettings.appConfigured)
@@ -94,12 +93,12 @@ namespace BlenderRenderController
             }
             updateRecentBlendsMenu();
             updateUI();
-            _log.Info("Program Started");
+            LogService.Log.Info("Program Started");
         }
 
         private void onSettingsFormClosed(object sender, FormClosedEventArgs e)
         {
-            
+            LogService.Log.Info("Settings saved");
         }
 
         private void applySettings()
@@ -307,7 +306,7 @@ namespace BlenderRenderController
 
         private void MainForm_Close(object sender, FormClosedEventArgs e)
         {
-            _log.Info("Program Closed");
+            LogService.Log.Info("Program Closed");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -435,7 +434,7 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                _log.Error(ex.ToString());
+                LogService.Log.Error(ex.ToString());
                 stopRender(false);
                 return;
             }
@@ -521,7 +520,7 @@ namespace BlenderRenderController
                                                                 MessageBoxIcon.Exclamation);
                 if (dialogResult == DialogResult.No) return;
                 stopRender(false);
-                _log.Warn("RENDER ABORTED");
+                LogService.Log.Warn("RENDER ABORTED");
             }
 
             //we want to start render
@@ -539,9 +538,15 @@ namespace BlenderRenderController
                     try {
                         Helper.clearFolder(p.chunksPath);
                     }
-                    catch (Exception ex){
-                        _log.Error(ex.ToString());
+                    catch (IOException ex){
+                        LogService.Log.Error(ex.ToString());
                         MessageBox.Show("It can't be deleted, files are in use by some program.\n");
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogService.Log.Error(ex.Message);
+                        MessageBox.Show("An unexpected error ocurred, sorry.");
                         return;
                     }
                     renderAllButton_Click(null, null);
@@ -552,7 +557,7 @@ namespace BlenderRenderController
         
         private void renderAll()
         {
-            _log.Info("RENDER STARTED");
+            LogService.Log.Info("RENDER STARTED");
             appState = AppStates.RENDERING_ALL;
             startTime = DateTime.Now;
             renderingSpeedsFPS.Clear();
@@ -596,7 +601,7 @@ namespace BlenderRenderController
                 }
                 catch(Exception ex)
                 {
-                    _log.Error(ex.ToString());
+                    LogService.Log.Error(ex.ToString());
                     Trace.WriteLine(ex);
                 }
                 processes.Remove(process);
@@ -838,24 +843,24 @@ namespace BlenderRenderController
 
             try
             {
-                process.Start();        _log.Info(statusLabel.Text);
+                process.Start();        LogService.Log.Info(statusLabel.Text);
                 process.WaitForExit();
             }
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                _log.Error(ex.ToString());
+                LogService.Log.Error(ex.ToString());
                 Helper.showErrors(AppErrorCodes.FFMPEG_PATH_NOT_SET);
                 settingsForm.ShowDialog();
                 statusLabel.Text = "Joining cancelled.";
                 return;
             }
             var msg = "Chunks Joined.";
-            statusLabel.Text = msg; _log.Info(msg);
+            statusLabel.Text = msg; LogService.Log.Info(msg);
         }
 
 		private void loadBlend() {
-            _log.Info("Loading .blend");
+            LogService.Log.Info("Loading .blend");
 
             statusLabel.Text = "Reading the .blend file...";
             statusLabel.Update();
@@ -898,7 +903,7 @@ namespace BlenderRenderController
                 //process.WaitForExit();
 			}
 			catch( Exception ex ) {
-                _log.Error(ex.ToString());
+                LogService.Log.Error(ex.ToString());
                 Trace.WriteLine(ex);
                 Helper.showErrors(AppErrorCodes.BLENDER_PATH_NOT_SET );
                 settingsForm.ShowDialog();
@@ -918,7 +923,7 @@ namespace BlenderRenderController
 
             // log errors
             if (streamErrors.Count > 0)
-                    _log.Error(streamErrors);
+                    LogService.Log.Error(streamErrors);
 
 
             if (streamOutput.Count == 0)
@@ -1001,7 +1006,7 @@ namespace BlenderRenderController
                 catch (Exception ex)
                 {
                     p.outputPath = Path.Combine(Path.GetDirectoryName(p.blendFilePath), blendData.outputPath.Replace("//", ""));
-                    _log.Error(ex.Message);
+                    LogService.Log.Error(ex.Message);
                 }
 
                 //SETTING PROJECT VARS
@@ -1052,13 +1057,13 @@ namespace BlenderRenderController
                 updateRecentBlendsMenu();
 
                 appState = AppStates.READY_FOR_RENDER;
-                _log.Info(".blend loaded successfully");
+                LogService.Log.Info(".blend loaded successfully");
             }
             else
-                _log.Error(".blend was NOT loaded");
+                LogService.Log.Error(".blend was NOT loaded");
 
             Trace.WriteLine( ".blend data = " + jsonInfo.ToString());
-            _log.Info(".blend data = " + jsonInfo.ToString());
+            LogService.Log.Info(".blend data = " + jsonInfo.ToString());
             updateUI();
         }
 
@@ -1070,7 +1075,7 @@ namespace BlenderRenderController
 
             statusLabel.Text = "Rendering mixdown, it can take a while for larger projects...";
             statusLabel.Update();
-            _log.Info("Mixdown started");
+            LogService.Log.Info("Mixdown started");
 
             if (!File.Exists(p.blendFilePath)) {
                 return;
@@ -1120,7 +1125,7 @@ namespace BlenderRenderController
             process.WaitForExit();
 
             string message = "Mixdown complete";
-            Trace.WriteLine(message); _log.Info(message);
+            Trace.WriteLine(message); LogService.Log.Info(message);
             statusLabel.Text = message;
             
         }
@@ -1368,7 +1373,7 @@ namespace BlenderRenderController
             //catch (Exception ex)
             //{
             //    MessageBox.Show("Test Exeption thrown...");
-            //    _log.Error(ex.ToString());
+            //    LogService.Log.Error(ex.ToString());
             //}
         }
 

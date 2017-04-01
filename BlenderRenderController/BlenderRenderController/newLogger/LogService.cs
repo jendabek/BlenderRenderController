@@ -12,16 +12,18 @@ namespace BlenderRenderController.newLogger
     {
         private readonly IList<ILogger> _loggerServices = new List<ILogger>();
 
+        // Singleton implementation
+        private static readonly Lazy<LogService> lazy = new Lazy<LogService>(() => new LogService());
+        public static LogService Log { get => lazy.Value; }
+
         public void RegisterLogSevice(ILogger service)
         {
             if (service == null)
-                throw new ArgumentException("Log service passed is null.");
+                throw new ArgumentNullException(service.ToString() ,"Log service passed is null.");
 
-            if (_loggerServices.Contains(service))
+            if (!_loggerServices.Contains(service))
                 // avoid duplicates services
-                return;
-
-            _loggerServices.Add(service);
+                _loggerServices.Add(service);
         }
 
         // Interface stuff

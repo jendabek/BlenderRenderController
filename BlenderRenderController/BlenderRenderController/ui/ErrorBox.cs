@@ -15,8 +15,6 @@ namespace BlenderRenderController.ui
     {
         private string _result;
 
-        private LogService _log = new LogService();
-
         public string Result
         {
             get { return _result; }
@@ -35,14 +33,14 @@ namespace BlenderRenderController.ui
             ErrorIcon.Image = SystemIcons.Hand.ToBitmap();
             ErrorIcon.SizeMode = PictureBoxSizeMode.CenterImage;
 
-            _log.RegisterLogSevice(new FileLogger());
-            _log.RegisterLogSevice(new ConsoleLogger());
+            LogService.Log.RegisterLogSevice(new FileLogger());
+            LogService.Log.RegisterLogSevice(new ConsoleLogger());
         }
 
         public ErrorBox(string label, List<string> contents, Buttons bnts = Buttons.Ok)
             : this()
         {
-            _log.Error(contents);
+            LogService.Log.Error(contents);
 
             ErrorBoxLabel.Text = label;
             ErrorContentBox.Lines = contents.ToArray();
@@ -85,12 +83,12 @@ namespace BlenderRenderController.ui
 
         private void ErrorBox_FormClosed(object sender, FormClosedEventArgs e)
         {
-            _log.Error(".blend was NOT loaded");
+            LogService.Log.Error(".blend was NOT loaded");
 
             if (String.IsNullOrEmpty(_result))
                 return;
 
-            _log.Error($"-ErrorBox- {_result} was pressed");
+            LogService.Log.Error($"-ErrorBox- {_result} was pressed");
         }
     }
 }
