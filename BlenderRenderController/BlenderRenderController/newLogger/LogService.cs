@@ -14,7 +14,23 @@ namespace BlenderRenderController.newLogger
 
         // Singleton implementation
         private static readonly Lazy<LogService> lazy = new Lazy<LogService>(() => new LogService());
+        private static readonly Lazy<LogService> lazy2 = new Lazy<LogService>(() => new LogService(true));
+
         public static LogService Log { get => lazy.Value; }
+        public static LogService LogD { get => lazy2.Value; }
+
+        public LogService()
+        {
+        }
+
+        public LogService(bool useDefaultServices)
+        {
+            if (useDefaultServices)
+            {
+                _loggerServices.Add(new FileLogger());
+                _loggerServices.Add(new ConsoleLogger());
+            }
+        }
 
         public void RegisterLogSevice(ILogger service)
         {
