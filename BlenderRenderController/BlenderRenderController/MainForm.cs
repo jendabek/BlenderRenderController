@@ -43,7 +43,7 @@ namespace BlenderRenderController
         {
             InitializeComponent();
 
-            PlatAdjust(Os);	
+            PlatAdjust(Os);
         }
         public void MainForm_Shown(object sender, EventArgs e)
         {
@@ -77,7 +77,13 @@ namespace BlenderRenderController
             processTimer.Tick += new EventHandler(updateProcessManagement);
 
             recentBlendsMenu = new ContextMenuStrip();
-            blendFileBrowseButton.Menu = recentBlendsMenu;
+
+            if (blendFileBrowseButton.Visible == true)
+                blendFileBrowseButton.Menu = recentBlendsMenu;
+
+            else if (blendBrowseOver.Visible == true)
+                blendBrowseOver.MenuOvr = recentBlendsMenu;
+
 
             // Logger service
             LogService.Log.RegisterLogSevice(new FileLogger());
@@ -147,6 +153,7 @@ namespace BlenderRenderController
         {
             //last blends
             recentBlendsMenu.Items.Clear();
+
             foreach (string item in appSettings.recentBlends)
             {
                 var menuItem = new ToolStripMenuItem(Path.GetFileNameWithoutExtension(item), Properties.Resources.blend_icon);
@@ -1387,5 +1394,6 @@ namespace BlenderRenderController
             var er = new ui.ErrorBox();
             er.ShowDialog();
         }
+
     }
 }
