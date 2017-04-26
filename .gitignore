@@ -280,3 +280,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 /BlenderRenderController/BlenderRenderController/bkp.txt
+/BlenderRenderController/log.txt

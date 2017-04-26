@@ -147,6 +147,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "ErrorBox";
             this.TopMost = true;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ErrorBox_FormClosed);
             this.Shown += new System.EventHandler(this.ErrorBox_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIcon)).EndInit();
             this.ResumeLayout(false);

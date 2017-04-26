@@ -108,10 +108,20 @@
     <Compile Include="ui\ErrorBox.Designer.cs">
       <DependentUpon>ErrorBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\linux\UiOver.cs">
+    <Compile Include="TaskbarProgress.cs" />
+    <Compile Include="ui\linux\main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TaskbarProgress.cs" />
+    <Compile Include="ui\linux\OsDetection.cs" />
+    <Compile Include="ui\linux\settings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\linux\SplitButtonOver.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ui\linux\SplitButtonOver.Designer.cs">
+      <DependentUpon>SplitButtonOver.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -130,6 +140,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\ErrorBox.resx">
       <DependentUpon>ErrorBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\linux\SplitButtonOver.resx">
+      <DependentUpon>SplitButtonOver.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="..\..\README.md">
       <Link>README.md</Link>
