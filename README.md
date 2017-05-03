@@ -36,11 +36,13 @@ Even if you don't use Blender VSE often, that’s a LOT of time saved. And the t
 - [FFmpeg](https://ffmpeg.zeranoe.com/builds/), required for joining the parts together. You don't need to worry about it if you download the Full version which has FFmpeg already included.
 - .NET framework 4.5
 
-##### Obs: Non-Windows platforms
-BRC was not extensively tested on anything other than Windows, so proceed with caution. Also feel free to give any feedback that could help us make BRC accessible to as many Blender users as possible.
+##### Obs: Linux and Mac
+BRC was not extensively tested on anything other than Windows. If you wish to use it with Linux or Mac, read [here](https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/utilities/about_Utilities.txt)
+
+Also feel free to give any feedback that could help us make BRC accessible to as many Blender users as possible.
 
 - Linux: Tested on Debian using Mono 4.8
-- MacOS: Untested, theoretically should work with Mono.
+- MacOS: Untested, theoretically should work.
 
 ### Steps
 1. Create your Blender VSE project normally within Blender.
@@ -66,7 +68,7 @@ BRC was not extensively tested on anything other than Windows, so proceed with c
 - *"Fatal python error"* when opening projects in Windows 7
 	- This is caused some incompatibility with Win7 UAC, runnig as administrator won't work either.
 	- This will probably affect you if one of the required programs is installed in a protected folder (like "Program Files")
-	- Work-around: Launch _BlenderRenderController.exe_ from the command line, you can make a _.bat_ file for convenience.
+	- Work-around: Launch _BlenderRenderController.exe_ from the command line, you can download a convenient _.bat_ file [here](https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/utilities/runWin7.bat).
 
 - If the output of your blend project is set to a location one folder below the project's location AND your using RELATIVE paths, BRC won't be able to parse it and it'll set the output to the blend file location. Use absolute paths to avoid this issue or change the path once loaded.
 
