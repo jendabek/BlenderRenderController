@@ -5,7 +5,7 @@ Latest release [HERE](https://github.com/jendabek/BlenderRenderController/releas
 
 ## What is this?
 <img align="right" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/blender-render-controller.png" width="480"/>
-Blender Render Controller is a tool (currently Windows only) to help speed up the rendering of Blender's Video Sequence Editor (VSE) projects.
+Blender Render Controller is a tool to help speed up the rendering of Blender's Video Sequence Editor (VSE) projects.
 
 VSE is pretty good for editing videos, it's precise and relatively easy to learn, making it a compelling choice next to other free video editing tools. There are some downsides too, main of which been that the renderer is **single threaded**. Meaning that it won't take full advantage of all logical cores in your system, so rendering your finished project is **super slow** compared to other video editors.
 
@@ -36,6 +36,11 @@ Even if you don't use Blender VSE often, that’s a LOT of time saved. And the t
 - [FFmpeg](https://ffmpeg.zeranoe.com/builds/), required for joining the parts together. You don't need to worry about it if you download the Full version which has FFmpeg already included.
 - .NET framework 4.5
 
+##### Obs: Non-Windows platforms
+BRC was not extensively tested on anything other than Windows, so proceed with caution. Also feel free to give any feedback that could help us make BRC accessible to as many Blender users as possible.
+
+- Linux: Tested on Debian using Mono 4.8
+- MacOS: Untested, theoretically should work with Mono.
 
 ### Steps
 1. Create your Blender VSE project normally within Blender.
@@ -62,6 +67,8 @@ Even if you don't use Blender VSE often, that’s a LOT of time saved. And the t
 	- This is caused some incompatibility with Win7 UAC, runnig as administrator won't work either.
 	- This will probably affect you if one of the required programs is installed in a protected folder (like "Program Files")
 	- Work-around: Launch _BlenderRenderController.exe_ from the command line, you can make a _.bat_ file for convenience.
+
+- If the output of your blend project is set to a location one folder below the project's location AND your using RELATIVE paths, BRC won't be able to parse it and it'll set the output to the blend file location. Use absolute paths to avoid this issue or change the path once loaded.
 
 ## CREDITS
 

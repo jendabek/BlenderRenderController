@@ -104,9 +104,8 @@ namespace BlenderRenderController
         {
             if (string.IsNullOrEmpty(path))
             {
-                var ex = new ArgumentNullException(path, "Path passed is null and cannot be fixed.");
-                _log.Error(ex.Message);
-                throw ex;
+                //throw new ArgumentNullException(path, "Cannot fix a null path");
+                return null;
             }
 
             return path.Trim().TrimEnd('\\');
@@ -118,7 +117,7 @@ namespace BlenderRenderController
             _log.RegisterLogSevice(new ConsoleLogger());
             _log.RegisterLogSevice(new FileLogger());
         }
-      
+
         static public string secondsToString(double seconds, bool digital = false)
         {
             TimeSpan t = TimeSpan.FromSeconds(seconds);

@@ -1003,17 +1003,25 @@ namespace BlenderRenderController
                     p.outputPath = Path.GetDirectoryName(p.outputPath);
 
                     // use blendFile location if p.outputpath is null, display a warning about it
-                    if (string.IsNullOrEmpty(p.outputPath))
-                    {
-                        Helper.showErrors(AppErrorCodes.BLEND_OUTPUT_INVALID);
-                        p.outputPath = Path.GetDirectoryName(p.blendFilePath);
-                    }
+                    //if (string.IsNullOrEmpty(p.outputPath))
+                    //{
+                    //    Helper.showErrors(AppErrorCodes.BLEND_OUTPUT_INVALID);
+                    //    p.outputPath = Path.GetDirectoryName(p.blendFilePath);
+                    //}
 
                 }
                 catch (Exception ex)
                 {
                     p.outputPath = Path.Combine(Path.GetDirectoryName(p.blendFilePath), blendData.outputPath.Replace("//", ""));
                     LogService.Log.Error(ex.Message);
+                }
+
+                // use blendFile location if p.outputpath is null, display a warning about it
+                var fixedPath = Helper.fixPath(p.outputPath);
+                if (string.IsNullOrEmpty(fixedPath))
+                {
+                    Helper.showErrors(AppErrorCodes.BLEND_OUTPUT_INVALID);
+                    p.outputPath = Path.GetDirectoryName(p.blendFilePath);
                 }
 
                 //SETTING PROJECT VARS

@@ -68,6 +68,12 @@ namespace BlenderRenderController.ui
             }
         }
 
+        public ErrorBox(string message, string contents, Buttons bnts = Buttons.Ok)
+            :this(message, new List<string> { contents }, bnts)
+        {
+
+        }
+
         private void Bnt_Click(object sender, EventArgs e)
         {
             var b = (sender as Button);
