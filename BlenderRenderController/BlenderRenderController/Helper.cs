@@ -35,46 +35,81 @@ namespace BlenderRenderController
             RegsterLog();
 
             var errorText = "";
+
             foreach (var errorCode in errorCodes)
-            {
-                if(errorCode == AppErrorCodes.BLENDER_PATH_NOT_SET)
-                {
-                    errorText += $"Please set correct path to Blender ({new AppSettings().BlenderExeName}).\n";
-                }
-                if (errorCode == AppErrorCodes.FFMPEG_PATH_NOT_SET)
-                {
-                    errorText += $"Please set correct path to FFmpeg ({new AppSettings().FFmpegExeName}).\n";
-                }
-                if (errorCode == AppErrorCodes.BLEND_FILE_NOT_EXISTS)
-                {
-                    errorText += "File does not exists anymore.\n";
-                    errorText += "It was removed from the list of recent blends.\n";
-                }
-                if (errorCode == AppErrorCodes.RENDER_FORMAT_IS_IMAGE)
-                {
-                    errorText += "The render format is " + arg1 + " image.\n";
-                    errorText += "You can render an image sequence with this tool but you will need to make a video with other SW.\n";
-                }
-                if (errorCode == AppErrorCodes.BLEND_OUTPUT_INVALID)
-                {
-                    errorText += "Unable to read output path, using project location.";
-                }
-                if (errorCode == AppErrorCodes.UNKNOWN_OS)
-                {
-                    errorText += "Could not identify operating system, BRC might not work properly.";
-                }
-            }
+                errorText += SetErrorText(errorCode, arg1);
+
             MessageBox.Show(
                     errorText,
                     "",
                     MessageBoxButtons.OK,
                     icon);
+
             _log.Warn("-Helper- " + errorText);
         }
+
+        static public void showErrors(string errorCode, MessageBoxIcon icon = MessageBoxIcon.Asterisk, string arg1 = "")
+        {
+            RegsterLog();
+
+            var errorText = "";
+
+            errorText += SetErrorText(errorCode, arg1);
+
+            MessageBox.Show(
+                errorText,
+                "",
+                MessageBoxButtons.OK,
+                icon);
+
+            _log.Warn("-Helper- " + errorText);
+        }
+
+        static private string SetErrorText(string code, string arg1)
+        {
+            var errorText = "";
+            var appSettings = new AppSettings();
+
+            if (code == AppErrorCodes.BLENDER_PATH_NOT_SET)
+            {
+                errorText += $"Please set correct path to Blender ({appSettings.BlenderExeName}).\n";
+            }
+            if (code == AppErrorCodes.FFMPEG_PATH_NOT_SET)
+            {
+                errorText += $"Please set correct path to FFmpeg ({appSettings.FFmpegExeName}).\n";
+            }
+            if (code == AppErrorCodes.BLEND_FILE_NOT_EXISTS)
+            {
+                errorText += "File does not exists anymore.\n";
+                errorText += "It was removed from the list of recent blends.\n";
+            }
+            if (code == AppErrorCodes.RENDER_FORMAT_IS_IMAGE)
+            {
+                errorText += "The render format is " + arg1 + " image.\n";
+                errorText += "You can render an image sequence with this tool but you will need to make a video with other SW.\n";
+            }
+            if (code == AppErrorCodes.BLEND_OUTPUT_INVALID)
+            {
+                errorText += "Unable to read output path, using project location.\n";
+            }
+            if (code == AppErrorCodes.UNKNOWN_OS)
+            {
+                errorText += "Could not identify operating system, BRC might not work properly.\n";
+            }
+
+            return errorText;
+        }
+
         static public string fixPath(string path)
         {
-            var fixedPath = path.Trim().TrimEnd('\\');
-            return fixedPath;
+            if (string.IsNullOrEmpty(path))
+            {
+                var ex = new ArgumentNullException(path, "Path passed is null and cannot be fixed.");
+                _log.Error(ex.Message);
+                throw ex;
+            }
+
+            return path.Trim().TrimEnd('\\');
         }
 
 

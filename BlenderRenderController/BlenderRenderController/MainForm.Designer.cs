@@ -54,6 +54,8 @@ namespace BlenderRenderController
             this.isti115MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meTwentyFiveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redRaptorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showErrorBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.infoPanel = new System.Windows.Forms.Panel();
             this.infoMore = new System.Windows.Forms.LinkLabel();
@@ -104,6 +106,7 @@ namespace BlenderRenderController
             this.ETALabel = new System.Windows.Forms.Label();
             this.ETALabelTitle = new System.Windows.Forms.Label();
             this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
+            this.blendBrowseOver = new BlenderRenderController.ui.linux.SplitButtonOver();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -313,7 +316,8 @@ namespace BlenderRenderController
             // 
             this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemBug,
-            this.toolStripMenuItem1});
+            this.toolStripMenuItem1,
+            this.debugToolStripMenuItem});
             this.infoToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
             this.infoToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
@@ -382,6 +386,22 @@ namespace BlenderRenderController
             this.redRaptorMenuItem.Size = new System.Drawing.Size(152, 22);
             this.redRaptorMenuItem.Text = "RedRaptor93";
             this.redRaptorMenuItem.Click += new System.EventHandler(this.redRaptor93ToolStripMenuItem_Click);
+            // 
+            // debugToolStripMenuItem
+            // 
+            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showErrorBoxToolStripMenuItem});
+            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.debugToolStripMenuItem.Text = "Debug";
+            this.debugToolStripMenuItem.Visible = false;
+            // 
+            // showErrorBoxToolStripMenuItem
+            // 
+            this.showErrorBoxToolStripMenuItem.Name = "showErrorBoxToolStripMenuItem";
+            this.showErrorBoxToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.showErrorBoxToolStripMenuItem.Text = "Show errorBox";
+            this.showErrorBoxToolStripMenuItem.Click += new System.EventHandler(this.showErrorBoxToolStripMenuItem_Click);
             // 
             // label1
             // 
@@ -1022,6 +1042,20 @@ namespace BlenderRenderController
             this.blendFileBrowseButton.UseVisualStyleBackColor = true;
             this.blendFileBrowseButton.Click += new System.EventHandler(this.blendFileBrowseButton_Click);
             // 
+            // blendBrowseOver
+            // 
+            this.blendBrowseOver.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.blendBrowseOver.BackColor = System.Drawing.SystemColors.Control;
+            this.blendBrowseOver.Location = new System.Drawing.Point(472, 79);
+            this.blendBrowseOver.MainBnt = "  Open Blend";
+            this.blendBrowseOver.MainImg = ((System.Drawing.Image)(resources.GetObject("blendBrowseOver.MainImg")));
+            this.blendBrowseOver.Margin = new System.Windows.Forms.Padding(0);
+            this.blendBrowseOver.Name = "blendBrowseOver";
+            this.blendBrowseOver.SecondaryBnt = "˅";
+            this.blendBrowseOver.Size = new System.Drawing.Size(172, 47);
+            this.blendBrowseOver.TabIndex = 37;
+            this.blendBrowseOver.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1064,12 +1098,11 @@ namespace BlenderRenderController
             this.Controls.Add(this.totalStartNumericUpDown);
             this.Controls.Add(this.outputFolderBrowseButton);
             this.Controls.Add(this.renderProgressBar);
-            this.Controls.Add(this.blendFileBrowseButton);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
-			//this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Controls.Add(this.blendFileBrowseButton);
+            this.Controls.Add(this.blendBrowseOver);
             this.MainMenuStrip = this.menuStrip;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(678, 660);
@@ -1099,7 +1132,6 @@ namespace BlenderRenderController
         }
 
         #endregion
-        private SplitButton blendFileBrowseButton;
         private System.Windows.Forms.ProgressBar renderProgressBar;
         private System.Windows.Forms.NumericUpDown totalStartNumericUpDown;
         private System.Windows.Forms.Label startFrameLabel;
@@ -1171,6 +1203,10 @@ namespace BlenderRenderController
         private System.Windows.Forms.ToolStripMenuItem clearRecentProjectsListToolStripMenuItem;
         private System.Windows.Forms.Label ETALabel;
         private System.Windows.Forms.Label ETALabelTitle;
+        private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showErrorBoxToolStripMenuItem;
+        protected SplitButton blendFileBrowseButton;
+        private ui.linux.SplitButtonOver blendBrowseOver;
     }
 }
 

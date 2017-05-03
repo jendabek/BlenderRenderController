@@ -11,7 +11,6 @@ namespace BlenderRenderController
     {
         private AppSettings _appSettings;
         private OpenFileDialog _changePathDialog;
-        private LogService _log = new LogService();
 		PlatformID Os = Environment.OSVersion.Platform;
 
         public SettingsForm()
@@ -33,7 +32,6 @@ namespace BlenderRenderController
                 ffmpegPathTextBox.Text = _appSettings.ffmpegPath;
                 
                 //ffmpeg exe is in app directory == FULL VERSION
-                //if(_appSettings.ffmpegPath == AppSettings.FFMPEG_PATH_DEFAULT)
 				if(_appSettings.ffmpegPath == _appSettings.FFmpegPathDefault)
                 {
                     ffmpegPathTextBox.Visible = true;
@@ -51,8 +49,6 @@ namespace BlenderRenderController
         private void blenderChangePathButton_Click(object sender, EventArgs e)
         {
             _changePathDialog = new OpenFileDialog();
-            //_changePathDialog.Filter = "Blender|" + AppSettings.BLENDER_EXE_NAME;
-            //_changePathDialog.Title = "Find " + AppSettings.BLENDER_EXE_NAME;
 			_changePathDialog.Filter = "Blender|" + _appSettings.BlenderExeName;
 			_changePathDialog.Title = "Find " + _appSettings.BlenderExeName;
             _changePathDialog.InitialDirectory = blenderPathTextBox.Text.Trim();
@@ -67,8 +63,6 @@ namespace BlenderRenderController
         private void ffmpegChangePathButton_Click(object sender, EventArgs e)
         {
             _changePathDialog = new OpenFileDialog();
-            //_changePathDialog.Filter = "FFmpeg|" + AppSettings.FFMPEG_EXE_NAME;
-            //_changePathDialog.Title = "Find " + AppSettings.FFMPEG_EXE_NAME;
 			_changePathDialog.Filter = "FFmpeg|" + _appSettings.FFmpegExeName;
 			_changePathDialog.Title = "Find " + _appSettings.FFmpegExeName;
             _changePathDialog.InitialDirectory = ffmpegPathTextBox.Text.Trim();
@@ -94,7 +88,7 @@ namespace BlenderRenderController
 
             if(_appSettings.appConfigured)
             {
-                _appSettings.save(); _log.Info("Settings saved");
+                _appSettings.save();
                 Close();
             }
         }

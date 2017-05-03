@@ -25,16 +25,16 @@
         public const string AFTER_RENDER_JOIN = "afterRenderJoin";
         public const string AFTER_RENDER_NOTHING = "afterRenderDoNothing";
         public const string FFMPEG_DOWNLOAD_URL = "https:\\//ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-3.2.2-win64-static.zip";
+        public const string LOG_FILE_NAME = "log.txt";
     }
     static class RenderFormats
     {
         public static readonly string[] IMAGES = { "PNG", "BMP", "IRIS", "JPEG", "JPEG2000", "TARGA", "TARGA_RAW", "CINEON", "DPX", "OPEN_EXR_MULTILAYER", "OPEN_EXR", "HDR", "TIFF" };
         public static readonly string[] VIDEOS = { "AVI_JPEG", "AVI_RAW", "H264", "FFMPEG", "THEORA", "XVID" };
     }
-    static class LogFormats
+    public enum LogType
     {
-        public const string LOG_FILE_NAME = "log.txt";
-
+        INFO, ERROR, WARNING
     }
 
 }

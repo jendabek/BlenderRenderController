@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace BlenderRenderController
 {
@@ -9,8 +10,8 @@ namespace BlenderRenderController
 
     partial class MainForm
     {
-		private void PlatAdjust(PlatformID os)
-		{
+        private void PlatAdjust(PlatformID os)
+        {
             // diferenciate between MacOs and Linux
             if (os == PlatformID.Unix)
             {
@@ -18,49 +19,61 @@ namespace BlenderRenderController
                 os = detectOS.LinuxOrMac();
             }
 
-			// exec ajustments for the selected platform
-			switch (os)
-			{
+            // exec ajustments for the selected platform
+            switch (os)
+            {
                 case PlatformID.Win32NT:
                     WinIconFix();
                     break;
-			    case PlatformID.MacOSX:
+                case PlatformID.MacOSX:
                     UiColors();
                     break;
-			    case PlatformID.Unix:
+                case PlatformID.Unix:
                     this.ClientSize =
                     this.MaximumSize = new System.Drawing.Size(780, 640);
                     UiColors();
-				    break;
-			    default:
-				    break;
-			}
-		}
+                    BlendBrowseUnix();
+                    break;
+                default:
+                    break;
+            }
+        }
 
         private void UiColors()
         {
 
-            totalEndNumericUpDown.BackColor = 
+            totalEndNumericUpDown.BackColor =
             totalStartNumericUpDown.BackColor =
             chunkLengthNumericUpDown.BackColor =
             processCountNumericUpDown.BackColor =
             outputFolderTextBox.BackColor = System.Drawing.Color.White;
 
-            this.BackColor = 
+            this.BackColor =
             infoActiveScene.BackColor =
             infoDuration.BackColor =
             infoFramerate.BackColor =
             infoFramesTotal.BackColor =
             infoResolution.BackColor = System.Drawing.Color.FromArgb(240, 240, 240);
 
-			renderAllButton.BackColor = 
-			concatenatePartsButton.BackColor = 
+            blendBrowseOver.BackColor =
+            renderAllButton.BackColor =
+            concatenatePartsButton.BackColor =
             blendFileBrowseButton.BackColor =
             reloadBlenderDataButton.BackColor =
             outputFolderBrowseButton.BackColor =
             mixDownButton.BackColor =
             openOutputFolderButton.BackColor =
-            donateButton.BackColor = System.Drawing.Color.FromArgb(225, 225, 225);
+            donateButton.BackColor = System.Drawing.Color.FromArgb(224, 224, 224);
+
+
+            renderAllButton.FlatStyle =
+            concatenatePartsButton.FlatStyle =
+            blendFileBrowseButton.FlatStyle =
+            reloadBlenderDataButton.FlatStyle =
+            outputFolderBrowseButton.FlatStyle =
+            mixDownButton.FlatStyle =
+            openOutputFolderButton.FlatStyle =
+            donateButton.FlatStyle = FlatStyle.Flat;
 
         }
 
@@ -74,62 +87,22 @@ namespace BlenderRenderController
             this.Icon = (System.Drawing.Icon)resources.GetObject("blender_icon");
             this.ShowIcon = true;
         }
-    }
 
-    partial class SettingsForm
-    {
-        private void PlatAdjust(PlatformID os)
+        void BlendBrowseUnix()
         {
-            // exec ajustments for the selected platform
-            switch (os)
-            {
-                case PlatformID.Win32NT:
-                    break;
-		    	case PlatformID.MacOSX:
-			    case PlatformID.Unix:
-			    	UiColors();
-                    break;
-                default:
-                    break;
-            }
+            // alternative layout for linux
+
+            this.blendFileBrowseButton.Visible = false;
+
+            this.blendBrowseOver.Visible = true;
+            blendBrowseOver.ButtonClicked += BlendBrowseFiles_Clicked;
         }
 
-        private void UiColors()
+        private void BlendBrowseFiles_Clicked(object sender, EventArgs e)
         {
-            blenderPathTextBox.BackColor = 
-            ffmpegPathTextBox.BackColor = System.Drawing.Color.White;
-
-			this.BackColor = System.Drawing.Color.FromArgb(240, 240, 240);
-
-            blenderChangePathButton.BackColor = 
-            ffmpegChangePathButton.BackColor = 
-            okButton.BackColor = System.Drawing.Color.FromArgb(225, 225, 225);
+            blendFileBrowseButton_Click(sender, e);
         }
 
-    }
-
-    public class OsDetection
-    {
-        const string MACOS = "Darwin";
-        const string LINUX = "Linux";
-
-        public PlatformID LinuxOrMac()
-        {
-            Process p = new Process();
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.FileName = "uname";
-
-            p.Start();
-
-            string ver = p.StandardOutput.ReadLine();
-            p.WaitForExit();
-
-            if (ver == MACOS)
-                return PlatformID.MacOSX;
-
-            return PlatformID.Unix;
-        }
     }
 }
+

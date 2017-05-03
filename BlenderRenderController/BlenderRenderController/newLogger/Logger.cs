@@ -11,32 +11,27 @@ namespace BlenderRenderController.newLogger
     {
         private readonly DateTime _time = DateTime.Now;
         private bool _verbose;
-        private string _lastLog;
-        private string _repeatLine;
-        private int _numLastLogs;
-
-        public enum LogType
-        {
-            INFO, ERROR, WARNING
-        }
+        //private string _lastLog;
+        //private string _repeatLine;
+        //private int _numLastLogs;
 
         public FileLogger()
         {
             var appSettings = new AppSettings();
             appSettings.RemoteLoadJsonSettings();
             this._verbose = appSettings.verboseLog;
-            this._repeatLine = $"Last message repeted {_numLastLogs} times";
+            //this._repeatLine = $"Last message repeted {_numLastLogs} times";
         }
 
         private void Log(string message, LogType logType)
         {
-            // Ignore 'INFO' logs if Verbose == false
+            // Ignore 'INFO' and 'WARN' logs if Verbose == false
             if ((!_verbose) && (logType != LogType.ERROR))
                 return;
 
             string type = logType.ToString();
 
-            using (StreamWriter sw = new StreamWriter(LogFormats.LOG_FILE_NAME, true))
+            using (StreamWriter sw = new StreamWriter(AppStrings.LOG_FILE_NAME, true))
             {
                 var logLine = $"{type} [{_time}]: {message}";
                 sw.WriteLine(logLine); 
@@ -65,10 +60,6 @@ namespace BlenderRenderController.newLogger
         private readonly DateTime _time = DateTime.Now;
         private bool _verbose;
 
-        public enum LogType
-        {
-            INFO, ERROR, WARNING
-        }
 
         public ConsoleLogger()
         {

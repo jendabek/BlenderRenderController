@@ -33,18 +33,17 @@ namespace BlenderRenderController
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
         List<int> renderingSpeedsFPS = new List<int>();
-        LogService _log = new LogService();
         PlatformID Os = Environment.OSVersion.Platform;
 
         // CMD args
-        string[] CMDargs = Environment.GetCommandLineArgs();
+        //string[] CMDargs = Environment.GetCommandLineArgs();
 
 
         public MainForm()
         {
             InitializeComponent();
 
-            PlatAdjust(Os);	
+            PlatAdjust(Os);
         }
         public void MainForm_Shown(object sender, EventArgs e)
         {
@@ -78,13 +77,19 @@ namespace BlenderRenderController
             processTimer.Tick += new EventHandler(updateProcessManagement);
 
             recentBlendsMenu = new ContextMenuStrip();
-            blendFileBrowseButton.Menu = recentBlendsMenu;
+
+            if (blendFileBrowseButton.Visible == true)
+                blendFileBrowseButton.Menu = recentBlendsMenu;
+
+            else if (blendBrowseOver.Visible == true)
+                blendBrowseOver.MenuOvr = recentBlendsMenu;
+
 
             // Logger service
-            _log.RegisterLogSevice(new FileLogger());
-            _log.RegisterLogSevice(new ConsoleLogger());
-            _log.Warn($"Program Started.");
-            _log.Info($"OS is {Os}");
+            LogService.Log.RegisterLogSevice(new FileLogger());
+            LogService.Log.RegisterLogSevice(new ConsoleLogger());
+            LogService.Log.Warn("Program Started.");
+            LogService.Log.Info($"OS is {Os}");
 
             applySettings();
             if (!appSettings.appConfigured)
@@ -94,12 +99,12 @@ namespace BlenderRenderController
             }
             updateRecentBlendsMenu();
             updateUI();
-            _log.Info("Program Started");
+            LogService.Log.Info("Program Started");
         }
 
         private void onSettingsFormClosed(object sender, FormClosedEventArgs e)
         {
-            
+            LogService.Log.Info("Settings saved");
         }
 
         private void applySettings()
@@ -148,6 +153,7 @@ namespace BlenderRenderController
         {
             //last blends
             recentBlendsMenu.Items.Clear();
+
             foreach (string item in appSettings.recentBlends)
             {
                 var menuItem = new ToolStripMenuItem(Path.GetFileNameWithoutExtension(item), Properties.Resources.blend_icon);
@@ -307,7 +313,7 @@ namespace BlenderRenderController
 
         private void MainForm_Close(object sender, FormClosedEventArgs e)
         {
-            _log.Info("Program Closed");
+            LogService.Log.Info("Program Closed");
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -328,8 +334,6 @@ namespace BlenderRenderController
                  loadBlend();
              }
              */
-            // initialize logger service
-
         }
 
         private void blendFileBrowseButton_Click(object sender, EventArgs e)
@@ -437,7 +441,7 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                _log.Error(ex.ToString());
+                LogService.Log.Error(ex.ToString());
                 stopRender(false);
                 return;
             }
@@ -523,7 +527,7 @@ namespace BlenderRenderController
                                                                 MessageBoxIcon.Exclamation);
                 if (dialogResult == DialogResult.No) return;
                 stopRender(false);
-                _log.Warn("RENDER ABORTED");
+                LogService.Log.Warn("RENDER ABORTED");
             }
 
             //we want to start render
@@ -541,9 +545,15 @@ namespace BlenderRenderController
                     try {
                         Helper.clearFolder(p.chunksPath);
                     }
-                    catch (Exception ex){
-                        _log.Error(ex.ToString());
+                    catch (IOException ex){
+                        LogService.Log.Error(ex.ToString());
                         MessageBox.Show("It can't be deleted, files are in use by some program.\n");
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogService.Log.Error(ex.Message);
+                        MessageBox.Show("An unexpected error ocurred, sorry.");
                         return;
                     }
                     renderAllButton_Click(null, null);
@@ -554,7 +564,7 @@ namespace BlenderRenderController
         
         private void renderAll()
         {
-            _log.Info("RENDER STARTED");
+            LogService.Log.Info("RENDER STARTED");
             appState = AppStates.RENDERING_ALL;
             startTime = DateTime.Now;
             renderingSpeedsFPS.Clear();
@@ -598,7 +608,7 @@ namespace BlenderRenderController
                 }
                 catch(Exception ex)
                 {
-                    _log.Error(ex.ToString());
+                    LogService.Log.Error(ex.ToString());
                     Trace.WriteLine(ex);
                 }
                 processes.Remove(process);
@@ -729,9 +739,8 @@ namespace BlenderRenderController
                 if (appState == AppStates.RENDERING_ALL && (p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN_MIXDOWN || p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN))
                 {
                     if (p.afterRenderAction == AppStrings.AFTER_RENDER_JOIN_MIXDOWN)
-                    {
                         mixdown();
-                    }
+
                     concatenate();
                     stopRender(true);
 
@@ -740,18 +749,14 @@ namespace BlenderRenderController
                            MessageBoxButtons.YesNo,
                            MessageBoxIcon.Question);
                     if (openOutputFolderQuestion == DialogResult.Yes)
-                    {
                         openOutputFolder();
-                    }
-                } else
-                {
-                    stopRender(true);
                 }
+                else
+                    stopRender(true);
             }
             else
-            {
                 stopRender(false);
-            }
+
             updateCurrentChunkStartEnd();
             updateUI();
         }
@@ -840,37 +845,35 @@ namespace BlenderRenderController
                 Path.Combine(p.outputPath, blendData.projectName),
                 videoExtensionFound
             );
+
             Trace.WriteLine(process.StartInfo.Arguments);
 
             try
             {
-                process.Start();        _log.Info(statusLabel.Text);
+                process.Start();        LogService.Log.Info(statusLabel.Text);
                 process.WaitForExit();
             }
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                //oldLogger.add(ex.ToString());
-                _log.Error(ex.ToString());
-                Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
+                LogService.Log.Error(ex.ToString());
+                Helper.showErrors(AppErrorCodes.FFMPEG_PATH_NOT_SET);
                 settingsForm.ShowDialog();
                 statusLabel.Text = "Joining cancelled.";
                 return;
             }
             var msg = "Chunks Joined.";
-            statusLabel.Text = msg; _log.Info(msg);
+            statusLabel.Text = msg; LogService.Log.Info(msg);
         }
 
 		private void loadBlend() {
-            _log.Info("Loading .blend");
+            LogService.Log.Info("Loading .blend");
 
             statusLabel.Text = "Reading the .blend file...";
             statusLabel.Update();
 
             if ( !File.Exists(p.blendFilePath) ) {
-                var errors = new List<string>();
-                errors.Add(AppErrorCodes.BLEND_FILE_NOT_EXISTS);
-                Helper.showErrors(errors, MessageBoxIcon.Exclamation);
+                Helper.showErrors(AppErrorCodes.BLEND_FILE_NOT_EXISTS, MessageBoxIcon.Exclamation);
 
                 appSettings.recentBlends.Remove(p.blendFilePath);
                 updateRecentBlendsMenu();
@@ -893,66 +896,94 @@ namespace BlenderRenderController
             process.StartInfo.RedirectStandardError  = true;
             process.StartInfo.CreateNoWindow         = true;
 			process.StartInfo.UseShellExecute        = false;
+            process.StartInfo.StandardOutputEncoding = 
+            process.StartInfo.StandardErrorEncoding  = Encoding.UTF8;
 
             process.StartInfo.Arguments = String.Format("-b \"{0}\" -P \"{1}\"",
                                                   p.blendFilePath,
-                                                  Path.Combine(appSettings.scriptsPath, "get_project_info.py")
-                                    );
+                                                  Path.Combine(appSettings.scriptsPath, "get_project_info.py"));
+
             Trace.WriteLine(process.StartInfo.Arguments);
-            //MessageBox.Show(AppDomain.CurrentDomain.BaseDirectory);
-            
+
             try {
 			    process.Start();
+                //process.WaitForExit();
 			}
 			catch( Exception ex ) {
-                _log.Error(ex.ToString());
+                LogService.Log.Error(ex.ToString());
                 Trace.WriteLine(ex);
-                Helper.showErrors(new List<string> { AppErrorCodes.BLENDER_PATH_NOT_SET });
+                Helper.showErrors(AppErrorCodes.BLENDER_PATH_NOT_SET );
                 settingsForm.ShowDialog();
                 stopRender(false);
                 return;
 			}
-            
-			StringBuilder jsonInfo    = new StringBuilder();
-			bool          jsonStarted = false;
-			int           curlyStack  = 0;
 
-            string streamErrorLines = "";
-            //string[] streamErrors;
+            // Get values from streams
+            var streamOutput = new List<string>();
+            var streamErrors = new List<string>();
+
+            while (!process.StandardOutput.EndOfStream)
+                streamOutput.Add(process.StandardOutput.ReadLine());
 
             while (!process.StandardError.EndOfStream)
+                streamErrors.Add(process.StandardError.ReadLine());
+
+            // log errors
+            if (streamErrors.Count > 0)
+                    LogService.Log.Error(streamErrors);
+
+
+            if (streamOutput.Count == 0)
             {
-                streamErrorLines += process.StandardError.ReadLine();
-                //streamErrors.a += process.StandardError.ReadLine();
-            }
-            if (streamErrorLines.Length > 0)
-            {
-                _log.Error(streamErrorLines);
+                var e = new ui.ErrorBox("Could not open project, no information was received",
+                                         streamErrors);
+                e.Text = "Error";
+                e.ShowDialog(this);
                 stopRender(false);
-                MessageBox.Show(streamErrorLines);
                 return;
             }
 
-            while ( !process.StandardOutput.EndOfStream ) {
-				string line = process.StandardOutput.ReadLine();
-				if( line.Contains( "{" ) ) {
-					jsonStarted = true;
-					curlyStack++;
-				}
-				if( jsonStarted ) {
-					if( !line.ToLower().Contains( "blender quit" ) && curlyStack > 0 ) {
-						jsonInfo.AppendLine( line );
-					}
-					if( line.Contains( "}" ) ) {
-						curlyStack--;
-						if( curlyStack == 0 ) {
-							jsonStarted = false;
-						}
-					}
-				}
-			}
+            StringBuilder jsonInfo    = new StringBuilder();
+			bool          jsonStarted = false;
+			int           curlyStack  = 0;
+
+            foreach (var line in streamOutput)
+            {
+                if (line.Contains("{"))
+                {
+                    jsonStarted = true;
+                    curlyStack++;
+                }
+                if (jsonStarted)
+                {
+                    if (!line.ToLower().Contains("blender quit") && curlyStack > 0)
+                    {
+                        jsonInfo.AppendLine(line);
+                    }
+                    if (line.Contains("}"))
+                    {
+                        curlyStack--;
+                        if (curlyStack == 0)
+                        {
+                            jsonStarted = false;
+                        }
+                    }
+                }
+            }
+
             blendData = null;
-			if( jsonInfo.Length > 0 ) { 
+			if( jsonInfo.Length > 0 ) {
+
+                // for when praser fails
+                if (jsonInfo.ToString() == "{}")
+                {
+                    var e = new ui.ErrorBox("Could not open project, failed to parse project info", streamErrors);
+                    e.Text = "Error";
+                    e.ShowDialog(this);
+                    stopRender(false);
+                    return;
+                }
+
 				JavaScriptSerializer serializer = new JavaScriptSerializer();
 				blendData = serializer.Deserialize<BlendData>(jsonInfo.ToString());
             }
@@ -962,7 +993,7 @@ namespace BlenderRenderController
                 //notify we are going to render an image
                 if (RenderFormats.IMAGES.Contains(p.renderFormat))
                 {
-                    Helper.showErrors(new List<string> { AppErrorCodes.RENDER_FORMAT_IS_IMAGE }, MessageBoxIcon.Asterisk, p.renderFormat);
+                    Helper.showErrors(AppErrorCodes.RENDER_FORMAT_IS_IMAGE, MessageBoxIcon.Asterisk, p.renderFormat);
                 }
 
                 //FIX RELATIVE RENDER OUTPUT PATHS
@@ -974,16 +1005,15 @@ namespace BlenderRenderController
                     // use blendFile location if p.outputpath is null, display a warning about it
                     if (string.IsNullOrEmpty(p.outputPath))
                     {
-                        var warn = new List<string>();
-                        warn.Add(AppErrorCodes.BLEND_OUTPUT_INVALID);
-                        Helper.showErrors(warn);
+                        Helper.showErrors(AppErrorCodes.BLEND_OUTPUT_INVALID);
                         p.outputPath = Path.GetDirectoryName(p.blendFilePath);
                     }
 
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     p.outputPath = Path.Combine(Path.GetDirectoryName(p.blendFilePath), blendData.outputPath.Replace("//", ""));
+                    LogService.Log.Error(ex.Message);
                 }
 
                 //SETTING PROJECT VARS
@@ -1034,17 +1064,17 @@ namespace BlenderRenderController
                 updateRecentBlendsMenu();
 
                 appState = AppStates.READY_FOR_RENDER;
-                _log.Info(".blend loaded successfully");
-            } else
-            {
-                _log.Error(".blend was NOT loaded");
+                LogService.Log.Info(".blend loaded successfully");
             }
+            else
+                LogService.Log.Error(".blend was NOT loaded");
+
             Trace.WriteLine( ".blend data = " + jsonInfo.ToString());
-            _log.Info(".blend data = " + jsonInfo.ToString());
+            LogService.Log.Info(".blend data = " + jsonInfo.ToString());
             updateUI();
         }
-        
-		private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
+
+        private void reloadBlenderDataButton_Click( object sender, EventArgs e ) {
             loadBlend();
 		}
 
@@ -1052,7 +1082,7 @@ namespace BlenderRenderController
 
             statusLabel.Text = "Rendering mixdown, it can take a while for larger projects...";
             statusLabel.Update();
-            _log.Info("Mixdown started");
+            LogService.Log.Info("Mixdown started");
 
             if (!File.Exists(p.blendFilePath)) {
                 return;
@@ -1074,6 +1104,7 @@ namespace BlenderRenderController
             Process process = new Process();
             process.StartInfo.FileName = Path.Combine(appSettings.blenderPath, appSettings.BlenderExeName);
             process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.StandardOutputEncoding = Encoding.UTF8;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;
 
@@ -1092,7 +1123,7 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                Helper.showErrors(new List<string> { AppErrorCodes.FFMPEG_PATH_NOT_SET });
+                Helper.showErrors(AppErrorCodes.FFMPEG_PATH_NOT_SET);
                 settingsForm.ShowDialog();
                 statusLabel.Text = "Mixdown cancelled.";
                 return;
@@ -1101,7 +1132,7 @@ namespace BlenderRenderController
             process.WaitForExit();
 
             string message = "Mixdown complete";
-            Trace.WriteLine(message); _log.Info(message);
+            Trace.WriteLine(message); LogService.Log.Info(message);
             statusLabel.Text = message;
             
         }
@@ -1342,8 +1373,6 @@ namespace BlenderRenderController
 
         private void infoMore_Click(object sender, EventArgs e)
         {
-            // for testing exeption logging
-
             //try
             //{
             //    exeption_test();
@@ -1351,7 +1380,7 @@ namespace BlenderRenderController
             //catch (Exception ex)
             //{
             //    MessageBox.Show("Test Exeption thrown...");
-            //    _log.Error(ex.ToString());
+            //    LogService.Log.Error(ex.ToString());
             //}
         }
 
@@ -1359,5 +1388,12 @@ namespace BlenderRenderController
         {
             throw new Exception("this is a test Exeption");
         }
+
+        private void showErrorBoxToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var er = new ui.ErrorBox();
+            er.ShowDialog();
+        }
+
     }
 }
