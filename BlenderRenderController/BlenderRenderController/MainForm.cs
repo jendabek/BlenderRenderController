@@ -404,7 +404,11 @@ namespace BlenderRenderController
         }
         private void renderCurrentChunk()
         {
-            if (p.chunkEnd == p.end) lastChunkStarted = true;
+            if (p.chunkEnd >= p.end)
+            {
+                lastChunkStarted = true;
+                p.chunkEnd = (p.chunkEnd > p.end) ? p.end : p.chunkEnd;
+            }
 
             Process process = new Process();
 
