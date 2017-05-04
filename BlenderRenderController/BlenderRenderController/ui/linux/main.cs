@@ -37,6 +37,7 @@ namespace BlenderRenderController
                 default:
                     break;
             }
+            newLogger.LogService.Log.Info($"OS is {Os}");
         }
 
         private void UiColors()

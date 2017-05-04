@@ -19,7 +19,7 @@ namespace BlenderRenderController
         bool lastChunkStarted = false;
 
         string appState = AppStates.AFTER_START;
-
+        
         //processes
         List<Process> processes = new List<Process>();
         List<int> framesRendered = new List<int>();
@@ -86,10 +86,8 @@ namespace BlenderRenderController
 
 
             // Logger service
-            LogService.Log.RegisterLogSevice(new FileLogger());
-            LogService.Log.RegisterLogSevice(new ConsoleLogger());
-            LogService.Log.Warn("Program Started.");
-            LogService.Log.Info($"OS is {Os}");
+            //LogService.Log.RegisterLogSevice(new FileLogger());
+            //LogService.Log.RegisterLogSevice(new ConsoleLogger());
 
             applySettings();
             if (!appSettings.appConfigured)

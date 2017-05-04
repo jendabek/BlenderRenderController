@@ -11,17 +11,17 @@ namespace BlenderRenderController.newLogger
     public class LogService : ILogger
     {
         private readonly IList<ILogger> _loggerServices = new List<ILogger>();
+        private readonly List<string> _registeredLogs = new List<string>();
 
         // Singleton implementation
         private static readonly Lazy<LogService> lazy = new Lazy<LogService>(() => new LogService());
-        private static readonly Lazy<LogService> lazy2 = new Lazy<LogService>(() => new LogService(true));
+       private static readonly Lazy<LogService> lazy2 = new Lazy<LogService>(() => new LogService(true));
 
         public static LogService Log { get => lazy.Value; }
-        public static LogService LogD { get => lazy2.Value; }
+        //public static LogService LogD { get => lazy2.Value; }
 
         public LogService()
-        {
-        }
+        {}
 
         public LogService(bool useDefaultServices)
         {
@@ -37,9 +37,19 @@ namespace BlenderRenderController.newLogger
             if (service == null)
                 throw new ArgumentNullException(service.ToString() ,"Log service passed is null.");
 
-            if (!_loggerServices.Contains(service))
-                // avoid duplicates services
+            var logger = service as LoggerBase;
+
+            if (!_registeredLogs.Contains(logger.Name))
+            {
                 _loggerServices.Add(service);
+
+                _registeredLogs.Add(logger.Name);
+            }
+
+            //if (!_loggerServices.Contains(service))
+            //{
+            //    _loggerServices.Add(service);
+            //}
         }
 
         // Interface stuff

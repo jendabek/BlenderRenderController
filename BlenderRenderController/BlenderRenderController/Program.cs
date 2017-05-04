@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlenderRenderController.newLogger;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +17,11 @@ namespace BlenderRenderController
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            // Register LogServices Here
+            LogService.Log.RegisterLogSevice(new FileLogger());
+            LogService.Log.RegisterLogSevice(new ConsoleLogger());
+
             Application.Run(new MainForm());
         }
 

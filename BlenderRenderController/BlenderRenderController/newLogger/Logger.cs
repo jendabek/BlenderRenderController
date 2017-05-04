@@ -7,20 +7,15 @@ using System.Threading.Tasks;
 
 namespace BlenderRenderController.newLogger
 {
-    public class FileLogger : ILogger
+    public class FileLogger : LoggerBase, ILogger
     {
-        private readonly DateTime _time = DateTime.Now;
-        private bool _verbose;
         //private string _lastLog;
         //private string _repeatLine;
         //private int _numLastLogs;
 
         public FileLogger()
         {
-            var appSettings = new AppSettings();
-            appSettings.RemoteLoadJsonSettings();
-            this._verbose = appSettings.verboseLog;
-            //this._repeatLine = $"Last message repeted {_numLastLogs} times";
+            Name = nameof(FileLogger);
         }
 
         private void Log(string message, LogType logType)
@@ -55,17 +50,11 @@ namespace BlenderRenderController.newLogger
         }
     }
 
-    public class ConsoleLogger : ILogger
+    public class ConsoleLogger : LoggerBase, ILogger
     {
-        private readonly DateTime _time = DateTime.Now;
-        private bool _verbose;
-
-
         public ConsoleLogger()
         {
-            var appSettings = new AppSettings();
-            appSettings.RemoteLoadJsonSettings();
-            this._verbose = appSettings.verboseLog;
+            Name = nameof(ConsoleLogger);
         }
 
         private void Log(string message, LogType logType)
@@ -97,6 +86,19 @@ namespace BlenderRenderController.newLogger
         }
     }
 
+    public class LoggerBase
+    {
+        protected readonly DateTime _time = DateTime.Now;
+        protected bool _verbose;
+        protected AppSettings appSettings = new AppSettings();
+        public string Name { get; set; }
+
+        public LoggerBase()
+        {
+            appSettings.RemoteLoadJsonSettings();
+            this._verbose = appSettings.verboseLog;
+        }
+    }
 }
 
 //if (logMode == 0)

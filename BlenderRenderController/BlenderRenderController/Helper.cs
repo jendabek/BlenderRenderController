@@ -8,12 +8,6 @@ namespace BlenderRenderController
 {
     static class Helper
     {
-        /* public static IEnumerable<string> AlphanumericSort(this IEnumerable<string> me)
-         {
-             string[] Separator = new string[] { "-" };
-         }*/
-        static LogService _log = new LogService();
-
         static public void clearFolder(string FolderName)
         {
             DirectoryInfo dir = new DirectoryInfo(FolderName);
@@ -32,8 +26,6 @@ namespace BlenderRenderController
         
         static public void showErrors(List<string> errorCodes, MessageBoxIcon icon = MessageBoxIcon.Asterisk, string arg1 = "")
         {
-            RegsterLog();
-
             var errorText = "";
 
             foreach (var errorCode in errorCodes)
@@ -45,12 +37,11 @@ namespace BlenderRenderController
                     MessageBoxButtons.OK,
                     icon);
 
-            _log.Warn("-Helper- " + errorText);
+            LogService.Log.Warn("-Helper- " + errorText);
         }
 
         static public void showErrors(string errorCode, MessageBoxIcon icon = MessageBoxIcon.Asterisk, string arg1 = "")
         {
-            RegsterLog();
 
             var errorText = "";
 
@@ -62,7 +53,7 @@ namespace BlenderRenderController
                 MessageBoxButtons.OK,
                 icon);
 
-            _log.Warn("-Helper- " + errorText);
+            LogService.Log.Warn("-Helper- " + errorText);
         }
 
         static private string SetErrorText(string code, string arg1)
@@ -104,19 +95,13 @@ namespace BlenderRenderController
         {
             if (string.IsNullOrEmpty(path))
             {
-                //throw new ArgumentNullException(path, "Cannot fix a null path");
+                LogService.Log.Warn("-Warning- " + "Failed to fixPath");
                 return null;
             }
 
             return path.Trim().TrimEnd('\\');
         }
 
-
-        static void RegsterLog()
-        {
-            _log.RegisterLogSevice(new ConsoleLogger());
-            _log.RegisterLogSevice(new FileLogger());
-        }
 
         static public string secondsToString(double seconds, bool digital = false)
         {

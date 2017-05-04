@@ -113,8 +113,8 @@ namespace BlenderRenderController
 
         public void init()
         {
-            LogService.Log.RegisterLogSevice(new FileLogger());
-            LogService.Log.RegisterLogSevice(new ConsoleLogger());
+            //LogService.Log.RegisterLogSevice(new FileLogger());
+            //LogService.Log.RegisterLogSevice(new ConsoleLogger());
 
             //LOADing data from JSON and set it to properties
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);

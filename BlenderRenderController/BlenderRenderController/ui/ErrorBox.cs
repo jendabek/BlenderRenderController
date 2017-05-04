@@ -33,8 +33,8 @@ namespace BlenderRenderController.ui
             ErrorIcon.Image = SystemIcons.Hand.ToBitmap();
             ErrorIcon.SizeMode = PictureBoxSizeMode.CenterImage;
 
-            LogService.Log.RegisterLogSevice(new FileLogger());
-            LogService.Log.RegisterLogSevice(new ConsoleLogger());
+            //LogService.Log.RegisterLogSevice(new FileLogger());
+            //LogService.Log.RegisterLogSevice(new ConsoleLogger());
         }
 
         public ErrorBox(string label, List<string> contents, Buttons bnts = Buttons.Ok)
