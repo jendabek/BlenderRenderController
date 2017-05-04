@@ -12,6 +12,7 @@ namespace BlenderRenderController.newLogger
         //private string _lastLog;
         //private string _repeatLine;
         //private int _numLastLogs;
+        private List<string> _dueMsgs = new List<string>();
 
         public FileLogger()
         {
@@ -25,12 +26,28 @@ namespace BlenderRenderController.newLogger
                 return;
 
             string type = logType.ToString();
+            var logLine = $"{type} [{_time}]: {message}";
+            var status = new FileInfo(AppStrings.LOG_FILE_NAME);
 
-            using (StreamWriter sw = new StreamWriter(AppStrings.LOG_FILE_NAME, true))
+            if (!IsFileLocked(status))
             {
-                var logLine = $"{type} [{_time}]: {message}";
-                sw.WriteLine(logLine); 
+                using (StreamWriter sw = new StreamWriter(AppStrings.LOG_FILE_NAME, true))
+                {
+                    if (_dueMsgs.Count > 0)
+                    {
+                        //write late logs
+                        sw.WriteLineAsync($"{type} [{_time}]: {_dueMsgs[0]}");
+                        _dueMsgs.Clear();
+                    }
+                    sw.WriteLine(logLine); 
+                }
             }
+            else
+            {
+                // if log file is in use, add to this list for later
+                _dueMsgs.Add(logLine);
+            }
+
 
         }
 
@@ -97,6 +114,45 @@ namespace BlenderRenderController.newLogger
         {
             appSettings.RemoteLoadJsonSettings();
             this._verbose = appSettings.verboseLog;
+        }
+
+        /// <summary>
+        /// This function is used to check specified file being used or not
+        /// </summary>
+        /// <param name="file">FileInfo of required file</param>
+        /// <returns>If that specified file is being processed 
+        /// or not found is return true</returns>
+        public static Boolean IsFileLocked(FileInfo file)
+        {
+            FileStream stream = null;
+
+            try
+            {
+                //Don't change FileAccess to ReadWrite, 
+                //because if a file is in readOnly, it fails.
+
+                stream = file.Open
+                (
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.None
+                );
+            }
+            catch (IOException)
+            {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            }
+            finally
+            {
+                if (stream != null)
+                    stream.Close();
+            }
+            //file is not locked
+            return false;
         }
     }
 }

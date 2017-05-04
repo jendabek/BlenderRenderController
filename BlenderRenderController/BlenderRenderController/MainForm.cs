@@ -439,6 +439,7 @@ namespace BlenderRenderController
             {
                 process.Start(); 
                 processes.Add(process);
+                LogService.Log.Info($"Render {processes.Count}/{p.processCount} in process");
             }
             catch (Exception ex)
             {
@@ -476,6 +477,7 @@ namespace BlenderRenderController
         private void chunkRendered(object sender, EventArgs e)
         {
             processes.Remove((Process) sender);
+            LogService.Log.Info($"Render {processes.Count}/{p.processCount} in process");
             processesCompletedCount++;
         }
 
@@ -544,6 +546,7 @@ namespace BlenderRenderController
 
                     if (dialogResult == DialogResult.No) return;
 
+                    // clean folders
                     try {
                         Helper.clearFolder(p.chunksPath);
                     }
@@ -558,15 +561,14 @@ namespace BlenderRenderController
                         MessageBox.Show("An unexpected error ocurred, sorry.");
                         return;
                     }
-                    renderAllButton_Click(null, null);
                 }
                 renderAll();
+                LogService.Log.Info("RENDER STARTED");
             }
         }
         
         private void renderAll()
         {
-            LogService.Log.Info("RENDER STARTED");
             appState = AppStates.RENDERING_ALL;
             startTime = DateTime.Now;
             renderingSpeedsFPS.Clear();
@@ -586,10 +588,7 @@ namespace BlenderRenderController
                 TaskbarProgress.SetState(Handle, TaskbarProgress.TaskbarStates.Indeterminate);
                 TaskbarProgress.SetValue(Handle, 0, 100);
             }
-            catch (Exception)
-            {
-                
-            }
+            catch (Exception){}
 
             updateUI();
         }
@@ -610,7 +609,8 @@ namespace BlenderRenderController
                 }
                 catch(Exception ex)
                 {
-                    LogService.Log.Error(ex.ToString());
+                    LogService.Log.Error("An error ocurred while killing processes");
+                    LogService.Log.Error("Stack:\n" + ex.StackTrace);
                     Trace.WriteLine(ex);
                 }
                 processes.Remove(process);
@@ -625,9 +625,7 @@ namespace BlenderRenderController
             {
                 TaskbarProgress.SetState(Handle, TaskbarProgress.TaskbarStates.NoProgress);
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception){}
 
             appState = AppStates.READY_FOR_RENDER;
 
@@ -667,10 +665,7 @@ namespace BlenderRenderController
             {
                 TaskbarProgress.SetValue(Handle, progressPercentage, 100);
             }
-            catch (Exception)
-            {
-
-            }
+            catch (Exception){}
             //progress bar
             renderProgressBar.Value = progressPercentage;
 
@@ -1381,6 +1376,7 @@ namespace BlenderRenderController
             Console.WriteLine(url);
         }
 
+        // debug stuff bellow
         private void infoMore_Click(object sender, EventArgs e)
         {
             //try
