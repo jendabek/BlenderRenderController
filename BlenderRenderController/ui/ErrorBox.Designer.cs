@@ -1,4 +1,4 @@
-﻿namespace BlenderRenderController.ui
+﻿namespace BlenderRenderController.Ui
 {
     partial class ErrorBox
     {

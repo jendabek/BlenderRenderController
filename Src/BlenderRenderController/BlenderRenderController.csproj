@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CD475A2A-67D6-47F3-A776-D03D7FDB29EA}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>BlenderRenderController</RootNamespace>
+    <AssemblyName>BlenderRenderController</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\blender_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.WindowsAPICodePack">
+      <HintPath>..\..\Libs\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell">
+      <HintPath>..\..\Libs\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions">
+      <HintPath>..\..\Libs\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NLog.4.4.11\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppStuff.cs" />
+    <Compile Include="AppSettings.cs" />
+    <Compile Include="BrcForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BrcForm.Designer.cs">
+      <DependentUpon>BrcForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helper.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\Dialogs\Dialogs.cs" />
+    <Compile Include="Ui\ErrorBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ui\ErrorBox.Designer.cs">
+      <DependentUpon>ErrorBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\SplitButtonOver.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Ui\SplitButtonOver.Designer.cs">
+      <DependentUpon>SplitButtonOver.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ui\SplitButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <None Include="Properties\DataSources\BRClib.ProjectData.datasource" />
+    <None Include="Resources\blender_icon.ico" />
+    <Content Include="Scripts\get_project_info.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\mixdown_audio.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="..\..\..\README.md">
+      <Link>README.md</Link>
+    </None>
+    <None Include="Resources\volume-small.png" />
+    <None Include="Resources\volume-512.png" />
+    <None Include="Resources\stop-icon-small.png" />
+    <None Include="Resources\stop-icon.png" />
+    <None Include="Resources\settings-icon.png" />
+    <None Include="Resources\render-icon-small.png" />
+    <None Include="Resources\reload-icon-small.png" />
+    <None Include="Resources\reload-icon.png" />
+    <None Include="Resources\info-icon.png" />
+    <None Include="Resources\github-logo-small.png" />
+    <None Include="Resources\github-logo.png" />
+    <None Include="Resources\folder-icon-smaller.png" />
+    <None Include="Resources\folder-icon-small.png" />
+    <None Include="Resources\folder-icon.png" />
+    <None Include="Resources\donate-icon.png" />
+    <None Include="Resources\donate-2.png" />
+    <None Include="Resources\connect-icon-small.png" />
+    <None Include="Resources\connect-icon.png" />
+    <None Include="Resources\clear_recent_icon.bmp" />
+    <None Include="Resources\bug-icon.png" />
+    <None Include="Resources\Broom-64.png" />
+    <None Include="Resources\Broom-50.png" />
+    <None Include="Resources\blend-icon.png" />
+    <None Include="Resources\Blender Alpha_00000.png" />
+    <None Include="Resources\239009-200.png" />
+    <EmbeddedResource Include="BrcForm.resx">
+      <DependentUpon>BrcForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ui\ErrorBox.resx">
+      <DependentUpon>ErrorBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ui\SplitButtonOver.resx">
+      <DependentUpon>SplitButtonOver.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\BRClib\BRClib.csproj">
+      <Project>{f102c740-b7b9-4f46-bb6e-579e23947391}</Project>
+      <Name>BRClib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

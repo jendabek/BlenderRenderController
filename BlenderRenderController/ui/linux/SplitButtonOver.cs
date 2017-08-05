@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BlenderRenderController.ui.linux
+namespace BlenderRenderController.Ui.linux
 {
     public partial class SplitButtonOver : UserControl
     {

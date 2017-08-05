@@ -1,4 +1,4 @@
-﻿namespace BlenderRenderController.ui.linux
+﻿namespace BlenderRenderController.Ui.linux
 {
     partial class SplitButtonOver
     {

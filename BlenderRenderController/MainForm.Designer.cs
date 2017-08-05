@@ -1,4 +1,4 @@
-﻿using BlenderRenderController.ui;
+﻿using BlenderRenderController.Ui;
 
 namespace BlenderRenderController
 {
@@ -65,11 +65,9 @@ namespace BlenderRenderController
             this.infoFramerate = new System.Windows.Forms.TextBox();
             this.infoDuration = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.infoNoScenes = new System.Windows.Forms.TextBox();
             this.infoFramesTotal = new System.Windows.Forms.TextBox();
             this.infoActiveScene = new System.Windows.Forms.TextBox();
             this.infoFramesTotalLabel = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.toolTipWarn = new System.Windows.Forms.ToolTip(this.components);
             this.toolTipInfo = new System.Windows.Forms.ToolTip(this.components);
             this.chunkLengthLabel = new System.Windows.Forms.Label();
@@ -82,7 +80,7 @@ namespace BlenderRenderController
             this.mixDownButton = new System.Windows.Forms.Button();
             this.concatenatePartsButton = new System.Windows.Forms.Button();
             this.renderAllButton = new System.Windows.Forms.Button();
-            this.blendFileBrowseButton = new BlenderRenderController.ui.SplitButton();
+            this.blendFileBrowseButton = new BlenderRenderController.Ui.SplitButton();
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -106,7 +104,7 @@ namespace BlenderRenderController
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.ETALabel = new System.Windows.Forms.Label();
             this.ETALabelTitle = new System.Windows.Forms.Label();
-            this.blendBrowseOver = new BlenderRenderController.ui.linux.SplitButtonOver();
+            this.blendBrowseOver = new BlenderRenderController.Ui.linux.SplitButtonOver();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
@@ -427,12 +425,10 @@ namespace BlenderRenderController
             this.infoPanel.Controls.Add(this.infoFramerate);
             this.infoPanel.Controls.Add(this.infoDuration);
             this.infoPanel.Controls.Add(this.label7);
-            this.infoPanel.Controls.Add(this.infoNoScenes);
             this.infoPanel.Controls.Add(this.infoFramesTotal);
             this.infoPanel.Controls.Add(this.infoActiveScene);
             this.infoPanel.Controls.Add(this.label1);
             this.infoPanel.Controls.Add(this.infoFramesTotalLabel);
-            this.infoPanel.Controls.Add(this.label3);
             this.infoPanel.Location = new System.Drawing.Point(32, 79);
             this.infoPanel.Name = "infoPanel";
             this.infoPanel.Size = new System.Drawing.Size(425, 87);
@@ -523,22 +519,6 @@ namespace BlenderRenderController
             this.label7.TabIndex = 29;
             this.label7.Text = "FPS";
             // 
-            // infoNoScenes
-            // 
-            this.infoNoScenes.BackColor = System.Drawing.SystemColors.Control;
-            this.infoNoScenes.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoNoScenes.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.infoNoScenes.Location = new System.Drawing.Point(11, 64);
-            this.infoNoScenes.Name = "infoNoScenes";
-            this.infoNoScenes.ReadOnly = true;
-            this.infoNoScenes.Size = new System.Drawing.Size(43, 20);
-            this.infoNoScenes.TabIndex = 26;
-            this.infoNoScenes.TabStop = false;
-            this.infoNoScenes.Text = "...";
-            this.infoNoScenes.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolTipInfo.SetToolTip(this.infoNoScenes, "Number of scenes in project.");
-            this.infoNoScenes.Visible = false;
-            // 
             // infoFramesTotal
             // 
             this.infoFramesTotal.BackColor = System.Drawing.SystemColors.Control;
@@ -579,18 +559,6 @@ namespace BlenderRenderController
             this.infoFramesTotalLabel.Size = new System.Drawing.Size(79, 15);
             this.infoFramesTotalLabel.TabIndex = 29;
             this.infoFramesTotalLabel.Text = "Frames Total";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(8, 45);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(48, 15);
-            this.label3.TabIndex = 23;
-            this.label3.Text = "Scenes";
-            this.toolTipWarn.SetToolTip(this.label3, "Number of scenes in project.");
-            this.label3.Visible = false;
             // 
             // toolTipWarn
             // 
@@ -1053,7 +1021,7 @@ namespace BlenderRenderController
             this.blendBrowseOver.Name = "blendBrowseOver";
             this.blendBrowseOver.SecondaryBnt = "˅";
             this.blendBrowseOver.Size = new System.Drawing.Size(172, 47);
-            this.blendBrowseOver.TabIndex = 37;
+            this.blendBrowseOver.TabIndex = 1;
             this.blendBrowseOver.Visible = false;
             // 
             // MainForm
@@ -1149,8 +1117,6 @@ namespace BlenderRenderController
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox infoNoScenes;
         private System.Windows.Forms.TextBox infoActiveScene;
         private System.Windows.Forms.ToolTip toolTipWarn;
         private System.Windows.Forms.ToolTip toolTipInfo;
@@ -1205,7 +1171,7 @@ namespace BlenderRenderController
         private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showErrorBoxToolStripMenuItem;
         protected SplitButton blendFileBrowseButton;
-        private ui.linux.SplitButtonOver blendBrowseOver;
+        private Ui.linux.SplitButtonOver blendBrowseOver;
     }
 }
 

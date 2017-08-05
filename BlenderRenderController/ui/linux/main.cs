@@ -24,25 +24,28 @@ namespace BlenderRenderController
             {
                 case PlatformID.Win32NT:
                     WinIconFix();
+                    Os = PlatformID.Win32NT;
                     break;
                 case PlatformID.MacOSX:
                     UiColors();
+                    Os = PlatformID.MacOSX;
                     break;
                 case PlatformID.Unix:
                     this.ClientSize =
                     this.MaximumSize = new System.Drawing.Size(780, 640);
                     UiColors();
                     BlendBrowseUnix();
+                    Os = PlatformID.Unix;
                     break;
                 default:
                     break;
             }
-            newLogger.LogService.Log.Info($"OS is {Os}");
+
+            logger.Info($"OS is {Os}");
         }
 
         private void UiColors()
         {
-
             totalEndNumericUpDown.BackColor =
             totalStartNumericUpDown.BackColor =
             chunkLengthNumericUpDown.BackColor =
@@ -81,6 +84,7 @@ namespace BlenderRenderController
         void WinIconFix()
         {
             // sets the icon for Windows systems outside of MainFormDesigner
+            // required to make project build on Mono Develop
             Type type = this.GetType();
             System.Resources.ResourceManager resources =
             new System.Resources.ResourceManager(type.Namespace + ".Properties.Resources", this.GetType().Assembly);
@@ -104,6 +108,24 @@ namespace BlenderRenderController
             blendFileBrowseButton_Click(sender, e);
         }
 
+        void BlendBrowseOverBUILD()
+        {
+            // blendBrowseOver
+            // getting infos from blendFileBrowseButton
+            Button b = blendFileBrowseButton;
+
+            this.blendBrowseOver.AutoSizeMode = b.AutoSizeMode;
+            this.blendBrowseOver.BackColor = b.BackColor;
+            this.blendBrowseOver.Location = b.Location;
+            this.blendBrowseOver.MainBnt = "  Open Blend";
+            this.blendBrowseOver.MainImg = blendFileBrowseButton.Image;
+            this.blendBrowseOver.Margin = new System.Windows.Forms.Padding(0);
+            this.blendBrowseOver.Name = "blendBrowseOver";
+            this.blendBrowseOver.SecondaryBnt = "˅";
+            this.blendBrowseOver.Size = new System.Drawing.Size(172, 47);
+            this.blendBrowseOver.TabIndex = 1;
+
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-﻿using BlenderRenderController.newLogger;
+﻿using NLog;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,8 +13,11 @@ namespace BlenderRenderController
 
     public class AppSettings
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         //THESE PROPERTIES (in _jsonProperties) ARE STORED AND LOADED automatically from external JSON file
-        private string[] _jsonProperties = { "recentBlends", "blenderPath", "ffmpegPath", "renderer", "afterRenderAction", "displayTooltips", "verboseLog"};
+        private string[] _jsonProperties = 
+            { "recentBlends", "blenderPath", "ffmpegPath", "renderer", "afterRenderAction", "displayTooltips", "verboseLog"};
 
         private const int _RECENT_BLENDS_MAX_COUNT = 10;
         public const string APP_TITLE = "Blender Render Controller";
@@ -113,14 +116,17 @@ namespace BlenderRenderController
 
         public void init()
         {
-            //LogService.Log.RegisterLogSevice(new FileLogger());
-            //LogService.Log.RegisterLogSevice(new ConsoleLogger());
-
             //LOADing data from JSON and set it to properties
             _scriptsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _scriptsSubfolder);
             _blenderPath = BlenderPathDefault;
             _ffmpegPath = FFmpegPathDefault;
             loadJsonSettings();
+
+            if (this.verboseLog)
+            {
+                NlogHelper.ChangeLogLevel(LogLevel.Info);
+            }
+
             checkCorrectConfig();
         }
 
@@ -145,8 +151,8 @@ namespace BlenderRenderController
                     }
                     catch (Exception ex)
                     {
-                        LogService.Log.Info(propertyName + " is not a valid property");
-                        LogService.Log.Warn(ex.Message);
+                        logger.Info(propertyName + " is not a valid property");
+                        logger.Warn(ex.Message);
                         return;
                     }
 

@@ -1,9 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlenderRenderController", "BlenderRenderController\BlenderRenderController.csproj", "{B050DD69-B2BE-4F42-8D4E-23B7A7EFF2E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlenderRenderControllerOLD", "BlenderRenderController\BlenderRenderControllerOLD.csproj", "{B050DD69-B2BE-4F42-8D4E-23B7A7EFF2E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlenderRenderController", "Src\BlenderRenderController\BlenderRenderController.csproj", "{CD475A2A-67D6-47F3-A776-D03D7FDB29EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BRClib", "Src\BRClib\BRClib.csproj", "{F102C740-B7B9-4F46-BB6E-579E23947391}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OLD", "OLD", "{43233F13-EA40-43AB-9330-F0638576125B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{87E2600C-D4BF-467B-9A84-FBA84939EEBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "Tests\UnitTestProject1\UnitTestProject1.csproj", "{C0B6A9DA-7E23-4E44-B642-A1AD4E148634}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +25,24 @@ Global
 		{B050DD69-B2BE-4F42-8D4E-23B7A7EFF2E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B050DD69-B2BE-4F42-8D4E-23B7A7EFF2E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B050DD69-B2BE-4F42-8D4E-23B7A7EFF2E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD475A2A-67D6-47F3-A776-D03D7FDB29EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD475A2A-67D6-47F3-A776-D03D7FDB29EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD475A2A-67D6-47F3-A776-D03D7FDB29EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD475A2A-67D6-47F3-A776-D03D7FDB29EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F102C740-B7B9-4F46-BB6E-579E23947391}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F102C740-B7B9-4F46-BB6E-579E23947391}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F102C740-B7B9-4F46-BB6E-579E23947391}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F102C740-B7B9-4F46-BB6E-579E23947391}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0B6A9DA-7E23-4E44-B642-A1AD4E148634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0B6A9DA-7E23-4E44-B642-A1AD4E148634}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0B6A9DA-7E23-4E44-B642-A1AD4E148634}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0B6A9DA-7E23-4E44-B642-A1AD4E148634}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B050DD69-B2BE-4F42-8D4E-23B7A7EFF2E5} = {43233F13-EA40-43AB-9330-F0638576125B}
+		{C0B6A9DA-7E23-4E44-B642-A1AD4E148634} = {87E2600C-D4BF-467B-9A84-FBA84939EEBF}
 	EndGlobalSection
 EndGlobal

@@ -33,7 +33,7 @@ namespace BlenderRenderController
         AppSettings appSettings;
         ContextMenuStrip recentBlendsMenu;
         List<int> renderingSpeedsFPS = new List<int>();
-        PlatformID Os = Environment.OSVersion.Platform;
+        PlatformID Os;
         
         // Logger service
         private static Logger logger = LogManager.GetLogger("BRC");
@@ -42,7 +42,7 @@ namespace BlenderRenderController
         {
             InitializeComponent();
 
-            PlatAdjust(Os);
+            PlatAdjust(Environment.OSVersion.Platform);
         }
         public void MainForm_Shown(object sender, EventArgs e)
         {
@@ -366,21 +366,6 @@ namespace BlenderRenderController
             }
         }
 
-        // nf
-        //private void renderChunkButton_Click(object sender, EventArgs e)
-        //{
-        //    appState = AppStates.RENDERING_CHUNK_ONLY;
-        //    startTime = DateTime.Now;
-        //    totalTimeLabel.Text = "00:00:00";
-        //    statusLabel.Text = "Starting render...";
-        //    processesCompletedCount = 0;
-        //    lastChunkStarted = true;
-        //    processTimer.Enabled = true;
-        //    framesRendered.Clear();
-        //    renderCurrentChunk();
-        //    updateUI();
-        //}
-
         private void renderCurrentChunk()
         {
             if (pData.chunkEnd >= pData.end)
@@ -398,7 +383,7 @@ namespace BlenderRenderController
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.WorkingDirectory = appSettings.blenderPath;
             process.StartInfo.FileName = Path.Combine(appSettings.blenderPath, appSettings.BlenderExeName);
-            
+             
             process.StartInfo.Arguments = String.Format("-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a",
                                                   pData.blendFilePath,
                                                   Path.Combine(pData.chunksPath, blendData.ProjectName) + "-#",
@@ -428,7 +413,7 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Trace.WriteLine(ex);
-                logger.Error(ex.ToString());
+                logger.Error(ex.Message);
                 stopRender(false);
                 return;
             }
@@ -883,7 +868,7 @@ namespace BlenderRenderController
 
             if (streamOutput.Count == 0)
             {
-                var e = new ui.ErrorBox("Could not open project, no information was received",
+                var e = new Ui.ErrorBox("Could not open project, no information was received",
                                          streamErrors);
                 e.Text = "Error";
                 e.ShowDialog(this);
@@ -925,7 +910,7 @@ namespace BlenderRenderController
                 // for when praser fails
                 if (jsonInfo.ToString() == "{}")
                 {
-                    var e = new ui.ErrorBox("Could not open project, failed to parse project info", streamErrors);
+                    var e = new Ui.ErrorBox("Could not open project, failed to parse project info", streamErrors);
                     e.Text = "Error";
                     e.ShowDialog(this);
                     stopRender(false);
@@ -999,7 +984,7 @@ namespace BlenderRenderController
                 blendFileNameLabel.Text         = blendData.ProjectName;
                 infoActiveScene.Text            = blendData.SceneActive;
                 infoFramerate.Text              = pData.fps.ToString("###.##");
-                infoNoScenes.Text               = blendData.ScenesNum;
+                //infoNoScenes.Text               = blendData.ScenesNum;
                 infoResolution.Text             = blendData.Resolution;
 
                 appSettings.addRecentBlend(pData.blendFilePath);
@@ -1343,7 +1328,7 @@ namespace BlenderRenderController
 
         private void showErrorBoxToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var er = new ui.ErrorBox();
+            var er = new Ui.ErrorBox();
             er.ShowDialog();
         }
 

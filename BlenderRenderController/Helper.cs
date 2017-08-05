@@ -1,13 +1,15 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using BlenderRenderController.newLogger;
 
 namespace BlenderRenderController
 {
     static class Helper
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         static public void clearFolder(string FolderName)
         {
             DirectoryInfo dir = new DirectoryInfo(FolderName);
@@ -37,7 +39,7 @@ namespace BlenderRenderController
                     MessageBoxButtons.OK,
                     icon);
 
-            LogService.Log.Warn("-Helper- " + errorText);
+            logger.Warn("-Helper- " + errorText);
         }
 
         static public void showErrors(string errorCode, MessageBoxIcon icon = MessageBoxIcon.Asterisk, string arg1 = "")
@@ -53,7 +55,7 @@ namespace BlenderRenderController
                 MessageBoxButtons.OK,
                 icon);
 
-            LogService.Log.Warn("-Helper- " + errorText);
+            logger.Warn("-Helper- " + errorText);
         }
 
         static private string SetErrorText(string code, string arg1)
@@ -95,7 +97,7 @@ namespace BlenderRenderController
         {
             if (string.IsNullOrEmpty(path))
             {
-                LogService.Log.Warn("-Warning- " + "Failed to fixPath");
+                logger.Warn("-Warning- " + "Failed to fixPath");
                 return null;
             }
 

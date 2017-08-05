@@ -1,4 +1,4 @@
-﻿using BlenderRenderController.newLogger;
+﻿using NLog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,10 +9,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BlenderRenderController.ui
+namespace BlenderRenderController.Ui
 {
     public partial class ErrorBox : Form
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         private string _result;
 
         public string Result
@@ -40,7 +42,7 @@ namespace BlenderRenderController.ui
         public ErrorBox(string label, List<string> contents, Buttons bnts = Buttons.Ok)
             : this()
         {
-            LogService.Log.Error(contents);
+            logger.Error(contents);
 
             ErrorBoxLabel.Text = label;
             ErrorContentBox.Lines = contents.ToArray();
@@ -89,12 +91,12 @@ namespace BlenderRenderController.ui
 
         private void ErrorBox_FormClosed(object sender, FormClosedEventArgs e)
         {
-            LogService.Log.Error(".blend was NOT loaded");
+            logger.Error(".blend was NOT loaded");
 
             if (String.IsNullOrEmpty(_result))
                 return;
 
-            LogService.Log.Error($"-ErrorBox- {_result} was pressed");
+            logger.Error($"-ErrorBox- {_result} was pressed");
         }
     }
 }
