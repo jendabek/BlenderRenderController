@@ -34,7 +34,6 @@ namespace BlenderRenderController
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BrcForm));
             this.renderProgressBar = new System.Windows.Forms.ProgressBar();
             this.totalStartNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.projectDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.startFrameLabel = new System.Windows.Forms.Label();
             this.outputFolderTextBox = new System.Windows.Forms.TextBox();
             this.statusLabel = new System.Windows.Forms.Label();
@@ -112,7 +111,6 @@ namespace BlenderRenderController
             this.recentBlendsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openBlendDialog = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.projectDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
             this.menuStrip.SuspendLayout();
@@ -133,7 +131,6 @@ namespace BlenderRenderController
             // 
             // totalStartNumericUpDown
             // 
-            this.totalStartNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectDataBindingSource, "Start", true));
             this.totalStartNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalStartNumericUpDown.Location = new System.Drawing.Point(136, 237);
             this.totalStartNumericUpDown.Maximum = new decimal(new int[] {
@@ -148,11 +145,6 @@ namespace BlenderRenderController
             this.toolTipInfo.SetToolTip(this.totalStartNumericUpDown, "You know what it is.");
             this.totalStartNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
             // 
-            // projectDataBindingSource
-            // 
-            this.projectDataBindingSource.DataSource = typeof(BRClib.ProjectData);
-            this.projectDataBindingSource.DataMemberChanged += new System.EventHandler(this.projectDataBindingSource_DataMemberChanged);
-            // 
             // startFrameLabel
             // 
             this.startFrameLabel.AutoSize = true;
@@ -166,7 +158,6 @@ namespace BlenderRenderController
             // outputFolderTextBox
             // 
             this.outputFolderTextBox.BackColor = System.Drawing.Color.White;
-            this.outputFolderTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.projectDataBindingSource, "OutputPath", true));
             this.outputFolderTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.outputFolderTextBox.Location = new System.Drawing.Point(32, 321);
             this.outputFolderTextBox.Name = "outputFolderTextBox";
@@ -202,7 +193,6 @@ namespace BlenderRenderController
             // 
             // totalEndNumericUpDown
             // 
-            this.totalEndNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectDataBindingSource, "End", true));
             this.totalEndNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalEndNumericUpDown.Location = new System.Drawing.Point(236, 237);
             this.totalEndNumericUpDown.Maximum = new decimal(new int[] {
@@ -430,9 +420,9 @@ namespace BlenderRenderController
             this.infoPanel.Controls.Add(this.infoActiveScene);
             this.infoPanel.Controls.Add(this.label1);
             this.infoPanel.Controls.Add(this.infoFramesTotalLabel);
-            this.infoPanel.Location = new System.Drawing.Point(32, 79);
+            this.infoPanel.Location = new System.Drawing.Point(23, 79);
             this.infoPanel.Name = "infoPanel";
-            this.infoPanel.Size = new System.Drawing.Size(425, 87);
+            this.infoPanel.Size = new System.Drawing.Size(443, 87);
             this.infoPanel.TabIndex = 22;
             // 
             // infoMore
@@ -470,7 +460,6 @@ namespace BlenderRenderController
             // 
             this.infoResolution.BackColor = System.Drawing.SystemColors.Control;
             this.infoResolution.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoResolution.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.projectDataBindingSource, "Resolution", true));
             this.infoResolution.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoResolution.Location = new System.Drawing.Point(298, 34);
             this.infoResolution.Name = "infoResolution";
@@ -485,12 +474,11 @@ namespace BlenderRenderController
             // 
             this.infoFramerate.BackColor = System.Drawing.SystemColors.Control;
             this.infoFramerate.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoFramerate.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.projectDataBindingSource, "Fps", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, null, "N2"));
             this.infoFramerate.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoFramerate.Location = new System.Drawing.Point(378, 34);
             this.infoFramerate.Name = "infoFramerate";
             this.infoFramerate.ReadOnly = true;
-            this.infoFramerate.Size = new System.Drawing.Size(36, 20);
+            this.infoFramerate.Size = new System.Drawing.Size(49, 20);
             this.infoFramerate.TabIndex = 30;
             this.infoFramerate.TabStop = false;
             this.infoFramerate.Text = "...";
@@ -500,7 +488,6 @@ namespace BlenderRenderController
             // 
             this.infoDuration.BackColor = System.Drawing.SystemColors.Control;
             this.infoDuration.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoDuration.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.projectDataBindingSource, "Duration", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, null, "T"));
             this.infoDuration.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoDuration.Location = new System.Drawing.Point(185, 34);
             this.infoDuration.Name = "infoDuration";
@@ -525,7 +512,6 @@ namespace BlenderRenderController
             // 
             this.infoFramesTotal.BackColor = System.Drawing.SystemColors.Control;
             this.infoFramesTotal.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoFramesTotal.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.projectDataBindingSource, "TotalFrames", true));
             this.infoFramesTotal.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoFramesTotal.Location = new System.Drawing.Point(108, 34);
             this.infoFramesTotal.Name = "infoFramesTotal";
@@ -540,7 +526,6 @@ namespace BlenderRenderController
             // 
             this.infoActiveScene.BackColor = System.Drawing.SystemColors.Control;
             this.infoActiveScene.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoActiveScene.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.projectDataBindingSource, "ActiveScene", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.infoActiveScene.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoActiveScene.Location = new System.Drawing.Point(11, 34);
             this.infoActiveScene.Name = "infoActiveScene";
@@ -560,9 +545,9 @@ namespace BlenderRenderController
             this.infoFramesTotalLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.infoFramesTotalLabel.Location = new System.Drawing.Point(105, 15);
             this.infoFramesTotalLabel.Name = "infoFramesTotalLabel";
-            this.infoFramesTotalLabel.Size = new System.Drawing.Size(79, 15);
+            this.infoFramesTotalLabel.Size = new System.Drawing.Size(62, 15);
             this.infoFramesTotalLabel.TabIndex = 29;
-            this.infoFramesTotalLabel.Text = "Frames Total";
+            this.infoFramesTotalLabel.Text = "T. Frames";
             // 
             // toolTipWarn
             // 
@@ -678,6 +663,7 @@ namespace BlenderRenderController
             this.reloadBlenderDataButton.Text = "Reload Blend";
             this.toolTipInfo.SetToolTip(this.reloadBlenderDataButton, "It reads data from the .blend again and update the form accordingly.");
             this.reloadBlenderDataButton.UseVisualStyleBackColor = true;
+            this.reloadBlenderDataButton.Click += new System.EventHandler(this.reloadBlenderDataButton_Click);
             // 
             // mixDownButton
             // 
@@ -981,6 +967,7 @@ namespace BlenderRenderController
             // 
             // getBlendInfoCom
             // 
+            this.getBlendInfoCom.StartInfo.CreateNoWindow = true;
             this.getBlendInfoCom.StartInfo.Domain = "";
             this.getBlendInfoCom.StartInfo.LoadUserProfile = false;
             this.getBlendInfoCom.StartInfo.Password = null;
@@ -1123,7 +1110,6 @@ namespace BlenderRenderController
             this.Text = "Blender Render Controller";
             this.Load += new System.EventHandler(this.BrcForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.projectDataBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).EndInit();
             this.menuStrip.ResumeLayout(false);
@@ -1220,7 +1206,6 @@ namespace BlenderRenderController
         private System.Windows.Forms.Button blendBrowseBtn;
         private System.Windows.Forms.ContextMenuStrip recentBlendsMenu;
         private System.Windows.Forms.OpenFileDialog openBlendDialog;
-        private System.Windows.Forms.BindingSource projectDataBindingSource;
     }
 }
 

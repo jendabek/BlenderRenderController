@@ -49,7 +49,27 @@ namespace UnitTestProject1
 
         }
 
+        [TestMethod]
+        public void CalcChunks_custom_length()
+        {
+            int[] randPair = MakeRandomParams.GetRandomNumberPair(1, 99999);
 
+            int start = randPair[0];
+            int end = randPair[1];
+            int len = 3500;
+
+            Console.WriteLine("Start: {0}, End: {1}, Legth: {2}", start, end, end-start+1);
+
+            var calcResult = Chunk.CalcChunksByLenght(start, end, len);
+            foreach (var res in calcResult)
+            {
+                Console.WriteLine(res + "   Lenght: " + res.Length);
+            }
+            Console.WriteLine();
+            Console.WriteLine("Number of chunks: " + calcResult.Length);
+            Assert.IsFalse(calcResult.Last().End != end, "Last calcResult.End was different then param end");
+
+        }
     }
 
     static class MakeRandomParams
@@ -65,12 +85,10 @@ namespace UnitTestProject1
         }
         public static int[] GetRandomNumberPair(int min, int max, bool invert = false)
         {
-            int[] rnd = new int[2];
             var r1 = GetRandomNumber(min, max);
             var r2 = GetRandomNumber(min, max);
 
-            rnd[0] = r1;
-            rnd[1] = r2;
+            int[] rnd = { r1, r2 };
 
             if (invert)
             {

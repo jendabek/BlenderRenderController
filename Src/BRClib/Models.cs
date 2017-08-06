@@ -1,16 +1,15 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
 
 namespace BRClib
 {
     public class BlendData : BindingBase
     {
         private int _start, _end, _sceneNum;
-        private double _fps, _fpsBase;
+        private double _fps;
         private string _res, _outPath, _projName, 
             _activeScene, _renderFmt;
 
@@ -33,17 +32,17 @@ namespace BRClib
             set => SetProperty(ref _sceneNum, value);
         }
         [JsonProperty("fps")]
-        public double FpsSource
+        public double Fps
         {
             get => _fps;
             set => SetProperty(ref _fps, value);
         }
-        [JsonProperty("fpsBase")]
-        public double FpsBase
-        {
-            get => _fpsBase;
-            set => SetProperty(ref _fpsBase, value);
-        }
+        //[JsonProperty("fpsBase")]
+        //public double FpsBase
+        //{
+        //    get => _fpsBase;
+        //    set => SetProperty(ref _fpsBase, value);
+        //}
         [JsonProperty("resolution")]
         public string Resolution
         {
@@ -75,27 +74,15 @@ namespace BRClib
             set => SetProperty(ref _renderFmt, value);
         }
 
-    }
-
-    public class ProjectData : BlendData
-    {
-        private readonly List<Chunk> _chunkList;
-        private string _blendPath;
-
-        public List<Chunk> ChunkList { get => _chunkList; }
-
-        public string BlendPath
-        {
-            get => _blendPath;
-            set => SetProperty(ref _blendPath, value);
-        }
-
-        public TimeSpan Duration
+        public TimeSpan? Duration
         {
             get
             {
-                var durationSeconds = TotalFrames / FpsSource;
-                return TimeSpan.FromSeconds(durationSeconds);
+                var duration = (_bData.End - _bData.Start + 1) / _bData.Fps;
+                if (!double.IsNaN(duration))
+                    return TimeSpan.FromSeconds(duration);
+                else
+                    return null;
             }
         }
 
@@ -103,19 +90,71 @@ namespace BRClib
         {
             get
             {
-                return End - Start + 1;
+                return _bData.End - _bData.Start + 1;
             }
         }
 
-        public double Fps
+
+    }
+
+    public class ProjectSettings : BindingBase
+    {
+        private readonly ObservableCollection<Chunk> _chunkList;
+        private string _blendPath;
+        private BlendData _bData;
+
+        public string BlendPath
         {
-            get => FpsSource / FpsBase;
+            get => _blendPath;
+            set => SetProperty(ref _blendPath, value);
         }
 
-        public ProjectData()
+        public BlendData BlendData
         {
-            _chunkList = new List<Chunk>();
+            get => _bData;
+            set
+            {
+                SetProperty(ref _bData, value);
+            }
         }
+
+        public TimeSpan? Duration
+        {
+            get
+            {
+                var duration = (_bData.End - _bData.Start + 1) / _bData.Fps;
+                if (!double.IsNaN(duration))
+                    return TimeSpan.FromSeconds(duration);
+                else
+                    return null;
+            }
+        }
+
+        public int TotalFrames
+        {
+            get
+            {
+                return _bData.End - _bData.Start + 1;
+            }
+        }
+
+        //public ObservableCollection<Chunk> ChunkList => _chunkList;
+
+
+        public ProjectSettings()
+        {
+            _chunkList = new ObservableCollection<Chunk>();
+            BlendData = new BlendData();
+        }
+
+
+        //public void AddChunkRange(IEnumerable<Chunk> chunks)
+        //{
+        //    foreach (var chunk in chunks)
+        //    {
+        //        ChunkList.Add(chunk);
+        //    }
+        //}
     }
 
     /// <summary>
@@ -156,7 +195,7 @@ namespace BRClib
         /// </summary>
         /// <param name="start">Project's start frame</param>
         /// <param name="end">Project's end frame</param>
-        /// <param name="div"></param>
+        /// <param name="div">Number of chunks</param>
         /// <returns></returns>
         public static Chunk[] CalcChunks(decimal start, decimal end, int div)
         {
@@ -176,7 +215,7 @@ namespace BRClib
 
             decimal cStart, cEnd;
 
-            // makes even chunks
+            // makes chunks
             for (int i = 0; i != div; i++)
             {
                 cStart = start;
@@ -191,6 +230,7 @@ namespace BRClib
                 }
                 else
                 {
+                    // the final chunk, the one that matches the project's end
                     var last = chunkList.Last();
                     var finalChunk = new Chunk(last.End + 1, end);
                     chunkList.Add(finalChunk);
@@ -199,32 +239,58 @@ namespace BRClib
 
             return chunkList.ToArray();
         }
+        /// <summary>
+        /// Calculates an even divided array of chunks, based on desired lenght
+        /// </summary>
+        /// <param name="start">Project's start frame</param>
+        /// <param name="end">Project's end frame</param>
+        /// <param name="chunkLenght">Desired chunk lenght</param>
+        /// <returns></returns>
+        public static Chunk[] CalcChunksByLenght(decimal start, decimal end, int chunkLenght)
+        {
+            if (end <= start)
+                throw new ArgumentException("Start frame cannot be equal or greater them end frame",
+                                            nameof(start));
 
+            var totalLenght = end - start + 1;
+
+            if (chunkLenght == 0)
+                throw new ArgumentException("Invalid chunk lenght", nameof(chunkLenght));
+
+            List<Chunk> chunkList = new List<Chunk>();
+            decimal cStart, cEnd, totalChunksLen = 0;
+
+            while (totalChunksLen <= totalLenght)
+            {
+                cStart = start;
+                cEnd = start + chunkLenght;
+
+                var chunk = new Chunk(cStart, cEnd);
+
+                if ((chunk.End + 1 < end))
+                {
+                    chunkList.Add(chunk);
+                    start = cEnd + 1;
+                }
+                else
+                {
+                    var last = chunkList.LastOrDefault();
+                    cStart = last.End + 1;
+                    if (cStart < end)
+                    {
+                        var finalChunk = new Chunk(last.End + 1, end);
+                        chunkList.Add(finalChunk);
+                    }
+                }
+
+                totalChunksLen += chunk.Length;
+            }
+
+            return chunkList.ToArray();
+        }
         public override string ToString()
         {
             return $"{Start}-{End}";
-        }
-    }
-
-    public class BindingBase : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName]string pName = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(storage, value))
-            {
-                return false;
-            }
-
-            storage = value;
-            OnPropertyChanged(pName);
-            return true;
-        }
-
-        protected void OnPropertyChanged([CallerMemberName]string pName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(pName));
         }
     }
 

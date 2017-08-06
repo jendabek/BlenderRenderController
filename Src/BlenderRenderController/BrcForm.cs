@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
 using System.Windows.Forms;
-
+using System.Collections.ObjectModel;
 
 namespace BlenderRenderController
 {
@@ -22,18 +22,76 @@ namespace BlenderRenderController
         private readonly string _scriptsFolderPath;
         private static Logger logger = LogManager.GetLogger("BRC");
         private AppSettings _settings;
-        private ProjectData pData;
+        private ProjectSettings pData;
+        private ObservableCollection<Chunk> _currentChunks;
+
 
         public BrcForm()
         {
+            InitializeComponent();
+
+            pData = new ProjectSettings();
+            _currentChunks = new ObservableCollection<Chunk>();
             _scriptsFolderPath = Path.Combine(_baseDir, AppInfo.ScriptsSubfolder);
             _settings = new AppSettings();
+            // temp settings
+            _settings.BlenderProgram = @"C:\Program Files\Blender Foundation\Blender\blender.exe";
+            _settings.FFmpegProgram = @"E:\Programas\FFmpeg\Snapshot\bin\ffmpeg.exe";
         }
 
-        private void BrcForm_Load(object sender, EventArgs e)
+        private void ProjectData_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
 
+
         }
+        private void BlendData_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(pData.BlendData.Start):
+                case nameof(pData.BlendData.End):
+                    infoDuration.Text = string.Format("{0:%h}h {0:%m}m {0:%s}s {0:%f}ms", pData.Duration.GetValueOrDefault());
+                    infoFramesTotal.Text = pData.TotalFrames.ToString();
+                    break;
+                default:
+                    break;
+            }
+        }
+        private void BrcForm_Load(object sender, EventArgs e)
+        {
+            pData.PropertyChanged += ProjectData_PropertyChanged;
+            pData.BlendData.PropertyChanged += BlendData_PropertyChanged;
+            _settings.State = AppStates.AFTER_START;
+
+            processCountNumericUpDown.Value = Environment.ProcessorCount;
+            infoActiveScene.DataBindings.Add("Text", pData, "BlendData.ActiveScene", false, DataSourceUpdateMode.OnValidation, "...");
+            infoResolution.DataBindings.Add("Text", pData.BlendData, "BlendData.Resolution", false, DataSourceUpdateMode.OnValidation, "...");
+            infoFramerate.DataBindings.Add("Text", pData.BlendData, "BlendData.Fps", true, DataSourceUpdateMode.OnValidation, "...", "###.##");
+            infoFramesTotal.DataBindings.Add("Text", pData, "TotalFrames", false, DataSourceUpdateMode.OnPropertyChanged, "...");
+
+            totalStartNumericUpDown.DataBindings.Add("Value", pData.BlendData, "Start");
+            totalStartNumericUpDown.DataBindings.Add("Enabled", startEndCustomRadio, "Checked");
+            totalEndNumericUpDown.DataBindings.Add("Value", pData.BlendData, "End");
+            totalEndNumericUpDown.DataBindings.Add("Enabled", startEndCustomRadio, "Checked");
+
+            chunkLengthNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
+            processCountNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
+
+
+        }
+
+
+
+        private void PData_Chunks_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            var cList = sender as IList<Chunk>;
+            if (cList.Count > 0)
+            {
+                var len = cList.First().Length;
+                chunkLengthNumericUpDown.Value = len;
+            }
+        }
+
         private void Enter_GotoNext(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter || (e.KeyCode == Keys.Return))
@@ -109,7 +167,21 @@ namespace BlenderRenderController
             }
 
             var blendData = Parsers.ParsePyOutput(streamOutput);
-            projectDataBindingSource.Add(blendData);
+            pData.BlendData = blendData;
+            pData.BlendPath = blendFile;
+            var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, 8);
+            UpdateCurrentChunks(chunks);
+        }
+
+        private void UpdateCurrentChunks(params Chunk[] newChunks)
+        {
+            if (_currentChunks.Count > 0)
+                _currentChunks.Clear();
+
+            foreach (var chnk in newChunks)
+            {
+                _currentChunks.Add(chnk);
+            }
         }
 
         private void UpdateRecentBlendsMenu()
@@ -124,16 +196,11 @@ namespace BlenderRenderController
                 menuItem.Click += (sender, args) =>
                 {
                     ToolStripMenuItem recentItem = (ToolStripMenuItem)sender;
-                    //pData.blendFilePath = recentItem.ToolTipText;
-                    //loadBlend();
+                    var blendPath = recentItem.ToolTipText;
+                    GetBlendInfo(blendPath);
                 };
                 recentBlendsMenu.Items.Add(menuItem);
             }
-        }
-
-        private void projectDataBindingSource_DataMemberChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void blendBrowseBtn_Click(object sender, EventArgs e)
@@ -146,5 +213,15 @@ namespace BlenderRenderController
                 GetBlendInfo(blend);
             }
         }
+
+        private void reloadBlenderDataButton_Click(object sender, EventArgs e)
+        {
+            var blend = pData.BlendPath;
+            if (!string.IsNullOrEmpty(blend))
+            {
+                GetBlendInfo(blend);
+            }
+        }
+
     }
 }
