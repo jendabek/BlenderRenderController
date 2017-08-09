@@ -11,7 +11,7 @@ namespace BlenderRenderController
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        static public void clearFolder(string FolderName)
+        static public void ClearFolder(string FolderName)
         {
             DirectoryInfo dir = new DirectoryInfo(FolderName);
 
@@ -22,7 +22,7 @@ namespace BlenderRenderController
 
             foreach (DirectoryInfo di in dir.GetDirectories())
             {
-                clearFolder(di.FullName);
+                ClearFolder(di.FullName);
                 di.Delete();
             }
         }
@@ -124,6 +124,17 @@ namespace BlenderRenderController
             return path.Trim().TrimEnd('\\');
         }
 
+        static public string ParseChunksFolder(string outputPath)
+        {
+            if (string.IsNullOrEmpty(outputPath))
+                return string.Empty;
+
+            return Path.Combine(outputPath, Constants.ChunksSubfolder);
+        }
+        static public string ParseChunksTxt(string outputPath)
+        {
+            return Path.Combine(ParseChunksFolder(outputPath), Constants.ChunksTxtFileName);
+        }
 
         static public string SecondsToString(double seconds, bool digital = false)
         {

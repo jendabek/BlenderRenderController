@@ -20,7 +20,7 @@ namespace BRClib
             return true;
         }
 
-        protected void OnPropertyChanged([CallerMemberName]string pName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName]string pName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(pName));
         }

@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\BRC.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -75,6 +76,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingsForm.Designer.cs">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TaskbarProgress.cs" />
     <Compile Include="Ui\ErrorBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,9 +98,8 @@
     <Compile Include="Ui\SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <None Include="Properties\DataSources\BrcForm.datasource" />
+    <None Include="Properties\DataSources\AppSettings.datasource" />
     <None Include="Properties\DataSources\BRClib.BlendData.datasource" />
-    <None Include="Properties\DataSources\BRClib.ProjectData.datasource" />
     <None Include="Properties\DataSources\BRClib.ProjectSettings.datasource" />
     <None Include="Resources\blender_icon.ico" />
     <Content Include="Scripts\get_project_info.py">
@@ -135,10 +142,15 @@
     </EmbeddedResource>
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>
+      </SubType>
     </Content>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingsForm.resx">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ui\ErrorBox.resx">
       <DependentUpon>ErrorBox.cs</DependentUpon>

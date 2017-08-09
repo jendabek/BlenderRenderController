@@ -34,8 +34,10 @@ namespace BlenderRenderController
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BrcForm));
             this.renderProgressBar = new System.Windows.Forms.ProgressBar();
             this.totalStartNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.blendDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.startFrameLabel = new System.Windows.Forms.Label();
             this.outputFolderTextBox = new System.Windows.Forms.TextBox();
+            this.projectSettingsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.statusLabel = new System.Windows.Forms.Label();
             this.totalFrameCountLabel = new System.Windows.Forms.Label();
             this.totalEndNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -49,13 +51,11 @@ namespace BlenderRenderController
             this.clearRecentProjectsListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemBug = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.authorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jendabekMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.isti115MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meTwentyFiveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redRaptorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showErrorBoxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.infoPanel = new System.Windows.Forms.Panel();
             this.infoMore = new System.Windows.Forms.LinkLabel();
@@ -102,15 +102,15 @@ namespace BlenderRenderController
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.ETALabel = new System.Windows.Forms.Label();
             this.ETALabelTitle = new System.Windows.Forms.Label();
-            this.getBlendInfoCom = new System.Diagnostics.Process();
-            this.renderCom = new System.Diagnostics.Process();
-            this.mixdownCom = new System.Diagnostics.Process();
-            this.concatenateCom = new System.Diagnostics.Process();
             this.blendBrowseBtn = new System.Windows.Forms.Button();
             this.showRecentBlendsBtn = new System.Windows.Forms.Button();
             this.recentBlendsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openBlendDialog = new System.Windows.Forms.OpenFileDialog();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.processManager = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
             this.menuStrip.SuspendLayout();
@@ -118,6 +118,7 @@ namespace BlenderRenderController
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // renderProgressBar
@@ -131,6 +132,7 @@ namespace BlenderRenderController
             // 
             // totalStartNumericUpDown
             // 
+            this.totalStartNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "Start", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.totalStartNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalStartNumericUpDown.Location = new System.Drawing.Point(136, 237);
             this.totalStartNumericUpDown.Maximum = new decimal(new int[] {
@@ -141,9 +143,16 @@ namespace BlenderRenderController
             this.totalStartNumericUpDown.Name = "totalStartNumericUpDown";
             this.totalStartNumericUpDown.Size = new System.Drawing.Size(90, 22);
             this.totalStartNumericUpDown.TabIndex = 5;
+            this.totalStartNumericUpDown.Tag = "DIRENDER";
             this.totalStartNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTipInfo.SetToolTip(this.totalStartNumericUpDown, "You know what it is.");
             this.totalStartNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
+            this.totalStartNumericUpDown.Validated += new System.EventHandler(this.StartEndNumeric_Changed);
+            // 
+            // blendDataBindingSource
+            // 
+            this.blendDataBindingSource.DataSource = typeof(BRClib.BlendData);
+            this.blendDataBindingSource.CurrentItemChanged += new System.EventHandler(this.blendDataBindingSource_CurrentItemChanged);
             // 
             // startFrameLabel
             // 
@@ -158,15 +167,21 @@ namespace BlenderRenderController
             // outputFolderTextBox
             // 
             this.outputFolderTextBox.BackColor = System.Drawing.Color.White;
+            this.outputFolderTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "OutputPath", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.outputFolderTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.outputFolderTextBox.Location = new System.Drawing.Point(32, 321);
             this.outputFolderTextBox.Name = "outputFolderTextBox";
             this.outputFolderTextBox.Size = new System.Drawing.Size(427, 22);
             this.outputFolderTextBox.TabIndex = 11;
+            this.outputFolderTextBox.Tag = "DIFNL;DIRENDER";
             this.toolTipInfo.SetToolTip(this.outputFolderTextBox, "Path to folder where your video will be rendered to.\r\nIt is automatically set to " +
         ".blend output folder when you open / reload it.");
             this.outputFolderTextBox.WordWrap = false;
             this.outputFolderTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
+            // 
+            // projectSettingsBindingSource
+            // 
+            this.projectSettingsBindingSource.DataSource = typeof(BRClib.ProjectSettings);
             // 
             // statusLabel
             // 
@@ -193,6 +208,7 @@ namespace BlenderRenderController
             // 
             // totalEndNumericUpDown
             // 
+            this.totalEndNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "End", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.totalEndNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalEndNumericUpDown.Location = new System.Drawing.Point(236, 237);
             this.totalEndNumericUpDown.Maximum = new decimal(new int[] {
@@ -203,6 +219,7 @@ namespace BlenderRenderController
             this.totalEndNumericUpDown.Name = "totalEndNumericUpDown";
             this.totalEndNumericUpDown.Size = new System.Drawing.Size(90, 22);
             this.totalEndNumericUpDown.TabIndex = 6;
+            this.totalEndNumericUpDown.Tag = "DIRENDER";
             this.totalEndNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.totalEndNumericUpDown.Value = new decimal(new int[] {
             123456,
@@ -210,9 +227,11 @@ namespace BlenderRenderController
             0,
             0});
             this.totalEndNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
+            this.totalEndNumericUpDown.Validated += new System.EventHandler(this.StartEndNumeric_Changed);
             // 
             // processCountNumericUpDown
             // 
+            this.processCountNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "ProcessesCount", true));
             this.processCountNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.processCountNumericUpDown.Location = new System.Drawing.Point(561, 237);
             this.processCountNumericUpDown.Minimum = new decimal(new int[] {
@@ -223,6 +242,7 @@ namespace BlenderRenderController
             this.processCountNumericUpDown.Name = "processCountNumericUpDown";
             this.processCountNumericUpDown.Size = new System.Drawing.Size(69, 22);
             this.processCountNumericUpDown.TabIndex = 8;
+            this.processCountNumericUpDown.Tag = "DIRENDER";
             this.processCountNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTipInfo.SetToolTip(this.processCountNumericUpDown, "Maximum number of Blender processes that will be parallely rendering your video.\r" +
         "\n\"Auto\" = number of your PC\'s logical processors (threads), this should work the" +
@@ -289,6 +309,7 @@ namespace BlenderRenderController
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.ToolTipText = "Open BRC\'s settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // tipsToolStripMenuItem
             // 
@@ -299,6 +320,7 @@ namespace BlenderRenderController
             this.tipsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.tipsToolStripMenuItem.Text = "Tooltips";
             this.tipsToolStripMenuItem.ToolTipText = "Show/Hide Tooltips";
+            this.tipsToolStripMenuItem.Click += new System.EventHandler(this.tipsToolStripMenuItem_Click);
             // 
             // clearRecentProjectsListToolStripMenuItem
             // 
@@ -306,13 +328,13 @@ namespace BlenderRenderController
             this.clearRecentProjectsListToolStripMenuItem.Name = "clearRecentProjectsListToolStripMenuItem";
             this.clearRecentProjectsListToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.clearRecentProjectsListToolStripMenuItem.Text = "Clear recent projects";
+            this.clearRecentProjectsListToolStripMenuItem.Click += new System.EventHandler(this.clearRecentProjectsListToolStripMenuItem_Click);
             // 
             // infoToolStripMenuItem
             // 
             this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemBug,
-            this.toolStripMenuItem1,
-            this.debugToolStripMenuItem});
+            this.authorsToolStripMenuItem});
             this.infoToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
             this.infoToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
@@ -326,20 +348,21 @@ namespace BlenderRenderController
             this.toolStripMenuItemBug.Name = "toolStripMenuItemBug";
             this.toolStripMenuItemBug.Size = new System.Drawing.Size(171, 22);
             this.toolStripMenuItemBug.Text = "Report a Bug";
+            this.toolStripMenuItemBug.Click += new System.EventHandler(this.toolStripMenuItemBug_Click);
             // 
-            // toolStripMenuItem1
+            // authorsToolStripMenuItem
             // 
-            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.authorsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.jendabekMenuItem,
             this.isti115MenuItem,
             this.meTwentyFiveMenuItem,
             this.redRaptorMenuItem});
-            this.toolStripMenuItem1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toolStripMenuItem1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.toolStripMenuItem1.Image = global::BlenderRenderController.Properties.Resources.github_logo_small;
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(171, 22);
-            this.toolStripMenuItem1.Text = "Authors on Github";
+            this.authorsToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.authorsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.authorsToolStripMenuItem.Image = global::BlenderRenderController.Properties.Resources.github_logo_small;
+            this.authorsToolStripMenuItem.Name = "authorsToolStripMenuItem";
+            this.authorsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.authorsToolStripMenuItem.Text = "Authors on Github";
             // 
             // jendabekMenuItem
             // 
@@ -349,6 +372,7 @@ namespace BlenderRenderController
             this.jendabekMenuItem.Name = "jendabekMenuItem";
             this.jendabekMenuItem.Size = new System.Drawing.Size(152, 22);
             this.jendabekMenuItem.Text = "jendabek";
+            this.jendabekMenuItem.Click += new System.EventHandler(this.AuthorLink_Clicked);
             // 
             // isti115MenuItem
             // 
@@ -358,6 +382,7 @@ namespace BlenderRenderController
             this.isti115MenuItem.Name = "isti115MenuItem";
             this.isti115MenuItem.Size = new System.Drawing.Size(152, 22);
             this.isti115MenuItem.Text = "Isti115";
+            this.isti115MenuItem.Click += new System.EventHandler(this.AuthorLink_Clicked);
             // 
             // meTwentyFiveMenuItem
             // 
@@ -367,6 +392,7 @@ namespace BlenderRenderController
             this.meTwentyFiveMenuItem.Name = "meTwentyFiveMenuItem";
             this.meTwentyFiveMenuItem.Size = new System.Drawing.Size(152, 22);
             this.meTwentyFiveMenuItem.Text = "MeTwentyFive";
+            this.meTwentyFiveMenuItem.Click += new System.EventHandler(this.AuthorLink_Clicked);
             // 
             // redRaptorMenuItem
             // 
@@ -376,21 +402,7 @@ namespace BlenderRenderController
             this.redRaptorMenuItem.Name = "redRaptorMenuItem";
             this.redRaptorMenuItem.Size = new System.Drawing.Size(152, 22);
             this.redRaptorMenuItem.Text = "RedRaptor93";
-            // 
-            // debugToolStripMenuItem
-            // 
-            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.showErrorBoxToolStripMenuItem});
-            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
-            this.debugToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.debugToolStripMenuItem.Text = "Debug";
-            this.debugToolStripMenuItem.Visible = false;
-            // 
-            // showErrorBoxToolStripMenuItem
-            // 
-            this.showErrorBoxToolStripMenuItem.Name = "showErrorBoxToolStripMenuItem";
-            this.showErrorBoxToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.showErrorBoxToolStripMenuItem.Text = "Show errorBox";
+            this.redRaptorMenuItem.Click += new System.EventHandler(this.AuthorLink_Clicked);
             // 
             // label1
             // 
@@ -428,7 +440,7 @@ namespace BlenderRenderController
             // infoMore
             // 
             this.infoMore.AutoSize = true;
-            this.infoMore.Location = new System.Drawing.Point(373, 64);
+            this.infoMore.Location = new System.Drawing.Point(387, 64);
             this.infoMore.Name = "infoMore";
             this.infoMore.Size = new System.Drawing.Size(40, 13);
             this.infoMore.TabIndex = 33;
@@ -460,6 +472,7 @@ namespace BlenderRenderController
             // 
             this.infoResolution.BackColor = System.Drawing.SystemColors.Control;
             this.infoResolution.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.infoResolution.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Resolution", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "..."));
             this.infoResolution.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoResolution.Location = new System.Drawing.Point(298, 34);
             this.infoResolution.Name = "infoResolution";
@@ -474,6 +487,7 @@ namespace BlenderRenderController
             // 
             this.infoFramerate.BackColor = System.Drawing.SystemColors.Control;
             this.infoFramerate.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.infoFramerate.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Fps", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "...", "###.##"));
             this.infoFramerate.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoFramerate.Location = new System.Drawing.Point(378, 34);
             this.infoFramerate.Name = "infoFramerate";
@@ -488,6 +502,7 @@ namespace BlenderRenderController
             // 
             this.infoDuration.BackColor = System.Drawing.SystemColors.Control;
             this.infoDuration.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.infoDuration.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Duration", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "..."));
             this.infoDuration.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoDuration.Location = new System.Drawing.Point(185, 34);
             this.infoDuration.Name = "infoDuration";
@@ -512,6 +527,7 @@ namespace BlenderRenderController
             // 
             this.infoFramesTotal.BackColor = System.Drawing.SystemColors.Control;
             this.infoFramesTotal.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.infoFramesTotal.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "TotalFrames", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "...", "# \"f\""));
             this.infoFramesTotal.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoFramesTotal.Location = new System.Drawing.Point(108, 34);
             this.infoFramesTotal.Name = "infoFramesTotal";
@@ -526,6 +542,7 @@ namespace BlenderRenderController
             // 
             this.infoActiveScene.BackColor = System.Drawing.SystemColors.Control;
             this.infoActiveScene.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.infoActiveScene.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "ActiveScene", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged, "..."));
             this.infoActiveScene.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoActiveScene.Location = new System.Drawing.Point(11, 34);
             this.infoActiveScene.Name = "infoActiveScene";
@@ -575,6 +592,7 @@ namespace BlenderRenderController
             // 
             // chunkLengthNumericUpDown
             // 
+            this.chunkLengthNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "ChunkLenght", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.chunkLengthNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(448, 238);
             this.chunkLengthNumericUpDown.Maximum = new decimal(new int[] {
@@ -590,6 +608,7 @@ namespace BlenderRenderController
             this.chunkLengthNumericUpDown.Name = "chunkLengthNumericUpDown";
             this.chunkLengthNumericUpDown.Size = new System.Drawing.Size(86, 22);
             this.chunkLengthNumericUpDown.TabIndex = 7;
+            this.chunkLengthNumericUpDown.Tag = "DIRENDER";
             this.chunkLengthNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTipInfo.SetToolTip(this.chunkLengthNumericUpDown, resources.GetString("chunkLengthNumericUpDown.ToolTip"));
             this.chunkLengthNumericUpDown.Value = new decimal(new int[] {
@@ -609,9 +628,11 @@ namespace BlenderRenderController
             this.afterRenderJoinMixdownRadio.Size = new System.Drawing.Size(283, 19);
             this.afterRenderJoinMixdownRadio.TabIndex = 33;
             this.afterRenderJoinMixdownRadio.TabStop = true;
+            this.afterRenderJoinMixdownRadio.Tag = "DIFNL;DIRENDER";
             this.afterRenderJoinMixdownRadio.Text = "Automatically join chunks && use mixdown audio";
             this.toolTipInfo.SetToolTip(this.afterRenderJoinMixdownRadio, resources.GetString("afterRenderJoinMixdownRadio.ToolTip"));
             this.afterRenderJoinMixdownRadio.UseVisualStyleBackColor = true;
+            this.afterRenderJoinMixdownRadio.CheckedChanged += new System.EventHandler(this.AfterRenderAction_Changed);
             // 
             // afterRenderJoinRadio
             // 
@@ -621,6 +642,7 @@ namespace BlenderRenderController
             this.afterRenderJoinRadio.Name = "afterRenderJoinRadio";
             this.afterRenderJoinRadio.Size = new System.Drawing.Size(162, 19);
             this.afterRenderJoinRadio.TabIndex = 33;
+            this.afterRenderJoinRadio.Tag = "DIFNL;DIRENDER";
             this.afterRenderJoinRadio.Text = "Automatically join chunks";
             this.toolTipInfo.SetToolTip(this.afterRenderJoinRadio, resources.GetString("afterRenderJoinRadio.ToolTip"));
             this.afterRenderJoinRadio.UseVisualStyleBackColor = true;
@@ -633,6 +655,7 @@ namespace BlenderRenderController
             this.afterRenderDoNothingRadio.Name = "afterRenderDoNothingRadio";
             this.afterRenderDoNothingRadio.Size = new System.Drawing.Size(130, 19);
             this.afterRenderDoNothingRadio.TabIndex = 33;
+            this.afterRenderDoNothingRadio.Tag = "DIFNL;DIRENDER";
             this.afterRenderDoNothingRadio.Text = "Render just chunks";
             this.toolTipInfo.SetToolTip(this.afterRenderDoNothingRadio, "Will render only chunks.\r\nStill, you can render mixdown separately and join it ma" +
         "nually by buttons on the right.\r\n");
@@ -660,8 +683,9 @@ namespace BlenderRenderController
             this.reloadBlenderDataButton.Padding = new System.Windows.Forms.Padding(20, 0, 5, 0);
             this.reloadBlenderDataButton.Size = new System.Drawing.Size(172, 34);
             this.reloadBlenderDataButton.TabIndex = 2;
+            this.reloadBlenderDataButton.Tag = "DIFNL;DIRENDER";
             this.reloadBlenderDataButton.Text = "Reload Blend";
-            this.toolTipInfo.SetToolTip(this.reloadBlenderDataButton, "It reads data from the .blend again and update the form accordingly.");
+            this.toolTipInfo.SetToolTip(this.reloadBlenderDataButton, "Re-reads data from the .blend again and updates the form accordingly.");
             this.reloadBlenderDataButton.UseVisualStyleBackColor = true;
             this.reloadBlenderDataButton.Click += new System.EventHandler(this.reloadBlenderDataButton_Click);
             // 
@@ -675,10 +699,12 @@ namespace BlenderRenderController
             this.mixDownButton.Padding = new System.Windows.Forms.Padding(8, 0, 7, 0);
             this.mixDownButton.Size = new System.Drawing.Size(155, 38);
             this.mixDownButton.TabIndex = 14;
+            this.mixDownButton.Tag = "DIFNL;DIRENDER";
             this.mixDownButton.Text = "Render Mixdown";
             this.mixDownButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.toolTipInfo.SetToolTip(this.mixDownButton, "Renders an audio file for the final video.");
             this.mixDownButton.UseVisualStyleBackColor = true;
+            this.mixDownButton.Click += new System.EventHandler(this.mixDownButton_Click);
             // 
             // concatenatePartsButton
             // 
@@ -690,12 +716,14 @@ namespace BlenderRenderController
             this.concatenatePartsButton.Padding = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.concatenatePartsButton.Size = new System.Drawing.Size(128, 38);
             this.concatenatePartsButton.TabIndex = 15;
+            this.concatenatePartsButton.Tag = "DIRENDER";
             this.concatenatePartsButton.Text = "Join Chunks";
             this.concatenatePartsButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.toolTipInfo.SetToolTip(this.concatenatePartsButton, "!Warning - previous video will be overwritten!\r\n\r\nJoins rendered chunks to get th" +
         "e final video.\r\nMixdown audio will be used if it is rendered (and found in the o" +
         "utput folder).");
             this.concatenatePartsButton.UseVisualStyleBackColor = true;
+            this.concatenatePartsButton.Click += new System.EventHandler(this.concatenatePartsButton_Click);
             // 
             // renderAllButton
             // 
@@ -707,10 +735,12 @@ namespace BlenderRenderController
             this.renderAllButton.Padding = new System.Windows.Forms.Padding(10, 0, 12, 0);
             this.renderAllButton.Size = new System.Drawing.Size(160, 47);
             this.renderAllButton.TabIndex = 13;
+            this.renderAllButton.Tag = "DIFNL";
             this.renderAllButton.Text = "Start Render";
             this.renderAllButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.toolTipInfo.SetToolTip(this.renderAllButton, "Saves a lot of your time.");
             this.renderAllButton.UseVisualStyleBackColor = true;
+            this.renderAllButton.Click += new System.EventHandler(this.renderAllButton_Click);
             // 
             // blendFileLabel
             // 
@@ -806,9 +836,11 @@ namespace BlenderRenderController
             this.rendererRadioButtonCycles.Name = "rendererRadioButtonCycles";
             this.rendererRadioButtonCycles.Size = new System.Drawing.Size(60, 19);
             this.rendererRadioButtonCycles.TabIndex = 10;
+            this.rendererRadioButtonCycles.Tag = "DIRENDER";
             this.rendererRadioButtonCycles.Text = "Cycles";
             this.rendererRadioButtonCycles.UseVisualStyleBackColor = true;
             this.rendererRadioButtonCycles.Visible = false;
+            this.rendererRadioButtonCycles.CheckedChanged += new System.EventHandler(this.RendererType_RadioChanged);
             // 
             // rendererRadioButtonBlender
             // 
@@ -820,31 +852,37 @@ namespace BlenderRenderController
             this.rendererRadioButtonBlender.Size = new System.Drawing.Size(112, 19);
             this.rendererRadioButtonBlender.TabIndex = 9;
             this.rendererRadioButtonBlender.TabStop = true;
+            this.rendererRadioButtonBlender.Tag = "DIRENDER";
             this.rendererRadioButtonBlender.Text = "Blender Render";
             this.rendererRadioButtonBlender.UseVisualStyleBackColor = true;
             this.rendererRadioButtonBlender.Visible = false;
+            this.rendererRadioButtonBlender.CheckedChanged += new System.EventHandler(this.RendererType_RadioChanged);
             // 
             // startEndBlendRadio
             // 
             this.startEndBlendRadio.AutoSize = true;
             this.startEndBlendRadio.Checked = true;
             this.startEndBlendRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startEndBlendRadio.Location = new System.Drawing.Point(32, 221);
+            this.startEndBlendRadio.Location = new System.Drawing.Point(3, 3);
             this.startEndBlendRadio.Name = "startEndBlendRadio";
             this.startEndBlendRadio.Size = new System.Drawing.Size(89, 19);
             this.startEndBlendRadio.TabIndex = 3;
             this.startEndBlendRadio.TabStop = true;
+            this.startEndBlendRadio.Tag = "DIFNL;DIRENDER";
             this.startEndBlendRadio.Text = "From Blend";
             this.startEndBlendRadio.UseVisualStyleBackColor = true;
+            this.startEndBlendRadio.CheckedChanged += new System.EventHandler(this.AutoOptionsRadio_CheckedChanged);
             // 
             // startEndCustomRadio
             // 
             this.startEndCustomRadio.AutoSize = true;
             this.startEndCustomRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startEndCustomRadio.Location = new System.Drawing.Point(32, 243);
+            this.startEndCustomRadio.Location = new System.Drawing.Point(3, 25);
+            this.startEndCustomRadio.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.startEndCustomRadio.Name = "startEndCustomRadio";
             this.startEndCustomRadio.Size = new System.Drawing.Size(67, 19);
             this.startEndCustomRadio.TabIndex = 4;
+            this.startEndCustomRadio.Tag = "DIFNL;DIRENDER";
             this.startEndCustomRadio.Text = "Custom";
             this.startEndCustomRadio.UseVisualStyleBackColor = true;
             // 
@@ -858,8 +896,10 @@ namespace BlenderRenderController
             this.renderOptionsAutoRadio.Size = new System.Drawing.Size(49, 19);
             this.renderOptionsAutoRadio.TabIndex = 9;
             this.renderOptionsAutoRadio.TabStop = true;
+            this.renderOptionsAutoRadio.Tag = "DIFNL;DIRENDER";
             this.renderOptionsAutoRadio.Text = "Auto";
             this.renderOptionsAutoRadio.UseVisualStyleBackColor = true;
+            this.renderOptionsAutoRadio.CheckedChanged += new System.EventHandler(this.AutoOptionsRadio_CheckedChanged);
             // 
             // renderOptionsCustomRadio
             // 
@@ -869,6 +909,7 @@ namespace BlenderRenderController
             this.renderOptionsCustomRadio.Name = "renderOptionsCustomRadio";
             this.renderOptionsCustomRadio.Size = new System.Drawing.Size(67, 19);
             this.renderOptionsCustomRadio.TabIndex = 10;
+            this.renderOptionsCustomRadio.Tag = "DIFNL;DIRENDER";
             this.renderOptionsCustomRadio.Text = "Custom";
             this.renderOptionsCustomRadio.UseVisualStyleBackColor = true;
             // 
@@ -927,9 +968,11 @@ namespace BlenderRenderController
             this.openOutputFolderButton.Padding = new System.Windows.Forms.Padding(8, 0, 5, 0);
             this.openOutputFolderButton.Size = new System.Drawing.Size(80, 25);
             this.openOutputFolderButton.TabIndex = 16;
+            this.openOutputFolderButton.Tag = "DIFNL";
             this.openOutputFolderButton.Text = "Open";
             this.openOutputFolderButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.openOutputFolderButton.UseVisualStyleBackColor = true;
+            this.openOutputFolderButton.Click += new System.EventHandler(this.openOutputFolderButton_Click);
             // 
             // outputFolderBrowseButton
             // 
@@ -941,9 +984,11 @@ namespace BlenderRenderController
             this.outputFolderBrowseButton.Padding = new System.Windows.Forms.Padding(8, 0, 7, 1);
             this.outputFolderBrowseButton.Size = new System.Drawing.Size(95, 25);
             this.outputFolderBrowseButton.TabIndex = 12;
+            this.outputFolderBrowseButton.Tag = "DIFNL;DIRENDER";
             this.outputFolderBrowseButton.Text = "  Change";
             this.outputFolderBrowseButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.outputFolderBrowseButton.UseVisualStyleBackColor = true;
+            this.outputFolderBrowseButton.Click += new System.EventHandler(this.outputFolderBrowseButton_Click);
             // 
             // ETALabel
             // 
@@ -965,59 +1010,6 @@ namespace BlenderRenderController
             this.ETALabelTitle.TabIndex = 19;
             this.ETALabelTitle.Text = "ETA:";
             // 
-            // getBlendInfoCom
-            // 
-            this.getBlendInfoCom.StartInfo.CreateNoWindow = true;
-            this.getBlendInfoCom.StartInfo.Domain = "";
-            this.getBlendInfoCom.StartInfo.LoadUserProfile = false;
-            this.getBlendInfoCom.StartInfo.Password = null;
-            this.getBlendInfoCom.StartInfo.RedirectStandardError = true;
-            this.getBlendInfoCom.StartInfo.RedirectStandardOutput = true;
-            this.getBlendInfoCom.StartInfo.StandardErrorEncoding = null;
-            this.getBlendInfoCom.StartInfo.StandardOutputEncoding = null;
-            this.getBlendInfoCom.StartInfo.UserName = "";
-            this.getBlendInfoCom.StartInfo.UseShellExecute = false;
-            this.getBlendInfoCom.SynchronizingObject = this;
-            // 
-            // renderCom
-            // 
-            this.renderCom.StartInfo.CreateNoWindow = true;
-            this.renderCom.StartInfo.Domain = "";
-            this.renderCom.StartInfo.LoadUserProfile = false;
-            this.renderCom.StartInfo.Password = null;
-            this.renderCom.StartInfo.RedirectStandardError = true;
-            this.renderCom.StartInfo.RedirectStandardOutput = true;
-            this.renderCom.StartInfo.StandardErrorEncoding = null;
-            this.renderCom.StartInfo.StandardOutputEncoding = null;
-            this.renderCom.StartInfo.UserName = "";
-            this.renderCom.StartInfo.UseShellExecute = false;
-            this.renderCom.SynchronizingObject = this;
-            // 
-            // mixdownCom
-            // 
-            this.mixdownCom.StartInfo.CreateNoWindow = true;
-            this.mixdownCom.StartInfo.Domain = "";
-            this.mixdownCom.StartInfo.LoadUserProfile = false;
-            this.mixdownCom.StartInfo.Password = null;
-            this.mixdownCom.StartInfo.RedirectStandardOutput = true;
-            this.mixdownCom.StartInfo.StandardErrorEncoding = null;
-            this.mixdownCom.StartInfo.StandardOutputEncoding = null;
-            this.mixdownCom.StartInfo.UserName = "";
-            this.mixdownCom.StartInfo.UseShellExecute = false;
-            this.mixdownCom.SynchronizingObject = this;
-            // 
-            // concatenateCom
-            // 
-            this.concatenateCom.StartInfo.CreateNoWindow = true;
-            this.concatenateCom.StartInfo.Domain = "";
-            this.concatenateCom.StartInfo.LoadUserProfile = false;
-            this.concatenateCom.StartInfo.Password = null;
-            this.concatenateCom.StartInfo.StandardErrorEncoding = null;
-            this.concatenateCom.StartInfo.StandardOutputEncoding = null;
-            this.concatenateCom.StartInfo.UserName = "";
-            this.concatenateCom.StartInfo.UseShellExecute = false;
-            this.concatenateCom.SynchronizingObject = this;
-            // 
             // blendBrowseBtn
             // 
             this.blendBrowseBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1025,10 +1017,11 @@ namespace BlenderRenderController
             this.blendBrowseBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.blendBrowseBtn.Location = new System.Drawing.Point(472, 79);
             this.blendBrowseBtn.Name = "blendBrowseBtn";
-            this.blendBrowseBtn.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.blendBrowseBtn.Size = new System.Drawing.Size(136, 44);
+            this.blendBrowseBtn.Padding = new System.Windows.Forms.Padding(3, 5, 0, 0);
+            this.blendBrowseBtn.Size = new System.Drawing.Size(145, 44);
             this.blendBrowseBtn.TabIndex = 37;
-            this.blendBrowseBtn.Text = "Open Blend";
+            this.blendBrowseBtn.Tag = "DIRENDER";
+            this.blendBrowseBtn.Text = " Open Blend";
             this.blendBrowseBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.blendBrowseBtn.UseVisualStyleBackColor = true;
             this.blendBrowseBtn.Click += new System.EventHandler(this.blendBrowseBtn_Click);
@@ -1037,12 +1030,15 @@ namespace BlenderRenderController
             // 
             this.showRecentBlendsBtn.ContextMenuStrip = this.recentBlendsMenu;
             this.showRecentBlendsBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.showRecentBlendsBtn.Location = new System.Drawing.Point(608, 79);
+            this.showRecentBlendsBtn.Location = new System.Drawing.Point(619, 79);
             this.showRecentBlendsBtn.Name = "showRecentBlendsBtn";
-            this.showRecentBlendsBtn.Size = new System.Drawing.Size(38, 44);
+            this.showRecentBlendsBtn.Size = new System.Drawing.Size(27, 44);
             this.showRecentBlendsBtn.TabIndex = 38;
+            this.showRecentBlendsBtn.Tag = "DIRENDER";
             this.showRecentBlendsBtn.Text = "˅";
+            this.toolTipInfo.SetToolTip(this.showRecentBlendsBtn, "Recent .blend files");
             this.showRecentBlendsBtn.UseVisualStyleBackColor = true;
+            this.showRecentBlendsBtn.Click += new System.EventHandler(this.showRecentBlendsBtn_Click);
             // 
             // recentBlendsMenu
             // 
@@ -1053,18 +1049,31 @@ namespace BlenderRenderController
             // 
             this.openBlendDialog.Filter = "Blend|*.blend";
             // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.startEndBlendRadio);
+            this.flowLayoutPanel1.Controls.Add(this.startEndCustomRadio);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(27, 220);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(99, 47);
+            this.flowLayoutPanel1.TabIndex = 39;
+            // 
+            // processManager
+            // 
+            this.processManager.Interval = 20;
+            this.processManager.Tick += new System.EventHandler(this.UpdateProcessManagement);
+            // 
             // BrcForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(662, 621);
+            this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.showRecentBlendsBtn);
             this.Controls.Add(this.blendBrowseBtn);
             this.Controls.Add(this.versionLabel);
             this.Controls.Add(this.renderInfoLabel);
-            this.Controls.Add(this.startEndBlendRadio);
-            this.Controls.Add(this.startEndCustomRadio);
             this.Controls.Add(this.rendererRadioButtonBlender);
             this.Controls.Add(this.rendererRadioButtonCycles);
             this.Controls.Add(this.blendFileNameLabel);
@@ -1110,6 +1119,8 @@ namespace BlenderRenderController
             this.Text = "Blender Render Controller";
             this.Load += new System.EventHandler(this.BrcForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).EndInit();
             this.menuStrip.ResumeLayout(false);
@@ -1121,6 +1132,8 @@ namespace BlenderRenderController
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1170,7 +1183,7 @@ namespace BlenderRenderController
         private System.Windows.Forms.RadioButton rendererRadioButtonCycles;
         private System.Windows.Forms.RadioButton rendererRadioButtonBlender;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem authorsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem isti115MenuItem;
         private System.Windows.Forms.ToolStripMenuItem jendabekMenuItem;
         private System.Windows.Forms.ToolStripMenuItem meTwentyFiveMenuItem;
@@ -1195,17 +1208,14 @@ namespace BlenderRenderController
         private System.Windows.Forms.ToolStripMenuItem clearRecentProjectsListToolStripMenuItem;
         private System.Windows.Forms.Label ETALabel;
         private System.Windows.Forms.Label ETALabelTitle;
-        private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem showErrorBoxToolStripMenuItem;
-        private System.Diagnostics.Process getBlendInfoCom;
-        private System.Diagnostics.Process renderCom;
-        private System.Diagnostics.Process mixdownCom;
-        //private SplitButton blendBrowseBtn;
-        private System.Diagnostics.Process concatenateCom;
         private System.Windows.Forms.Button showRecentBlendsBtn;
         private System.Windows.Forms.Button blendBrowseBtn;
         private System.Windows.Forms.ContextMenuStrip recentBlendsMenu;
         private System.Windows.Forms.OpenFileDialog openBlendDialog;
+        private System.Windows.Forms.BindingSource projectSettingsBindingSource;
+        private System.Windows.Forms.BindingSource blendDataBindingSource;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Timer processManager;
     }
 }
 

@@ -1,5 +1,10 @@
-﻿using System;
+﻿using BRClib;
+using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,24 +12,103 @@ using System.Windows.Forms;
 
 namespace BlenderRenderController
 {
+    [JsonObject(Description = "Brc settings")]
     class AppSettings
     {
-        private List<string> _recentBlends = new List<string>();
-        private PlatformID Os = Environment.OSVersion.Platform;
-
-        private string _blenderExeName;
-        private string _ffmpegExeName;
+        private ObservableCollection<string> _recentBlends = new ObservableCollection<string>();
+        private static readonly string _baseDir = Environment.CurrentDirectory;
+        private string _blenderExeName, _scriptsFolderPath, _ffmpegExeName;
         private int RECENT_BLENDS_MAX_COUNT = 10;
+        private bool _appConfigured;
+        const string SETTINGS_FILE = "brc_settings.json";
+
+        private static AppSettings _instance;
+        public static AppSettings Current
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (typeof(AppSettings))
+                    {
+                        if (_instance == null)
+                        {
+                            //_instance = new AppSettings();
+                            _instance = Load();
+                        }
+                    }
+                }
+
+                return _instance;
+            }
+        }
+
+        public event EventHandler<NotifyCollectionChangedEventArgs> RecentBlends_Changed;
 
         public string BlenderProgram { get; set; }
+
         public string FFmpegProgram { get; set; }
-        public AppStates State { get; set; }
-        public List<string> RecentBlends { get => _recentBlends; }
+
+        public bool Verbose { get; set; }
+
+        public bool DisplayToolTips { get; set; }
+
+        public AfterRenderAction AfterRender { get; set; }
+
+        public BlenderRenderes Renderer { get; set; }
+
+        public ObservableCollection<string> RecentBlends { get => _recentBlends; }
+
+        [JsonIgnore]
+        public string ScriptsFolder
+        {
+            get => _scriptsFolderPath;
+            private set => _scriptsFolderPath = value;
+        }
+
+        public string BlenderExeName { get => _blenderExeName; }
+        public string FFmpegExeName { get => _ffmpegExeName; }
+
+        //public string BlenderPath { get => Path.Combine(BlenderProgram, BlenderExeName); }
+        //public string FFmpegPath { get => Path.Combine(FFmpegProgram, FFmpegExeName);  }
 
         public AppSettings()
         {
             _ffmpegExeName = GetProgramFileName("ffmpeg");
             _blenderExeName = GetProgramFileName("blender");
+            _recentBlends.CollectionChanged += RecentBlends_CollectionChanged;
+            _scriptsFolderPath = Path.Combine(_baseDir, Constants.ScriptsSubfolder);
+        }
+
+        [JsonIgnore]
+        private static AppSettings Defaults
+        {
+            get
+            {
+                var settings = new AppSettings()
+                {
+                    BlenderProgram = @"C:\Program Files\Blender Foundation\Blender\" + GetProgramFileName("blender"),
+                    FFmpegProgram = Path.Combine(_baseDir, GetProgramFileName("ffmpeg")),
+                    Verbose = false,
+                    DisplayToolTips = true,
+                    AfterRender = AfterRenderAction.JOIN_MIXDOWN,
+                    Renderer = BlenderRenderes.BLENDER_RENDER
+                };
+
+                return settings;
+            }
+        }
+
+        //[JsonIgnore]
+        //public bool AppConfigured
+        //{
+        //    get => _appConfigured;
+        //    private set => _appConfigured = value;
+        //}
+
+        private void RecentBlends_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            RecentBlends_Changed?.Invoke(sender, e);
         }
 
         public void AddRecentBlend(string blendFilePath)
@@ -66,9 +150,36 @@ namespace BlenderRenderController
             }
         }
 
-        private string GetProgramFileName(string prog)
+        public bool CheckCorrectConfig(bool showErrors = true)
         {
-            switch (Os)
+            List<AppErrorCode> errors = new List<AppErrorCode>();
+
+            if (!File.Exists(BlenderProgram))
+            {
+                errors.Add(AppErrorCode.BLENDER_PATH_NOT_SET);
+            }
+
+            if (!File.Exists(FFmpegProgram))
+            {
+                errors.Add(AppErrorCode.FFMPEG_PATH_NOT_SET);
+            }
+
+            if (errors.Count == 0)
+            {
+                return true;
+            }
+
+            if (showErrors)
+            {
+                Helper.ShowErrors(MessageBoxIcon.Exclamation, errors.ToArray());
+            }
+
+            return false;
+        }
+
+        private static string GetProgramFileName(string prog)
+        {
+            switch (Environment.OSVersion.Platform)
             {
                 case PlatformID.Win32NT:
                     return prog + ".exe";
@@ -78,6 +189,20 @@ namespace BlenderRenderController
                 default:
                     return prog;
             }
+        }
+
+        public void Save()
+        {
+            var jsonStr = JsonConvert.SerializeObject(this, Formatting.Indented);
+            File.WriteAllText(Path.Combine(_baseDir, SETTINGS_FILE), jsonStr);
+        }
+        public static AppSettings Load()
+        {
+            var settingsPath = Path.Combine(_baseDir, SETTINGS_FILE);
+
+            return File.Exists(settingsPath) 
+                ? JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(settingsPath))
+                : AppSettings.Defaults;
         }
     }
 }

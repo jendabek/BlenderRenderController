@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Collections.ObjectModel;
 
@@ -17,13 +18,27 @@ namespace BRClib
         public int Start
         {
             get => _start;
-            set => SetProperty(ref _start, value);
+            set
+            {
+                if (SetProperty(ref _start, value))
+                {
+                    OnPropertyChanged(nameof(Duration));
+                    OnPropertyChanged(nameof(TotalFrames));
+                }
+            }
         }
         [JsonProperty("end")]
         public int End
         {
             get => _end;
-            set => SetProperty(ref _end, value);
+            set
+            {
+                if (SetProperty(ref _end, value))
+                {
+                    OnPropertyChanged(nameof(Duration));
+                    OnPropertyChanged(nameof(TotalFrames));
+                }
+            }
         }
         [JsonProperty("scenesNum")]
         public int NumberOfScenes
@@ -35,14 +50,15 @@ namespace BRClib
         public double Fps
         {
             get => _fps;
-            set => SetProperty(ref _fps, value);
+            set
+            {
+                if(SetProperty(ref _fps, value))
+                {
+                    OnPropertyChanged(nameof(Duration));
+                    OnPropertyChanged(nameof(TotalFrames));
+                }
+            }
         }
-        //[JsonProperty("fpsBase")]
-        //public double FpsBase
-        //{
-        //    get => _fpsBase;
-        //    set => SetProperty(ref _fpsBase, value);
-        //}
         [JsonProperty("resolution")]
         public string Resolution
         {
@@ -78,19 +94,23 @@ namespace BRClib
         {
             get
             {
-                var duration = (_bData.End - _bData.Start + 1) / _bData.Fps;
-                if (!double.IsNaN(duration))
+                var duration = (End - Start + 1) / Fps;
+                if (!double.IsNaN(duration) && !double.IsInfinity(duration))
                     return TimeSpan.FromSeconds(duration);
                 else
                     return null;
             }
         }
 
-        public int TotalFrames
+        public int? TotalFrames
         {
             get
             {
-                return _bData.End - _bData.Start + 1;
+                if (End <= Start)
+                {
+                    return null;
+                }
+                return End - Start + 1;
             }
         }
 
@@ -100,8 +120,9 @@ namespace BRClib
     public class ProjectSettings : BindingBase
     {
         private readonly ObservableCollection<Chunk> _chunkList;
-        private string _blendPath;
+        private string _blendPath, _chunkFolder;
         private BlendData _bData;
+        private int _chunkLen, _processCount;
 
         public string BlendPath
         {
@@ -118,43 +139,41 @@ namespace BRClib
             }
         }
 
-        public TimeSpan? Duration
+        public ObservableCollection<Chunk> ChunkList => _chunkList;
+
+        public int ChunkLenght
         {
-            get
-            {
-                var duration = (_bData.End - _bData.Start + 1) / _bData.Fps;
-                if (!double.IsNaN(duration))
-                    return TimeSpan.FromSeconds(duration);
-                else
-                    return null;
-            }
+            get => _chunkLen;
+            set => SetProperty(ref _chunkLen, value);
         }
 
-        public int TotalFrames
+        public int ProcessesCount
         {
-            get
-            {
-                return _bData.End - _bData.Start + 1;
-            }
+            get => _processCount;
+            set => SetProperty(ref _processCount, value);
         }
 
-        //public ObservableCollection<Chunk> ChunkList => _chunkList;
 
+        //public BlenderRenderes Renderer { get; set; }
 
         public ProjectSettings()
         {
             _chunkList = new ObservableCollection<Chunk>();
+            //_chunkList.CollectionChanged += ChunkList_CollectionChanged;
             BlendData = new BlendData();
         }
 
 
-        //public void AddChunkRange(IEnumerable<Chunk> chunks)
-        //{
-        //    foreach (var chunk in chunks)
-        //    {
-        //        ChunkList.Add(chunk);
-        //    }
-        //}
+    }
+
+    public enum BlenderRenderes
+    {
+        BLENDER_RENDER, CYCLES
+    }
+
+    public enum AfterRenderAction
+    {
+        JOIN_MIXDOWN = 2, JOIN = 1, NOTHING = 0
     }
 
     /// <summary>
@@ -181,7 +200,7 @@ namespace BRClib
         public Chunk(decimal start, decimal end)
         {
             if (end <= start)
-                throw new ArgumentException("Start frame cannot be equal or greater them end frame",
+                throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
                                             nameof(start));
 
             Start = start;
@@ -195,12 +214,12 @@ namespace BRClib
         /// </summary>
         /// <param name="start">Project's start frame</param>
         /// <param name="end">Project's end frame</param>
-        /// <param name="div">Number of chunks</param>
+        /// <param name="div">Number of chunks desired</param>
         /// <returns></returns>
         public static Chunk[] CalcChunks(decimal start, decimal end, int div)
         {
             if (end <= start)
-                throw new ArgumentException("Start frame cannot be equal or greater them end frame",
+                throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
                                             nameof(start));
 
             if (div == 0)
@@ -249,12 +268,12 @@ namespace BRClib
         public static Chunk[] CalcChunksByLenght(decimal start, decimal end, int chunkLenght)
         {
             if (end <= start)
-                throw new ArgumentException("Start frame cannot be equal or greater them end frame",
+                throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
                                             nameof(start));
 
             var totalLenght = end - start + 1;
 
-            if (chunkLenght == 0)
+            if (chunkLenght <= 0)
                 throw new ArgumentException("Invalid chunk lenght", nameof(chunkLenght));
 
             List<Chunk> chunkList = new List<Chunk>();
@@ -288,9 +307,44 @@ namespace BRClib
 
             return chunkList.ToArray();
         }
+
         public override string ToString()
         {
             return $"{Start}-{End}";
+        }
+
+        // override object.Equals
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            var chunk = (Chunk)obj;
+
+            return Start == chunk.Start
+                && End == chunk.End;
+        }
+        public bool Equals(Chunk c)
+        {
+            return Start == c.Start
+                && End == c.End;
+        }
+        // override object.GetHashCode
+        public override int GetHashCode()
+        {
+            const int HashBase = 233;
+            const int HashMulti = 13;
+
+            unchecked
+            {
+                int hash = HashBase;
+                hash = (hash * HashMulti) ^ Start.GetHashCode();
+                hash = (hash * HashMulti) ^ End.GetHashCode();
+
+                return hash;
+            }
         }
     }
 

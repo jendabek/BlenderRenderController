@@ -7,26 +7,40 @@ from bpy import context
 from bpy import ops
 from bpy import data
 
+class Error(Exception):
+    pass
+
+class FolderCountError(Error):
+    
+    def __init__(self, msg, needed, got):
+        self.needed = needed
+        self.got = got
+        self.msg = msg
+
 
 class ProjectInfo:
     
     def __init__(self, legacy = False):
         self.jsonData = []
         self.legacy = legacy
+        if self.legacy == True:
+            print("Running in legacy mode")
 
+
+    # get number of Scenes and active scene name
+    scene = bpy.context.scene
+    scenes = bpy.data.scenes
 
     # requests info and builds jsonData
     def getInfo(self):
         blendPath = bpy.context.blend_data.filepath;
         projectName  = bpy.path.display_name_from_filepath( blendPath );
 
-        # get number of Scenes and active scene name
-        scenes = bpy.data.scenes
-        scene = bpy.context.scene
-
         # get values from strings
-        scenesNum = str(scenes).partition('[')[-1].rpartition(']')[0]
-        sceneActive = str(scene).partition('("')[-1].rpartition('")')[0]
+        scenesNum = str(self.scenes).partition('[')[-1].rpartition(']')[0]
+        sceneActive = str(self.scene).partition('("')[-1].rpartition('")')[0]
+
+        scene = self.scene
 
         # set infos acording to active Scene
         start = scene.frame_start
@@ -43,14 +57,20 @@ class ProjectInfo:
 
         # convert output path to absolute
         # make sure path separator is constant
-        output = bpy.data.scenes[sceneActive].render.filepath
+        output = scene.render.filepath
         outputPath = bpy.path.native_pathsep(bpy.path.abspath(output)) 
 
         # split and see if it needs fixing (one of the elements is '..')
         outSplit = outputPath.split(os.sep)
         
         if ".." in outSplit:
-            outputPath = self.fixPath(outSplit)
+            try:
+                outputPath = self.fixPath(outSplit)
+            except FolderCountError as err:
+                msg, n, g = err.args
+                print("{0}. Expected {1}, got {2}".format(msg,n,g))
+                print(type(err)) # can be detected by BRC
+                raise err
 
 
         data = {
@@ -88,7 +108,6 @@ class ProjectInfo:
             # new format to use in future versions
             self.jsonData = data
 
-
     # fixes relative paths
     def fixPath(self, path):
         print("Fixing output path...")
@@ -99,13 +118,11 @@ class ProjectInfo:
         for idx in relIndexes:
             count = count+1
             folderIdx = idx - count
-            print("idx: {2} ,count: {0}, folderIdx: {1}".format(count, folderIdx, idx))
+            
             if folderIdx not in foldersToDel:
                 foldersToDel.append(folderIdx)
-            else:
-                count = count+1
-                folderIdx = idx - count
-                foldersToDel.append(folderIdx)
+                count=count+1
+
 
         if len(foldersToDel) > 0:
             relIndexes = list(set(relIndexes + foldersToDel))
