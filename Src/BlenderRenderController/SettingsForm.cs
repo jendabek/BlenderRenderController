@@ -7,17 +7,11 @@ using System.Windows.Forms;
 
 namespace BlenderRenderController
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public partial class SettingsForm : Form
     {
         private AppSettings _appSettings;
         private OpenFileDialog _changePathDialog;
 
-        /// <summary>
-        /// 
-        /// </summary>
         public SettingsForm()
         {
             InitializeComponent();

@@ -9,7 +9,7 @@ namespace BlenderRenderController
 {
     static class Helper
     {
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static Logger logger = LogManager.GetLogger("Helper");
 
         static public void ClearFolder(string FolderName)
         {
@@ -40,7 +40,7 @@ namespace BlenderRenderController
                     MessageBoxButtons.OK,
                     icon);
 
-            logger.Warn("-Helper- " + errorText);
+            logger.Warn(errorText);
         }
         static public void ShowErrors(MessageBoxIcon icon, params AppErrorCode[] errorCodes)
         {
@@ -55,7 +55,7 @@ namespace BlenderRenderController
                     MessageBoxButtons.OK,
                     icon);
 
-            logger.Warn("-Helper- " + errorText);
+            logger.Warn(errorText);
         }
         static public void ShowErrors(MessageBoxIcon icon, AppErrorCode errorCode)
         {
@@ -67,7 +67,7 @@ namespace BlenderRenderController
                 MessageBoxButtons.OK,
                 icon);
 
-            logger.Warn("-Helper- " + errorText);
+            logger.Warn(errorText);
         }
         static public void ShowErrors(MessageBoxIcon icon, string fmt, AppErrorCode errorCode)
         {
@@ -79,7 +79,7 @@ namespace BlenderRenderController
                 MessageBoxButtons.OK,
                 icon);
 
-            logger.Warn("-Helper- " + errorText);
+            logger.Warn(errorText);
         }
 
         static private string SetErrorText(AppErrorCode code, string arg1 = "")

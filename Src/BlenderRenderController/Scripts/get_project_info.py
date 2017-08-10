@@ -21,7 +21,6 @@ class FolderCountError(Error):
 class ProjectInfo:
     
     def __init__(self, legacy = False):
-        self.jsonData = []
         self.legacy = legacy
         if self.legacy == True:
             print("Running in legacy mode")
@@ -31,8 +30,11 @@ class ProjectInfo:
     scene = bpy.context.scene
     scenes = bpy.data.scenes
 
-    # requests info and builds jsonData
+    # requests info from blender
     def getInfo(self):
+
+        print("Requesting infos...")
+
         blendPath = bpy.context.blend_data.filepath;
         projectName  = bpy.path.display_name_from_filepath( blendPath );
 
@@ -65,6 +67,7 @@ class ProjectInfo:
         
         if ".." in outSplit:
             try:
+                print("Path has relative folders '/../'")
                 outputPath = self.fixPath(outSplit)
             except FolderCountError as err:
                 msg, n, g = err.args
@@ -72,6 +75,7 @@ class ProjectInfo:
                 print(type(err)) # can be detected by BRC
                 raise err
 
+        print("Building data...")
 
         data = {
             'projectName': projectName,
@@ -103,13 +107,14 @@ class ProjectInfo:
 
         if self.legacy == True:
             # old 0.8.2 format
-            self.jsonData = dataLeg
+            return dataLeg
         else:
             # new format to use in future versions
-            self.jsonData = data
+            return data
 
     # fixes relative paths
     def fixPath(self, path):
+
         print("Fixing output path...")
         relIndexes = [i for i, x in enumerate(path) if x == ".."]
         foldersToDel = []
@@ -138,11 +143,12 @@ class ProjectInfo:
         outputAbs = os.sep.join(path)
         return outputAbs
 
-    def makeJson(self):
-        return json.dumps(self.jsonData, indent=4, skipkeys=True, sort_keys=True)
+    # makes a json string from jsonData
+    def makeJson(self, jsonData):
+        return json.dumps(jsonData, indent=4, skipkeys=True, sort_keys=True)
 
 
 if __name__ == "__main__":
     p = ProjectInfo()
-    p.getInfo()
-    print(p.makeJson())
+    jsonStr = p.getInfo()
+    print(p.makeJson(jsonStr))

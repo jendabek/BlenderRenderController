@@ -1,4 +1,5 @@
-﻿using BRClib;
+﻿using NLog;
+using BRClib;
 using System;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -69,8 +70,6 @@ namespace BlenderRenderController
         public string BlenderExeName { get => _blenderExeName; }
         public string FFmpegExeName { get => _ffmpegExeName; }
 
-        //public string BlenderPath { get => Path.Combine(BlenderProgram, BlenderExeName); }
-        //public string FFmpegPath { get => Path.Combine(FFmpegProgram, FFmpegExeName);  }
 
         public AppSettings()
         {
@@ -98,13 +97,6 @@ namespace BlenderRenderController
                 return settings;
             }
         }
-
-        //[JsonIgnore]
-        //public bool AppConfigured
-        //{
-        //    get => _appConfigured;
-        //    private set => _appConfigured = value;
-        //}
 
         private void RecentBlends_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -200,9 +192,22 @@ namespace BlenderRenderController
         {
             var settingsPath = Path.Combine(_baseDir, SETTINGS_FILE);
 
-            return File.Exists(settingsPath) 
-                ? JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(settingsPath))
-                : AppSettings.Defaults;
+            var appSet = File.Exists(settingsPath) 
+                        ? JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(settingsPath))
+                        : AppSettings.Defaults;
+
+            // apply log
+            if (appSet.Verbose)
+            {
+                //string[] names = { typeof(BrcForm).FullName, typeof(Helper).FullName };
+                foreach (var rule in LogManager.Configuration.LoggingRules)
+                {
+                    if (rule.NameMatches(typeof(BrcForm).FullName))
+                        rule.EnableLoggingForLevel(LogLevel.Info);
+                }
+            }
+
+            return appSet;
         }
     }
 }

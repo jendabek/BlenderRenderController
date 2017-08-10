@@ -25,22 +25,22 @@ namespace BlenderRenderController
 
     class CommandARGS
     {
-        /// <summary>
-        /// Concatenate command ARGS
-        /// <para>0=ChunkTxtPath, 1=AudioARGS, 3=Project name, 4=file .EXT</para>
-        /// </summary>
-        public const string ConcatenateComARGS = "-f concat -safe 0 -i \"{0}\" {1} -c:v copy \"{3}.{4}\" -y";
+        ///// <summary>
+        ///// Concatenate command ARGS
+        ///// <para>0=ChunkTxtPath, 1=AudioARGS, 3=Project name, 4=file .EXT</para>
+        ///// </summary>
+        //public const string ConcatenateComARGS = "-f concat -safe 0 -i \"{0}\" {1} -c:v copy \"{3}.{4}\" -y";
+
+        ///// <summary>
+        ///// Concatenate command with mixdown audio ARGS
+        ///// <para>0=mixdown audio file path</para>
+        ///// </summary>
+        //public const string ConcatenateAudioARGS = "-i \"{0}\" -map 0:v -map 1:a";
 
         /// <summary>
-        /// Concatenate command with mixdown audio ARGS
-        /// <para>0=mixdown audio file path</para>
+        /// Gets the Concatenate ARGS with or without mixdown
         /// </summary>
-        public const string ConcatenateAudioARGS = "-i \"{0}\" -map 0:v -map 1:a";
-
-        /// <summary>
-        /// Gets the Concatenate ARGS
-        /// </summary>
-        /// <param name="mixdownFound"></param>
+        /// <param name="mixdownFound">If true, args will have mixdown parameters</param>
         /// <returns>
         /// <para>mixdownFound is True: 0=ChunkTxtPath, 1=Mixdown audio, 2=Project name, 3=file .EXT</para>
         /// <para>mixdownFound is False: 0=ChunkTxtPath, 1=Project name, 2=file .EXT</para>
@@ -101,11 +101,20 @@ namespace BlenderRenderController
 
     class NlogHelper
     {
-        public static void ChangeLogLevel(LogLevel level)
+        public static void ChangeLogLevel(LogLevel level, string loggerName = null)
         {
             foreach (var rule in LogManager.Configuration.LoggingRules)
             {
-                rule.EnableLoggingForLevel(level);
+                if (!string.IsNullOrEmpty(loggerName))
+                {
+                    if (rule.NameMatches(loggerName))
+                        rule.EnableLoggingForLevel(level);
+
+                    else
+                        continue;
+                }
+                else
+                    rule.EnableLoggingForLevel(level);
             }
 
             LogManager.ReconfigExistingLoggers();

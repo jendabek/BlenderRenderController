@@ -80,6 +80,8 @@ namespace BlenderRenderController
             this.mixDownButton = new System.Windows.Forms.Button();
             this.concatenatePartsButton = new System.Windows.Forms.Button();
             this.renderAllButton = new System.Windows.Forms.Button();
+            this.showRecentBlendsBtn = new System.Windows.Forms.Button();
+            this.recentBlendsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -103,11 +105,10 @@ namespace BlenderRenderController
             this.ETALabel = new System.Windows.Forms.Label();
             this.ETALabelTitle = new System.Windows.Forms.Label();
             this.blendBrowseBtn = new System.Windows.Forms.Button();
-            this.showRecentBlendsBtn = new System.Windows.Forms.Button();
-            this.recentBlendsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openBlendDialog = new System.Windows.Forms.OpenFileDialog();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.processManager = new System.Windows.Forms.Timer(this.components);
+            this.blendNameLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).BeginInit();
@@ -132,6 +133,7 @@ namespace BlenderRenderController
             // 
             // totalStartNumericUpDown
             // 
+            this.totalStartNumericUpDown.CausesValidation = false;
             this.totalStartNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "Start", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.totalStartNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalStartNumericUpDown.Location = new System.Drawing.Point(136, 237);
@@ -147,12 +149,11 @@ namespace BlenderRenderController
             this.totalStartNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTipInfo.SetToolTip(this.totalStartNumericUpDown, "You know what it is.");
             this.totalStartNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
-            this.totalStartNumericUpDown.Validated += new System.EventHandler(this.StartEndNumeric_Changed);
+            this.totalStartNumericUpDown.Leave += new System.EventHandler(this.StartEndNumeric_Changed);
             // 
             // blendDataBindingSource
             // 
             this.blendDataBindingSource.DataSource = typeof(BRClib.BlendData);
-            this.blendDataBindingSource.CurrentItemChanged += new System.EventHandler(this.blendDataBindingSource_CurrentItemChanged);
             // 
             // startFrameLabel
             // 
@@ -208,6 +209,7 @@ namespace BlenderRenderController
             // 
             // totalEndNumericUpDown
             // 
+            this.totalEndNumericUpDown.CausesValidation = false;
             this.totalEndNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "End", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.totalEndNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalEndNumericUpDown.Location = new System.Drawing.Point(236, 237);
@@ -219,7 +221,7 @@ namespace BlenderRenderController
             this.totalEndNumericUpDown.Name = "totalEndNumericUpDown";
             this.totalEndNumericUpDown.Size = new System.Drawing.Size(90, 22);
             this.totalEndNumericUpDown.TabIndex = 6;
-            this.totalEndNumericUpDown.Tag = "DIRENDER";
+            this.totalEndNumericUpDown.Tag = "";
             this.totalEndNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.totalEndNumericUpDown.Value = new decimal(new int[] {
             123456,
@@ -227,7 +229,7 @@ namespace BlenderRenderController
             0,
             0});
             this.totalEndNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
-            this.totalEndNumericUpDown.Validated += new System.EventHandler(this.StartEndNumeric_Changed);
+            this.totalEndNumericUpDown.Leave += new System.EventHandler(this.StartEndNumeric_Changed);
             // 
             // processCountNumericUpDown
             // 
@@ -742,6 +744,25 @@ namespace BlenderRenderController
             this.renderAllButton.UseVisualStyleBackColor = true;
             this.renderAllButton.Click += new System.EventHandler(this.renderAllButton_Click);
             // 
+            // showRecentBlendsBtn
+            // 
+            this.showRecentBlendsBtn.ContextMenuStrip = this.recentBlendsMenu;
+            this.showRecentBlendsBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.showRecentBlendsBtn.Location = new System.Drawing.Point(619, 79);
+            this.showRecentBlendsBtn.Name = "showRecentBlendsBtn";
+            this.showRecentBlendsBtn.Size = new System.Drawing.Size(27, 44);
+            this.showRecentBlendsBtn.TabIndex = 38;
+            this.showRecentBlendsBtn.Tag = "DIRENDER";
+            this.showRecentBlendsBtn.Text = "˅";
+            this.toolTipInfo.SetToolTip(this.showRecentBlendsBtn, "Recent .blend files");
+            this.showRecentBlendsBtn.UseVisualStyleBackColor = true;
+            this.showRecentBlendsBtn.Click += new System.EventHandler(this.showRecentBlendsBtn_Click);
+            // 
+            // recentBlendsMenu
+            // 
+            this.recentBlendsMenu.Name = "recentBlendsMenu";
+            this.recentBlendsMenu.Size = new System.Drawing.Size(61, 4);
+            // 
             // blendFileLabel
             // 
             this.blendFileLabel.AutoSize = true;
@@ -1026,25 +1047,6 @@ namespace BlenderRenderController
             this.blendBrowseBtn.UseVisualStyleBackColor = true;
             this.blendBrowseBtn.Click += new System.EventHandler(this.blendBrowseBtn_Click);
             // 
-            // showRecentBlendsBtn
-            // 
-            this.showRecentBlendsBtn.ContextMenuStrip = this.recentBlendsMenu;
-            this.showRecentBlendsBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.showRecentBlendsBtn.Location = new System.Drawing.Point(619, 79);
-            this.showRecentBlendsBtn.Name = "showRecentBlendsBtn";
-            this.showRecentBlendsBtn.Size = new System.Drawing.Size(27, 44);
-            this.showRecentBlendsBtn.TabIndex = 38;
-            this.showRecentBlendsBtn.Tag = "DIRENDER";
-            this.showRecentBlendsBtn.Text = "˅";
-            this.toolTipInfo.SetToolTip(this.showRecentBlendsBtn, "Recent .blend files");
-            this.showRecentBlendsBtn.UseVisualStyleBackColor = true;
-            this.showRecentBlendsBtn.Click += new System.EventHandler(this.showRecentBlendsBtn_Click);
-            // 
-            // recentBlendsMenu
-            // 
-            this.recentBlendsMenu.Name = "recentBlendsMenu";
-            this.recentBlendsMenu.Size = new System.Drawing.Size(61, 4);
-            // 
             // openBlendDialog
             // 
             this.openBlendDialog.Filter = "Blend|*.blend";
@@ -1063,12 +1065,26 @@ namespace BlenderRenderController
             this.processManager.Interval = 20;
             this.processManager.Tick += new System.EventHandler(this.UpdateProcessManagement);
             // 
+            // blendNameLabel
+            // 
+            this.blendNameLabel.AutoSize = true;
+            this.blendNameLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "ProjectName", true));
+            this.blendNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Bold);
+            this.blendNameLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.blendNameLabel.Location = new System.Drawing.Point(132, 43);
+            this.blendNameLabel.Name = "blendNameLabel";
+            this.blendNameLabel.Size = new System.Drawing.Size(105, 20);
+            this.blendNameLabel.TabIndex = 40;
+            this.blendNameLabel.Text = "blend name";
+            this.blendNameLabel.Visible = false;
+            // 
             // BrcForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(662, 621);
+            this.Controls.Add(this.blendNameLabel);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.showRecentBlendsBtn);
             this.Controls.Add(this.blendBrowseBtn);
@@ -1117,6 +1133,7 @@ namespace BlenderRenderController
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Blender Render Controller";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BrcForm_FormClosing);
             this.Load += new System.EventHandler(this.BrcForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).EndInit();
@@ -1216,6 +1233,7 @@ namespace BlenderRenderController
         private System.Windows.Forms.BindingSource blendDataBindingSource;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Timer processManager;
+        private System.Windows.Forms.Label blendNameLabel;
     }
 }
 

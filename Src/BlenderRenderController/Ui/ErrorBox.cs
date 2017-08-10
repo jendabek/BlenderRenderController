@@ -13,8 +13,6 @@ namespace BlenderRenderController.Ui
 {
     public partial class ErrorBox : Form
     {
-        private static Logger logger = LogManager.GetCurrentClassLogger();
-
         private string _result;
 
         public string Result
@@ -91,12 +89,10 @@ namespace BlenderRenderController.Ui
 
         private void ErrorBox_FormClosed(object sender, FormClosedEventArgs e)
         {
-            logger.Error(".blend was NOT loaded");
 
             if (String.IsNullOrEmpty(_result))
                 return;
 
-            logger.Error($"-ErrorBox- {_result} was pressed");
         }
     }
 }

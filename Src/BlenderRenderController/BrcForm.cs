@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Globalization;
+using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,24 +14,32 @@ using Newtonsoft.Json;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading;
+using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace BlenderRenderController
 {
-
+    /// <summary>
+    /// Main Window
+    /// </summary>
     public partial class BrcForm : Form
     {
-        //public event EventHandler<ChunkRenderedEventArgs> ChunkRendered;
+        // controls render all btn if it will stop current
+        // or start new
+        private bool _renderInProgress; 
 
         private int _autoRefStart, _autoRefEnd;
-        private static Logger logger = LogManager.GetLogger("BRC");
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         private AppSettings _appSettings;
         private ProjectSettings _project;
         private BlendData _blendData;
         private int rendersInProgress, processesCompletedCount, _currentChunkIndex;
         private List<Process> _processList;
-        private List<int> framesRendered, renderingSpeedsFPS;
+        private List<int> framesRendered;
         private AppStates appState = AppStates.AFTER_START;
-        DateTime startTime;
+        private DateTime startTime;
+        private ETACalculator _etaCalc;
+        private TaskbarManager _taskbar;
 
         public BrcForm()
         {
@@ -41,13 +49,8 @@ namespace BlenderRenderController
             _blendData = _project.BlendData;
             _processList = new List<Process>();
             framesRendered = new List<int>();
-            renderingSpeedsFPS = new List<int>();
-
+            _taskbar = TaskbarManager.Instance;
             _appSettings = AppSettings.Current;
-            // temp settings
-            //_settings.BlenderProgram = @"C:\Program Files\Blender Foundation\Blender\blender.exe";
-            //_settings.FFmpegProgram = @"E:\Programas\FFmpeg\Snapshot\bin\ffmpeg.exe";
-            //_settings.AfterRender = AfterRenderAction.JOIN_MIXDOWN;
         }
 
         private void BrcForm_Load(object sender, EventArgs e)
@@ -58,14 +61,12 @@ namespace BlenderRenderController
                                     + assemblyVersion.Split('.')[1]
                                     + "." + assemblyVersion.Split('.')[2];
 
-
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(onAppExit);
 
-            _project.PropertyChanged += ProjectSettings_PropertyChanged;
             _appSettings.RecentBlends_Changed += AppSettings_RecentBlends_Changed;
-
             _project.ProcessesCount = Environment.ProcessorCount;
 
+            // set source for project binding
             projectSettingsBindingSource.DataSource = _project;
 
             // Time duration format
@@ -80,6 +81,7 @@ namespace BlenderRenderController
             UpdateUI();
             UpdateRecentBlendsMenu();
 
+            // extra bindings
             totalStartNumericUpDown.DataBindings.Add("Enabled", startEndCustomRadio, "Checked");
             totalEndNumericUpDown.DataBindings.Add("Enabled", startEndCustomRadio, "Checked");
 
@@ -88,21 +90,33 @@ namespace BlenderRenderController
 
             if (!_appSettings.CheckCorrectConfig())
             {
-                new SettingsForm().ShowDialog();
+                var setForm = new SettingsForm();
+                setForm.ShowInTaskbar = true;
+                setForm.ShowDialog();
             }
 
             logger.Info("Program Started");
+        }
+
+        private void BrcForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_renderInProgress)
+            {
+               var result = MessageBox.Show(
+                            "Closing now will cancel rendering process. Close anyway?",
+                            "Render in progress", 
+                            MessageBoxButtons.YesNo, 
+                            MessageBoxIcon.Warning);
+
+                if (result == DialogResult.No)
+                    e.Cancel = true;
+            }
         }
 
         private void onAppExit(object sender, EventArgs e)
         {
             StopRender(false);
             _appSettings.Save();
-        }
-
-        private void ProjectSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-
         }
 
         private void AppSettings_RecentBlends_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -143,18 +157,19 @@ namespace BlenderRenderController
             #region getBlendInfo process
 
             var getBlendInfoCom = new Process();
-            var info = new ProcessStartInfo();
-            info.FileName = _appSettings.BlenderProgram;
-            info.StandardOutputEncoding =
-            info.StandardErrorEncoding = Encoding.UTF8;
-            info.RedirectStandardError = true;
-            info.RedirectStandardOutput = true;
-            info.UseShellExecute = false;
-            info.CreateNoWindow = true;
-            info.Arguments = string.Format(CommandARGS.GetInfoComARGS,
+            var info = new ProcessStartInfo()
+            {
+                FileName = _appSettings.BlenderProgram,
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                Arguments = string.Format(CommandARGS.GetInfoComARGS,
                                                             blendFile,
-                                                            Path.Combine(_appSettings.ScriptsFolder, scriptName));
-
+                                                            Path.Combine(_appSettings.ScriptsFolder, scriptName))
+            };
             getBlendInfoCom.StartInfo = info;
 
             #endregion
@@ -166,10 +181,11 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 logger.Error(ex.Message);
-                logger.Debug(ex);
+                logger.Trace(ex.StackTrace);
                 return;
             }
 
+            #region Getting streams
             // Get values from streams
             var streamOutput = new List<string>();
             var streamErrors = new List<string>();
@@ -178,15 +194,15 @@ namespace BlenderRenderController
                 streamOutput.Add(getBlendInfoCom.StandardOutput.ReadLine());
 
             while (!getBlendInfoCom.StandardError.EndOfStream)
-                streamErrors.Add(getBlendInfoCom.StandardError.ReadLine());
+                streamErrors.Add(getBlendInfoCom.StandardError.ReadLine()); 
+            #endregion
 
             // log errors
             if (streamErrors.Count > 0)
             {
-                foreach (var error in streamErrors)
-                {
-                    logger.Error(error);
-                }
+                string allErrors = string.Join("\n", streamErrors);
+                logger.Debug("Blender output errors detected.");
+                logger.Trace(allErrors);
             }
 
             if (streamOutput.Count == 0)
@@ -229,18 +245,19 @@ namespace BlenderRenderController
                 {
                     Helper.ShowErrors(MessageBoxIcon.Asterisk, AppErrorCode.RENDER_FORMAT_IS_IMAGE);
                 }
-                // output path w/o project name
 
+                // output path w/o project name
                 if (string.IsNullOrWhiteSpace(_blendData.OutputPath))
                 {
-                    // get .blend folder, if outputPath is unset
+                    // get .blend folder, if outputPath is unset, display a warning about it
+                    Helper.ShowErrors(MessageBoxIcon.Information, AppErrorCode.BLEND_OUTPUT_INVALID);
                     _blendData.OutputPath = Path.GetDirectoryName(blendFile);
                 }
+                else
+                    _blendData.OutputPath = Path.GetDirectoryName(_blendData.OutputPath);
 
-                _blendData.OutputPath = Path.GetDirectoryName(_blendData.OutputPath);
-
-                logger.Info(".blend loaded successfully");
                 
+                logger.Info(".blend loaded successfully");
             }
             else
                 logger.Error(".blend was NOT loaded");
@@ -279,19 +296,21 @@ namespace BlenderRenderController
 
             #region Mixdown Commad
             var mixdownCom = new Process();
-            var info = new ProcessStartInfo();
-            info.FileName = _appSettings.BlenderProgram;
-            info.StandardOutputEncoding = Encoding.UTF8;
-            info.RedirectStandardOutput = true;
-            info.UseShellExecute = false;
-            info.CreateNoWindow = true;
-            info.Arguments = string.Format(CommandARGS.MixdownComARGS,
+            var info = new ProcessStartInfo()
+            {
+                FileName = _appSettings.BlenderProgram,
+                StandardOutputEncoding = Encoding.UTF8,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                Arguments = string.Format(CommandARGS.MixdownComARGS,
                                            _project.BlendPath,
                                            _blendData.Start,
                                            _blendData.End,
                                            Path.Combine(_appSettings.ScriptsFolder, mixdownScript),
-                                           _blendData.OutputPath);
-            mixdownCom.StartInfo = info; 
+                                           _blendData.OutputPath)
+            };
+            mixdownCom.StartInfo = info;
             #endregion
 
             Trace.WriteLine(mixdownCom.StartInfo.Arguments);
@@ -299,7 +318,6 @@ namespace BlenderRenderController
             try
             {
                 mixdownCom.Start();
-                mixdownCom.WaitForExit();
             }
             catch (Exception ex)
             {
@@ -326,6 +344,7 @@ namespace BlenderRenderController
             List<string> fileList = dirFiles
                 .FindAll(f =>
                 {
+                    // skip '.' in ext
                     var ext = Path.GetExtension(f).Substring(1);
                     if (exts.Contains(ext))
                         return true;
@@ -393,9 +412,9 @@ namespace BlenderRenderController
             if (!File.Exists(mixdownAudioPath))
             {
                 statusLabel.Text = "Joining chunks, please wait...";
-                comArgs = string.Format(CommandARGS.GetConcatenateArgs(false), 
-                            chunksTxtPath, 
-                            projPath, 
+                comArgs = string.Format(CommandARGS.GetConcatenateArgs(false),
+                            chunksTxtPath,
+                            projPath,
                             videoExtensionFound);
             }
             //mixdown audio found
@@ -419,7 +438,6 @@ namespace BlenderRenderController
             info.RedirectStandardOutput = true;
             info.Arguments = comArgs;
             concatenateCom.StartInfo = info;
-            concatenateCom.ErrorDataReceived += (pSender, pArgs) => Console.WriteLine(pArgs.Data);
             concatenateCom.Exited += (pSender, pArgs) =>
             {
                 logger.Info("FFmpeg exited");
@@ -430,14 +448,14 @@ namespace BlenderRenderController
 
             try
             {
-                concatenateCom.Start();
                 logger.Info(statusLabel.Text);
-                //concatenateCom.WaitForExit();
+                concatenateCom.Start();
             }
             catch (Exception ex)
             {
-                Trace.WriteLine(ex);
-                logger.Error(ex.ToString());
+                //Trace.WriteLine(ex);
+                logger.Error("Unexpected error at {0}. Msg: {1}", nameof(Concatenate), ex.Message);
+                logger.Trace(ex.StackTrace);
                 Helper.ShowErrors(MessageBoxIcon.Error, AppErrorCode.FFMPEG_PATH_NOT_SET);
                 statusLabel.Text = "Joining cancelled.";
                 return;
@@ -491,6 +509,7 @@ namespace BlenderRenderController
                 rendersInProgress++;
                 _processList.Add(renderCom);
                 logger.Info($"Render {rendersInProgress}/{_project.ProcessesCount} in process");
+                //renderCom.WaitForExit();
             }
             catch (Exception ex)
             {
@@ -628,28 +647,6 @@ namespace BlenderRenderController
             }
         }
 
-        //void EnableControls(string tag)
-        //{
-
-        //    var items = FindControlsByTag(this.Controls, tag);
-
-        //    foreach (Control item in items)
-        //    {
-        //        item.Enabled = true;
-        //    }
-        //}
-
-        //void DisableControls(string tag)
-        //{
-
-        //    var items = FindControlsByTag(this.Controls, tag);
-
-        //    foreach (Control item in items)
-        //    {
-        //        item.Enabled = false;
-        //    }
-        //}
-
         private void AfterRenderAction_Changed(object sender, EventArgs e)
         {
             var radio = sender as RadioButton;
@@ -670,7 +667,7 @@ namespace BlenderRenderController
 
         private void renderAllButton_Click(object sender, EventArgs e)
         {
-            if (processManager.Enabled)
+            if (_renderInProgress)
             {
                 var result = MessageBox.Show("Are you sure you want to stop?",
                                                 "",
@@ -693,7 +690,8 @@ namespace BlenderRenderController
                                             MessageBoxButtons.YesNo,
                                             MessageBoxIcon.Exclamation);
 
-                    if (dialogResult == DialogResult.No) return;
+                    if (dialogResult == DialogResult.No)
+                        return;
 
                     try
                     {
@@ -701,13 +699,14 @@ namespace BlenderRenderController
                     }
                     catch (IOException ex)
                     {
-                        logger.Error(ex.ToString());
+                        logger.Error("Can't clear chunk folder, files are in use");
                         MessageBox.Show("It can't be deleted, files are in use by some program.\n");
                         return;
                     }
                     catch (Exception ex)
                     {
                         logger.Error(ex.Message);
+                        logger.Trace(ex.StackTrace);
                         MessageBox.Show("An unexpected error ocurred, sorry.");
                         return;
                     }
@@ -725,26 +724,22 @@ namespace BlenderRenderController
         {
             appState = AppStates.RENDERING_ALL;
             startTime = DateTime.Now;
-            renderingSpeedsFPS.Clear();
             framesRendered.Clear();
             Status("Starting render...");
             processesCompletedCount = 0;
             rendersInProgress = 0;
             _currentChunkIndex = 0;
+            _renderInProgress = true;
             processManager.Enabled = true;
-            // ETA timer WIP
 
-            try
-            {
-                TaskbarProgress.SetState(Handle, TaskbarProgress.TaskbarStates.Indeterminate);
-                TaskbarProgress.SetValue(Handle, 0, 100);
+            //render ETA reset
+            totalTimeLabel.Text = Helper.SecondsToString(0, true);
+            _etaCalc = new ETACalculator(5, 1);
 
-            }
-            catch (Exception ex)
-            { logger.Debug(ex); }
+            _taskbar.SetProgressState(TaskbarProgressBarState.Indeterminate);
+            _taskbar.SetProgressValue(0, 100);
 
             UpdateUI();
-
         }
 
         private void StopRender(bool wasComplete)
@@ -764,25 +759,26 @@ namespace BlenderRenderController
                 }
                 catch (Exception ex)
                 {
-                    logger.Error("An error ocurred while killing processes");
-                    logger.Error("Stack:\n" + ex.StackTrace);
-                    Trace.WriteLine(ex);
+                    logger.Error("An error ocurred while killing processes: " + ex.Message);
+                    logger.Trace(ex.StackTrace);
+                    //Trace.WriteLine(ex);
                 }
-                //_processList.Remove(process);
             }
+
             _processList.Clear();
 
             processManager.Enabled = false;
+            _renderInProgress = false;
+            renderProgressBar.Style = ProgressBarStyle.Blocks;
             renderProgressBar.Value = 0;
             renderProgressBar.Refresh();
+
+            ETALabel.Text =
+            totalTimeLabel.Text = Helper.SecondsToString(0, true);
+
             Text = Constants.APP_TITLE;
 
-            try
-            {
-                TaskbarProgress.SetState(Handle, TaskbarProgress.TaskbarStates.NoProgress);
-            }
-            catch (Exception ex)
-            { logger.Debug(ex); }
+            _taskbar.SetProgressState(TaskbarProgressBarState.NoProgress);
 
             appState = AppStates.READY_FOR_RENDER;
 
@@ -791,6 +787,8 @@ namespace BlenderRenderController
 
         private void AfterRender()
         {
+            // turn manager off
+            //processManager.Enabled = false;
             bool wasComplete = (framesRendered.Count > Math.Round(Convert.ToDouble(_blendData.TotalFrames)) * 0.75);
 
             if (wasComplete)
@@ -801,8 +799,12 @@ namespace BlenderRenderController
                 if (appState == AppStates.RENDERING_ALL)
                 {
                     if (_appSettings.AfterRender == AfterRenderAction.JOIN_MIXDOWN)
+                    {
+                        //await MixdownAudio();
                         MixdownAudio();
+                    }
 
+                    //await Concatenate();
                     Concatenate();
                     StopRender(true);
 
@@ -825,36 +827,40 @@ namespace BlenderRenderController
             UpdateUI();
         }
 
+        /// <summary>
+        /// This method is looped by <see cref="processManager"/> and controls what
+        /// processes get started for rendering and when to call <see cref="AfterRender"/>
+        /// </summary>
         private void UpdateProcessManagement(object sender, EventArgs e)
         {
-            Chunk currentChunk;
-
+            // if anything goes wrong, make sure rendering stops
             try
             {
+                Chunk currentChunk;
                 UpdateProgress();
+                if (_currentChunkIndex < _project.ChunkList.Count)
+                {
+                    currentChunk = _project.ChunkList[_currentChunkIndex];
+
+                    if (_processList.Count < _project.ProcessesCount)
+                    {
+                        RenderChunk(currentChunk);
+                        _currentChunkIndex++;
+                    }
+
+                }
+
+                // do after render once all processes exits
+                if (_processList.All(p => p.HasExited == true))
+                {
+                    renderProgressBar.Style = ProgressBarStyle.Marquee;
+                    AfterRender();
+                }
             }
             catch (Exception)
             {
-
                 StopRender(false);
                 throw;
-            }
-
-            if (_currentChunkIndex <= _project.ChunkList.Count - 1)
-            {
-                currentChunk = _project.ChunkList[_currentChunkIndex];
-
-                if (_processList.Count < _project.ProcessesCount)
-                {
-                    RenderChunk(currentChunk);
-                    _currentChunkIndex++;
-                }
-
-            }
-
-            if (_processList.All(p => p.HasExited == true))
-            {
-                AfterRender();
             }
         }
 
@@ -870,15 +876,26 @@ namespace BlenderRenderController
             Status(sb.ToString());
 
             // taskbar progress
-            TaskbarProgress.SetValue(Handle, progressPercentage, 100);
+            _taskbar.SetProgressValue(progressPercentage, 100);
 
             //progress bar
             if (progressPercentage > 100)
-            {
                 throw new Exception("Progress is over 100%");
-            }
+
             else
                 renderProgressBar.Value = progressPercentage;
+
+            _etaCalc.Update(progressPercentage / 100f);
+
+            if (_etaCalc.ETAIsAvailable)
+                ETALabel.Text = Helper.SecondsToString(_etaCalc.ETR.TotalSeconds, true);
+
+            ETALabel.Refresh();
+
+            //time elapsed display
+            TimeSpan runTime = DateTime.Now - startTime;
+            string lastTotalTimeText = totalTimeLabel.Text;
+            totalTimeLabel.Text = Helper.SecondsToString(runTime.TotalSeconds, true);
 
             //title progress
             Text = progressPercentage.ToString() + "% rendered - " + Constants.APP_TITLE;
@@ -892,7 +909,7 @@ namespace BlenderRenderController
                 ShowNewFolderButton = true,
                 SelectedPath = _blendData.OutputPath,
             };
-
+            
             var result = outputFolderBrowseDialog.ShowDialog();
 
             if (result == DialogResult.OK)
@@ -908,14 +925,9 @@ namespace BlenderRenderController
             {
                 var autoChunks = Chunk.CalcChunks(_project.BlendData.Start, _project.BlendData.End, _project.ProcessesCount);
                 _project.ChunkLenght = (int)autoChunks.First().Length;
-                blendDataBindingSource.ResetCurrentItem();
+                AutoOptionsRadio_CheckedChanged(renderOptionsAutoRadio, EventArgs.Empty);
                 UpdateCurrentChunks(autoChunks);
             }
-        }
-
-        private void blendDataBindingSource_CurrentItemChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void mixDownButton_Click(object sender, EventArgs e)
@@ -1034,6 +1046,7 @@ namespace BlenderRenderController
             switch (appState)
             {
                 case AppStates.AFTER_START:
+                    blendNameLabel.Visible = false;
                     renderAllButton.Enabled = false;
                     menuStrip.Enabled = true;
                     blendBrowseBtn.Enabled = true;
@@ -1094,13 +1107,14 @@ namespace BlenderRenderController
                     renderInfoLabel.Enabled = false;
                     break;
                 case AppStates.READY_FOR_RENDER:
+                    blendNameLabel.Visible = true;
                     renderAllButton.Enabled = true;
                     menuStrip.Enabled = true;
                     mixDownButton.Enabled = true;
-                    totalStartNumericUpDown.Enabled = startEndCustomRadio.Checked;
-                    totalEndNumericUpDown.Enabled = startEndCustomRadio.Checked;
-                    chunkLengthNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
-                    processCountNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
+                    //totalStartNumericUpDown.Enabled = startEndCustomRadio.Checked;
+                    //totalEndNumericUpDown.Enabled = startEndCustomRadio.Checked;
+                    //chunkLengthNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
+                    //processCountNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
                     concatenatePartsButton.Enabled = Directory.Exists(Helper.ParseChunksFolder(_blendData.OutputPath));
                     reloadBlenderDataButton.Enabled = true;
                     blendBrowseBtn.Enabled = true;
