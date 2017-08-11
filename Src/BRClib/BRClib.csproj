@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="BindingBase.cs" />
     <Compile Include="Models.cs" />
-    <Compile Include="Parsers.cs" />
+    <Compile Include="Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -157,5 +158,32 @@ namespace BlenderRenderController
             return timeString;
 
         }
+
+        static public IEnumerable<Control> FindControlsByTag(Control.ControlCollection controls, string key)
+        {
+            List<Control> controlsWithTags = new List<Control>();
+
+            foreach (Control c in controls)
+            {
+                if (c.Tag != null)
+                {
+                    // splits tag content into string array
+                    string[] tags = c.Tag.ToString().Split(';');
+
+                    // if key maches, add to list
+                    if (tags.Contains(key))
+                        controlsWithTags.Add(c);
+                }
+
+                if (c.HasChildren)
+                {
+                    //Recursively check all children controls as well; ie groupboxes or tabpages
+                    controlsWithTags.AddRange(FindControlsByTag(c.Controls, key));
+                }
+            }
+
+            return controlsWithTags;
+        }
+
     }
 }

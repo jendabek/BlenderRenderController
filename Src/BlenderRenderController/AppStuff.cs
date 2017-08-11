@@ -1,9 +1,4 @@
 ﻿using NLog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlenderRenderController
 {
@@ -16,11 +11,11 @@ namespace BlenderRenderController
         public const string APP_TITLE = "Blender Render Controller";
         public const string ChunksTxtFileName = "chunklist.txt";
 
+        /// <summary>
+        /// In case <see cref="PyGetInfo"/> fails to fix relative paths,
+        /// this will be in the process output
+        /// </summary>
         public const string PY_FolderCountError = "<class '__main__.FolderCountError'>";
-
-        public const string DIFNL = "DIFNL";
-        public const string DIRENDER = "DIRENDER";
-        public const char TAG_SEP = ';';
     }
 
     class CommandARGS
@@ -48,8 +43,8 @@ namespace BlenderRenderController
         public static string GetConcatenateArgs(bool mixdownFound)
         {
             return mixdownFound 
-                ? "-f concat -safe 0 -i \"{0}\" -i \"{1}\" -map 0:v -map 1:a -c:v copy \"{2}.{3}\" -y" 
-                : "-f concat -safe 0 -i \"{0}\" -c:v copy \"{1}.{2}\" -y";
+                ? "-f concat -safe 0 -i \"{0}\" -i \"{1}\" -map 0:v -map 1:a -c:v copy \"{2}{3}\" -y" 
+                : "-f concat -safe 0 -i \"{0}\" -c:v copy \"{1}{2}\" -y";
         }
 
         /// <summary>
@@ -70,7 +65,7 @@ namespace BlenderRenderController
         public const string RenderComARGS = "-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a";
     }
 
-    enum AppStates
+    enum AppState
     {
         RENDERING_ALL, READY_FOR_RENDER, AFTER_START, NOT_CONFIGURED
     }
@@ -81,23 +76,6 @@ namespace BlenderRenderController
         RENDER_FORMAT_IS_IMAGE, BLEND_OUTPUT_INVALID, UNKNOWN_OS
     }
 
-    static class RenderFormats
-    {
-        public static readonly string[] IMAGES = 
-            { "PNG", "BMP", "IRIS", "JPEG", "JPEG2000", "TARGA", "TARGA_RAW",
-            "CINEON", "DPX", "OPEN_EXR_MULTILAYER", "OPEN_EXR", "HDR", "TIFF" };
-
-        public static readonly string[] VIDEOS = 
-            { "AVI_JPEG", "AVI_RAW", "H264", "FFMPEG", "THEORA", "XVID" };
-
-        public static readonly string[] AllowedFormats = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
-
-        public enum Videos
-        {
-            AVI_JPEG, AVI_RAW, H264, FFMPEG, THEORA, XVID
-        }
-
-    }
 
     class NlogHelper
     {

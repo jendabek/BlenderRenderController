@@ -109,6 +109,7 @@ namespace BlenderRenderController
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.processManager = new System.Windows.Forms.Timer(this.components);
             this.blendNameLabel = new System.Windows.Forms.Label();
+            this.afterRenderBGWorker = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).BeginInit();
@@ -125,6 +126,7 @@ namespace BlenderRenderController
             // renderProgressBar
             // 
             this.renderProgressBar.Location = new System.Drawing.Point(32, 552);
+            this.renderProgressBar.MarqueeAnimationSpeed = 75;
             this.renderProgressBar.Name = "renderProgressBar";
             this.renderProgressBar.Size = new System.Drawing.Size(612, 14);
             this.renderProgressBar.Step = 1;
@@ -233,16 +235,16 @@ namespace BlenderRenderController
             // 
             // processCountNumericUpDown
             // 
-            this.processCountNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "ProcessesCount", true));
+            this.processCountNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "ProcessesCount", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.processCountNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.processCountNumericUpDown.Location = new System.Drawing.Point(561, 237);
+            this.processCountNumericUpDown.Location = new System.Drawing.Point(542, 237);
             this.processCountNumericUpDown.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
             this.processCountNumericUpDown.Name = "processCountNumericUpDown";
-            this.processCountNumericUpDown.Size = new System.Drawing.Size(69, 22);
+            this.processCountNumericUpDown.Size = new System.Drawing.Size(88, 22);
             this.processCountNumericUpDown.TabIndex = 8;
             this.processCountNumericUpDown.Tag = "DIRENDER";
             this.processCountNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -1062,7 +1064,7 @@ namespace BlenderRenderController
             // 
             // processManager
             // 
-            this.processManager.Interval = 20;
+            this.processManager.Interval = 50;
             this.processManager.Tick += new System.EventHandler(this.UpdateProcessManagement);
             // 
             // blendNameLabel
@@ -1077,6 +1079,11 @@ namespace BlenderRenderController
             this.blendNameLabel.TabIndex = 40;
             this.blendNameLabel.Text = "blend name";
             this.blendNameLabel.Visible = false;
+            // 
+            // afterRenderBGWorker
+            // 
+            this.afterRenderBGWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AfterRenderBGWorker_DoWork);
+            this.afterRenderBGWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AfterRenderBGWorker_RunWorkerCompleted);
             // 
             // BrcForm
             // 
@@ -1234,6 +1241,7 @@ namespace BlenderRenderController
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Timer processManager;
         private System.Windows.Forms.Label blendNameLabel;
+        private System.ComponentModel.BackgroundWorker afterRenderBGWorker;
     }
 }
 

@@ -37,12 +37,12 @@ namespace BlenderRenderController.Ui
             //LogService.Log.RegisterLogSevice(new ConsoleLogger());
         }
 
-        public ErrorBox(string label, IEnumerable<string> contents, Buttons bnts = Buttons.Ok)
+        public ErrorBox(string label, string title, IEnumerable<string> contents, Buttons bnts = Buttons.Ok)
             : this()
         {
-            logger.Error(contents);
 
             ErrorBoxLabel.Text = label;
+            this.Text = title;
             ErrorContentBox.Lines = contents.ToArray();
 
             switch (bnts)
@@ -68,8 +68,8 @@ namespace BlenderRenderController.Ui
             }
         }
 
-        public ErrorBox(string message, string contents, Buttons bnts = Buttons.Ok)
-            :this(message, new List<string> { contents }, bnts)
+        public ErrorBox(string message, string title, string contents, Buttons bnts = Buttons.Ok)
+            :this(message, title, new List<string> { contents }, bnts)
         {
 
         }

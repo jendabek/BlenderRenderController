@@ -161,8 +161,8 @@
             this.chkBoxVerboseLog.Size = new System.Drawing.Size(102, 19);
             this.chkBoxVerboseLog.TabIndex = 30;
             this.chkBoxVerboseLog.Text = "Detailed Logs";
-            this.settingsToolTip.SetToolTip(this.chkBoxVerboseLog, "Log program operation, could be useful for troubleshooting.\r\n\r\nObs: Error message" +
-        "s will always be logged.");
+            this.settingsToolTip.SetToolTip(this.chkBoxVerboseLog, "Logs program operation, could be useful for troubleshooting.\r\n\r\nObs: Error messag" +
+        "es will always be logged.");
             this.chkBoxVerboseLog.UseVisualStyleBackColor = true;
             this.chkBoxVerboseLog.Click += new System.EventHandler(this.chkBoxVerboseLog_Click);
             // 

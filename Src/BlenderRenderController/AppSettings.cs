@@ -8,7 +8,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BlenderRenderController
@@ -20,7 +19,6 @@ namespace BlenderRenderController
         private static readonly string _baseDir = Environment.CurrentDirectory;
         private string _blenderExeName, _scriptsFolderPath, _ffmpegExeName;
         private int RECENT_BLENDS_MAX_COUNT = 10;
-        private bool _appConfigured;
         const string SETTINGS_FILE = "brc_settings.json";
 
         private static AppSettings _instance;
@@ -47,16 +45,12 @@ namespace BlenderRenderController
         public event EventHandler<NotifyCollectionChangedEventArgs> RecentBlends_Changed;
 
         public string BlenderProgram { get; set; }
-
         public string FFmpegProgram { get; set; }
-
         public bool Verbose { get; set; }
-
         public bool DisplayToolTips { get; set; }
-
         public AfterRenderAction AfterRender { get; set; }
-
         public BlenderRenderes Renderer { get; set; }
+
 
         public ObservableCollection<string> RecentBlends { get => _recentBlends; }
 
@@ -67,7 +61,10 @@ namespace BlenderRenderController
             private set => _scriptsFolderPath = value;
         }
 
+        [JsonIgnore]
         public string BlenderExeName { get => _blenderExeName; }
+
+        [JsonIgnore]
         public string FFmpegExeName { get => _ffmpegExeName; }
 
 
