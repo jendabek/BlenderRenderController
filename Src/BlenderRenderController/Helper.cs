@@ -134,6 +134,9 @@ namespace BlenderRenderController
         }
         static public string ParseChunksTxt(string outputPath)
         {
+            if (string.IsNullOrEmpty(outputPath))
+                return string.Empty;
+
             return Path.Combine(ParseChunksFolder(outputPath), Constants.ChunksTxtFileName);
         }
 

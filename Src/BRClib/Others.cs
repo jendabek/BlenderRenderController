@@ -18,8 +18,13 @@ namespace BRClib
         /// <summary>
         /// Parses the output of get_project_info
         /// </summary>
-        /// <param name="output"></param>
+        /// <param name="output">Standard output, split by lines ('\n')</param>
         /// <returns>A <see cref="BlendData"/> object</returns>
+        /// <remarks>
+        /// When executing get_project_info script, Blender may also print errors
+        /// alongside the Json containig the project info (a commun case if there're
+        /// custom plugins installed) this method will filter out those errors.
+        /// </remarks>
         public static BlendData ParsePyOutput(IEnumerable<string> output)
         {
             StringBuilder jsonInfo = new StringBuilder();
@@ -55,6 +60,22 @@ namespace BRClib
             var bData = JsonConvert.DeserializeObject<BlendData>(json);
 
             return bData;
+        }
+
+        /// <summary>
+        /// Parses the output of get_project_info
+        /// </summary>
+        /// <param name="outputString">Standard output</param>
+        /// <returns>A <see cref="BlendData"/> object</returns>
+        /// <remarks>
+        /// When executing get_project_info script, Blender may also print errors
+        /// alongside the Json containig the project info (a commun case if there're
+        /// custom plugins installed) this method will filter out those errors.
+        /// </remarks>
+        public static BlendData ParsePyOutput(string outputString)
+        {
+            string[] outLineSplit = outputString.Split('\n');
+            return ParsePyOutput(outLineSplit);
         }
 
         /// <summary>

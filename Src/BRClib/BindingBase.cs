@@ -4,6 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace BRClib
 {
+    /// <summary>
+    /// A base class with <see cref="INotifyPropertyChanged"/> methods
+    /// </summary>
     public class BindingBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;

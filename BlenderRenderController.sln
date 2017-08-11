@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BRClib", "Src\BRClib\BRClib
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{87E2600C-D4BF-467B-9A84-FBA84939EEBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "Tests\UnitTestProject1\UnitTestProject1.csproj", "{C0B6A9DA-7E23-4E44-B642-A1AD4E148634}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "Tests\UnitTests\UnitTests.csproj", "{C0B6A9DA-7E23-4E44-B642-A1AD4E148634}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

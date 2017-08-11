@@ -7,6 +7,9 @@ using System.Collections.ObjectModel;
 
 namespace BRClib
 {
+    /// <summary>
+    /// Represents the settings from a Blender project file
+    /// </summary>
     public class BlendData : BindingBase
     {
         private int _start, _end, _sceneNum;
@@ -117,11 +120,13 @@ namespace BRClib
 
     }
 
+    /// <summary>
+    /// Holds settings to the BRC render process
+    /// </summary>
     public class ProjectSettings : BindingBase
     {
         private readonly ObservableCollection<Chunk> _chunkList;
-        private string _blendPath, _chunkFolder;
-        private BlendData _bData;
+        private string _blendPath;
         private int _chunkLen, _processCount;
 
         public string BlendPath
@@ -130,14 +135,14 @@ namespace BRClib
             set => SetProperty(ref _blendPath, value);
         }
 
-        public BlendData BlendData
-        {
-            get => _bData;
-            set
-            {
-                SetProperty(ref _bData, value);
-            }
-        }
+        //public BlendData BlendData
+        //{
+        //    get => _bData;
+        //    set
+        //    {
+        //        SetProperty(ref _bData, value);
+        //    }
+        //}
 
         public ObservableCollection<Chunk> ChunkList => _chunkList;
 
@@ -153,17 +158,23 @@ namespace BRClib
             set => SetProperty(ref _processCount, value);
         }
 
-
-        //public BlenderRenderes Renderer { get; set; }
-
         public ProjectSettings()
         {
             _chunkList = new ObservableCollection<Chunk>();
-            //_chunkList.CollectionChanged += ChunkList_CollectionChanged;
-            BlendData = new BlendData();
+            _chunkList.CollectionChanged += ChunkList_CollectionChanged;
+            //BlendData = new BlendData();
         }
 
+        private void ChunkList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var cList = sender as ObservableCollection<Chunk>;
 
+            if (cList.Count > 0)
+            {
+                var cLen = cList.First().Length;
+                ChunkLenght = (int)cLen;
+            }
+        }
     }
 
     public enum BlenderRenderes

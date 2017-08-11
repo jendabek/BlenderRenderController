@@ -1,22 +1,17 @@
 using BlenderRenderController.Properties;
 using BRClib;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.WindowsAPICodePack.Taskbar;
 using NLog;
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Newtonsoft.Json;
 using System.Windows.Forms;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Threading;
-using Microsoft.WindowsAPICodePack.Taskbar;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace BlenderRenderController
 {
@@ -60,7 +55,7 @@ namespace BlenderRenderController
             InitializeComponent();
 
             _project = new ProjectSettings();
-            _blendData = _project.BlendData;
+            _blendData = new BlendData();
             framesRendered = new List<int>();
             _taskbar = TaskbarManager.Instance;
             _appSettings = AppSettings.Current;
@@ -77,7 +72,6 @@ namespace BlenderRenderController
 
             _appSettings.RecentBlends_Changed += AppSettings_RecentBlends_Changed;
             _project.ProcessesCount = Environment.ProcessorCount;
-            _project.PropertyChanged += Project_PropertyChanged;
 
             // set source for project binding
             projectSettingsBindingSource.DataSource = _project;
@@ -112,11 +106,6 @@ namespace BlenderRenderController
             logger.Info("Program Started");
         }
 
-        private void Project_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-
-        }
-
         private void BrcForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (IsRendering)
@@ -129,14 +118,14 @@ namespace BlenderRenderController
 
                 if (result == DialogResult.No)
                     e.Cancel = true;
+
+                else
+                    StopRender(false);
             }
         }
 
         private void onAppExit(object sender, EventArgs e)
         {
-            if (IsRendering)
-                StopRender(false);
-
             _appSettings.Save();
         }
 
@@ -205,6 +194,10 @@ namespace BlenderRenderController
             }
 
             #region Getting streams
+
+            //var fullOutput = getBlendInfoCom.StandardOutput.ReadToEnd();
+            //var fullErrors = getBlendInfoCom.StandardError.ReadToEnd();
+
             // Get values from streams
             var streamOutput = new List<string>();
             var streamErrors = new List<string>();
@@ -242,8 +235,8 @@ namespace BlenderRenderController
             }
 
             var blendData = Utilities.ParsePyOutput(streamOutput);
-            _blendData =
-            _project.BlendData = blendData;
+            _blendData = blendData;
+            //_project.BlendData = blendData;
             _project.BlendPath = blendFile;
 
             // save copy of start and end frames values
@@ -255,7 +248,7 @@ namespace BlenderRenderController
             blendDataBindingSource.ResetBindings(false);
 
             var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, 8);
-            _project.ChunkLenght = (int)chunks.First().Length;
+            //_project.ChunkLenght = (int)chunks.First().Length;
 
             if (blendData != null)
             {
@@ -304,6 +297,12 @@ namespace BlenderRenderController
             }
         }
 
+        /// <summary>
+        /// Thread safe method to update UI text
+        /// </summary>
+        /// <param name="msg">message</param>
+        /// <param name="ctrl">control to recive the message, 
+        /// if left empty it will be <see cref="statusLabel"/></param>
         private void Status(string msg, Control ctrl = null)
         {
             if (ctrl == null)
@@ -331,9 +330,8 @@ namespace BlenderRenderController
                 _project.ChunkList.Add(chnk);
             }
 
-            // 
-            _project.ChunkLenght = (int)_project.ChunkList.First().Length;
-            chunkLengthNumericUpDown.Value = _project.ChunkList.First().Length;
+            //_project.ChunkLenght = (int)_project.ChunkList.First().Length;
+            //chunkLengthNumericUpDown.Value = _project.ChunkList.First().Length;
         }
 
         private void UpdateRecentBlendsMenu()
@@ -391,7 +389,7 @@ namespace BlenderRenderController
                 {
                     _project.ProcessesCount = Environment.ProcessorCount;
                     // recalc auto chunks:
-                    var autoChunks = Chunk.CalcChunks(_project.BlendData.Start, _project.BlendData.End, _project.ProcessesCount);
+                    var autoChunks = Chunk.CalcChunks(_blendData.Start, _blendData.End, _project.ProcessesCount);
                     UpdateCurrentChunks(autoChunks);
                 }
             }
@@ -552,7 +550,7 @@ namespace BlenderRenderController
 
         private void RenderAll()
         {
-            // if custom render is on calc chunks by lenght
+            // if custom render is on, calc chunks by lenght
             // before starting
             if (renderOptionsCustomRadio.Checked)
             {
@@ -620,7 +618,6 @@ namespace BlenderRenderController
 
             UpdateUI(AppState.READY_FOR_RENDER);
         }
-
 
         private void MixdownAudio(string mixdownScript = Constants.PyMixdown)
         {
@@ -844,18 +841,12 @@ namespace BlenderRenderController
 
             if (_etaCalc.ETAIsAvailable)
             {
-                //ETALabel.Text = Helper.SecondsToString(_etaCalc.ETR.TotalSeconds, true);
                 Status(Helper.SecondsToString(_etaCalc.ETR.TotalSeconds, true), ETALabel);
             }
-
-            //ETALabel.Refresh();
 
             //time elapsed display
             TimeSpan runTime = DateTime.Now - startTime;
             Status(Helper.SecondsToString(runTime.TotalSeconds, true), totalTimeLabel);
-
-            //string lastTotalTimeText = totalTimeLabel.Text;
-            //totalTimeLabel.Text = Helper.SecondsToString(runTime.TotalSeconds, true);
 
             //title progress
             var titleProg = progressPercentage.ToString() + "% rendered - " + Constants.APP_TITLE;
@@ -945,7 +936,7 @@ namespace BlenderRenderController
         {
             if (renderOptionsAutoRadio.Checked)
             {
-                var autoChunks = Chunk.CalcChunks(_project.BlendData.Start, _project.BlendData.End, _project.ProcessesCount);
+                var autoChunks = Chunk.CalcChunks(_blendData.Start, _blendData.End, _project.ProcessesCount);
                 UpdateCurrentChunks(autoChunks);
             }
         }
@@ -1001,7 +992,6 @@ namespace BlenderRenderController
             toolTipWarn.Active =
             _appSettings.DisplayToolTips = tipsToolStripMenuItem.Checked;
         }
-
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
