@@ -3,7 +3,7 @@
 #### Beta notes:
 - Massive code revision/rewrite to make it easier to work w/ in the future
 - Core logic now resides in BRClib
-- No Linux/Mono support
+- No Linux/Mono support, yet
 
 ## What is this?
 <img align="right" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/blender-render-controller.png" width="480"/>
@@ -37,14 +37,6 @@ Even if you don't use Blender VSE often, that’s a LOT of time saved. And the t
 - Blender, obviously.
 - [FFmpeg](https://ffmpeg.zeranoe.com/builds/), required for joining the parts together. You don't need to worry about it if you download the Full version which has FFmpeg already included.
 - .NET framework 4.5
-
-##### Obs: Linux and Mac
-BRC was not extensively tested on anything other than Windows. If you wish to use it with Linux or Mac, read [here](https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/utilities/about_Utilities.txt)
-
-Also feel free to give any feedback that could help us make BRC accessible to as many Blender users as possible.
-
-- Linux: Tested on Debian using Mono 4.8
-- MacOS: Untested, theoretically should work.
 
 ### Steps
 1. Create your Blender VSE project normally within Blender.
