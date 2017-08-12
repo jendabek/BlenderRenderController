@@ -1065,7 +1065,7 @@ namespace BlenderRenderController
             // processManager
             // 
             this.processManager.Interval = 50;
-            this.processManager.Tick += new System.EventHandler(this.UpdateProcessManagement);
+            this.processManager.Tick += new System.EventHandler(this.TryQueueRenderProcess);
             // 
             // blendNameLabel
             // 
