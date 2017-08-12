@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿#pragma warning disable CS1591
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -207,7 +208,11 @@ namespace BRClib
         {
             get => End - Start;
         }
-
+        /// <summary>
+        /// Create a new chunk
+        /// </summary>
+        /// <param name="start">Chunk's start frame</param>
+        /// <param name="end">Chunk's end frame</param>
         public Chunk(decimal start, decimal end)
         {
             if (end <= start)
@@ -324,7 +329,6 @@ namespace BRClib
             return $"{Start}-{End}";
         }
 
-        // override object.Equals
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
@@ -342,7 +346,6 @@ namespace BRClib
             return Start == c.Start
                 && End == c.End;
         }
-        // override object.GetHashCode
         public override int GetHashCode()
         {
             const int HashBase = 233;

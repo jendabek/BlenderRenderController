@@ -22,6 +22,10 @@ namespace BlenderRenderController
         const string SETTINGS_FILE = "brc_settings.json";
 
         private static AppSettings _instance;
+
+        /// <summary>
+        /// Settings singleton
+        /// </summary>
         public static AppSettings Current
         {
             get
@@ -123,7 +127,7 @@ namespace BlenderRenderController
                 var response = MessageBox.Show(
                                  "This will clear all files in the recent blends list, are you sure?", 
                                  "Clear recent blends?",
-                                 MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 switch (response)
                 {

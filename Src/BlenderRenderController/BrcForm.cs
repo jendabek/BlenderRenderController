@@ -23,7 +23,6 @@ namespace BlenderRenderController
     /// </summary>
     public partial class BrcForm : Form
     {
-        private bool _renderInProgress;
         private int _autoRefStart, _autoRefEnd;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private AppSettings _appSettings;
@@ -39,18 +38,11 @@ namespace BlenderRenderController
         private Process concatenateCom, mixdownCom;
         delegate void StatusUpdate(string msg, Control ctrl);
 
-        public bool IsRendering
-        {
-            get => _renderInProgress;
-            private set => _renderInProgress = value;
-        }
+        public bool IsRendering { get; private set; }
 
         private string AssemblyVersion
         {
-            get
-            {
-                return " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
+            get { return " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(); }
         }
 
         public BrcForm()
@@ -289,7 +281,7 @@ namespace BlenderRenderController
                 GetBlendInfo(blend);
             }
         }
-
+        
         private void reloadBlenderDataButton_Click(object sender, EventArgs e)
         {
             var blend = _project.BlendPath;
@@ -597,6 +589,11 @@ namespace BlenderRenderController
             }
         }
 
+        /// <summary>
+        /// Thread safe method to change UI text
+        /// </summary>
+        /// <param name="msg">new text</param>
+        /// <param name="ctrl">Control to update, <seealso cref="statusLabel"/> by default</param>
         private void Status(string msg, Control ctrl = null)
         {
             if (ctrl == null)
@@ -727,7 +724,7 @@ namespace BlenderRenderController
             if (!File.Exists(mixdownAudioPath))
             {
                 Status("Joining chunks, please wait...");
-                comArgs = string.Format(CommandARGS.GetConcatenateArgs(false),
+                comArgs = string.Format(CommandARGS.ConcatenateOnly,
                             chunksTxtPath,
                             projPath,
                             videoExtensionFound);
@@ -736,14 +733,13 @@ namespace BlenderRenderController
             else
             {
                 Status("Joining chunks with mixdown audio...");
-                comArgs = string.Format(CommandARGS.GetConcatenateArgs(true),
+                comArgs = string.Format(CommandARGS.ConcatenateMixdown,
                             chunksTxtPath,
                             mixdownAudioPath,
                             projPath,
                             videoExtensionFound);
             }
 
-            #region Concatenate Command
             //var concatenateCom = new Process();
             var info = new ProcessStartInfo();
             info.FileName = _appSettings.FFmpegProgram;
@@ -756,7 +752,6 @@ namespace BlenderRenderController
             {
                 logger.Info("FFmpeg exited");
             };
-            #endregion
 
             Trace.WriteLine(concatenateCom.StartInfo.Arguments);
 
@@ -788,6 +783,10 @@ namespace BlenderRenderController
         #endregion
 
         #region AfterRenderActions
+        /// <summary>
+        /// Checks if rendering process is completed and calls the after
+        /// render actions in a background thread
+        /// </summary>
         void AfterRenderBG()
         {
             bool wasComplete = (framesRendered.Count > Math.Round(Convert.ToDouble(_blendData.TotalFrames)) * 0.75);

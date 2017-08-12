@@ -1,7 +1,6 @@
-﻿rem BRC build bat
-
-rem Usage, in VS build events
-rem il_merge.bat $(TargetName) $(TargetDir)
+﻿rem This bat merges dll files into the EXE
+rem To use it, add the following to the post build options:
+rem IF $(ConfigurationName)==Release call $(SolutionDir)mergeBuild.bat $(TargetName) $(TargetDir)
 
 rem ilmerge path
 set ilmerge=%~dp0\packages\ILMerge.2.14.1208\tools\ILMerge.exe
@@ -18,6 +17,8 @@ set net_refpath=%net_refpath_v45%
 
 set _workDir=%~2
 set _targetName=%~1
+
+rem set the filter
 set _filter=Microsoft.WindowsAPICodePack*.dll
 REM set _filter=*.dll
 

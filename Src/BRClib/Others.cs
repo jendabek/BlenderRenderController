@@ -99,7 +99,7 @@ namespace BRClib
         /// <returns></returns>
         public static IList<string> GetChunkFiles(params string[] files)
         {
-            string[] exts = RenderFormats.AllowedFormats;
+            string[] exts = RenderFormats.AllowedFileExts;
 
             var fileList = files
                 .Where(f => 
@@ -132,18 +132,67 @@ namespace BRClib
 
     }
 
+    /// <summary>
+    /// Reference info of possible Blender render formats
+    /// </summary>
     public static class RenderFormats
     {
+        /// <summary>
+        /// Image render formats
+        /// </summary>
         public static readonly string[] IMAGES =
             { "PNG", "BMP", "IRIS", "JPEG", "JPEG2000", "TARGA", "TARGA_RAW",
             "CINEON", "DPX", "OPEN_EXR_MULTILAYER", "OPEN_EXR", "HDR", "TIFF" };
 
+        /// <summary>
+        /// Video render formats
+        /// </summary>
         public static readonly string[] VIDEOS =
             { "AVI_JPEG", "AVI_RAW", "H264", "FFMPEG", "THEORA", "XVID" };
 
-        public static readonly string[] AllowedFormats = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
+        /// <summary>
+        /// Allowed file extentions
+        /// </summary>
+        public static readonly string[] AllowedFileExts = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
 
     }
+
+    /// <summary>
+    /// Command line arguments for the various processes
+    /// </summary>
+    public static class CommandARGS
+    {
+
+        /// <summary>
+        /// Concatenate command ARGS, join chunks with mixdown
+        /// <para>0=ChunkTxtPath, 1=Mixdown audio, 2=Project name, 3=file .EXT</para>
+        /// </summary>
+        public const string ConcatenateMixdown = "-f concat -safe 0 -i \"{0}\" -i \"{1}\" -map 0:v -map 1:a -c:v copy \"{2}{3}\" -y";
+
+        /// <summary>
+        /// Concatenate command ARGS, join chunks
+        /// <para>0=ChunkTxtPath, 1=Project name, 2=.EXT</para>
+        /// </summary>
+        public const string ConcatenateOnly = "-f concat -safe 0 -i \"{0}\" -c:v copy \"{1}{2}\" -y";
+
+        /// <summary>
+        /// Get info command ARGS
+        /// <para>0=Blend file, 1=get_project_info.py</para>
+        /// </summary>
+        public const string GetInfoComARGS = "-b \"{0}\" -P \"{1}\"";
+
+        /// <summary>
+        /// Mixdown command ARGS
+        /// 0=Blend file, 1=start, 2=end, 3=mixdown_audio.py, 4=output
+        /// </summary>
+        public const string MixdownComARGS = "-b \"{0}\" -s {1} -e {2} -P \"{3}\" -- \"{4}\"";
+
+        /// <summary>
+        /// 0=Blend file, 1=output, 2=Renderer, 3=Frame start, 4=Frame end
+        /// </summary>
+        public const string RenderComARGS = "-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a";
+    }
+
 
     public static class Extentions
     {
