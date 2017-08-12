@@ -1,5 +1,7 @@
 # Blender Render Controller - Beta branch
 
+#### See changelog.md for more details
+
 ## What is this?
 <img align="right" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/blender-render-controller.png" width="480"/>
 Blender Render Controller is a tool to help speed up the rendering of Blender's Video Sequence Editor (VSE) projects.
