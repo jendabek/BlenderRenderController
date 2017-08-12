@@ -114,9 +114,6 @@
     <None Include="Properties\DataSources\BRClib.BlendData.datasource" />
     <None Include="Properties\DataSources\BRClib.ProjectSettings.datasource" />
     <None Include="Resources\blender_icon.ico" />
-    <None Include="..\..\..\README.md">
-      <Link>README.md</Link>
-    </None>
     <None Include="Resources\volume-small.png" />
     <None Include="Resources\volume-512.png" />
     <None Include="Resources\stop-icon-small.png" />
