@@ -137,18 +137,8 @@ namespace BlenderRenderController
             UpdateRecentBlendsMenu();
         }
 
-        private void Enter_GotoNext(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter || (e.KeyCode == Keys.Return))
-            {
-                SelectNextControl((Control)sender, true, true, true, true);
-                e.SuppressKeyPress = true; //disables sound
-            }
 
-        }
-
-
-
+        #region BlendFileInfo
         private void GetBlendInfo(string blendFile, string scriptName = Constants.PyGetInfo)
         {
             logger.Info("Loading .blend");
@@ -314,29 +304,9 @@ namespace BlenderRenderController
             var recentBtn = sender as Button;
             recentBlendsMenu.Show(recentBtn, 0, recentBtn.Height);
         }
+        #endregion
 
-
-
-        private void openOutputFolderButton_Click(object sender, EventArgs e)
-        {
-            OpenOutputFolder();
-        }
-
-        private void OpenOutputFolder()
-        {
-            if (Directory.Exists(_blendData.OutputPath))
-            {
-                Process.Start(_blendData.OutputPath);
-            }
-            else
-            {
-                MessageBox.Show("Output folder does not exist.", "",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Exclamation);
-            }
-
-        }
-
+        #region RenderMethods
         private void RenderChunk(Chunk chunk)
         {
             var chunksFolder = Helper.ParseChunksFolder(_blendData.OutputPath);
@@ -519,7 +489,7 @@ namespace BlenderRenderController
         /// </summary>
         private void TryQueueRenderProcess(object sender, EventArgs e)
         {
-            // if anything goes wrong, make sure rendering stops
+            // if anything goes wrong, make rendering stop
             try
             {
                 Chunk currentChunk;
@@ -551,9 +521,9 @@ namespace BlenderRenderController
                 throw;
             }
         }
+        #endregion
 
-
-
+        #region UpdateElements
         /// <summary>
         /// Updates the UI on the render process
         /// </summary>
@@ -642,9 +612,9 @@ namespace BlenderRenderController
                 statusLabel.Refresh();
             }
         }
+        #endregion
 
-
-
+        #region Mixdown
         private void MixdownAudio(string mixdownScript = Constants.PyMixdown)
         {
             Status("Rendering mixdown, it can take a while for larger projects...");
@@ -715,9 +685,9 @@ namespace BlenderRenderController
             await Task.Run(() => MixdownAudio());
             renderProgressBar.Style = ProgressBarStyle.Blocks;
         }
+        #endregion
 
-
-
+        #region Concatenate
         private void Concatenate()
         {
             var chunksFolder = Helper.ParseChunksFolder(_blendData.OutputPath);
@@ -815,9 +785,9 @@ namespace BlenderRenderController
             await Task.Run(() => Concatenate());
             renderProgressBar.Style = ProgressBarStyle.Blocks;
         }
+        #endregion
 
-
-
+        #region AfterRenderActions
         void AfterRenderBG()
         {
             bool wasComplete = (framesRendered.Count > Math.Round(Convert.ToDouble(_blendData.TotalFrames)) * 0.75);
@@ -859,8 +829,38 @@ namespace BlenderRenderController
 
             UpdateUI(appState);
         }
+        #endregion
 
 
+        private void Enter_GotoNext(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter || (e.KeyCode == Keys.Return))
+            {
+                SelectNextControl((Control)sender, true, true, true, true);
+                e.SuppressKeyPress = true; //disables sound
+            }
+
+        }
+
+        private void openOutputFolderButton_Click(object sender, EventArgs e)
+        {
+            OpenOutputFolder();
+        }
+
+        private void OpenOutputFolder()
+        {
+            if (Directory.Exists(_blendData.OutputPath))
+            {
+                Process.Start(_blendData.OutputPath);
+            }
+            else
+            {
+                MessageBox.Show("Output folder does not exist.", "",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Exclamation);
+            }
+
+        }
 
         private void AutoOptionsRadio_CheckedChanged(object sender, EventArgs e)
         {
