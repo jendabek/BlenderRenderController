@@ -113,7 +113,7 @@ namespace BlenderRenderController
 
                 td.Caption = "Setup required";
                 td.InstructionText = "Paths missing";
-                td.Text = "To use the program, set the paths to the required program in the Settings window";
+                td.Text = "To use the program, set the paths to the required program(s) in the Settings window";
                 td.Icon = TaskDialogStandardIcon.Warning;
                 td.StandardButtons = TaskDialogStandardButtons.Ok;
                 td.Controls.Add(tdCmdLink);
@@ -141,7 +141,10 @@ namespace BlenderRenderController
                     e.Cancel = true;
 
                 else
+                {
+                    logger.Info("Program closing");
                     StopRender(false);
+                }
             }
         }
 
@@ -492,8 +495,9 @@ namespace BlenderRenderController
                     }
                     catch (IOException ex)
                     {
-                        logger.Error("Can't clear chunk folder, files are in use");
-                        MessageBox.Show("It can't be deleted, files are in use by some program.\n");
+                        string msg = "Can't clear chunk folder, files are in use";
+                        logger.Error(msg);
+                        MessageBox.Show(msg);
                         return;
                     }
                     catch (Exception ex)
