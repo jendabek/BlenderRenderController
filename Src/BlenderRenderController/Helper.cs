@@ -125,21 +125,6 @@ namespace BlenderRenderController
             return path.Trim().TrimEnd('\\');
         }
 
-        static public string ParseChunksFolder(string outputPath)
-        {
-            if (string.IsNullOrEmpty(outputPath))
-                return string.Empty;
-
-            return Path.Combine(outputPath, Constants.ChunksSubfolder);
-        }
-        static public string ParseChunksTxt(string outputPath)
-        {
-            if (string.IsNullOrEmpty(outputPath))
-                return string.Empty;
-
-            return Path.Combine(ParseChunksFolder(outputPath), Constants.ChunksTxtFileName);
-        }
-
         static public string SecondsToString(double seconds, bool digital = false)
         {
             TimeSpan t = TimeSpan.FromSeconds(seconds);

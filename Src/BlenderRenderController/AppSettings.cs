@@ -112,7 +112,7 @@ namespace BlenderRenderController
                 _recentBlends.Remove(blendFilePath);
             }
 
-            //delete last if the list is larger than _LAST_BLENDS_MAX_COUNT
+            //delete last if the list is larger than RECENT_BLENDS_MAX_COUNT
             if (_recentBlends.Count == RECENT_BLENDS_MAX_COUNT)
             {
                 _recentBlends.RemoveAt(RECENT_BLENDS_MAX_COUNT - 1);
@@ -131,10 +131,10 @@ namespace BlenderRenderController
 
                 switch (response)
                 {
-                    case DialogResult.OK:
+                    case DialogResult.Yes:
                         _recentBlends.Clear();
                         break;
-                    case DialogResult.Cancel:
+                    case DialogResult.No:
                         break;
                     default:
                         MessageBox.Show("Something wrong happend.");

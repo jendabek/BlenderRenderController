@@ -36,14 +36,15 @@ namespace BlenderRenderController
         private ETACalculator _etaCalc;
         private TaskbarManager _taskbar;
         private Process concatenateCom, mixdownCom;
+        private SettingsForm _settingsForm;
         delegate void StatusUpdate(string msg, Control ctrl);
 
         public bool IsRendering { get; private set; }
-
         private string AssemblyVersion
         {
             get { return " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(); }
         }
+
 
         public BrcForm()
         {
@@ -56,6 +57,7 @@ namespace BlenderRenderController
             _appSettings = AppSettings.Current;
             mixdownCom = new Process();
             concatenateCom = new Process();
+
         }
 
         private void BrcForm_Load(object sender, EventArgs e)
@@ -63,7 +65,8 @@ namespace BlenderRenderController
             //add version numbers to window title
             versionLabel.Text = AssemblyVersion;
 
-            AppDomain.CurrentDomain.ProcessExit += new EventHandler(onAppExit);
+            // save appSettings on exit
+            AppDomain.CurrentDomain.ProcessExit += (ad, cd) => _appSettings.Save();
 
             _appSettings.RecentBlends_Changed += AppSettings_RecentBlends_Changed;
             _project.ProcessesCount = Environment.ProcessorCount;
@@ -80,7 +83,6 @@ namespace BlenderRenderController
                 }
             };
 
-            UpdateUI(AppState.AFTER_START);
             UpdateRecentBlendsMenu();
 
             // extra bindings
@@ -89,16 +91,40 @@ namespace BlenderRenderController
 
             chunkLengthNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
             processCountNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
+        }
 
+        private void BrcForm_Shown(object sender, EventArgs e)
+        {
+            logger.Info("Program Started");
 
-            if (!_appSettings.CheckCorrectConfig())
+            if (!_appSettings.CheckCorrectConfig(false))
             {
-                var setForm = new SettingsForm();
-                setForm.ShowInTaskbar = true;
-                setForm.ShowDialog();
+                UpdateUI(AppState.NOT_CONFIGURED);
+
+                var td = new TaskDialog();
+                var tdCmdLink = new TaskDialogCommandLink("BtnOpenSettings", "Goto Settings");
+                tdCmdLink.Click += (tdS, tdE) => 
+                {
+                    _settingsForm = new SettingsForm();
+                    _settingsForm.FormClosed += SettingsForm_FormClosed;
+                    _settingsForm.Show();
+                    td.Close();
+                };
+
+                td.Caption = "Setup required";
+                td.InstructionText = "Paths missing";
+                td.Text = "To use the program, set the paths to the required program in the Settings window";
+                td.Icon = TaskDialogStandardIcon.Warning;
+                td.StandardButtons = TaskDialogStandardButtons.Ok;
+                td.Controls.Add(tdCmdLink);
+                td.Show();
+
+            }
+            else
+            {
+                UpdateUI(AppState.AFTER_START);
             }
 
-            logger.Info("Program Started");
         }
 
         private void BrcForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -119,14 +145,26 @@ namespace BlenderRenderController
             }
         }
 
-        private void onAppExit(object sender, EventArgs e)
-        {
-            _appSettings.Save();
-        }
-
         private void AppSettings_RecentBlends_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             UpdateRecentBlendsMenu();
+        }
+
+        private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // when closing the Settings window, check if valid
+            // and update UI if needed
+            if (_appSettings.CheckCorrectConfig(false))
+            {
+                // ignore if file is already loaded
+                if (appState == AppState.READY_FOR_RENDER)
+                    return;
+
+                UpdateUI(AppState.AFTER_START);
+            }
+            else
+                UpdateUI(AppState.NOT_CONFIGURED);
+
         }
 
 
@@ -301,7 +339,7 @@ namespace BlenderRenderController
         #region RenderMethods
         private void RenderChunk(Chunk chunk)
         {
-            var chunksFolder = Helper.ParseChunksFolder(_blendData.OutputPath);
+            var chunksFolder = Path.Combine(_blendData.OutputPath, Constants.ChunksSubfolder);
 
             var renderCom = new Process();
             var info = new ProcessStartInfo();
@@ -436,7 +474,7 @@ namespace BlenderRenderController
             }
             else
             {
-                var chunksFolder = Helper.ParseChunksFolder(_blendData.OutputPath);
+                var chunksFolder = Path.Combine(_blendData.OutputPath, Constants.ChunksSubfolder);
 
                 if (Directory.Exists(chunksFolder) && Directory.GetFiles(chunksFolder).Length > 0)
                 {
@@ -556,6 +594,10 @@ namespace BlenderRenderController
             Status(titleProg, this);
         }
 
+        /// <summary>
+        /// Updates the list of chunks that will be rendered
+        /// </summary>
+        /// <param name="newChunks"></param>
         private void UpdateCurrentChunks(params Chunk[] newChunks)
         {
             if (_project.ChunkList.Count > 0)
@@ -566,8 +608,8 @@ namespace BlenderRenderController
                 _project.ChunkList.Add(chnk);
             }
 
-            //_project.ChunkLenght = (int)_project.ChunkList.First().Length;
-            //chunkLengthNumericUpDown.Value = _project.ChunkList.First().Length;
+            logger.Debug("ChunkList updated");
+            logger.Trace(string.Join(", " ,_project.ChunkList));
         }
 
         private void UpdateRecentBlendsMenu()
@@ -687,7 +729,7 @@ namespace BlenderRenderController
         #region Concatenate
         private void Concatenate()
         {
-            var chunksFolder = Helper.ParseChunksFolder(_blendData.OutputPath);
+            var chunksFolder = Path.Combine(_blendData.OutputPath, Constants.ChunksSubfolder);
 
             if (!Directory.Exists(chunksFolder))
             {
@@ -695,19 +737,20 @@ namespace BlenderRenderController
                 return;
             }
 
-            string chunksTxtPath = Helper.ParseChunksTxt(_blendData.OutputPath);
+            string chunksTxtPath = Path.Combine(chunksFolder, Constants.ChunksTxtFileName);
             string audioFileName = _blendData.ProjectName + "." + "ac3";
             string projPath = Path.Combine(_blendData.OutputPath, _blendData.ProjectName);
             string mixdownAudioPath = Path.Combine(_blendData.OutputPath, audioFileName);
 
             var fileListSorted = Utilities.GetChunkFiles(chunksFolder);
-            var videoExtensionFound = Path.GetExtension(fileListSorted.FirstOrDefault());
 
             if (fileListSorted.Count == 0)
             {
                 MessageBox.Show("Failed to get chunk files", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 return;
             }
+
+            var videoExtensionFound = Path.GetExtension(fileListSorted.FirstOrDefault());
 
             //write txt for FFmpeg concatenation
             using (StreamWriter partListWriter = new StreamWriter(chunksTxtPath))
@@ -979,10 +1022,29 @@ namespace BlenderRenderController
             _appSettings.DisplayToolTips = tipsToolStripMenuItem.Checked;
         }
 
+        private void donateButton_Click(object sender, EventArgs e)
+        {
+            string business = "jendabek@gmail.com";  // your paypal email
+            string description = "Donation for Blender Render Controller";
+            string country = "CZE";                  // AU, US, etc.
+            string currency = "USD";                 // AUD, USD, etc.
+
+            string url = "https://www.paypal.com/cgi-bin/webscr" +
+                    "?cmd=" + "_donations" +
+                    "&business=" + business +
+                    "&lc=" + country +
+                    "&item_name=" + description +
+                    "&currency_code=" + currency +
+                    "&bn=" + "PP%2dDonationsBF";
+
+            Process.Start(url);
+        }
+
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var settingsForm = new SettingsForm();
-            settingsForm.ShowDialog();
+            _settingsForm = new SettingsForm();
+            _settingsForm.FormClosed += SettingsForm_FormClosed;
+            _settingsForm.ShowDialog();
         }
 
         private void toolStripMenuItemBug_Click(object sender, EventArgs e)
@@ -999,7 +1061,7 @@ namespace BlenderRenderController
         /// <summary>
         /// Updates UI according to <see cref="AppState"/>
         /// </summary>
-        /// <param name="state">New state</param>
+        /// <param name="state">New state, leave empty to refresh using the current state</param>
         private void UpdateUI(AppState? state = null)
         {
             appState = state ?? appState;
@@ -1077,6 +1139,7 @@ namespace BlenderRenderController
                     afterRenderJoinMixdownRadio.Enabled = false;
                     afterRenderJoinRadio.Enabled = false;
                     renderInfoLabel.Enabled = false;
+                    Status("Required program(s) not found, see Settings");
                     break;
                 case AppState.READY_FOR_RENDER:
                     blendNameLabel.Visible = true;
@@ -1087,7 +1150,8 @@ namespace BlenderRenderController
                     totalEndNumericUpDown.Enabled = startEndCustomRadio.Checked;
                     chunkLengthNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
                     processCountNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
-                    concatenatePartsButton.Enabled = Directory.Exists(Helper.ParseChunksFolder(_blendData.OutputPath));
+                    var chunksFolder = Path.Combine(_blendData.OutputPath, Constants.ChunksSubfolder);
+                    concatenatePartsButton.Enabled = Directory.Exists(chunksFolder);
                     reloadBlenderDataButton.Enabled = true;
                     blendBrowseBtn.Enabled = true;
                     showRecentBlendsBtn.Enabled = true;

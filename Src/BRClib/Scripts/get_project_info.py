@@ -77,21 +77,9 @@ class ProjectInfo:
 
         print("Building data...")
 
-        data = {
-            'projectName': projectName,
-            'blendPath': blendPath,
-		    'start': start,
-		    'end': end,
-		    'fps': fps,
-            'totalLength': totalLength,
-            'resolution': resolution,
-		    'outputPath': outputPath,
-            'scenesNum': scenesNum,
-		    'sceneActive': sceneActive,
-		    'renderFormat': renderFormat
-        };
-
-        dataLeg = {
+        if self.legacy == True:
+            # old 0.8.2 format
+            return {
             'projectName': projectName,
 		    'start': start,
 		    'end': end,
@@ -104,13 +92,21 @@ class ProjectInfo:
 		    'sceneActive': sceneActive,
 		    'renderFormat': renderFormat
         };
-
-        if self.legacy == True:
-            # old 0.8.2 format
-            return dataLeg
         else:
             # new format to use in future versions
-            return data
+            return {
+            'projectName': projectName,
+            'blendPath': blendPath,
+		    'start': start,
+		    'end': end,
+		    'fps': fps,
+            'totalLength': totalLength,
+            'resolution': resolution,
+		    'outputPath': outputPath,
+            'scenesNum': scenesNum,
+		    'sceneActive': sceneActive,
+		    'renderFormat': renderFormat
+        };
 
     # fixes relative paths
     def fixPath(self, path):

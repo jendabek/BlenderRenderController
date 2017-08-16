@@ -476,7 +476,7 @@ namespace BlenderRenderController
             // 
             this.infoResolution.BackColor = System.Drawing.SystemColors.Control;
             this.infoResolution.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoResolution.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Resolution", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "..."));
+            this.infoResolution.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Resolution", true, System.Windows.Forms.DataSourceUpdateMode.Never, "..."));
             this.infoResolution.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoResolution.Location = new System.Drawing.Point(298, 34);
             this.infoResolution.Name = "infoResolution";
@@ -491,7 +491,7 @@ namespace BlenderRenderController
             // 
             this.infoFramerate.BackColor = System.Drawing.SystemColors.Control;
             this.infoFramerate.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoFramerate.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Fps", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "...", "###.##"));
+            this.infoFramerate.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Fps", true, System.Windows.Forms.DataSourceUpdateMode.Never, "...", "###.##"));
             this.infoFramerate.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoFramerate.Location = new System.Drawing.Point(378, 34);
             this.infoFramerate.Name = "infoFramerate";
@@ -506,7 +506,7 @@ namespace BlenderRenderController
             // 
             this.infoDuration.BackColor = System.Drawing.SystemColors.Control;
             this.infoDuration.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoDuration.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Duration", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "..."));
+            this.infoDuration.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Duration", true, System.Windows.Forms.DataSourceUpdateMode.Never, "..."));
             this.infoDuration.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoDuration.Location = new System.Drawing.Point(185, 34);
             this.infoDuration.Name = "infoDuration";
@@ -531,7 +531,7 @@ namespace BlenderRenderController
             // 
             this.infoFramesTotal.BackColor = System.Drawing.SystemColors.Control;
             this.infoFramesTotal.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoFramesTotal.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "TotalFrames", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "...", "# \"f\""));
+            this.infoFramesTotal.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "TotalFrames", true, System.Windows.Forms.DataSourceUpdateMode.Never, "...", "# \"f\""));
             this.infoFramesTotal.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoFramesTotal.Location = new System.Drawing.Point(108, 34);
             this.infoFramesTotal.Name = "infoFramesTotal";
@@ -546,7 +546,7 @@ namespace BlenderRenderController
             // 
             this.infoActiveScene.BackColor = System.Drawing.SystemColors.Control;
             this.infoActiveScene.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoActiveScene.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "ActiveScene", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged, "..."));
+            this.infoActiveScene.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "ActiveScene", true, System.Windows.Forms.DataSourceUpdateMode.Never, "..."));
             this.infoActiveScene.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.infoActiveScene.Location = new System.Drawing.Point(11, 34);
             this.infoActiveScene.Name = "infoActiveScene";
@@ -980,6 +980,7 @@ namespace BlenderRenderController
             this.donateButton.Text = "Donate";
             this.donateButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.donateButton.UseVisualStyleBackColor = true;
+            this.donateButton.Click += new System.EventHandler(this.donateButton_Click);
             // 
             // openOutputFolderButton
             // 
@@ -1142,6 +1143,7 @@ namespace BlenderRenderController
             this.Text = "Blender Render Controller";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BrcForm_FormClosing);
             this.Load += new System.EventHandler(this.BrcForm_Load);
+            this.Shown += new System.EventHandler(this.BrcForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).EndInit();

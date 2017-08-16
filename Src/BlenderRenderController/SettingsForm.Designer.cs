@@ -164,7 +164,6 @@
             this.settingsToolTip.SetToolTip(this.chkBoxVerboseLog, "Logs program operation, could be useful for troubleshooting.\r\n\r\nObs: Error messag" +
         "es will always be logged.");
             this.chkBoxVerboseLog.UseVisualStyleBackColor = true;
-            this.chkBoxVerboseLog.Click += new System.EventHandler(this.chkBoxVerboseLog_Click);
             // 
             // SettingsForm
             // 

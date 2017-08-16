@@ -13,10 +13,10 @@ namespace BRClib
     /// </summary>
     public class BlendData : BindingBase
     {
-        private int _start, _end, _sceneNum;
+        private int _start, _end, _scenesNum;
         private double _fps;
-        private string _res, _outPath, _projName, 
-            _activeScene, _renderFmt;
+        private string _outPath, _projName, 
+            _activeScene, _renderFmt, _res;
 
         [JsonProperty("start")]
         public int Start
@@ -31,6 +31,7 @@ namespace BRClib
                 }
             }
         }
+
         [JsonProperty("end")]
         public int End
         {
@@ -44,31 +45,28 @@ namespace BRClib
                 }
             }
         }
+        
         [JsonProperty("scenesNum")]
         public int NumberOfScenes
         {
-            get => _sceneNum;
-            set => SetProperty(ref _sceneNum, value);
+            get => _scenesNum;
+            private set => SetProperty(ref _scenesNum, value);
         }
+
         [JsonProperty("fps")]
         public double Fps
         {
             get => _fps;
-            set
-            {
-                if(SetProperty(ref _fps, value))
-                {
-                    OnPropertyChanged(nameof(Duration));
-                    OnPropertyChanged(nameof(TotalFrames));
-                }
-            }
+            private set => SetProperty(ref _fps, value);
         }
+
         [JsonProperty("resolution")]
         public string Resolution
         {
             get => _res;
-            set => SetProperty(ref _res, value);
+            private set => SetProperty(ref _res, value);
         }
+
         [JsonProperty("outputPath")]
         public string OutputPath
         {
@@ -85,14 +83,15 @@ namespace BRClib
         public string ActiveScene
         {
             get => _activeScene;
-            set => SetProperty(ref _activeScene, value);
+            private set => SetProperty(ref _activeScene, value);
         }
         [JsonProperty("renderFormat")]
         public string RenderFormat
         {
             get => _renderFmt;
-            set => SetProperty(ref _renderFmt, value);
+            private set => SetProperty(ref _renderFmt, value);
         }
+
 
         public TimeSpan? Duration
         {
@@ -266,8 +265,8 @@ namespace BRClib
                 else
                 {
                     // the final chunk, the one that matches the project's end
-                    var last = chunkList.Last();
-                    var finalChunk = new Chunk(last.End + 1, end);
+                    var secondLast = chunkList.Last();
+                    var finalChunk = new Chunk(secondLast.End + 1, end);
                     chunkList.Add(finalChunk);
                 }
             }
@@ -338,8 +337,7 @@ namespace BRClib
 
             var chunk = (Chunk)obj;
 
-            return Start == chunk.Start
-                && End == chunk.End;
+            return Equals(chunk);
         }
         public bool Equals(Chunk c)
         {

@@ -75,7 +75,8 @@ namespace BlenderRenderController
         {
             if (!_appSettings.CheckCorrectConfig(false))
             {
-                Application.Exit();
+                this.DialogResult = DialogResult.Abort;
+                //Application.Exit();
             }
 
         }
@@ -85,10 +86,5 @@ namespace BlenderRenderController
             Process.Start("https://www.ffmpeg.org/download.html");
         }
 
-        private void chkBoxVerboseLog_Click(object sender, EventArgs e)
-        {
-            //_appSettings.verboseLog = (sender as CheckBox).Checked;
-            //_appSettings.save();
-        }
     }
 }

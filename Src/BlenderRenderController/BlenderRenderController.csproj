@@ -186,7 +186,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>IF $(ConfigurationName)==Release call $(SolutionDir)mergeBuild.bat $(TargetName) $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
 </Project>

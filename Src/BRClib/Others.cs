@@ -165,7 +165,7 @@ namespace BRClib
 
         /// <summary>
         /// Concatenate command ARGS, join chunks with mixdown
-        /// <para>0=ChunkTxtPath, 1=Mixdown audio, 2=Project name, 3=file .EXT</para>
+        /// <para>0=ChunkTxtPath, 1=Mixdown audio, 2=Project name, 3= .EXT</para>
         /// </summary>
         public const string ConcatenateMixdown = "-f concat -safe 0 -i \"{0}\" -i \"{1}\" -map 0:v -map 1:a -c:v copy \"{2}{3}\" -y";
 
@@ -183,38 +183,15 @@ namespace BRClib
 
         /// <summary>
         /// Mixdown command ARGS
-        /// 0=Blend file, 1=start, 2=end, 3=mixdown_audio.py, 4=output
+        /// <para>0=Blend file, 1=start, 2=end, 3=mixdown_audio.py, 4=output</para>
         /// </summary>
         public const string MixdownComARGS = "-b \"{0}\" -s {1} -e {2} -P \"{3}\" -- \"{4}\"";
 
         /// <summary>
-        /// 0=Blend file, 1=output, 2=Renderer, 3=Frame start, 4=Frame end
+        /// Render command ARGS
+        /// <para>0=Blend file, 1=output, 2=Renderer, 3=Frame start, 4=Frame end</para>
         /// </summary>
         public const string RenderComARGS = "-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a";
     }
 
-
-    public static class Extentions
-    {
-        /// <summary>
-        /// Starts the process asynchronously.
-        /// </summary>
-        /// <param name="process">The process to wait for cancellation.</param>
-        /// <param name="cancellationToken">A cancellation token. If invoked, the task will return 
-        /// immediately as canceled.</param>
-        /// <returns>A Task representing waiting for the process to end.</returns>
-        public static Task StartAsync(this Process process,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var tcs = new TaskCompletionSource<object>();
-            process.EnableRaisingEvents = true;
-            process.Exited += (sender, args) => tcs.TrySetResult(null);
-            if (cancellationToken != default(CancellationToken))
-                cancellationToken.Register(tcs.SetCanceled);
-
-            process.Start();
-
-            return tcs.Task;
-        }
-    }
 }
