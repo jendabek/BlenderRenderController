@@ -450,6 +450,7 @@ namespace BlenderRenderController
             this.infoMore.TabIndex = 33;
             this.infoMore.TabStop = true;
             this.infoMore.Text = "More...";
+            this.infoMore.Visible = false;
             // 
             // label4
             // 

@@ -117,12 +117,12 @@ class ProjectInfo:
         
         count = 0
         for idx in relIndexes:
-            count = count+1
+            count += 1
             folderIdx = idx - count
             
             if folderIdx not in foldersToDel:
                 foldersToDel.append(folderIdx)
-                count=count+1
+                count += 1
 
 
         if len(foldersToDel) > 0:

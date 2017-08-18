@@ -73,18 +73,21 @@ namespace BRClib
             get => _outPath;
             set => SetProperty(ref _outPath, value);
         }
+
         [JsonProperty("projectName")]
         public string ProjectName
         {
             get => _projName;
             set => SetProperty(ref _projName, value);
         }
+
         [JsonProperty("sceneActive")]
         public string ActiveScene
         {
             get => _activeScene;
             private set => SetProperty(ref _activeScene, value);
         }
+
         [JsonProperty("renderFormat")]
         public string RenderFormat
         {

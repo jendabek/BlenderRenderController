@@ -21,5 +21,23 @@ namespace BlenderRenderController.Ui
             }
         }
 
+        public static TaskDialog ErrorBox(string textBody, string mainText, string caption, string details)
+        {
+            var td = new TaskDialog();
+            td.Text = textBody;
+            td.InstructionText = mainText;
+            td.Caption = td.Caption;
+
+            td.DetailsExpanded = false;
+            td.DetailsExpandedLabel = "Show details";
+            td.DetailsExpandedText = details;
+            td.ExpansionMode = TaskDialogExpandedDetailsLocation.ExpandFooter;
+
+            td.Icon = TaskDialogStandardIcon.Error;
+            td.FooterIcon = TaskDialogStandardIcon.Information;
+            td.StandardButtons = TaskDialogStandardButtons.Ok;
+
+            return td;
+        }
     }
 }

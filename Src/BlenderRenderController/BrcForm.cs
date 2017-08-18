@@ -220,52 +220,57 @@ namespace BlenderRenderController
             // Get values from streams
             var streamOutput = new List<string>();
             var streamErrors = new List<string>();
+            var fullOutput = getBlendInfoCom.StandardOutput.ReadToEnd();
+            var fullErrors = getBlendInfoCom.StandardError.ReadToEnd();
 
-            while (!getBlendInfoCom.StandardOutput.EndOfStream)
-                streamOutput.Add(getBlendInfoCom.StandardOutput.ReadLine());
+            streamOutput.AddRange(fullOutput.Split('\n'));
+            streamErrors.AddRange(fullErrors.Split('\n'));
 
-            while (!getBlendInfoCom.StandardError.EndOfStream)
-                streamErrors.Add(getBlendInfoCom.StandardError.ReadLine());
-
-            // log errors
+            // errors
             if (streamErrors.Count > 0)
             {
-                string allErrors = string.Join("\n", streamErrors);
                 logger.Debug("Blender output errors detected.");
-                logger.Trace(allErrors);
+                logger.Trace(fullErrors);
+
+                // folder count exception
+                if (streamErrors.Contains(Constants.PY_FolderCountError))
+                {
+                    var err = new Ui.ErrorBox("There was an error parsing the output", "Error", streamErrors);
+                    err.ShowDialog(this);
+                    return;
+                }
+
             }
 
             if (streamOutput.Count == 0)
             {
-                var e = new Ui.ErrorBox("Could not open project, no information was received",
-                                        "Error",
-                                         streamErrors);
-                e.ShowDialog(this);
+                var detailsContent = "Error output: \n\n" + fullErrors;
+
+                var err = Ui.Dialogs.ErrorBox("Could not open project, no information was received", 
+                                                "Failed to read project", 
+                                                "Error", 
+                                                detailsContent);
+                err.Show();
                 StopRender(false);
                 return;
             }
-            // folder count exception
-            if (streamErrors.Contains(Constants.PY_FolderCountError))
-            {
-                var err = new Ui.ErrorBox("There was an error parsing the output", "Error", streamErrors);
-                err.ShowDialog(this);
-                return;
-            }
+
 
             var blendData = Utilities.ParsePyOutput(streamOutput);
-            _blendData = blendData;
-            _project.BlendPath = blendFile;
-
-            // save copy of start and end frames values
-            _autoRefStart = blendData.Start;
-            _autoRefEnd = blendData.End;
-
-            // refresh binding source for blend data
-            blendDataBindingSource.DataSource = _blendData;
-            blendDataBindingSource.ResetBindings(false);
 
             if (blendData != null)
             {
+                _blendData = blendData;
+                _project.BlendPath = blendFile;
+
+                // save copy of start and end frames values
+                _autoRefStart = blendData.Start;
+                _autoRefEnd = blendData.End;
+
+                // refresh binding source for blend data
+                blendDataBindingSource.DataSource = _blendData;
+                blendDataBindingSource.ResetBindings(false);
+
                 if (RenderFormats.IMAGES.Contains(blendData.RenderFormat))
                 {
                     Helper.ShowErrors(MessageBoxIcon.Asterisk, AppErrorCode.RENDER_FORMAT_IS_IMAGE);
@@ -274,7 +279,7 @@ namespace BlenderRenderController
                 // output path w/o project name
                 if (string.IsNullOrWhiteSpace(_blendData.OutputPath))
                 {
-                    // get .blend folder, if outputPath is unset, display a warning about it
+                    // use .blend folder path if outputPath is unset, display a warning about it
                     Helper.ShowErrors(MessageBoxIcon.Information, AppErrorCode.BLEND_OUTPUT_INVALID);
                     _blendData.OutputPath = Path.GetDirectoryName(blendFile);
                 }
@@ -285,8 +290,18 @@ namespace BlenderRenderController
                 logger.Info(".blend loaded successfully");
             }
             else
+            {
                 logger.Error(".blend was NOT loaded");
+                UpdateUI(AppState.AFTER_START);
+                Status("Error loading blend file");
 
+                var errorBox = Ui.Dialogs.ErrorBox("An unknown error occured and the blend file was not read", 
+                    "Unknown error", "Error", fullErrors);
+
+                errorBox.Show();
+
+                return;
+            }
 
             var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, 8);
             UpdateCurrentChunks(chunks);
@@ -544,6 +559,7 @@ namespace BlenderRenderController
                 if (_processList.Count == 0)
                 {
                     renderProgressBar.Style = ProgressBarStyle.Marquee;
+                    _taskbar.SetProgressState(TaskbarProgressBarState.Indeterminate);
                     processManager.Enabled = false;
                     AfterRenderBG();
                 }
@@ -625,14 +641,16 @@ namespace BlenderRenderController
             {
                 var menuItem = new ToolStripMenuItem(Path.GetFileNameWithoutExtension(item), Resources.blend_icon);
                 menuItem.ToolTipText = item;
-                menuItem.Click += (sender, args) =>
-                {
-                    ToolStripMenuItem recentItem = (ToolStripMenuItem)sender;
-                    var blendPath = recentItem.ToolTipText;
-                    GetBlendInfo(blendPath);
-                };
+                menuItem.Click += RecentBlendsItem_Click;
                 recentBlendsMenu.Items.Add(menuItem);
             }
+        }
+
+        private void RecentBlendsItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem recentItem = (ToolStripMenuItem)sender;
+            var blendPath = recentItem.ToolTipText;
+            GetBlendInfo(blendPath);
         }
 
         /// <summary>
@@ -1065,10 +1083,10 @@ namespace BlenderRenderController
         /// <summary>
         /// Updates UI according to <see cref="AppState"/>
         /// </summary>
-        /// <param name="state">New state, leave empty to refresh using the current state</param>
-        private void UpdateUI(AppState? state = null)
+        /// <param name="newState">New state, leave empty to refresh using the current state</param>
+        private void UpdateUI(AppState? newState = null)
         {
-            appState = state ?? appState;
+            appState = newState ?? appState;
 
             renderAllButton.Text = (appState == AppState.RENDERING_ALL)
                                     ? "Stop Render"
