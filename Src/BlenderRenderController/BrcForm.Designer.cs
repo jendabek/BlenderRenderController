@@ -58,7 +58,6 @@ namespace BlenderRenderController
             this.redRaptorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.infoPanel = new System.Windows.Forms.Panel();
-            this.infoMore = new System.Windows.Forms.LinkLabel();
             this.label4 = new System.Windows.Forms.Label();
             this.infoDurationLabel = new System.Windows.Forms.Label();
             this.infoResolution = new System.Windows.Forms.TextBox();
@@ -425,7 +424,6 @@ namespace BlenderRenderController
             // 
             this.infoPanel.BackColor = System.Drawing.SystemColors.Info;
             this.infoPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.infoPanel.Controls.Add(this.infoMore);
             this.infoPanel.Controls.Add(this.label4);
             this.infoPanel.Controls.Add(this.infoDurationLabel);
             this.infoPanel.Controls.Add(this.infoResolution);
@@ -440,17 +438,6 @@ namespace BlenderRenderController
             this.infoPanel.Name = "infoPanel";
             this.infoPanel.Size = new System.Drawing.Size(443, 87);
             this.infoPanel.TabIndex = 22;
-            // 
-            // infoMore
-            // 
-            this.infoMore.AutoSize = true;
-            this.infoMore.Location = new System.Drawing.Point(387, 64);
-            this.infoMore.Name = "infoMore";
-            this.infoMore.Size = new System.Drawing.Size(40, 13);
-            this.infoMore.TabIndex = 33;
-            this.infoMore.TabStop = true;
-            this.infoMore.Text = "More...";
-            this.infoMore.Visible = false;
             // 
             // label4
             // 
@@ -1230,7 +1217,6 @@ namespace BlenderRenderController
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemBug;
         private System.Windows.Forms.Label versionLabel;
         private System.Windows.Forms.TextBox infoResolution;
-        private System.Windows.Forms.LinkLabel infoMore;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem clearRecentProjectsListToolStripMenuItem;
         private System.Windows.Forms.Label ETALabel;

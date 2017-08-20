@@ -26,7 +26,7 @@ namespace BlenderRenderController.Ui
             var td = new TaskDialog();
             td.Text = textBody;
             td.InstructionText = mainText;
-            td.Caption = td.Caption;
+            td.Caption = caption;
 
             td.DetailsExpanded = false;
             td.DetailsExpandedLabel = "Show details";
@@ -39,5 +39,23 @@ namespace BlenderRenderController.Ui
 
             return td;
         }
+        public static TaskDialog ErrorBox(string textBody, string mainText, string details)
+        {
+            var td = new TaskDialog();
+            td.Text = textBody;
+            td.InstructionText = mainText;
+
+            td.DetailsExpanded = false;
+            td.DetailsExpandedLabel = "Show details";
+            td.DetailsExpandedText = details;
+            td.ExpansionMode = TaskDialogExpandedDetailsLocation.ExpandFooter;
+
+            td.Icon = TaskDialogStandardIcon.Error;
+            td.FooterIcon = TaskDialogStandardIcon.Information;
+            td.StandardButtons = TaskDialogStandardButtons.Ok;
+
+            return td;
+        }
+
     }
 }

@@ -95,18 +95,6 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Ui\Dialogs.cs" />
-    <Compile Include="Ui\ErrorBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Ui\ErrorBox.Designer.cs">
-      <DependentUpon>ErrorBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Ui\SplitButtonOver.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Ui\SplitButtonOver.Designer.cs">
-      <DependentUpon>SplitButtonOver.cs</DependentUpon>
-    </Compile>
     <Compile Include="Ui\SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -154,12 +142,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Ui\ErrorBox.resx">
-      <DependentUpon>ErrorBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Ui\SplitButtonOver.resx">
-      <DependentUpon>SplitButtonOver.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>

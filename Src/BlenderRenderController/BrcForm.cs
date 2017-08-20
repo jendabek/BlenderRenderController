@@ -101,7 +101,15 @@ namespace BlenderRenderController
             {
                 UpdateUI(AppState.NOT_CONFIGURED);
 
-                var td = new TaskDialog();
+                var td = new TaskDialog()
+                {
+                    Caption = "Setup required",
+                    InstructionText = "Paths missing",
+                    Text = "To use the program, set the paths to the required program(s) in the Settings window",
+                    Icon = TaskDialogStandardIcon.Warning,
+                    StandardButtons = TaskDialogStandardButtons.Ok
+                };
+
                 var tdCmdLink = new TaskDialogCommandLink("BtnOpenSettings", "Goto Settings");
                 tdCmdLink.Click += (tdS, tdE) => 
                 {
@@ -111,11 +119,6 @@ namespace BlenderRenderController
                     td.Close();
                 };
 
-                td.Caption = "Setup required";
-                td.InstructionText = "Paths missing";
-                td.Text = "To use the program, set the paths to the required program(s) in the Settings window";
-                td.Icon = TaskDialogStandardIcon.Warning;
-                td.StandardButtons = TaskDialogStandardButtons.Ok;
                 td.Controls.Add(tdCmdLink);
                 td.Show();
 
@@ -146,6 +149,10 @@ namespace BlenderRenderController
                     StopRender(false);
                 }
             }
+            else
+            {
+                logger.Info("Program closing");
+            }
         }
 
         private void AppSettings_RecentBlends_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -174,6 +181,14 @@ namespace BlenderRenderController
         #region BlendFileInfo
         private void GetBlendInfo(string blendFile, string scriptName = Constants.PyGetInfo)
         {
+            // call this if GetBlendInfo fails
+            Action ReadFail = () =>
+            {
+                logger.Error(".blend was NOT loaded");
+                UpdateUI(AppState.AFTER_START);
+                Status("Error loading blend file");
+            };
+
             logger.Info("Loading .blend");
             Status("Reading .blend file...");
 
@@ -181,12 +196,14 @@ namespace BlenderRenderController
             {
                 MessageBox.Show("File does not exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 // remove and update recent blends...
+                ReadFail();
                 return;
             }
             if (!Directory.Exists(_appSettings.ScriptsFolder))
             {
                 // Error scriptsfolder not found
                 MessageBox.Show("Scripts folder not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ReadFail();
                 return;
             }
 
@@ -204,6 +221,7 @@ namespace BlenderRenderController
                                             blendFile,
                                             Path.Combine(_appSettings.ScriptsFolder, scriptName))
             };
+
             getBlendInfoCom.StartInfo = info;
 
             try
@@ -235,8 +253,13 @@ namespace BlenderRenderController
                 // folder count exception
                 if (streamErrors.Contains(Constants.PY_FolderCountError))
                 {
-                    var err = new Ui.ErrorBox("There was an error parsing the output", "Error", streamErrors);
-                    err.ShowDialog(this);
+                    var err = Ui.Dialogs.ErrorBox("There was an error parsing the output path", 
+                        "Read error", 
+                        "Script failed to parse the relative output path into an absolute path, try" +
+                        "changing the path in your project\n\nError: " + Constants.PY_FolderCountError);
+
+                    err.Show();
+                    ReadFail();
                     return;
                 }
 
@@ -251,7 +274,7 @@ namespace BlenderRenderController
                                                 "Error", 
                                                 detailsContent);
                 err.Show();
-                StopRender(false);
+                ReadFail();
                 return;
             }
 
@@ -291,14 +314,12 @@ namespace BlenderRenderController
             }
             else
             {
-                logger.Error(".blend was NOT loaded");
-                UpdateUI(AppState.AFTER_START);
-                Status("Error loading blend file");
-
-                var errorBox = Ui.Dialogs.ErrorBox("An unknown error occured and the blend file was not read", 
-                    "Unknown error", "Error", fullErrors);
+                //var detailContents = string.Format("# STD output:\n\n{0}\n\n# STD errors:\n\n{1}", fullOutput, fullErrors);
+                var errorBox = Ui.Dialogs.ErrorBox("Failed to read blend file info.", 
+                    "Read error", "Error output:\n\n" + fullErrors);
 
                 errorBox.Show();
+                ReadFail();
 
                 return;
             }
@@ -306,7 +327,7 @@ namespace BlenderRenderController
             var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, 8);
             UpdateCurrentChunks(chunks);
             _appSettings.AddRecentBlend(blendFile);
-            Status("Done");
+            Status("File loaded");
             UpdateUI(AppState.READY_FOR_RENDER);
         }
 
@@ -728,8 +749,14 @@ namespace BlenderRenderController
             catch (Exception ex)
             {
                 Status("Mixdown cancelled.");
-                var err = new Ui.ErrorBox("An unexpected error occurred", "Error", new string[] { ex.Message, "", ex.StackTrace });
-                err.ShowDialog();
+                var err = new TaskDialog()
+                {
+                    Text = string.Format("An unexpected error occurred: '{0}'", ex.Message),
+                    InstructionText = "Mixdown failed",
+                    DetailsExpanded = false,
+                    DetailsExpandedText = "StackTrace:\n\n" + ex.StackTrace,
+                    Icon = TaskDialogStandardIcon.Error
+                };
                 return;
             }
 
@@ -884,7 +911,7 @@ namespace BlenderRenderController
 
             var openOutputFolderQuestion =
                     MessageBox.Show("Open the folder with the video?",
-                                    "Open folder",
+                                    "Work complete!",
                                     MessageBoxButtons.YesNo,
                                     MessageBoxIcon.Question);
 
@@ -1077,7 +1104,7 @@ namespace BlenderRenderController
         private void clearRecentProjectsListToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _appSettings.ClearRecentBlend();
-            UpdateRecentBlendsMenu();
+            //UpdateRecentBlendsMenu();
         }
 
         /// <summary>
