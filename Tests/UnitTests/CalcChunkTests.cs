@@ -52,22 +52,26 @@ namespace UnitTestProject1
         [TestMethod]
         public void CalcChunks_custom_length()
         {
-            int[] randPair = MakeRandomParams.GetRandomNumberPair(1, 99999);
 
-            int start = randPair[0];
-            int end = randPair[1];
-            int len = 3500;
-
-            Console.WriteLine("Start: {0}, End: {1}, Legth: {2}", start, end, end-start+1);
-
-            var calcResult = Chunk.CalcChunksByLenght(start, end, len);
-            foreach (var res in calcResult)
+            for (int i = 0; i < 10; i++)
             {
-                Console.WriteLine(res + "   Lenght: " + res.Length);
+                int[] randPair = MakeRandomParams.GetRandomNumberPair(1, 99999);
+
+                int start = randPair[0];
+                int end = randPair[1];
+                int len = 3500;
+
+                Console.WriteLine("Start: {0}, End: {1}, Legth: {2}", start, end, end - start + 1);
+
+                var calcResult = Chunk.CalcChunksByLenght(start, end, len);
+                foreach (var res in calcResult)
+                {
+                    Console.WriteLine(res + "   Lenght: " + res.Length);
+                }
+                Console.WriteLine();
+                Console.WriteLine("Number of chunks: " + calcResult.Length);
+                Assert.IsFalse(calcResult.Last().End != end, "Last calcResult.End was different then param end");
             }
-            Console.WriteLine();
-            Console.WriteLine("Number of chunks: " + calcResult.Length);
-            Assert.IsFalse(calcResult.Last().End != end, "Last calcResult.End was different then param end");
 
         }
     }
@@ -90,14 +94,9 @@ namespace UnitTestProject1
 
             int[] rnd = { r1, r2 };
 
-            if (invert)
-            {
-                return rnd.OrderByDescending(r => r).ToArray();
-            }
-            else
-            {
-                return rnd.OrderBy(r => r).ToArray();
-            }
+            return invert 
+                    ? rnd.OrderByDescending(r => r).ToArray() 
+                    : rnd.OrderBy(r => r).ToArray();
         }
     }
 }

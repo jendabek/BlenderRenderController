@@ -1,4 +1,13 @@
-﻿using NLog;
+﻿// For Mono compatible Unix builds, uncomment
+// the next line or compile with /d:UNIX
+//#define UNIX
+#if !WINDOWS && !UNIX
+#define WINDOWS
+#elif UNIX
+#undef WINDOWS
+#endif
+
+using NLog;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -31,6 +40,11 @@ namespace BlenderRenderController
             {
                 ffmpegPathTextBox.Text = string.Empty;
             }
+
+#if UNIX
+            ffmpegPathTextBox.BackColor =
+            blenderPathTextBox.BackColor = System.Drawing.Color.White;
+#endif
         }
 
         private void blenderChangePathButton_Click(object sender, EventArgs e)
@@ -73,7 +87,7 @@ namespace BlenderRenderController
 
         private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (!_appSettings.CheckCorrectConfig(false))
+            if (!_appSettings.CheckCorrectConfig())
             {
                 this.DialogResult = DialogResult.Abort;
                 //Application.Exit();

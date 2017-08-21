@@ -1,10 +1,10 @@
-﻿#pragma warning disable CS1591
+﻿using NLog;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 namespace BRClib
 {
@@ -17,6 +17,8 @@ namespace BRClib
         private double _fps;
         private string _outPath, _projName, 
             _activeScene, _renderFmt, _res;
+
+        public BlendData() : base() { }
 
         [JsonProperty("start")]
         public int Start
@@ -120,7 +122,6 @@ namespace BRClib
             }
         }
 
-
     }
 
     /// <summary>
@@ -161,23 +162,24 @@ namespace BRClib
             set => SetProperty(ref _processCount, value);
         }
 
-        public ProjectSettings()
+        public ProjectSettings() : base()
         {
             _chunkList = new ObservableCollection<Chunk>();
-            _chunkList.CollectionChanged += ChunkList_CollectionChanged;
+            //_chunkList.CollectionChanged += ChunkList_CollectionChanged;
             //BlendData = new BlendData();
+            ChunkLenght = 1;
         }
 
-        private void ChunkList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            var cList = sender as ObservableCollection<Chunk>;
+        //private void ChunkList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        //{
+        //    var cList = sender as ObservableCollection<Chunk>;
 
-            if (cList.Count > 0)
-            {
-                var cLen = cList.First().Length;
-                ChunkLenght = (int)cLen;
-            }
-        }
+        //    if (cList.Count > 0)
+        //    {
+        //        var cLen = cList.First().Length;
+        //        ChunkLenght = (int)cLen;
+        //    }
+        //}
     }
 
     public enum BlenderRenderes
@@ -188,179 +190,6 @@ namespace BRClib
     public enum AfterRenderAction
     {
         JOIN_MIXDOWN = 2, JOIN = 1, NOTHING = 0
-    }
-
-    /// <summary>
-    /// Represents a range of frames to be rendered
-    /// </summary>
-    public struct Chunk
-    {
-        /// <summary>
-        /// <see cref="Chunk"/>'s start frame
-        /// </summary>
-        public decimal Start { get; set; }
-        /// <summary>
-        /// <see cref="Chunk"/>'s end frame
-        /// </summary>
-        public decimal End { get; set; }
-        /// <summary>
-        /// The <see cref="Chunk"/>'s length
-        /// </summary>
-        public decimal Length
-        {
-            get => End - Start;
-        }
-        /// <summary>
-        /// Create a new chunk
-        /// </summary>
-        /// <param name="start">Chunk's start frame</param>
-        /// <param name="end">Chunk's end frame</param>
-        public Chunk(decimal start, decimal end)
-        {
-            if (end <= start)
-                throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
-                                            nameof(start));
-
-            Start = start;
-            End = end;
-
-        }
-
-        /// <summary>
-        /// Calculates an even divided array of chunks, based on
-        /// the provided divisor
-        /// </summary>
-        /// <param name="start">Project's start frame</param>
-        /// <param name="end">Project's end frame</param>
-        /// <param name="div">Number of chunks desired</param>
-        /// <returns></returns>
-        public static Chunk[] CalcChunks(decimal start, decimal end, int div)
-        {
-            if (end <= start)
-                throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
-                                            nameof(start));
-
-            if (div == 0)
-                throw new ArgumentException("Divider cannot be 0", nameof(div));
-
-            // if div is 1, return a single chunk
-            if (div == 1)
-                return new Chunk[]{ new Chunk(start, end) };
-
-            var lenght = Math.Ceiling((end - start + 1) / div);
-            List<Chunk> chunkList = new List<Chunk>();
-
-            decimal cStart, cEnd;
-
-            // makes chunks
-            for (int i = 0; i != div; i++)
-            {
-                cStart = start;
-                cEnd = start + lenght;
-
-                var chunk = new Chunk(cStart, cEnd);
-
-                if ((chunk.End + 1 < end))
-                {
-                    chunkList.Add(chunk);
-                    start = cEnd + 1;
-                }
-                else
-                {
-                    // the final chunk, the one that matches the project's end
-                    var secondLast = chunkList.Last();
-                    var finalChunk = new Chunk(secondLast.End + 1, end);
-                    chunkList.Add(finalChunk);
-                }
-            }
-
-            return chunkList.ToArray();
-        }
-        /// <summary>
-        /// Calculates an even divided array of chunks, based on desired lenght
-        /// </summary>
-        /// <param name="start">Project's start frame</param>
-        /// <param name="end">Project's end frame</param>
-        /// <param name="chunkLenght">Desired chunk lenght</param>
-        /// <returns></returns>
-        public static Chunk[] CalcChunksByLenght(decimal start, decimal end, int chunkLenght)
-        {
-            if (end <= start)
-                throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
-                                            nameof(start));
-
-            var totalLenght = end - start + 1;
-
-            if (chunkLenght <= 0)
-                throw new ArgumentException("Invalid chunk lenght", nameof(chunkLenght));
-
-            List<Chunk> chunkList = new List<Chunk>();
-            decimal cStart, cEnd, totalChunksLen = 0;
-
-            while (totalChunksLen <= totalLenght)
-            {
-                cStart = start;
-                cEnd = start + chunkLenght;
-
-                var chunk = new Chunk(cStart, cEnd);
-
-                if ((chunk.End + 1 < end))
-                {
-                    chunkList.Add(chunk);
-                    start = cEnd + 1;
-                }
-                else
-                {
-                    var last = chunkList.LastOrDefault();
-                    cStart = last.End + 1;
-                    if (cStart < end)
-                    {
-                        var finalChunk = new Chunk(last.End + 1, end);
-                        chunkList.Add(finalChunk);
-                    }
-                }
-
-                totalChunksLen += chunk.Length;
-            }
-
-            return chunkList.ToArray();
-        }
-
-        public override string ToString()
-        {
-            return $"{Start}-{End}";
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            var chunk = (Chunk)obj;
-
-            return Equals(chunk);
-        }
-        public bool Equals(Chunk c)
-        {
-            return Start == c.Start
-                && End == c.End;
-        }
-        public override int GetHashCode()
-        {
-            const int HashBase = 233;
-            const int HashMulti = 13;
-
-            unchecked
-            {
-                int hash = HashBase;
-                hash = (hash * HashMulti) ^ Start.GetHashCode();
-                hash = (hash * HashMulti) ^ End.GetHashCode();
-
-                return hash;
-            }
-        }
     }
 
 }

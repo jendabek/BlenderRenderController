@@ -193,5 +193,4 @@ namespace BRClib
         /// </summary>
         public const string RenderComARGS = "-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a";
     }
-
 }

@@ -1,27 +1,29 @@
-﻿using System;
+﻿// For Mono compatible Unix builds, uncomment
+// the next line or compile with /d:UNIX
+//#define UNIX
+#if !WINDOWS && !UNIX
+#define WINDOWS
+#elif UNIX
+#undef WINDOWS
+#endif
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+#if WINDOWS
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Controls;
+#endif
 
 namespace BlenderRenderController.Ui
 {
     class Dialogs
     {
-        public static CommonOpenFileDialog FolderPickerDialog
-        {
-            get
-            {
-                return new CommonOpenFileDialog
-                {
-                    IsFolderPicker = true,
-                };
-            }
-        }
-
-        public static TaskDialog ErrorBox(string textBody, string mainText, string caption, string details)
+#if WINDOWS
+        public static TaskDialog ShowErrorBox(string textBody, string mainText, string caption, string details)
         {
             var td = new TaskDialog();
             td.Text = textBody;
@@ -29,7 +31,6 @@ namespace BlenderRenderController.Ui
             td.Caption = caption;
 
             td.DetailsExpanded = false;
-            td.DetailsExpandedLabel = "Show details";
             td.DetailsExpandedText = details;
             td.ExpansionMode = TaskDialogExpandedDetailsLocation.ExpandFooter;
 
@@ -39,7 +40,7 @@ namespace BlenderRenderController.Ui
 
             return td;
         }
-        public static TaskDialog ErrorBox(string textBody, string mainText, string details)
+        public static TaskDialog ShowErrorBox(string textBody, string mainText, string details)
         {
             var td = new TaskDialog();
             td.Text = textBody;
@@ -56,6 +57,18 @@ namespace BlenderRenderController.Ui
 
             return td;
         }
-
+#else
+        public static ErrorBox ShowErrorBox(string textBody, string mainText, string caption, string details)
+        {
+            string msg = mainText + "\n\n" + textBody;
+            ErrorBox eb = new ErrorBox(msg, caption, details);
+            return eb;
+        }
+        public static ErrorBox ShowErrorBox(string textBody, string mainText, string details)
+        {
+            ErrorBox eb = new ErrorBox(textBody, mainText, details);
+            return eb;
+        }
+#endif
     }
 }

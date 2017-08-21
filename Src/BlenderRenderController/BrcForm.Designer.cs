@@ -44,18 +44,18 @@ namespace BlenderRenderController
             this.processCountNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.processCountLabel = new System.Windows.Forms.Label();
             this.totalTimeLabel = new System.Windows.Forms.Label();
-            this.menuStrip = new System.Windows.Forms.MenuStrip();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tipsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearRecentProjectsListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extrasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemBug = new System.Windows.Forms.ToolStripMenuItem();
             this.authorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jendabekMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.isti115MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meTwentyFiveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redRaptorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.forceUIUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.infoPanel = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
@@ -97,8 +97,6 @@ namespace BlenderRenderController
             this.renderOptionsCustomRadio = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.versionLabel = new System.Windows.Forms.Label();
-            this.donateButton = new System.Windows.Forms.Button();
             this.openOutputFolderButton = new System.Windows.Forms.Button();
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.ETALabel = new System.Windows.Forms.Label();
@@ -109,17 +107,22 @@ namespace BlenderRenderController
             this.processManager = new System.Windows.Forms.Timer(this.components);
             this.blendNameLabel = new System.Windows.Forms.Label();
             this.afterRenderBGWorker = new System.ComponentModel.BackgroundWorker();
+            this.menuToolStrip = new System.Windows.Forms.ToolStrip();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.verToolStripLbl = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.donationTSBtn = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
-            this.menuStrip.SuspendLayout();
             this.infoPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
+            this.menuToolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // renderProgressBar
@@ -149,8 +152,8 @@ namespace BlenderRenderController
             this.totalStartNumericUpDown.Tag = "DIRENDER";
             this.totalStartNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTipInfo.SetToolTip(this.totalStartNumericUpDown, "You know what it is.");
+            this.totalStartNumericUpDown.ValueChanged += new System.EventHandler(this.StartEndNumeric_Changed);
             this.totalStartNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
-            this.totalStartNumericUpDown.Leave += new System.EventHandler(this.StartEndNumeric_Changed);
             // 
             // blendDataBindingSource
             // 
@@ -229,8 +232,8 @@ namespace BlenderRenderController
             0,
             0,
             0});
+            this.totalEndNumericUpDown.ValueChanged += new System.EventHandler(this.StartEndNumeric_Changed);
             this.totalEndNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
-            this.totalEndNumericUpDown.Leave += new System.EventHandler(this.StartEndNumeric_Changed);
             // 
             // processCountNumericUpDown
             // 
@@ -280,30 +283,18 @@ namespace BlenderRenderController
             this.totalTimeLabel.TabIndex = 19;
             this.totalTimeLabel.Text = "00:00:00";
             // 
-            // menuStrip
+            // optionsToolStripMenuItem
             // 
-            this.menuStrip.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem,
-            this.infoToolStripMenuItem});
-            this.menuStrip.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(662, 24);
-            this.menuStrip.TabIndex = 20;
-            this.menuStrip.Text = "menuStrip1";
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.settingsToolStripMenuItem,
             this.tipsToolStripMenuItem,
             this.clearRecentProjectsListToolStripMenuItem});
-            this.aboutToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.aboutToolStripMenuItem.Text = "Options";
-            this.aboutToolStripMenuItem.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
-            this.aboutToolStripMenuItem.ToolTipText = "Extra options";
+            this.optionsToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 25);
+            this.optionsToolStripMenuItem.Text = "Options";
+            this.optionsToolStripMenuItem.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
+            this.optionsToolStripMenuItem.ToolTipText = "Extra options";
             // 
             // settingsToolStripMenuItem
             // 
@@ -333,15 +324,16 @@ namespace BlenderRenderController
             this.clearRecentProjectsListToolStripMenuItem.Text = "Clear recent projects";
             this.clearRecentProjectsListToolStripMenuItem.Click += new System.EventHandler(this.clearRecentProjectsListToolStripMenuItem_Click);
             // 
-            // infoToolStripMenuItem
+            // extrasToolStripMenuItem
             // 
-            this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.extrasToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemBug,
-            this.authorsToolStripMenuItem});
-            this.infoToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
-            this.infoToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
-            this.infoToolStripMenuItem.Text = "Extras";
+            this.authorsToolStripMenuItem,
+            this.forceUIUpdateToolStripMenuItem});
+            this.extrasToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.extrasToolStripMenuItem.Name = "extrasToolStripMenuItem";
+            this.extrasToolStripMenuItem.Size = new System.Drawing.Size(53, 25);
+            this.extrasToolStripMenuItem.Text = "Extras";
             // 
             // toolStripMenuItemBug
             // 
@@ -406,6 +398,16 @@ namespace BlenderRenderController
             this.redRaptorMenuItem.Size = new System.Drawing.Size(152, 22);
             this.redRaptorMenuItem.Text = "RedRaptor93";
             this.redRaptorMenuItem.Click += new System.EventHandler(this.AuthorLink_Clicked);
+            // 
+            // forceUIUpdateToolStripMenuItem
+            // 
+            this.forceUIUpdateToolStripMenuItem.Name = "forceUIUpdateToolStripMenuItem";
+            this.forceUIUpdateToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.forceUIUpdateToolStripMenuItem.Text = "Force UI update";
+            this.forceUIUpdateToolStripMenuItem.ToolTipText = "If your UI elements are not reacting to changes, click here to \r\nforce them to up" +
+    "date.";
+            this.forceUIUpdateToolStripMenuItem.Visible = false;
+            this.forceUIUpdateToolStripMenuItem.Click += new System.EventHandler(this.ForceBindedElementsUpdate);
             // 
             // label1
             // 
@@ -584,7 +586,7 @@ namespace BlenderRenderController
             // 
             // chunkLengthNumericUpDown
             // 
-            this.chunkLengthNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "ChunkLenght", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.chunkLengthNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "ChunkLenght", true));
             this.chunkLengthNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(448, 238);
             this.chunkLengthNumericUpDown.Maximum = new decimal(new int[] {
@@ -943,33 +945,6 @@ namespace BlenderRenderController
             this.panel2.Size = new System.Drawing.Size(328, 83);
             this.panel2.TabIndex = 34;
             // 
-            // versionLabel
-            // 
-            this.versionLabel.AutoSize = true;
-            this.versionLabel.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.versionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.versionLabel.Location = new System.Drawing.Point(605, 4);
-            this.versionLabel.Name = "versionLabel";
-            this.versionLabel.Size = new System.Drawing.Size(39, 15);
-            this.versionLabel.TabIndex = 36;
-            this.versionLabel.Text = "v0.0.0";
-            this.versionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // donateButton
-            // 
-            this.donateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.donateButton.Image = global::BlenderRenderController.Properties.Resources.donate_icon;
-            this.donateButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.donateButton.Location = new System.Drawing.Point(128, 0);
-            this.donateButton.Name = "donateButton";
-            this.donateButton.Padding = new System.Windows.Forms.Padding(0, 0, 1, 0);
-            this.donateButton.Size = new System.Drawing.Size(90, 24);
-            this.donateButton.TabIndex = 2;
-            this.donateButton.Text = "Donate";
-            this.donateButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.donateButton.UseVisualStyleBackColor = true;
-            this.donateButton.Click += new System.EventHandler(this.donateButton_Click);
-            // 
             // openOutputFolderButton
             // 
             this.openOutputFolderButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1074,17 +1049,65 @@ namespace BlenderRenderController
             this.afterRenderBGWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AfterRenderBGWorker_DoWork);
             this.afterRenderBGWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AfterRenderBGWorker_RunWorkerCompleted);
             // 
+            // menuToolStrip
+            // 
+            this.menuToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optionsToolStripMenuItem,
+            this.extrasToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.verToolStripLbl,
+            this.toolStripSeparator2,
+            this.donationTSBtn});
+            this.menuToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
+            this.menuToolStrip.Location = new System.Drawing.Point(0, 0);
+            this.menuToolStrip.Name = "menuToolStrip";
+            this.menuToolStrip.Size = new System.Drawing.Size(664, 25);
+            this.menuToolStrip.TabIndex = 41;
+            this.menuToolStrip.Text = "menuToolStrip";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // verToolStripLbl
+            // 
+            this.verToolStripLbl.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.verToolStripLbl.Name = "verToolStripLbl";
+            this.verToolStripLbl.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.verToolStripLbl.Size = new System.Drawing.Size(40, 22);
+            this.verToolStripLbl.Text = " v0.0.0";
+            this.verToolStripLbl.ToolTipText = "Version";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // donationTSBtn
+            // 
+            this.donationTSBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.donationTSBtn.Image = global::BlenderRenderController.Properties.Resources.donate_icon;
+            this.donationTSBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.donationTSBtn.Name = "donationTSBtn";
+            this.donationTSBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
+            this.donationTSBtn.Size = new System.Drawing.Size(65, 22);
+            this.donationTSBtn.Text = "Donate";
+            this.donationTSBtn.ToolTipText = "Feeling specially awesome? Donate!";
+            this.donationTSBtn.Click += new System.EventHandler(this.donateButton_Click);
+            // 
             // BrcForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(662, 621);
+            this.ClientSize = new System.Drawing.Size(664, 621);
+            this.Controls.Add(this.menuToolStrip);
             this.Controls.Add(this.blendNameLabel);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.showRecentBlendsBtn);
             this.Controls.Add(this.blendBrowseBtn);
-            this.Controls.Add(this.versionLabel);
             this.Controls.Add(this.renderInfoLabel);
             this.Controls.Add(this.rendererRadioButtonBlender);
             this.Controls.Add(this.rendererRadioButtonCycles);
@@ -1101,7 +1124,6 @@ namespace BlenderRenderController
             this.Controls.Add(this.timeElapsedLabel);
             this.Controls.Add(this.ETALabel);
             this.Controls.Add(this.totalTimeLabel);
-            this.Controls.Add(this.donateButton);
             this.Controls.Add(this.reloadBlenderDataButton);
             this.Controls.Add(this.mixDownButton);
             this.Controls.Add(this.openOutputFolderButton);
@@ -1118,13 +1140,11 @@ namespace BlenderRenderController
             this.Controls.Add(this.totalStartNumericUpDown);
             this.Controls.Add(this.outputFolderBrowseButton);
             this.Controls.Add(this.renderProgressBar);
-            this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
-            this.MainMenuStrip = this.menuStrip;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(678, 660);
-            this.MinimumSize = new System.Drawing.Size(678, 660);
+            this.MaximumSize = new System.Drawing.Size(700, 660);
+            this.MinimumSize = new System.Drawing.Size(680, 400);
             this.Name = "BrcForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -1137,8 +1157,6 @@ namespace BlenderRenderController
             ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).EndInit();
-            this.menuStrip.ResumeLayout(false);
-            this.menuStrip.PerformLayout();
             this.infoPanel.ResumeLayout(false);
             this.infoPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).EndInit();
@@ -1148,6 +1166,8 @@ namespace BlenderRenderController
             this.panel2.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
+            this.menuToolStrip.ResumeLayout(false);
+            this.menuToolStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1169,14 +1189,13 @@ namespace BlenderRenderController
 		private System.Windows.Forms.Button reloadBlenderDataButton;
 		private System.Windows.Forms.Button mixDownButton;
 		private System.Windows.Forms.Label totalTimeLabel;
-        private System.Windows.Forms.MenuStrip menuStrip;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox infoActiveScene;
         private System.Windows.Forms.ToolTip toolTipWarn;
         private System.Windows.Forms.ToolTip toolTipInfo;
         private System.Windows.Forms.ToolStripMenuItem tipsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extrasToolStripMenuItem;
         private System.Windows.Forms.Label blendFileLabel;
         private System.Windows.Forms.NumericUpDown chunkLengthNumericUpDown;
         private System.Windows.Forms.Label chunkLengthLabel;
@@ -1212,10 +1231,8 @@ namespace BlenderRenderController
         private System.Windows.Forms.RadioButton afterRenderJoinRadio;
         private System.Windows.Forms.RadioButton afterRenderDoNothingRadio;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button donateButton;
         private System.Windows.Forms.Label renderInfoLabel;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemBug;
-        private System.Windows.Forms.Label versionLabel;
         private System.Windows.Forms.TextBox infoResolution;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem clearRecentProjectsListToolStripMenuItem;
@@ -1231,6 +1248,12 @@ namespace BlenderRenderController
         private System.Windows.Forms.Timer processManager;
         private System.Windows.Forms.Label blendNameLabel;
         private System.ComponentModel.BackgroundWorker afterRenderBGWorker;
+        private System.Windows.Forms.ToolStripMenuItem forceUIUpdateToolStripMenuItem;
+        private System.Windows.Forms.ToolStrip menuToolStrip;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripLabel verToolStripLbl;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton donationTSBtn;
     }
 }
 

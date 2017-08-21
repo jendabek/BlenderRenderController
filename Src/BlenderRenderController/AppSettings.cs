@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace BlenderRenderController
 {
@@ -20,8 +21,41 @@ namespace BlenderRenderController
         private string _blenderExeName, _scriptsFolderPath, _ffmpegExeName;
         private int RECENT_BLENDS_MAX_COUNT = 10;
         const string SETTINGS_FILE = "brc_settings.json";
+        //bool blenderFound, ffmpegFound;
 
         private static AppSettings _instance;
+
+        private static string DefBlenderFolder
+        {
+            get
+            {
+                switch (Environment.OSVersion.Platform)
+                {
+                    case PlatformID.Win32NT:
+                        return @"C:\Program Files\Blender Foundation\Blender\";
+                    case PlatformID.Unix:
+                    case PlatformID.MacOSX:
+                    default:
+                        return "/usr/bin/";
+                }
+            }
+        }
+
+        private static string DefFFmpegFolder
+        {
+            get
+            {
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                {
+                    // ffmpeg exe is in base dir
+                    return string.Empty;
+                }
+                else
+                {
+                    return "/usr/bin/";
+                }
+            }
+        }
 
         /// <summary>
         /// Settings singleton
@@ -58,6 +92,8 @@ namespace BlenderRenderController
 
         public ObservableCollection<string> RecentBlends { get => _recentBlends; }
 
+        public int RecentBlendsCount => _recentBlends.Count;
+
         [JsonIgnore]
         public string ScriptsFolder
         {
@@ -76,6 +112,12 @@ namespace BlenderRenderController
         {
             _ffmpegExeName = GetProgramFileName("ffmpeg");
             _blenderExeName = GetProgramFileName("blender");
+            BlenderProgram = DefBlenderFolder + _blenderExeName;
+            FFmpegProgram = DefFFmpegFolder + _ffmpegExeName;
+
+            //blenderFound = File.Exists(BlenderProgram);
+            //ffmpegFound = File.Exists(FFmpegProgram);
+
             _recentBlends.CollectionChanged += RecentBlends_CollectionChanged;
             _scriptsFolderPath = Path.Combine(_baseDir, Constants.ScriptsSubfolder);
         }
@@ -87,8 +129,8 @@ namespace BlenderRenderController
             {
                 var settings = new AppSettings()
                 {
-                    BlenderProgram = @"C:\Program Files\Blender Foundation\Blender\" + GetProgramFileName("blender"),
-                    FFmpegProgram = Path.Combine(_baseDir, GetProgramFileName("ffmpeg")),
+                    BlenderProgram = DefBlenderFolder + GetProgramFileName("blender"),
+                    FFmpegProgram = DefFFmpegFolder + GetProgramFileName("ffmpeg"),
                     Verbose = false,
                     DisplayToolTips = true,
                     AfterRender = AfterRenderAction.JOIN_MIXDOWN,
@@ -143,7 +185,7 @@ namespace BlenderRenderController
             }
         }
 
-        public bool CheckCorrectConfig(bool showErrors = true)
+        public bool CheckCorrectConfig()
         {
             List<AppErrorCode> errors = new List<AppErrorCode>();
 
@@ -162,10 +204,10 @@ namespace BlenderRenderController
                 return true;
             }
 
-            if (showErrors)
-            {
-                Helper.ShowErrors(MessageBoxIcon.Exclamation, errors.ToArray());
-            }
+            //if (showErrors)
+            //{
+            //    Helper.ShowErrors(MessageBoxIcon.Exclamation, errors.ToArray());
+            //}
 
             return false;
         }
@@ -184,6 +226,8 @@ namespace BlenderRenderController
             }
         }
 
+
+
         public void Save()
         {
             var jsonStr = JsonConvert.SerializeObject(this, Formatting.Indented);
@@ -196,6 +240,30 @@ namespace BlenderRenderController
             var appSet = File.Exists(settingsPath) 
                         ? JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(settingsPath))
                         : AppSettings.Defaults;
+
+            //if (!appSet.CheckCorrectConfig())
+            //{
+            //    // SECONDARY CHECKING
+            //    if (!appSet.ffmpegFound)
+            //    {
+            //        Process p = new Process();
+            //        var info = new ProcessStartInfo();
+            //        info.FileName = appSet.FFmpegProgram;
+            //        info.RedirectStandardOutput = true;
+            //        info.UseShellExecute = false;
+            //        info.CreateNoWindow = true;
+            //        info.Arguments = "-version";
+            //        p.StartInfo = info;
+
+            //        p.Start();
+            //        var output = p.StandardOutput.ReadToEnd();
+
+            //        if (output.Contains("ffmpeg version "))
+            //        {
+            //            appSet.ffmpegFound = true;
+            //        }
+            //    }
+            //}
 
             // apply log
             if (appSet.Verbose)
