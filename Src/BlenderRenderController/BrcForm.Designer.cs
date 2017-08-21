@@ -110,6 +110,7 @@ namespace BlenderRenderController
             this.verToolStripLbl = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.donationTSBtn = new System.Windows.Forms.ToolStripButton();
+            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).BeginInit();
@@ -121,6 +122,7 @@ namespace BlenderRenderController
             this.panel2.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.menuToolStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
             // 
             // renderProgressBar
@@ -135,8 +137,7 @@ namespace BlenderRenderController
             // 
             // totalStartNumericUpDown
             // 
-            this.totalStartNumericUpDown.CausesValidation = false;
-            this.totalStartNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "Start", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.totalStartNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "Start", true));
             this.totalStartNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalStartNumericUpDown.Location = new System.Drawing.Point(136, 237);
             this.totalStartNumericUpDown.Maximum = new decimal(new int[] {
@@ -150,8 +151,9 @@ namespace BlenderRenderController
             this.totalStartNumericUpDown.Tag = "DIRENDER";
             this.totalStartNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTipInfo.SetToolTip(this.totalStartNumericUpDown, "You know what it is.");
-            this.totalStartNumericUpDown.ValueChanged += new System.EventHandler(this.StartEndNumeric_Changed);
             this.totalStartNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
+            this.totalStartNumericUpDown.Validating += new System.ComponentModel.CancelEventHandler(this.StartEnd_Validating);
+            this.totalStartNumericUpDown.Validated += new System.EventHandler(this.StartEndNumeric_Validated);
             // 
             // blendDataBindingSource
             // 
@@ -211,8 +213,7 @@ namespace BlenderRenderController
             // 
             // totalEndNumericUpDown
             // 
-            this.totalEndNumericUpDown.CausesValidation = false;
-            this.totalEndNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "End", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.totalEndNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "End", true));
             this.totalEndNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.totalEndNumericUpDown.Location = new System.Drawing.Point(236, 237);
             this.totalEndNumericUpDown.Maximum = new decimal(new int[] {
@@ -230,8 +231,9 @@ namespace BlenderRenderController
             0,
             0,
             0});
-            this.totalEndNumericUpDown.ValueChanged += new System.EventHandler(this.StartEndNumeric_Changed);
             this.totalEndNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
+            this.totalEndNumericUpDown.Validating += new System.ComponentModel.CancelEventHandler(this.StartEnd_Validating);
+            this.totalEndNumericUpDown.Validated += new System.EventHandler(this.StartEndNumeric_Validated);
             // 
             // processCountNumericUpDown
             // 
@@ -275,7 +277,7 @@ namespace BlenderRenderController
             // 
             this.totalTimeLabel.AutoSize = true;
             this.totalTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.totalTimeLabel.Location = new System.Drawing.Point(494, 572);
+            this.totalTimeLabel.Location = new System.Drawing.Point(494, 571);
             this.totalTimeLabel.Name = "totalTimeLabel";
             this.totalTimeLabel.Size = new System.Drawing.Size(147, 16);
             this.totalTimeLabel.TabIndex = 19;
@@ -969,7 +971,7 @@ namespace BlenderRenderController
             // 
             this.ETALabel.AutoSize = true;
             this.ETALabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.ETALabel.Location = new System.Drawing.Point(552, 591);
+            this.ETALabel.Location = new System.Drawing.Point(552, 590);
             this.ETALabel.Name = "ETALabel";
             this.ETALabel.Size = new System.Drawing.Size(90, 16);
             this.ETALabel.TabIndex = 19;
@@ -1075,6 +1077,10 @@ namespace BlenderRenderController
             this.donationTSBtn.ToolTipText = "Feeling specially awesome? Donate!";
             this.donationTSBtn.Click += new System.EventHandler(this.donateButton_Click);
             // 
+            // errorProvider1
+            // 
+            this.errorProvider1.ContainerControl = this;
+            // 
             // BrcForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -1144,6 +1150,7 @@ namespace BlenderRenderController
             this.flowLayoutPanel1.PerformLayout();
             this.menuToolStrip.ResumeLayout(false);
             this.menuToolStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1228,6 +1235,7 @@ namespace BlenderRenderController
         private System.Windows.Forms.ToolStripLabel verToolStripLbl;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton donationTSBtn;
+        private System.Windows.Forms.ErrorProvider errorProvider1;
     }
 }
 

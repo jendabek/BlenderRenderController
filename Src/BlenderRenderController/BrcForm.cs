@@ -109,8 +109,6 @@ namespace BlenderRenderController
 
 #if UNIX
             forceUIUpdateToolStripMenuItem.Visible = true;
-            // TODO: fix ui not updating w/ data binding changes
-
 #endif
         }
 
@@ -1030,8 +1028,8 @@ namespace BlenderRenderController
                 {
                     _project.ProcessesCount = Environment.ProcessorCount;
                     // recalc auto chunks:
-                    var currentStart = totalStartNumericUpDown.Value;
-                    var currentEnd = totalEndNumericUpDown.Value;
+                    var currentStart = (int)totalStartNumericUpDown.Value;
+                    var currentEnd = (int)totalEndNumericUpDown.Value;
                     var currentProcessors = (int)processCountNumericUpDown.Value;
 
                     var autoChunks = Chunk.CalcChunks(currentStart, currentEnd, currentProcessors);
@@ -1109,19 +1107,43 @@ namespace BlenderRenderController
 #endif
         }
 
-        private void StartEndNumeric_Changed(object sender, EventArgs e)
+        private void StartEndNumeric_Validated(object sender, EventArgs e)
         {
             if (renderOptionsAutoRadio.Checked)
             {
                 var currentStart = totalStartNumericUpDown.Value;
                 var currentEnd = totalEndNumericUpDown.Value;
-                var currentProcessors = (int)processCountNumericUpDown.Value;
+                var currentProcessors = processCountNumericUpDown.Value;
 
-                if (currentEnd <= currentStart || currentProcessors == 0)
-                    return;
+                //if (currentEnd <= currentStart || currentProcessors == 0)
+                //    return;
 
-                var autoChunks = Chunk.CalcChunks(currentStart, currentEnd, currentProcessors);
-                UpdateCurrentChunks(autoChunks);
+                //var autoChunks = Chunk.CalcChunks(currentStart, currentEnd, currentProcessors);
+                //UpdateCurrentChunks(autoChunks);
+                var expectedChunkLen = (int)Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
+                _project.ChunkLenght = expectedChunkLen;
+
+#if UNIX
+                ForceBindedElementsUpdate(null, null);
+#endif
+
+            }
+        }
+
+        private void StartEnd_Validating(object sender, CancelEventArgs e)
+        {
+            var currentStart = (int)totalStartNumericUpDown.Value;
+            var currentEnd = (int)totalEndNumericUpDown.Value;
+            var currentProcessors = (int)processCountNumericUpDown.Value;
+
+            // TODO: Handle invalid values
+            if (currentStart >= currentEnd)
+            {
+                e.Cancel = true;
+            }
+            else if (currentEnd <= currentStart)
+            {
+                e.Cancel = true;
             }
         }
 
@@ -1197,6 +1219,7 @@ namespace BlenderRenderController
             blendDataBindingSource.ResetBindings(false);
             projectSettingsBindingSource.ResetBindings(false);
         }
+
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {

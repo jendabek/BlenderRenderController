@@ -12,15 +12,15 @@ namespace BRClib
         /// <summary>
         /// <see cref="Chunk"/>'s start frame
         /// </summary>
-        public decimal Start { get; set; }
+        public int Start { get; set; }
         /// <summary>
         /// <see cref="Chunk"/>'s end frame
         /// </summary>
-        public decimal End { get; set; }
+        public int End { get; set; }
         /// <summary>
         /// The <see cref="Chunk"/>'s length
         /// </summary>
-        public decimal Length => End - Start;
+        public int Length => End - Start;
 
         public bool IsValid
         {
@@ -33,7 +33,7 @@ namespace BRClib
         /// </summary>
         /// <param name="start">Chunk's start frame</param>
         /// <param name="end">Chunk's end frame</param>
-        public Chunk(decimal start, decimal end)
+        public Chunk(int start, int end)
         {
             if (end <= start)
                 throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
@@ -52,7 +52,7 @@ namespace BRClib
         /// <param name="end">Project's end frame</param>
         /// <param name="div">Number of chunks desired</param>
         /// <returns></returns>
-        public static Chunk[] CalcChunks(decimal start, decimal end, int div)
+        public static Chunk[] CalcChunks(int start, int end, int div)
         {
             if (end <= start)
                 throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
@@ -66,10 +66,10 @@ namespace BRClib
             if (div == 1)
                 return new Chunk[]{ new Chunk(start, end) };
 
-            var lenght = Math.Ceiling((end - start + 1) / div);
+            int lenght = (int)Math.Ceiling((decimal)(end - start + 1) / div);
             List<Chunk> chunkList = new List<Chunk>();
 
-            decimal cStart, cEnd;
+            int cStart, cEnd;
             cStart = start;
 
             // makes chunks
@@ -102,7 +102,7 @@ namespace BRClib
         /// <param name="end">Project's end frame</param>
         /// <param name="chunkLenght">Desired chunk lenght</param>
         /// <returns></returns>
-        public static Chunk[] CalcChunksByLenght(decimal start, decimal end, int chunkLenght)
+        public static Chunk[] CalcChunksByLenght(int start, int end, int chunkLenght)
         {
             if (end <= start)
                 throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
@@ -113,10 +113,10 @@ namespace BRClib
 
 
             var totalLen = end - start + 1;
-            var div = Math.Ceiling(totalLen / chunkLenght);
+            int div = (int)Math.Ceiling((decimal)totalLen / chunkLenght);
 
             List<Chunk> chunkList = new List<Chunk>();
-            decimal cStart, cEnd;
+            int cStart, cEnd;
 
             cStart = start;
 
