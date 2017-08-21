@@ -35,7 +35,7 @@ namespace BlenderRenderController
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
         const string timePassedFmt = "Time Elapsed: {0}";
-        const string etaFmt = "ETA: {0}";
+        const string etaFmt = "ETR: {0}";
 
         private int _autoRefStart, _autoRefEnd;
         private AppSettings _appSettings;
@@ -73,7 +73,7 @@ namespace BlenderRenderController
 
         private void BrcForm_Load(object sender, EventArgs e)
         {
-            //add version numbers to window title
+            //add version numbers to label
             verToolStripLbl.Text = AssemblyVersion;
 
             // save appSettings on exit
@@ -462,7 +462,7 @@ namespace BlenderRenderController
             _processList = new List<Process>(_project.ProcessesCount);
 
             // render progress reset
-            totalTimeLabel.Text = Helper.SecondsToString(0, true);
+            totalTimeLabel.Text = string.Format(timePassedFmt, Helper.SecondsToString(0, true));
             _etaCalc = new ETACalculator(5, 1);
 
 #if WINDOWS
@@ -506,8 +506,8 @@ namespace BlenderRenderController
             renderProgressBar.Value = 0;
             renderProgressBar.Refresh();
 
-            ETALabel.Text =
-            totalTimeLabel.Text = Helper.SecondsToString(0, true);
+            ETALabel.Text = string.Format(etaFmt, Helper.SecondsToString(0, true));
+            totalTimeLabel.Text = string.Format(timePassedFmt, Helper.SecondsToString(0, true));
 
             Text = Constants.APP_TITLE;
 
@@ -668,12 +668,14 @@ namespace BlenderRenderController
 
             if (_etaCalc.ETAIsAvailable)
             {
-                Status(Helper.SecondsToString(_etaCalc.ETR.TotalSeconds, true), ETALabel);
+                var etr = string.Format(etaFmt, Helper.SecondsToString(_etaCalc.ETR.TotalSeconds, true));
+                Status(etr, ETALabel);
             }
 
             //time elapsed display
             TimeSpan runTime = DateTime.Now - startTime;
-            Status(Helper.SecondsToString(runTime.TotalSeconds, true), totalTimeLabel);
+            var tElapsed = string.Format(timePassedFmt, Helper.SecondsToString(runTime.TotalSeconds, true));
+            Status(tElapsed, totalTimeLabel);
 
             //title progress
             var titleProg = progressPercentage.ToString() + "% rendered - " + Constants.APP_TITLE;
@@ -1250,8 +1252,7 @@ namespace BlenderRenderController
                     outputFolderBrowseButton.Enabled = false;
                     outputFolderTextBox.Enabled = false;
                     statusLabel.Visible = true;
-                    timeElapsedLabel.Visible = false;
-                    ETALabel.Visible = ETALabelTitle.Visible = false;
+                    ETALabel.Visible = false;
                     totalTimeLabel.Visible = false;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
@@ -1281,8 +1282,7 @@ namespace BlenderRenderController
                     openOutputFolderButton.Enabled = false;
                     outputFolderTextBox.Enabled = false;
                     statusLabel.Visible = true;
-                    timeElapsedLabel.Visible = false;
-                    ETALabel.Visible = ETALabelTitle.Visible = false;
+                    ETALabel.Visible = false;
                     totalTimeLabel.Visible = false;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
@@ -1314,8 +1314,7 @@ namespace BlenderRenderController
                     outputFolderTextBox.Enabled = true;
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
-                    timeElapsedLabel.Visible = true;
-                    ETALabel.Visible = ETALabelTitle.Visible = true;
+                    ETALabel.Visible = true;
                     totalTimeLabel.Visible = true;
                     rendererRadioButtonBlender.Enabled = true;
                     rendererRadioButtonCycles.Enabled = true;
@@ -1344,8 +1343,7 @@ namespace BlenderRenderController
                     outputFolderTextBox.Enabled = false;
                     openOutputFolderButton.Enabled = true;
                     statusLabel.Visible = true;
-                    timeElapsedLabel.Visible = true;
-                    ETALabel.Visible = ETALabelTitle.Visible = true;
+                    ETALabel.Visible = true;
                     rendererRadioButtonBlender.Enabled = false;
                     rendererRadioButtonCycles.Enabled = false;
                     renderOptionsCustomRadio.Enabled = false;

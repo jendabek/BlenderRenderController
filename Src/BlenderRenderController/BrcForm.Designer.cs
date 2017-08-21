@@ -87,7 +87,6 @@ namespace BlenderRenderController
             this.label10 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.timeElapsedLabel = new System.Windows.Forms.Label();
             this.blendFileNameLabel = new System.Windows.Forms.Label();
             this.rendererRadioButtonCycles = new System.Windows.Forms.RadioButton();
             this.rendererRadioButtonBlender = new System.Windows.Forms.RadioButton();
@@ -100,7 +99,6 @@ namespace BlenderRenderController
             this.openOutputFolderButton = new System.Windows.Forms.Button();
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.ETALabel = new System.Windows.Forms.Label();
-            this.ETALabelTitle = new System.Windows.Forms.Label();
             this.blendBrowseBtn = new System.Windows.Forms.Button();
             this.openBlendDialog = new System.Windows.Forms.OpenFileDialog();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
@@ -277,11 +275,11 @@ namespace BlenderRenderController
             // 
             this.totalTimeLabel.AutoSize = true;
             this.totalTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.totalTimeLabel.Location = new System.Drawing.Point(588, 571);
+            this.totalTimeLabel.Location = new System.Drawing.Point(494, 572);
             this.totalTimeLabel.Name = "totalTimeLabel";
-            this.totalTimeLabel.Size = new System.Drawing.Size(56, 16);
+            this.totalTimeLabel.Size = new System.Drawing.Size(147, 16);
             this.totalTimeLabel.TabIndex = 19;
-            this.totalTimeLabel.Text = "00:00:00";
+            this.totalTimeLabel.Text = "Time Elapsed: 00:00:00";
             // 
             // optionsToolStripMenuItem
             // 
@@ -821,16 +819,6 @@ namespace BlenderRenderController
             this.label5.TabIndex = 25;
             this.label5.Text = "Extras";
             // 
-            // timeElapsedLabel
-            // 
-            this.timeElapsedLabel.AutoSize = true;
-            this.timeElapsedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.timeElapsedLabel.Location = new System.Drawing.Point(492, 571);
-            this.timeElapsedLabel.Name = "timeElapsedLabel";
-            this.timeElapsedLabel.Size = new System.Drawing.Size(96, 16);
-            this.timeElapsedLabel.TabIndex = 19;
-            this.timeElapsedLabel.Text = "Time Elapsed:";
-            // 
             // blendFileNameLabel
             // 
             this.blendFileNameLabel.AutoSize = true;
@@ -981,21 +969,11 @@ namespace BlenderRenderController
             // 
             this.ETALabel.AutoSize = true;
             this.ETALabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.ETALabel.Location = new System.Drawing.Point(588, 587);
+            this.ETALabel.Location = new System.Drawing.Point(552, 591);
             this.ETALabel.Name = "ETALabel";
-            this.ETALabel.Size = new System.Drawing.Size(56, 16);
+            this.ETALabel.Size = new System.Drawing.Size(90, 16);
             this.ETALabel.TabIndex = 19;
-            this.ETALabel.Text = "00:00:00";
-            // 
-            // ETALabelTitle
-            // 
-            this.ETALabelTitle.AutoSize = true;
-            this.ETALabelTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ETALabelTitle.Location = new System.Drawing.Point(550, 587);
-            this.ETALabelTitle.Name = "ETALabelTitle";
-            this.ETALabelTitle.Size = new System.Drawing.Size(38, 16);
-            this.ETALabelTitle.TabIndex = 19;
-            this.ETALabelTitle.Text = "ETA:";
+            this.ETALabel.Text = "ETR: 00:00:00";
             // 
             // blendBrowseBtn
             // 
@@ -1120,8 +1098,6 @@ namespace BlenderRenderController
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.infoPanel);
-            this.Controls.Add(this.ETALabelTitle);
-            this.Controls.Add(this.timeElapsedLabel);
             this.Controls.Add(this.ETALabel);
             this.Controls.Add(this.totalTimeLabel);
             this.Controls.Add(this.reloadBlenderDataButton);
@@ -1210,7 +1186,6 @@ namespace BlenderRenderController
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label infoDurationLabel;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label timeElapsedLabel;
         private System.Windows.Forms.Button openOutputFolderButton;
         private System.Windows.Forms.Label blendFileNameLabel;
         private System.Windows.Forms.RadioButton rendererRadioButtonCycles;
@@ -1237,7 +1212,6 @@ namespace BlenderRenderController
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem clearRecentProjectsListToolStripMenuItem;
         private System.Windows.Forms.Label ETALabel;
-        private System.Windows.Forms.Label ETALabelTitle;
         private System.Windows.Forms.Button showRecentBlendsBtn;
         private System.Windows.Forms.Button blendBrowseBtn;
         private System.Windows.Forms.ContextMenuStrip recentBlendsMenu;
