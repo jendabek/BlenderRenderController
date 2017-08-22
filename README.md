@@ -3,7 +3,6 @@
 #### Beta notes:
 - Massive code revision/rewrite to make it easier to work w/ in the future
 - Core logic now resides in BRClib
-- No Linux/Mono support, yet
 
 ## What is this?
 <img align="right" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/blender-render-controller.png" width="480"/>
@@ -36,7 +35,10 @@ Even if you don't use Blender VSE often, that’s a LOT of time saved. And the t
 ### Dependencies
 - Blender, obviously.
 - [FFmpeg](https://ffmpeg.zeranoe.com/builds/), required for joining the parts together. You don't need to worry about it if you download the Full version which has FFmpeg already included.
-- .NET framework 4.5
+- .NET framework 4.5 or Mono 4.8 minimum
+
+#### Obs Linux and Mac:
+Compile with '/d:UNIX' (or set it under Properties -> General -> Compilation symbols) so the program will work w/ Mono
 
 ### Steps
 1. Create your Blender VSE project normally within Blender.
@@ -64,7 +66,7 @@ Even if you don't use Blender VSE often, that’s a LOT of time saved. And the t
 	- This will probably affect you if one of the required programs is installed in a protected folder (like "Program Files")
 	- Work-around: Launch _BlenderRenderController.exe_ from the command line, you can download a convenient _.bat_ file [here](https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/utilities/runWin7.bat).
 
-- If the output of your blend project is set to a location one folder below the project's location AND your using RELATIVE paths, BRC won't be able to parse it and it'll set the output to the blend file location. Use absolute paths to avoid this issue or change the path once loaded.
+- UI elements may fail to update when running on Linux
 
 ## CREDITS
 
