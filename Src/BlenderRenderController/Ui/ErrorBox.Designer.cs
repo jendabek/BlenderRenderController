@@ -138,7 +138,7 @@
             this.Controls.Add(this.ErrorContentBox);
             this.Controls.Add(this.BntRight);
             this.Controls.Add(this.BntLeft);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ErrorBox";

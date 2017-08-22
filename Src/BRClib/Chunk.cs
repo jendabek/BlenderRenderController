@@ -18,13 +18,15 @@ namespace BRClib
         /// </summary>
         public int End { get; set; }
         /// <summary>
-        /// The <see cref="Chunk"/>'s length
+        /// The <see cref="Chunk"/>'s length in N# of frames
         /// </summary>
-        public int Length => End - Start;
-
+        public int Length => End - Start + 1;
+        /// <summary>
+        /// Returns if current <see cref="Chunk"/> is valid
+        /// </summary>
         public bool IsValid
         {
-            get => Start < End;
+            get => Start < End && Length > 0;
         }
 
 
@@ -88,6 +90,10 @@ namespace BRClib
                 {
                     // the final chunk, the one that matches the project's end
                     var secondLast = chunkList.Last();
+
+                    if (secondLast.End == end)
+                        break;
+
                     var finalChunk = new Chunk(secondLast.End + 1, end);
                     chunkList.Add(finalChunk);
                 }
@@ -135,6 +141,10 @@ namespace BRClib
                 {
                     // the final chunk, the one that matches the project's end
                     var secondLast = chunkList.Last();
+
+                    if (secondLast.End == end)
+                        break;
+
                     var finalChunk = new Chunk(secondLast.End + 1, end);
                     chunkList.Add(finalChunk);
                 }

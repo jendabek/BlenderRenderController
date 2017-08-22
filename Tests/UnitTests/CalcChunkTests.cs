@@ -30,6 +30,8 @@ namespace UnitTestProject1
 
                 Console.WriteLine();
                 Assert.IsFalse(calcResult.Last().End != end, "Last calcResult.End was diferent then param end");
+                Assert.IsTrue(calcResult.Length == cores);
+
             }
         }
 
@@ -59,9 +61,15 @@ namespace UnitTestProject1
 
                 int start = randPair[0];
                 int end = randPair[1];
-                int len = 3500;
+                int totalLen = end - start + 1;
 
-                Console.WriteLine("Start: {0}, End: {1}, Legth: {2}", start, end, end - start + 1);
+                // range of random lengths:
+                var minLen = totalLen * 0.05;
+                var maxLen = totalLen * 0.4;
+
+                int len = MakeRandomParams.GetRandomNumber((int)minLen, (int)maxLen);
+
+                Console.WriteLine("Start: {0}, End: {1}, Total legth: {2}", start, end, totalLen);
 
                 var calcResult = Chunk.CalcChunksByLenght(start, end, len);
                 foreach (var res in calcResult)
@@ -74,12 +82,28 @@ namespace UnitTestProject1
             }
 
         }
+
+        [TestMethod]
+        public void Chunks_TotalLenght_is_accuerate()
+        {
+            var start = 1;
+            var end = 24000;
+            var totalLen = end - start + 1;
+
+            var chunks = Chunk.CalcChunks(start, end, 8);
+
+            Console.WriteLine("Total lenght = " + totalLen);
+            Console.WriteLine("Chunks total length = " + chunks.TotalLength());
+
+            Assert.IsTrue(totalLen == chunks.TotalLength(), "Lenghts are not equal");
+        }
     }
 
     static class MakeRandomParams
     {
         private static readonly Random getrandom = new Random();
         private static readonly object syncLock = new object();
+
         public static int GetRandomNumber(int min, int max)
         {
             lock (syncLock)

@@ -22,7 +22,7 @@ class ProjectInfo:
     
     def __init__(self, legacy = False):
         self.legacy = legacy
-        if self.legacy == True:
+        if self.legacy:
             print("Running in legacy mode")
 
 
@@ -51,7 +51,7 @@ class ProjectInfo:
         renderFormat = scene.render.image_settings.file_format
         resolutionPercentage = scene.render.resolution_percentage
         resolution = "{0} x {1}".format(math.floor(scene.render.resolution_x * resolutionPercentage / 100),
-                                      math.floor(scene.render.resolution_y * resolutionPercentage / 100))
+                                        math.floor(scene.render.resolution_y * resolutionPercentage / 100))
         # calc real fps
         fpsSource  = scene.render.fps
         fpsBase = scene.render.fps_base
@@ -77,36 +77,36 @@ class ProjectInfo:
 
         print("Building data...")
 
-        if self.legacy == True:
+        if self.legacy:
             # old 0.8.2 format
             return {
-            'projectName': projectName,
-		    'start': start,
-		    'end': end,
-		    'fps': fpsSource,
-		    'fpsBase': fpsBase,
-            'resolution': resolution,
-		    'resolutionPercentage': resolutionPercentage,
-		    'outputPath': outputPath,
-            'scenesNum': scenesNum,
-		    'sceneActive': sceneActive,
-		    'renderFormat': renderFormat
-        };
+                    'projectName': projectName,
+		            'start': start,
+		            'end': end,
+		            'fps': fpsSource,
+		            'fpsBase': fpsBase,
+                    'resolution': resolution,
+		            'resolutionPercentage': resolutionPercentage,
+		            'outputPath': outputPath,
+                    'scenesNum': scenesNum,
+		            'sceneActive': sceneActive,
+		            'renderFormat': renderFormat
+                };
         else:
             # new format to use in future versions
             return {
-            'projectName': projectName,
-            'blendPath': blendPath,
-		    'start': start,
-		    'end': end,
-		    'fps': fps,
-            'totalLength': totalLength,
-            'resolution': resolution,
-		    'outputPath': outputPath,
-            'scenesNum': scenesNum,
-		    'sceneActive': sceneActive,
-		    'renderFormat': renderFormat
-        };
+                    'projectName': projectName,
+                    'blendPath': blendPath,
+		            'start': start,
+		            'end': end,
+		            'fps': fps,
+                    'totalLength': totalLength,
+                    'resolution': resolution,
+		            'outputPath': outputPath,
+                    'scenesNum': scenesNum,
+		            'sceneActive': sceneActive,
+		            'renderFormat': renderFormat
+                };
 
     # fixes relative paths
     def fixPath(self, path):

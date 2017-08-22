@@ -47,7 +47,7 @@ namespace BlenderRenderController
         private AppState appState;
         private DateTime startTime;
         private ETACalculator _etaCalc;
-        private Process concatenateCom, mixdownCom;
+        //private Process concatenateCom, mixdownCom;
         private SettingsForm _settingsForm;
         delegate void StatusUpdate(string msg, Control ctrl);
 
@@ -67,8 +67,6 @@ namespace BlenderRenderController
             _blendData = new BlendData();
             framesRendered = new List<int>();
             _appSettings = AppSettings.Current;
-            mixdownCom = new Process();
-            concatenateCom = new Process();
         }
 
         private void BrcForm_Load(object sender, EventArgs e)
@@ -83,6 +81,8 @@ namespace BlenderRenderController
             UpdateRecentBlendsMenu();
 
             _appSettings.RecentBlends_Changed += AppSettings_RecentBlends_Changed;
+
+            processCountNumericUpDown.Maximum = 
             _project.ProcessesCount = Environment.ProcessorCount;
 
             // set source for project binding
@@ -104,8 +104,6 @@ namespace BlenderRenderController
 
             chunkLengthNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
             processCountNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
-
-
 
 #if UNIX
             forceUIUpdateToolStripMenuItem.Visible = true;
@@ -348,7 +346,6 @@ namespace BlenderRenderController
 
                 errorBox.Show();
                 ReadFail();
-
                 return;
             }
 
@@ -717,7 +714,7 @@ namespace BlenderRenderController
             recentBlendsMenu.Items.Clear();
 
             // make blends from recent list
-            foreach (string item in _appSettings.RecentBlends)
+            foreach (string item in _appSettings.GetRecentBlends())
             {
                 var menuItem = new ToolStripMenuItem(Path.GetFileNameWithoutExtension(item), Resources.blend_icon);
                 menuItem.ToolTipText = item;
@@ -779,8 +776,8 @@ namespace BlenderRenderController
                 Directory.CreateDirectory(_blendData.OutputPath);
             }
 
-#region Mixdown Commad
-            //var mixdownCom = new Process();
+            #region Mixdown Commad
+            var mixdownCom = new Process();
             var info = new ProcessStartInfo()
             {
                 FileName = _appSettings.BlenderProgram,
@@ -797,7 +794,7 @@ namespace BlenderRenderController
             };
             mixdownCom.StartInfo = info;
             mixdownCom.EnableRaisingEvents = true;
-#endregion
+            #endregion
 
             Trace.WriteLine(mixdownCom.StartInfo.Arguments);
 
@@ -897,7 +894,7 @@ namespace BlenderRenderController
                             videoExtensionFound);
             }
 
-            //var concatenateCom = new Process();
+            var concatenateCom = new Process();
             var info = new ProcessStartInfo();
             info.FileName = _appSettings.FFmpegProgram;
             info.CreateNoWindow = true;
@@ -1028,12 +1025,12 @@ namespace BlenderRenderController
                 {
                     _project.ProcessesCount = Environment.ProcessorCount;
                     // recalc auto chunks:
-                    var currentStart = (int)totalStartNumericUpDown.Value;
-                    var currentEnd = (int)totalEndNumericUpDown.Value;
-                    var currentProcessors = (int)processCountNumericUpDown.Value;
+                    var currentStart = totalStartNumericUpDown.Value;
+                    var currentEnd = totalEndNumericUpDown.Value;
+                    var currentProcessors = processCountNumericUpDown.Value;
 
-                    var autoChunks = Chunk.CalcChunks(currentStart, currentEnd, currentProcessors);
-                    UpdateCurrentChunks(autoChunks);
+                    var expectedChunkLen = (int)Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
+                    _project.ChunkLenght = expectedChunkLen;
                 }
             }
             else if (radio.Name == startEndBlendRadio.Name)
@@ -1044,11 +1041,11 @@ namespace BlenderRenderController
                     _blendData.Start = _autoRefStart;
                     _blendData.End = _autoRefEnd;
 
-#if UNIX
-                    ForceBindedElementsUpdate(null, null);
-#endif
                 }
             }
+#if UNIX
+            ForceBindedElementsUpdate(null, null);
+#endif
         }
 
         private void AfterRenderAction_Changed(object sender, EventArgs e)
@@ -1109,42 +1106,40 @@ namespace BlenderRenderController
 
         private void StartEndNumeric_Validated(object sender, EventArgs e)
         {
+            var currentStart = totalStartNumericUpDown.Value;
+            var currentEnd = totalEndNumericUpDown.Value;
+            var currentProcessors = processCountNumericUpDown.Value;
+
             if (renderOptionsAutoRadio.Checked)
             {
-                var currentStart = totalStartNumericUpDown.Value;
-                var currentEnd = totalEndNumericUpDown.Value;
-                var currentProcessors = processCountNumericUpDown.Value;
-
-                //if (currentEnd <= currentStart || currentProcessors == 0)
-                //    return;
-
-                //var autoChunks = Chunk.CalcChunks(currentStart, currentEnd, currentProcessors);
-                //UpdateCurrentChunks(autoChunks);
                 var expectedChunkLen = (int)Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
                 _project.ChunkLenght = expectedChunkLen;
-
 #if UNIX
                 ForceBindedElementsUpdate(null, null);
 #endif
-
             }
+
+            // set max chunk size to total frames
+            chunkLengthNumericUpDown.Maximum = currentEnd - currentStart + 1;
         }
 
         private void StartEnd_Validating(object sender, CancelEventArgs e)
         {
-            var currentStart = (int)totalStartNumericUpDown.Value;
-            var currentEnd = (int)totalEndNumericUpDown.Value;
-            var currentProcessors = (int)processCountNumericUpDown.Value;
-
             // TODO: Handle invalid values
-            if (currentStart >= currentEnd)
+            if (totalStartNumericUpDown.Value >= totalEndNumericUpDown.Value)
             {
+                errorProvider.
+                    SetError(totalStartNumericUpDown, "Start frame cannot be equal or greater then End frame");
                 e.Cancel = true;
             }
-            else if (currentEnd <= currentStart)
+            else if (totalEndNumericUpDown.Value <= totalStartNumericUpDown.Value)
             {
+                errorProvider
+                    .SetError(totalEndNumericUpDown, "End frame cannot be equal or less then Start frame");
                 e.Cancel = true;
             }
+            else
+                errorProvider.Clear();
         }
 
         private void RendererType_RadioChanged(object sender, EventArgs e)
@@ -1214,7 +1209,7 @@ namespace BlenderRenderController
 
         private void ForceBindedElementsUpdate(object sender, EventArgs e)
         {
-            // Mono's WinForm doesn't update the UI elements properly, 
+            // WinForm in Mono doesn't update the UI elements properly, 
             // so do it manually
             blendDataBindingSource.ResetBindings(false);
             projectSettingsBindingSource.ResetBindings(false);

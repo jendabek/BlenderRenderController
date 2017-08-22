@@ -18,12 +18,12 @@ namespace BRClib
         /// <summary>
         /// Parses the output of get_project_info
         /// </summary>
-        /// <param name="output">Standard output, split by lines ('\n')</param>
+        /// <param name="output">Standard output lines</param>
         /// <returns>A <see cref="BlendData"/> object</returns>
         /// <remarks>
         /// When executing get_project_info script, Blender may also print errors
-        /// alongside the Json containig the project info (a commun case if there're
-        /// custom plugins installed) this method will filter out those errors.
+        /// alongside the project info (a commun case if there're custom plugins installed) 
+        /// this method will filter out those errors.
         /// </remarks>
         public static BlendData ParsePyOutput(IEnumerable<string> output)
         {
@@ -174,6 +174,8 @@ namespace BRClib
         /// <para>0=ChunkTxtPath, 1=Project name, 2=.EXT</para>
         /// </summary>
         public const string ConcatenateOnly = "-f concat -safe 0 -i \"{0}\" -c:v copy \"{1}{2}\" -y";
+
+        public const string ConcatenateProg = "-progress {0} {1}";
 
         /// <summary>
         /// Get info command ARGS

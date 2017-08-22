@@ -110,7 +110,7 @@ namespace BlenderRenderController
             this.verToolStripLbl = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.donationTSBtn = new System.Windows.Forms.ToolStripButton();
-            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).BeginInit();
@@ -122,7 +122,7 @@ namespace BlenderRenderController
             this.panel2.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.menuToolStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
             // renderProgressBar
@@ -586,7 +586,7 @@ namespace BlenderRenderController
             // 
             // chunkLengthNumericUpDown
             // 
-            this.chunkLengthNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "ChunkLenght", true));
+            this.chunkLengthNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "ChunkLenght", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.chunkLengthNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(448, 238);
             this.chunkLengthNumericUpDown.Maximum = new decimal(new int[] {
@@ -1077,9 +1077,9 @@ namespace BlenderRenderController
             this.donationTSBtn.ToolTipText = "Feeling specially awesome? Donate!";
             this.donationTSBtn.Click += new System.EventHandler(this.donateButton_Click);
             // 
-            // errorProvider1
+            // errorProvider
             // 
-            this.errorProvider1.ContainerControl = this;
+            this.errorProvider.ContainerControl = this;
             // 
             // BrcForm
             // 
@@ -1150,7 +1150,7 @@ namespace BlenderRenderController
             this.flowLayoutPanel1.PerformLayout();
             this.menuToolStrip.ResumeLayout(false);
             this.menuToolStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1235,7 +1235,7 @@ namespace BlenderRenderController
         private System.Windows.Forms.ToolStripLabel verToolStripLbl;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton donationTSBtn;
-        private System.Windows.Forms.ErrorProvider errorProvider1;
+        private System.Windows.Forms.ErrorProvider errorProvider;
     }
 }
 

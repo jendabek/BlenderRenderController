@@ -16,10 +16,12 @@ namespace BlenderRenderController
     [JsonObject(Description = "Brc settings")]
     class AppSettings
     {
+        [JsonProperty("RecentBlends")]
         private ObservableCollection<string> _recentBlends = new ObservableCollection<string>();
+
         private static readonly string _baseDir = Environment.CurrentDirectory;
         private string _blenderExeName, _scriptsFolderPath, _ffmpegExeName;
-        private int RECENT_BLENDS_MAX_COUNT = 10;
+        private const int RECENT_BLENDS_MAX_COUNT = 10;
         const string SETTINGS_FILE = "brc_settings.json";
         //bool blenderFound, ffmpegFound;
 
@@ -89,8 +91,10 @@ namespace BlenderRenderController
         public AfterRenderAction AfterRender { get; set; }
         public BlenderRenderes Renderer { get; set; }
 
-
-        public ObservableCollection<string> RecentBlends { get => _recentBlends; }
+        public IList<string> GetRecentBlends()
+        {
+            return _recentBlends;
+        }
 
         public int RecentBlendsCount => _recentBlends.Count;
 
@@ -114,9 +118,6 @@ namespace BlenderRenderController
             _blenderExeName = GetProgramFileName("blender");
             BlenderProgram = DefBlenderFolder + _blenderExeName;
             FFmpegProgram = DefFFmpegFolder + _ffmpegExeName;
-
-            //blenderFound = File.Exists(BlenderProgram);
-            //ffmpegFound = File.Exists(FFmpegProgram);
 
             _recentBlends.CollectionChanged += RecentBlends_CollectionChanged;
             _scriptsFolderPath = Path.Combine(_baseDir, Constants.ScriptsSubfolder);
@@ -148,17 +149,20 @@ namespace BlenderRenderController
 
         public void AddRecentBlend(string blendFilePath)
         {
-            //dont want to show one file many times
+            // dont want to show one file many times
             if (_recentBlends.Contains(blendFilePath))
             {
-                _recentBlends.Remove(blendFilePath);
+                var oldIdx = _recentBlends.IndexOf(blendFilePath);
+                _recentBlends.Move(oldIdx, 0);
+                return;
             }
 
-            //delete last if the list is larger than RECENT_BLENDS_MAX_COUNT
+            // delete last if the list count hits max
             if (_recentBlends.Count == RECENT_BLENDS_MAX_COUNT)
             {
                 _recentBlends.RemoveAt(RECENT_BLENDS_MAX_COUNT - 1);
             }
+
             _recentBlends.Insert(0, blendFilePath);
         }
 
@@ -179,7 +183,6 @@ namespace BlenderRenderController
                     case DialogResult.No:
                         break;
                     default:
-                        MessageBox.Show("Something wrong happend.");
                         break;
                 }
             }
@@ -240,30 +243,6 @@ namespace BlenderRenderController
             var appSet = File.Exists(settingsPath) 
                         ? JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(settingsPath))
                         : AppSettings.Defaults;
-
-            //if (!appSet.CheckCorrectConfig())
-            //{
-            //    // SECONDARY CHECKING
-            //    if (!appSet.ffmpegFound)
-            //    {
-            //        Process p = new Process();
-            //        var info = new ProcessStartInfo();
-            //        info.FileName = appSet.FFmpegProgram;
-            //        info.RedirectStandardOutput = true;
-            //        info.UseShellExecute = false;
-            //        info.CreateNoWindow = true;
-            //        info.Arguments = "-version";
-            //        p.StartInfo = info;
-
-            //        p.Start();
-            //        var output = p.StandardOutput.ReadToEnd();
-
-            //        if (output.Contains("ffmpeg version "))
-            //        {
-            //            appSet.ffmpegFound = true;
-            //        }
-            //    }
-            //}
 
             // apply log
             if (appSet.Verbose)
