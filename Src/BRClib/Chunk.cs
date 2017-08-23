@@ -64,42 +64,14 @@ namespace BRClib
                 throw new ArgumentException("Divider cannot be 0", nameof(div));
 
 
-            // if div is 1, return a single chunk
             if (div == 1)
+                // return a single chunk
                 return new Chunk[]{ new Chunk(start, end) };
 
-            int lenght = (int)Math.Ceiling((decimal)(end - start + 1) / div);
-            List<Chunk> chunkList = new List<Chunk>();
 
-            int cStart, cEnd;
-            cStart = start;
+            var chunkArray = MakeChunks(start, end, div);
 
-            // makes chunks
-            for (int i = 0; i != div; i++)
-            {
-                cEnd = cStart + lenght;
-
-                var chunk = new Chunk(cStart, cEnd);
-
-                if ((chunk.End + 1 < end))
-                {
-                    chunkList.Add(chunk);
-                    cStart = cEnd + 1;
-                }
-                else
-                {
-                    // the final chunk, the one that matches the project's end
-                    var secondLast = chunkList.Last();
-
-                    if (secondLast.End == end)
-                        break;
-
-                    var finalChunk = new Chunk(secondLast.End + 1, end);
-                    chunkList.Add(finalChunk);
-                }
-            }
-
-            return chunkList.ToArray();
+            return chunkArray;
         }
         /// <summary>
         /// Calculates an even divided array of chunks, based on desired lenght
@@ -118,17 +90,24 @@ namespace BRClib
                 throw new ArgumentException("Invalid chunk lenght", nameof(chunkLenght));
 
 
+            int div = (int)Math.Ceiling((decimal)end - start + 1 / chunkLenght);
+
+            var chunkArray = MakeChunks(start, end, div);
+
+            return chunkArray;
+        }
+
+        private static Chunk[] MakeChunks(int start, int end, int div)
+        {
+            int cStart = start;
+            int cEnd;
             decimal totalLen = end - start + 1;
-            int div = (int)Math.Ceiling(totalLen / chunkLenght);
-
+            var lenght = (int)Math.Ceiling(totalLen / div);
             List<Chunk> chunkList = new List<Chunk>();
-            int cStart, cEnd;
-
-            cStart = start;
 
             for (int i = 0; i < div; i++)
             {
-                cEnd = cStart + chunkLenght;
+                cEnd = cStart + lenght;
 
                 var chunk = new Chunk(cStart, cEnd);
 
@@ -139,7 +118,7 @@ namespace BRClib
                 }
                 else
                 {
-                    // the final chunk, the one that matches the project's end
+                    // decide final chunk, the one that matches the project's end
                     var secondLast = chunkList.Last();
 
                     if (secondLast.End == end)
@@ -152,7 +131,6 @@ namespace BRClib
 
             return chunkList.ToArray();
         }
-
 
         public override string ToString()
         {
