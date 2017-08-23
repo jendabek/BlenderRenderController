@@ -1026,6 +1026,7 @@ namespace BlenderRenderController
             // 
             // afterRenderBGWorker
             // 
+            this.afterRenderBGWorker.WorkerSupportsCancellation = true;
             this.afterRenderBGWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AfterRenderBGWorker_DoWork);
             this.afterRenderBGWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AfterRenderBGWorker_RunWorkerCompleted);
             // 

@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -41,22 +42,18 @@ namespace BlenderRenderController
         private AppSettings _appSettings;
         private ProjectSettings _project;
         private BlendData _blendData;
-        private int rendersInProcess, processesCompletedCount, _currentChunkIndex;
-        private List<Process> _processList;
+        private int rendersCount, processesCompletedCount, _currentChunkIndex;
+        private List<Process> _renderProcesses;
         private List<int> framesRendered;
         private AppState appState;
         private DateTime startTime;
         private ETACalculator _etaCalc;
-        //private Process concatenateCom, mixdownCom;
+        private Process concatenateCom, mixdownCom;
         private SettingsForm _settingsForm;
         delegate void StatusUpdate(string msg, Control ctrl);
 
 
         public bool IsRendering { get; private set; }
-        private string AssemblyVersion
-        {
-            get { return " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(); }
-        }
 
 
         public BrcForm()
@@ -72,7 +69,7 @@ namespace BlenderRenderController
         private void BrcForm_Load(object sender, EventArgs e)
         {
             //add version numbers to label
-            verToolStripLbl.Text = AssemblyVersion;
+            verToolStripLbl.Text = " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(); 
 
             // save appSettings on exit
             AppDomain.CurrentDomain.ProcessExit += (ad, cd) => _appSettings.Save();
@@ -107,8 +104,23 @@ namespace BlenderRenderController
 
 #if UNIX
             forceUIUpdateToolStripMenuItem.Visible = true;
+            totalStartNumericUpDown.Paint += NumericUpDown_OnPaint;
+            totalEndNumericUpDown.Paint += NumericUpDown_OnPaint;
+            chunkLengthNumericUpDown.Paint += NumericUpDown_OnPaint;
+            processCountNumericUpDown.Paint += NumericUpDown_OnPaint;
 #endif
         }
+
+#if UNIX
+        private void NumericUpDown_OnPaint(object sender, PaintEventArgs e)
+        {
+            // Work around Mono not gray-ing out if disabled
+            var numeric = sender as NumericUpDown;
+            numeric.BackColor = (numeric.Enabled)
+                                ? System.Drawing.Color.White
+                                : System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
+        } 
+#endif
 
         private void BrcForm_Shown(object sender, EventArgs e)
         {
@@ -356,7 +368,6 @@ namespace BlenderRenderController
             UpdateUI(AppState.READY_FOR_RENDER);
         }
 
-
         private void blendBrowseBtn_Click(object sender, EventArgs e)
         {
             var result = openBlendDialog.ShowDialog();
@@ -410,16 +421,16 @@ namespace BlenderRenderController
             renderCom.Exited += (pSender, pArgs) =>
             {
                 // updates the counts
-                _processList.Remove((Process)pSender);
-                rendersInProcess--;
+                _renderProcesses.Remove((Process)pSender);
+                rendersCount--;
                 processesCompletedCount++;
             };
 
             try
             {
                 renderCom.Start();
-                rendersInProcess++;
-                _processList.Add(renderCom);
+                rendersCount++;
+                _renderProcesses.Add(renderCom);
             }
             catch (Exception ex)
             {
@@ -451,10 +462,10 @@ namespace BlenderRenderController
             framesRendered.Clear();
             Status("Starting render...");
             processesCompletedCount = 0;
-            rendersInProcess = 0;
+            rendersCount = 0;
             _currentChunkIndex = 0;
             IsRendering = true;
-            _processList = new List<Process>(_project.ProcessesCount);
+            _renderProcesses = new List<Process>(_project.ProcessesCount);
 
             // render progress reset
             totalTimeLabel.Text = string.Format(timePassedFmt, Helper.SecondsToString(0, true));
@@ -472,10 +483,10 @@ namespace BlenderRenderController
 
         private void StopRender(bool wasComplete)
         {
-            var msg = wasComplete ? "Render complete." : "Render cancelled.";
-            Status(msg);
+            //var msg = wasComplete ? "Render complete." : "Render cancelled.";
+            //Status(msg);
 
-            foreach (var process in _processList.ToList())
+            foreach (var process in _renderProcesses.ToList())
             {
                 try
                 {
@@ -493,9 +504,7 @@ namespace BlenderRenderController
                 }
             }
 
-            _processList.Clear();
-
-            processManager.Enabled = false;
+            _renderProcesses.Clear();
             IsRendering = false;
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             renderProgressBar.Value = 0;
@@ -584,7 +593,7 @@ namespace BlenderRenderController
                 {
                     currentChunk = _project.ChunkList[_currentChunkIndex];
 
-                    if (_processList.Count < _processList.Capacity)
+                    if (_renderProcesses.Count < _renderProcesses.Capacity)
                     {
                         RenderChunk(currentChunk);
                         _currentChunkIndex++;
@@ -594,7 +603,7 @@ namespace BlenderRenderController
                 UpdateProgress();
 
                 // do after render once all processes exits
-                if (_processList.Count == 0)
+                if (_renderProcesses.Count == 0)
                 {
                     renderProgressBar.Style = ProgressBarStyle.Marquee;
 #if WINDOWS
@@ -617,6 +626,7 @@ namespace BlenderRenderController
         {
             if (e.Data != null)
             {
+                // read blender's output to see what frames are beeing rendered
                 if (e.Data.IndexOf("Fra:", StringComparison.InvariantCulture) == 0)
                 {
                     int frameBeingRendered = int.Parse(e.Data.Split(' ')[0].Replace("Fra:", ""));
@@ -644,7 +654,7 @@ namespace BlenderRenderController
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("Completed {0} / {1}", processesCompletedCount, chunksTotalCount);
-            sb.AppendFormat(" chunks, rendered {0} frames in {1} processes", framesRendered.Count, rendersInProcess);
+            sb.AppendFormat(" chunks, rendered {0} frames in {1} processes", framesRendered.Count, rendersCount);
             Status(sb.ToString());
 
 #if WINDOWS
@@ -776,8 +786,7 @@ namespace BlenderRenderController
                 Directory.CreateDirectory(_blendData.OutputPath);
             }
 
-            #region Mixdown Commad
-            var mixdownCom = new Process();
+            mixdownCom = new Process();
             var info = new ProcessStartInfo()
             {
                 FileName = _appSettings.BlenderProgram,
@@ -794,13 +803,17 @@ namespace BlenderRenderController
             };
             mixdownCom.StartInfo = info;
             mixdownCom.EnableRaisingEvents = true;
-            #endregion
+            mixdownCom.Exited += (pSender, pe) =>
+            {
+                _renderProcesses.Remove((Process)pSender);
+            };
 
             Trace.WriteLine(mixdownCom.StartInfo.Arguments);
 
             try
             {
                 mixdownCom.Start();
+                _renderProcesses.Add(mixdownCom);
             }
             catch (Exception ex)
             {
@@ -815,7 +828,9 @@ namespace BlenderRenderController
                     DetailsExpanded = false,
                     DetailsExpandedText = "StackTrace:\n\n" + ex.StackTrace,
                     Icon = TaskDialogStandardIcon.Error
-                }; 
+                };
+
+                err.Show();
 #else
                 MessageBox.Show(errText, errInfo, MessageBoxButtons.OK, MessageBoxIcon.Error);
 #endif
@@ -894,7 +909,7 @@ namespace BlenderRenderController
                             videoExtensionFound);
             }
 
-            var concatenateCom = new Process();
+            concatenateCom = new Process();
             var info = new ProcessStartInfo();
             info.FileName = _appSettings.FFmpegProgram;
             info.CreateNoWindow = true;
@@ -904,6 +919,7 @@ namespace BlenderRenderController
             concatenateCom.EnableRaisingEvents = true;
             concatenateCom.Exited += (pSender, pArgs) =>
             {
+                _renderProcesses.Remove((Process)pSender);
                 logger.Info("FFmpeg exited");
             };
 
@@ -913,6 +929,7 @@ namespace BlenderRenderController
             {
                 logger.Info(statusLabel.Text);
                 concatenateCom.Start();
+                _renderProcesses.Add(concatenateCom);
             }
             catch (Exception ex)
             {

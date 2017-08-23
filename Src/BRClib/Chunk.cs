@@ -118,8 +118,8 @@ namespace BRClib
                 throw new ArgumentException("Invalid chunk lenght", nameof(chunkLenght));
 
 
-            var totalLen = end - start + 1;
-            int div = (int)Math.Ceiling((decimal)totalLen / chunkLenght);
+            decimal totalLen = end - start + 1;
+            int div = (int)Math.Ceiling(totalLen / chunkLenght);
 
             List<Chunk> chunkList = new List<Chunk>();
             int cStart, cEnd;

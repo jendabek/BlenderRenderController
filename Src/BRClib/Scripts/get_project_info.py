@@ -1,7 +1,6 @@
 import os
 import json
 import bpy
-import re
 import math
 from bpy import context
 from bpy import ops
@@ -93,7 +92,7 @@ class ProjectInfo:
 		            'renderFormat': renderFormat
                 };
         else:
-            # new format to use in future versions
+            # new format for v0.9.8.0 and later
             return {
                     'projectName': projectName,
                     'blendPath': blendPath,

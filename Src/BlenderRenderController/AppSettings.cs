@@ -96,6 +96,7 @@ namespace BlenderRenderController
             return _recentBlends;
         }
 
+        [JsonIgnore]
         public int RecentBlendsCount => _recentBlends.Count;
 
         [JsonIgnore]
@@ -105,10 +106,8 @@ namespace BlenderRenderController
             private set => _scriptsFolderPath = value;
         }
 
-        [JsonIgnore]
         public string BlenderExeName { get => _blenderExeName; }
 
-        [JsonIgnore]
         public string FFmpegExeName { get => _ffmpegExeName; }
 
 

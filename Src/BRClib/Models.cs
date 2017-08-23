@@ -1,10 +1,6 @@
-﻿using NLog;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 
 namespace BRClib
 {
@@ -139,15 +135,6 @@ namespace BRClib
             set => SetProperty(ref _blendPath, value);
         }
 
-        //public BlendData BlendData
-        //{
-        //    get => _bData;
-        //    set
-        //    {
-        //        SetProperty(ref _bData, value);
-        //    }
-        //}
-
         public ObservableCollection<Chunk> ChunkList => _chunkList;
 
         public int ChunkLenght
@@ -165,21 +152,9 @@ namespace BRClib
         public ProjectSettings() : base()
         {
             _chunkList = new ObservableCollection<Chunk>();
-            //_chunkList.CollectionChanged += ChunkList_CollectionChanged;
-            //BlendData = new BlendData();
             ChunkLenght = 1;
         }
 
-        //private void ChunkList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        //{
-        //    var cList = sender as ObservableCollection<Chunk>;
-
-        //    if (cList.Count > 0)
-        //    {
-        //        var cLen = cList.First().Length;
-        //        ChunkLenght = (int)cLen;
-        //    }
-        //}
     }
 
     public enum BlenderRenderes
