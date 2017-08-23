@@ -1,0 +1,20 @@
+﻿Blender Render Controller – About utilities
+
+This folder contains the following files:
+- BRC_unix.sh
+- runWin7.bat
+
+To use them, place them in the same folder as the executable.
+
+-*BRC_unix.sh*- is a simple shell script to serve as a shortcut to launch BRC in Linux using Mono
+
+To run this program in Linux, you will need:
+- Mono 4.8 or higher
+- Blender
+- Ffmpeg
+
+Keep in mind that, while it SHOULD work, Linux support is at an early state, make sure you know what your doing!
+
+
+-*runWin7.bat*- is a temporary fix for Windows 7 users facing crashes when opening files. Use this to run BRC and you should be able to use the program normaly
+
