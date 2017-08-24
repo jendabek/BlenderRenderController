@@ -622,7 +622,7 @@ namespace BlenderRenderController
             this.afterRenderJoinMixdownRadio.Size = new System.Drawing.Size(283, 19);
             this.afterRenderJoinMixdownRadio.TabIndex = 33;
             this.afterRenderJoinMixdownRadio.TabStop = true;
-            this.afterRenderJoinMixdownRadio.Tag = "DIFNL;DIRENDER";
+            this.afterRenderJoinMixdownRadio.Tag = "";
             this.afterRenderJoinMixdownRadio.Text = "Automatically join chunks && use mixdown audio";
             this.toolTipInfo.SetToolTip(this.afterRenderJoinMixdownRadio, resources.GetString("afterRenderJoinMixdownRadio.ToolTip"));
             this.afterRenderJoinMixdownRadio.UseVisualStyleBackColor = true;
@@ -636,7 +636,7 @@ namespace BlenderRenderController
             this.afterRenderJoinRadio.Name = "afterRenderJoinRadio";
             this.afterRenderJoinRadio.Size = new System.Drawing.Size(162, 19);
             this.afterRenderJoinRadio.TabIndex = 33;
-            this.afterRenderJoinRadio.Tag = "DIFNL;DIRENDER";
+            this.afterRenderJoinRadio.Tag = "";
             this.afterRenderJoinRadio.Text = "Automatically join chunks";
             this.toolTipInfo.SetToolTip(this.afterRenderJoinRadio, resources.GetString("afterRenderJoinRadio.ToolTip"));
             this.afterRenderJoinRadio.UseVisualStyleBackColor = true;
@@ -649,7 +649,7 @@ namespace BlenderRenderController
             this.afterRenderDoNothingRadio.Name = "afterRenderDoNothingRadio";
             this.afterRenderDoNothingRadio.Size = new System.Drawing.Size(130, 19);
             this.afterRenderDoNothingRadio.TabIndex = 33;
-            this.afterRenderDoNothingRadio.Tag = "DIFNL;DIRENDER";
+            this.afterRenderDoNothingRadio.Tag = "";
             this.afterRenderDoNothingRadio.Text = "Render just chunks";
             this.toolTipInfo.SetToolTip(this.afterRenderDoNothingRadio, "Will render only chunks.\r\nStill, you can render mixdown separately and join it ma" +
         "nually by buttons on the right.\r\n");

@@ -707,7 +707,7 @@ namespace BlenderRenderController
                 _project.ChunkList.Add(chnk);
             }
 
-            _project.ChunkLenght = (int)_project.ChunkList.First().Length;
+            _project.ChunkLenght = _project.ChunkList.First().Length;
 
             logger.Debug("ChunkLenght: " + _project.ChunkLenght);
             logger.Trace(string.Join(", " ,_project.ChunkList));

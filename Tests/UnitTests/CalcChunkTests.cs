@@ -14,15 +14,24 @@ namespace UnitTestProject1
         {
             for (int i = 0; i < 10; i++)
             {
-                int[] randPair = MakeRandomParams.GetRandomNumberPair(1, 99999);
-                //Console.WriteLine("randPair: r1={0}, r2={1}", randPair[0], randPair[1]);
+                int[] randPair = RandomParams.GetNumberPair(1, 99999);
 
-                var cores = MakeRandomParams.GetRandomNumber(1, 16);
+                var cores = RandomParams.GetNumber(1, 16);
                 var start = randPair[0];
                 var end = randPair[1];
-                Console.WriteLine("Start: {0}, End: {1}, Total lenght: {2}, CoreCount: {3}", start, end, end - start, cores);
+
+                var totalLen = end - start + 1;
+                var minLen = totalLen * 0.05;
+                var maxLen = totalLen * 0.4;
 
                 var calcResult = Chunk.CalcChunks(start, end, cores);
+                if (calcResult.First().Length > maxLen || calcResult.First().Length < minLen)
+                {
+                    // ignore unrealistic lenghts
+                    continue;
+                }
+
+                Console.WriteLine("Start: {0}, End: {1}, Total lenght: {2}, CoreCount: {3}", start, end, totalLen, cores);
                 foreach (var res in calcResult)
                 {
                     Console.WriteLine(res + "   Lenght: " + res.Length);
@@ -30,7 +39,7 @@ namespace UnitTestProject1
 
                 Console.WriteLine();
                 Assert.IsFalse(calcResult.Last().End != end, "Last calcResult.End was diferent then param end");
-                Assert.IsTrue(calcResult.Length == cores);
+                Assert.IsTrue(calcResult.Length == cores, "Number of chunks does not match core count");
 
             }
         }
@@ -39,8 +48,8 @@ namespace UnitTestProject1
         [ExpectedException(typeof(ArgumentException))]
         public void CalcChunks_start_cannot_be_greater_then_end()
         {
-            int[] rnd = MakeRandomParams.GetRandomNumberPair(1, 9999, invert: true);
-            int cores = MakeRandomParams.GetRandomNumber(1, 17);
+            int[] rnd = RandomParams.GetNumberPair(1, 9999, invert: true);
+            int cores = RandomParams.GetNumber(1, 17);
 
             int start = rnd[0];
             int end = rnd[1];
@@ -57,7 +66,7 @@ namespace UnitTestProject1
 
             for (int i = 0; i < 10; i++)
             {
-                int[] randPair = MakeRandomParams.GetRandomNumberPair(1, 99999);
+                int[] randPair = RandomParams.GetNumberPair(1, 99999);
 
                 int start = randPair[0];
                 int end = randPair[1];
@@ -67,7 +76,7 @@ namespace UnitTestProject1
                 var minLen = totalLen * 0.05;
                 var maxLen = totalLen * 0.4;
 
-                int len = MakeRandomParams.GetRandomNumber((int)minLen, (int)maxLen);
+                int len = RandomParams.GetNumber((int)minLen, (int)maxLen);
 
                 Console.WriteLine("Start: {0}, End: {1}, Total legth: {2}", start, end, totalLen);
 
@@ -89,8 +98,9 @@ namespace UnitTestProject1
             var start = 1;
             var end = 24000;
             var totalLen = end - start + 1;
+            int cores = RandomParams.GetNumber(1, 17);
 
-            var chunks = Chunk.CalcChunks(start, end, 8);
+            var chunks = Chunk.CalcChunks(start, end, cores);
 
             Console.WriteLine("Total lenght = " + totalLen);
             Console.WriteLine("Chunks total length = " + chunks.TotalLength());
@@ -99,22 +109,22 @@ namespace UnitTestProject1
         }
     }
 
-    static class MakeRandomParams
+    static class RandomParams
     {
-        private static readonly Random getrandom = new Random();
+        private static readonly Random getRandom = new Random();
         private static readonly object syncLock = new object();
 
-        public static int GetRandomNumber(int min, int max)
+        public static int GetNumber(int min, int max)
         {
             lock (syncLock)
             { // synchronize
-                return getrandom.Next(min, max);
+                return getRandom.Next(min, max);
             }
         }
-        public static int[] GetRandomNumberPair(int min, int max, bool invert = false)
+        public static int[] GetNumberPair(int min, int max, bool invert = false)
         {
-            var r1 = GetRandomNumber(min, max);
-            var r2 = GetRandomNumber(min, max);
+            var r1 = GetNumber(min, max);
+            var r2 = GetNumber(min, max);
 
             int[] rnd = { r1, r2 };
 

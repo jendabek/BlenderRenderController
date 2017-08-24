@@ -20,7 +20,7 @@ namespace BRClib
         /// <summary>
         /// The <see cref="Chunk"/>'s length in N# of frames
         /// </summary>
-        public int Length => End - Start + 1;
+        public int Length => End - Start;
         /// <summary>
         /// Returns if current <see cref="Chunk"/> is valid
         /// </summary>
@@ -90,7 +90,7 @@ namespace BRClib
                 throw new ArgumentException("Invalid chunk lenght", nameof(chunkLenght));
 
 
-            int div = (int)Math.Ceiling((decimal)end - start + 1 / chunkLenght);
+            int div = (int)Math.Ceiling((decimal)(end - start + 1) / chunkLenght);
 
             var chunkArray = MakeChunks(start, end, div);
 
@@ -148,11 +148,23 @@ namespace BRClib
 
             return Equals(chunk);
         }
+
         public bool Equals(Chunk c)
         {
             return Start == c.Start
                 && End == c.End;
         }
+
+        public static bool operator ==(Chunk c1, Chunk c2)
+        {
+            return c1.Equals(c2);
+        }
+        public static bool operator !=(Chunk c1, Chunk c2)
+        {
+            return !(c1.Equals(c2));
+        }
+
+
         public override int GetHashCode()
         {
             const int HashBase = 233;
