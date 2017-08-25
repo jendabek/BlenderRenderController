@@ -76,8 +76,6 @@ namespace BlenderRenderController
             this.afterRenderDoNothingRadio = new System.Windows.Forms.RadioButton();
             this.renderInfoLabel = new System.Windows.Forms.Label();
             this.reloadBlenderDataButton = new System.Windows.Forms.Button();
-            this.mixDownButton = new System.Windows.Forms.Button();
-            this.concatenatePartsButton = new System.Windows.Forms.Button();
             this.renderAllButton = new System.Windows.Forms.Button();
             this.showRecentBlendsBtn = new System.Windows.Forms.Button();
             this.recentBlendsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -86,7 +84,6 @@ namespace BlenderRenderController
             this.label8 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.blendFileNameLabel = new System.Windows.Forms.Label();
             this.rendererRadioButtonCycles = new System.Windows.Forms.RadioButton();
             this.rendererRadioButtonBlender = new System.Windows.Forms.RadioButton();
@@ -111,6 +108,9 @@ namespace BlenderRenderController
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.donationTSBtn = new System.Windows.Forms.ToolStripButton();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.concatenatePartsButton = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.mixDownButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).BeginInit();
@@ -127,10 +127,10 @@ namespace BlenderRenderController
             // 
             // renderProgressBar
             // 
-            this.renderProgressBar.Location = new System.Drawing.Point(32, 552);
+            this.renderProgressBar.Location = new System.Drawing.Point(32, 543);
             this.renderProgressBar.MarqueeAnimationSpeed = 75;
             this.renderProgressBar.Name = "renderProgressBar";
-            this.renderProgressBar.Size = new System.Drawing.Size(612, 14);
+            this.renderProgressBar.Size = new System.Drawing.Size(612, 20);
             this.renderProgressBar.Step = 1;
             this.renderProgressBar.TabIndex = 2;
             this.toolTipInfo.SetToolTip(this.renderProgressBar, "Progress bar");
@@ -640,6 +640,7 @@ namespace BlenderRenderController
             this.afterRenderJoinRadio.Text = "Automatically join chunks";
             this.toolTipInfo.SetToolTip(this.afterRenderJoinRadio, resources.GetString("afterRenderJoinRadio.ToolTip"));
             this.afterRenderJoinRadio.UseVisualStyleBackColor = true;
+            this.afterRenderJoinRadio.CheckedChanged += new System.EventHandler(this.AfterRenderAction_Changed);
             // 
             // afterRenderDoNothingRadio
             // 
@@ -654,6 +655,7 @@ namespace BlenderRenderController
             this.toolTipInfo.SetToolTip(this.afterRenderDoNothingRadio, "Will render only chunks.\r\nStill, you can render mixdown separately and join it ma" +
         "nually by buttons on the right.\r\n");
             this.afterRenderDoNothingRadio.UseVisualStyleBackColor = true;
+            this.afterRenderDoNothingRadio.CheckedChanged += new System.EventHandler(this.AfterRenderAction_Changed);
             // 
             // renderInfoLabel
             // 
@@ -682,42 +684,6 @@ namespace BlenderRenderController
             this.toolTipInfo.SetToolTip(this.reloadBlenderDataButton, "Re-reads data from the .blend again and updates the form accordingly.");
             this.reloadBlenderDataButton.UseVisualStyleBackColor = true;
             this.reloadBlenderDataButton.Click += new System.EventHandler(this.reloadBlenderDataButton_Click);
-            // 
-            // mixDownButton
-            // 
-            this.mixDownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.mixDownButton.Image = global::BlenderRenderController.Properties.Resources.volume_small;
-            this.mixDownButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.mixDownButton.Location = new System.Drawing.Point(378, 395);
-            this.mixDownButton.Name = "mixDownButton";
-            this.mixDownButton.Padding = new System.Windows.Forms.Padding(8, 0, 7, 0);
-            this.mixDownButton.Size = new System.Drawing.Size(155, 38);
-            this.mixDownButton.TabIndex = 14;
-            this.mixDownButton.Tag = "DIFNL;DIRENDER";
-            this.mixDownButton.Text = "Render Mixdown";
-            this.mixDownButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolTipInfo.SetToolTip(this.mixDownButton, "Renders an audio file for the final video.");
-            this.mixDownButton.UseVisualStyleBackColor = true;
-            this.mixDownButton.Click += new System.EventHandler(this.mixDownButton_Click);
-            // 
-            // concatenatePartsButton
-            // 
-            this.concatenatePartsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.concatenatePartsButton.Image = global::BlenderRenderController.Properties.Resources.connect_icon_small;
-            this.concatenatePartsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.concatenatePartsButton.Location = new System.Drawing.Point(378, 438);
-            this.concatenatePartsButton.Name = "concatenatePartsButton";
-            this.concatenatePartsButton.Padding = new System.Windows.Forms.Padding(7, 0, 7, 0);
-            this.concatenatePartsButton.Size = new System.Drawing.Size(128, 38);
-            this.concatenatePartsButton.TabIndex = 15;
-            this.concatenatePartsButton.Tag = "DIRENDER";
-            this.concatenatePartsButton.Text = "Join Chunks";
-            this.concatenatePartsButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolTipInfo.SetToolTip(this.concatenatePartsButton, "!Warning - previous video will be overwritten!\r\n\r\nJoins rendered chunks to get th" +
-        "e final video.\r\nMixdown audio will be used if it is rendered (and found in the o" +
-        "utput folder).");
-            this.concatenatePartsButton.UseVisualStyleBackColor = true;
-            this.concatenatePartsButton.Click += new System.EventHandler(this.concatenatePartsButton_Click);
             // 
             // renderAllButton
             // 
@@ -809,17 +775,6 @@ namespace BlenderRenderController
             this.label12.Size = new System.Drawing.Size(144, 20);
             this.label12.TabIndex = 25;
             this.label12.Text = "3. Render Options";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
-            this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label5.Location = new System.Drawing.Point(374, 367);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(57, 20);
-            this.label5.TabIndex = 25;
-            this.label5.Text = "Extras";
             // 
             // blendFileNameLabel
             // 
@@ -1082,6 +1037,53 @@ namespace BlenderRenderController
             // 
             this.errorProvider.ContainerControl = this;
             // 
+            // concatenatePartsButton
+            // 
+            this.concatenatePartsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.concatenatePartsButton.Image = global::BlenderRenderController.Properties.Resources.connect_icon_small;
+            this.concatenatePartsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.concatenatePartsButton.Location = new System.Drawing.Point(378, 438);
+            this.concatenatePartsButton.Name = "concatenatePartsButton";
+            this.concatenatePartsButton.Padding = new System.Windows.Forms.Padding(7, 0, 7, 0);
+            this.concatenatePartsButton.Size = new System.Drawing.Size(128, 38);
+            this.concatenatePartsButton.TabIndex = 15;
+            this.concatenatePartsButton.Tag = "DIRENDER";
+            this.concatenatePartsButton.Text = "Join Chunks";
+            this.concatenatePartsButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.toolTipInfo.SetToolTip(this.concatenatePartsButton, "!Warning - previous video will be overwritten!\r\n\r\nJoins rendered chunks to get th" +
+        "e final video.\r\nMixdown audio will be used if it is rendered (and found in the o" +
+        "utput folder).");
+            this.concatenatePartsButton.UseVisualStyleBackColor = true;
+            this.concatenatePartsButton.Click += new System.EventHandler(this.concatenatePartsButton_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
+            this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.label5.Location = new System.Drawing.Point(374, 367);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(57, 20);
+            this.label5.TabIndex = 25;
+            this.label5.Text = "Extras";
+            // 
+            // mixDownButton
+            // 
+            this.mixDownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.mixDownButton.Image = global::BlenderRenderController.Properties.Resources.volume_small;
+            this.mixDownButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.mixDownButton.Location = new System.Drawing.Point(378, 395);
+            this.mixDownButton.Name = "mixDownButton";
+            this.mixDownButton.Padding = new System.Windows.Forms.Padding(8, 0, 7, 0);
+            this.mixDownButton.Size = new System.Drawing.Size(155, 38);
+            this.mixDownButton.TabIndex = 14;
+            this.mixDownButton.Tag = "DIFNL;DIRENDER";
+            this.mixDownButton.Text = "Render Mixdown";
+            this.mixDownButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.toolTipInfo.SetToolTip(this.mixDownButton, "Renders an audio file for the final video.");
+            this.mixDownButton.UseVisualStyleBackColor = true;
+            this.mixDownButton.Click += new System.EventHandler(this.mixDownButton_Click);
+            // 
             // BrcForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -1169,9 +1171,7 @@ namespace BlenderRenderController
         private System.Windows.Forms.NumericUpDown processCountNumericUpDown;
         private System.Windows.Forms.Label processCountLabel;
         private System.Windows.Forms.Button renderAllButton;
-        private System.Windows.Forms.Button concatenatePartsButton;
 		private System.Windows.Forms.Button reloadBlenderDataButton;
-		private System.Windows.Forms.Button mixDownButton;
 		private System.Windows.Forms.Label totalTimeLabel;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.Label label1;
@@ -1193,7 +1193,6 @@ namespace BlenderRenderController
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label infoDurationLabel;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button openOutputFolderButton;
         private System.Windows.Forms.Label blendFileNameLabel;
         private System.Windows.Forms.RadioButton rendererRadioButtonCycles;
@@ -1237,6 +1236,9 @@ namespace BlenderRenderController
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton donationTSBtn;
         private System.Windows.Forms.ErrorProvider errorProvider;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button concatenatePartsButton;
+        private System.Windows.Forms.Button mixDownButton;
     }
 }
 

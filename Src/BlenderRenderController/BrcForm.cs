@@ -48,7 +48,6 @@ namespace BlenderRenderController
         private AppState appState;
         private DateTime startTime;
         private ETACalculator _etaCalc;
-        private Process concatenateCom, mixdownCom;
         private SettingsForm _settingsForm;
         delegate void StatusUpdate(string msg, Control ctrl);
 
@@ -63,6 +62,7 @@ namespace BlenderRenderController
             _project = new ProjectSettings();
             _blendData = new BlendData();
             framesRendered = new List<int>();
+            _renderProcesses = new List<Process>();
             _appSettings = AppSettings.Current;
         }
 
@@ -650,10 +650,10 @@ namespace BlenderRenderController
         {
 
             int progressPercentage = (int)Math.Floor((framesRendered.Count / (decimal)_blendData.TotalFrames) * 100);
-            var chunksTotalCount = Math.Ceiling((decimal)_blendData.TotalFrames / _project.ChunkLenght);
+            //var chunksTotalCount = Math.Ceiling((decimal)_blendData.TotalFrames / _project.ChunkLenght);
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("Completed {0} / {1}", processesCompletedCount, chunksTotalCount);
+            sb.AppendFormat("Completed {0} / {1}", processesCompletedCount, _project.ChunkList.Count);
             sb.AppendFormat(" chunks, rendered {0} frames in {1} processes", framesRendered.Count, rendersCount);
             Status(sb.ToString());
 
@@ -763,7 +763,7 @@ namespace BlenderRenderController
         #endregion
 
         #region Mixdown
-        private void MixdownAudio(string mixdownScript = Constants.PyMixdown)
+        private void MixdownAudio()
         {
             Status("Rendering mixdown, it can take a while for larger projects...");
             logger.Info("Mixdown started");
@@ -786,7 +786,7 @@ namespace BlenderRenderController
                 Directory.CreateDirectory(_blendData.OutputPath);
             }
 
-            mixdownCom = new Process();
+            var mixdownCom = new Process();
             var info = new ProcessStartInfo()
             {
                 FileName = _appSettings.BlenderProgram,
@@ -798,14 +798,16 @@ namespace BlenderRenderController
                                            _project.BlendPath,
                                            _blendData.Start,
                                            _blendData.End,
-                                           Path.Combine(_appSettings.ScriptsFolder, mixdownScript),
+                                           Path.Combine(_appSettings.ScriptsFolder, Constants.PyMixdown),
                                            _blendData.OutputPath)
             };
             mixdownCom.StartInfo = info;
             mixdownCom.EnableRaisingEvents = true;
             mixdownCom.Exited += (pSender, pe) =>
             {
-                _renderProcesses.Remove((Process)pSender);
+                if (pSender is Process process)
+                    _renderProcesses.Remove(process);
+                logger.Info("Mixdown done");
             };
 
             Trace.WriteLine(mixdownCom.StartInfo.Arguments);
@@ -817,23 +819,11 @@ namespace BlenderRenderController
             }
             catch (Exception ex)
             {
+                Trace.WriteLine(ex.StackTrace);
                 Status("Mixdown cancelled.");
                 string errText = string.Format("An unexpected error occurred: '{0}'", ex.Message);
                 string errInfo = "Mixdown failed";
-#if WINDOWS
-                var err = new TaskDialog()
-                {
-                    Text = errText,
-                    InstructionText = errInfo,
-                    DetailsExpanded = false,
-                    DetailsExpandedText = "StackTrace:\n\n" + ex.StackTrace,
-                    Icon = TaskDialogStandardIcon.Error
-                };
-
-                err.Show();
-#else
                 MessageBox.Show(errText, errInfo, MessageBoxButtons.OK, MessageBoxIcon.Error);
-#endif
                 return;
             }
 
@@ -843,13 +833,17 @@ namespace BlenderRenderController
             logger.Info(message);
             Status(message);
         }
-
         private async void mixDownButton_Click(object sender, EventArgs e)
         {
+            IsRendering = true;
+            UpdateUI(AppState.RENDERING_ALL);
             renderProgressBar.Style = ProgressBarStyle.Marquee;
             await Task.Run(() => MixdownAudio());
             renderProgressBar.Style = ProgressBarStyle.Blocks;
+            UpdateUI(AppState.READY_FOR_RENDER);
+            IsRendering = false;
         }
+
         #endregion
 
         #region Concatenate
@@ -909,7 +903,7 @@ namespace BlenderRenderController
                             videoExtensionFound);
             }
 
-            concatenateCom = new Process();
+            var concatenateCom = new Process();
             var info = new ProcessStartInfo();
             info.FileName = _appSettings.FFmpegProgram;
             info.CreateNoWindow = true;
@@ -919,7 +913,8 @@ namespace BlenderRenderController
             concatenateCom.EnableRaisingEvents = true;
             concatenateCom.Exited += (pSender, pArgs) =>
             {
-                _renderProcesses.Remove((Process)pSender);
+                if (pSender is Process process)
+                    _renderProcesses.Remove(process);
                 logger.Info("FFmpeg exited");
             };
 
@@ -927,7 +922,7 @@ namespace BlenderRenderController
 
             try
             {
-                logger.Info(statusLabel.Text);
+                logger.Info("Joining chunks");
                 concatenateCom.Start();
                 _renderProcesses.Add(concatenateCom);
             }
@@ -936,7 +931,7 @@ namespace BlenderRenderController
                 //Trace.WriteLine(ex);
                 logger.Error("Unexpected error at {0}. Msg: {1}", nameof(Concatenate), ex.Message);
                 logger.Trace(ex.StackTrace);
-                statusLabel.Text = "Joining cancelled.";
+                Status("Joining cancelled.");
                 return;
             }
             concatenateCom.WaitForExit();
@@ -947,9 +942,13 @@ namespace BlenderRenderController
 
         private async void concatenatePartsButton_Click(object sender, EventArgs e)
         {
+            IsRendering = true;
+            UpdateUI(AppState.RENDERING_ALL);
             renderProgressBar.Style = ProgressBarStyle.Marquee;
             await Task.Run(() => Concatenate());
             renderProgressBar.Style = ProgressBarStyle.Blocks;
+            UpdateUI(AppState.READY_FOR_RENDER);
+            IsRendering = false;
         }
         #endregion
 
@@ -992,7 +991,7 @@ namespace BlenderRenderController
                     MessageBox.Show("Open the folder with the video?",
                                     "Work complete!",
                                     MessageBoxButtons.YesNo,
-                                    MessageBoxIcon.Question);
+                                    MessageBoxIcon.Information);
 
             if (openOutputFolderQuestion == DialogResult.Yes)
                 OpenOutputFolder();
@@ -1239,6 +1238,7 @@ namespace BlenderRenderController
             _settingsForm.FormClosed += SettingsForm_FormClosed;
             _settingsForm.ShowDialog();
         }
+
 
         private void toolStripMenuItemBug_Click(object sender, EventArgs e)
         {

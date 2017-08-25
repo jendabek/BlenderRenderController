@@ -1,9 +1,7 @@
 import os
-import json
 import bpy
 import sys
-from bpy import context
-from bpy import ops
+
 
 blendPath = bpy.context.blend_data.filepath;
 projName  = bpy.path.display_name_from_filepath( blendPath );
