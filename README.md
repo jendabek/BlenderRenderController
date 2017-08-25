@@ -27,5 +27,5 @@ Any questions, bug reports or suggestions? [Let us know](https://github.com/jend
 
 ## Support the development &#9829;
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=jendabek@gmail.com&lc=CZE&item_name=Donation%20for%20Blender Render%20Controller&currency_code=USD&bn=PP%2dDonationsBF">
-<img align="left" src="https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/extras/donate-github.png" width="110"/>
+<img align="left" src="https://github.com/jendabek/BlenderRenderController/blob/master/extras/imgs/donate-github.png" width="110"/>
 </a>
