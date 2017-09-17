@@ -2,9 +2,7 @@ import os
 import json
 import bpy
 import math
-from bpy import context
-from bpy import ops
-from bpy import data
+
 
 class Error(Exception):
     pass

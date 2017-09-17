@@ -233,9 +233,6 @@
   <metadata name="toolTipWarn.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>210, 16</value>
   </metadata>
-  <metadata name="toolTipWarn.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>210, 16</value>
-  </metadata>
   <data name="chunkLengthLabel.ToolTip" xml:space="preserve">
     <value>Video is divided into "chunks" (segments or parts), each process works on different one.
 Chunk Size sets the length (frame count) of these parts.

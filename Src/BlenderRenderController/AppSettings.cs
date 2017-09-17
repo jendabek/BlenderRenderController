@@ -180,7 +180,6 @@ namespace BlenderRenderController
                         _recentBlends.Clear();
                         break;
                     case DialogResult.No:
-                        break;
                     default:
                         break;
                 }

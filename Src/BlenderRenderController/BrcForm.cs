@@ -1,8 +1,6 @@
-// For Mono compatible Unix builds, uncomment
-// the next line or compile with /d:UNIX
-//#define UNIX
+// For Mono compatible Unix builds compile with /d:UNIX
 #if !WINDOWS && !UNIX
-#define WINDOWS
+#error You must define a platform (WINDOWS or UNIX)
 #elif UNIX
 #undef WINDOWS
 #endif
@@ -22,7 +20,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -35,14 +32,15 @@ namespace BlenderRenderController
     public partial class BrcForm : Form
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        const string timePassedFmt = "Time Elapsed: {0}";
-        const string etaFmt = "ETR: {0}";
 
-        private int _autoRefStart, _autoRefEnd;
+        const string timePassedFmt = "Time Elapsed: {0}",
+                     etaFmt = "ETR: {0}";
+
         private AppSettings _appSettings;
         private ProjectSettings _project;
         private BlendData _blendData;
-        private int rendersCount, processesCompletedCount, _currentChunkIndex;
+        private int rendersCount, processesCompletedCount,
+                    _currentChunkIndex, _autoRefStart, _autoRefEnd;
         private List<Process> _renderProcesses;
         private List<int> framesRendered;
         private AppState appState;
@@ -64,6 +62,11 @@ namespace BlenderRenderController
             framesRendered = new List<int>();
             _renderProcesses = new List<Process>();
             _appSettings = AppSettings.Current;
+
+#if WINDOWS
+            // set the form icon outside designer
+            this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+#endif
         }
 
         private void BrcForm_Load(object sender, EventArgs e)
@@ -293,7 +296,7 @@ namespace BlenderRenderController
                 {
                     var err = Ui.Dialogs.ShowErrorBox("There was an error parsing the output path", 
                         "Read error", 
-                        "Script failed to parse the relative output path into an absolute path, try" +
+                        "Script failed to parse the relative output path into an absolute path, try " +
                         "changing the path in your project\n\nError: " + Constants.PY_FolderCountError);
 
                     err.Show();
@@ -364,7 +367,7 @@ namespace BlenderRenderController
             var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, _project.ProcessesCount);
             UpdateCurrentChunks(chunks);
             _appSettings.AddRecentBlend(blendFile);
-            Status("File loaded");
+            //Status("File loaded");
             UpdateUI(AppState.READY_FOR_RENDER);
         }
 
@@ -447,16 +450,16 @@ namespace BlenderRenderController
         private void RenderAll()
         {
             // Calculate chunks
+            Chunk[] chunks;
             if (renderOptionsCustomRadio.Checked)
             {
-                var customChunks = Chunk.CalcChunksByLenght(_blendData.Start, _blendData.End, _project.ChunkLenght);
-                UpdateCurrentChunks(customChunks);
+                chunks = Chunk.CalcChunksByLenght(_blendData.Start, _blendData.End, _project.ChunkLenght);
             }
             else
             {
-                var autoChunks = Chunk.CalcChunks(_blendData.Start, _blendData.End, _project.ProcessesCount);
-                UpdateCurrentChunks(autoChunks);
+                chunks = Chunk.CalcChunks(_blendData.Start, _blendData.End, _project.ProcessesCount);
             }
+            UpdateCurrentChunks(chunks);
 
             startTime = DateTime.Now;
             framesRendered.Clear();
@@ -483,9 +486,6 @@ namespace BlenderRenderController
 
         private void StopRender(bool wasComplete)
         {
-            //var msg = wasComplete ? "Render complete." : "Render cancelled.";
-            //Status(msg);
-
             foreach (var process in _renderProcesses.ToList())
             {
                 try
@@ -629,8 +629,8 @@ namespace BlenderRenderController
                 // read blender's output to see what frames are beeing rendered
                 if (e.Data.IndexOf("Fra:", StringComparison.InvariantCulture) == 0)
                 {
-                    int frameBeingRendered = int.Parse(e.Data.Split(' ')[0].Replace("Fra:", ""));
-                    var frame = e.Data.Split(' ')[0].Replace("Fra:", "");
+                    var line = e.Data.Split(' ')[0].Replace("Fra:", "");
+                    int frameBeingRendered = int.Parse(line);
                     if (!framesRendered.Contains(frameBeingRendered))
                     {
                         framesRendered.Add(frameBeingRendered);
@@ -838,7 +838,9 @@ namespace BlenderRenderController
             IsRendering = true;
             UpdateUI(AppState.RENDERING_ALL);
             renderProgressBar.Style = ProgressBarStyle.Marquee;
+
             await Task.Run(() => MixdownAudio());
+
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             UpdateUI(AppState.READY_FOR_RENDER);
             IsRendering = false;
@@ -909,15 +911,17 @@ namespace BlenderRenderController
             info.CreateNoWindow = true;
             info.UseShellExecute = false;
             info.Arguments = comArgs;
+            info.RedirectStandardError = true;
             concatenateCom.StartInfo = info;
             concatenateCom.EnableRaisingEvents = true;
             concatenateCom.Exited += (pSender, pArgs) =>
             {
                 if (pSender is Process process)
                     _renderProcesses.Remove(process);
+
                 logger.Info("FFmpeg exited");
             };
-
+            
             Trace.WriteLine(concatenateCom.StartInfo.Arguments);
 
             try
@@ -928,14 +932,30 @@ namespace BlenderRenderController
             }
             catch (Exception ex)
             {
-                //Trace.WriteLine(ex);
                 logger.Error("Unexpected error at {0}. Msg: {1}", nameof(Concatenate), ex.Message);
                 logger.Trace(ex.StackTrace);
                 Status("Joining cancelled.");
                 return;
             }
+            var errors = concatenateCom.StandardError.ReadToEnd();
             concatenateCom.WaitForExit();
-            var msg = "Chunks Joined.";
+
+            string msg;
+            int exitCode = concatenateCom.ExitCode;
+
+            if (exitCode == 0 && string.IsNullOrEmpty(errors))
+                msg = "Chunks Joined.";
+            else if (!string.IsNullOrEmpty(errors))
+            {
+                msg = "FFmpeg errors detected, check joint video.";
+                MessageBox.Show(msg + "\n\n" + errors, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                msg = $"FFmpeg failed (error code {exitCode})";
+                MessageBox.Show(msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
             Status(msg);
             logger.Info(msg);
         }
@@ -945,7 +965,9 @@ namespace BlenderRenderController
             IsRendering = true;
             UpdateUI(AppState.RENDERING_ALL);
             renderProgressBar.Style = ProgressBarStyle.Marquee;
+
             await Task.Run(() => Concatenate());
+
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             UpdateUI(AppState.READY_FOR_RENDER);
             IsRendering = false;
@@ -1218,15 +1240,16 @@ namespace BlenderRenderController
                     "&lc=" + country +
                     "&item_name=" + description +
                     "&currency_code=" + currency +
-                    "&bn=" + "PP%2dDonationsBF";
+                    "&bn=PP%2dDonationsBF";
 
             Process.Start(url);
         }
 
+
         private void ForceBindedElementsUpdate(object sender, EventArgs e)
         {
-            // WinForm in Mono doesn't update the UI elements properly, 
-            // so do it manually
+            // WinForm databinding in Mono doesn't update the UI elements 
+            // properly, so do it manually
             blendDataBindingSource.ResetBindings(false);
             projectSettingsBindingSource.ResetBindings(false);
         }

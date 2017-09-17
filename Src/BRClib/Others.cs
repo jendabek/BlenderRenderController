@@ -87,7 +87,6 @@ namespace BRClib
         public static IList<string> GetChunkFiles(string chunkFolderPath)
         {
             var dirFiles = Directory.GetFiles(chunkFolderPath, "*.*", SearchOption.TopDirectoryOnly);
-
             return GetChunkFiles(dirFiles);
         }
 
