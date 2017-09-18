@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using BRClib;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -171,6 +172,23 @@ namespace BlenderRenderController
             }
 
             return controlsWithTags;
+        }
+
+        public static string GetChunksFolder(string blendOutput)
+        {
+            return Path.Combine(blendOutput, "chunks");
+        }
+        public static string GetChunksFolder(BlendData blendData)
+        {
+            return GetChunksFolder(blendData.OutputPath);
+        }
+        public static string GetChunkTxt(string blendOutput)
+        {
+            return Path.Combine(GetChunksFolder(blendOutput), "chunklist.txt");
+        }
+        public static string GetChunkTxt(BlendData blendData)
+        {
+            return GetChunkTxt(blendData.OutputPath);
         }
 
     }

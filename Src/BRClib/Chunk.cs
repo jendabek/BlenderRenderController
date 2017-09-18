@@ -47,8 +47,7 @@ namespace BRClib
         }
 
         /// <summary>
-        /// Calculates an even divided array of chunks, based on
-        /// the provided divisor
+        /// Calculates an even divided array of chunks
         /// </summary>
         /// <param name="start">Project's start frame</param>
         /// <param name="end">Project's end frame</param>
@@ -63,15 +62,11 @@ namespace BRClib
             if (div == 0)
                 throw new ArgumentException("Divider cannot be 0", nameof(div));
 
-
             if (div == 1)
                 // return a single chunk
                 return new Chunk[]{ new Chunk(start, end) };
 
-
-            var chunkArray = MakeChunks(start, end, div);
-
-            return chunkArray;
+            return MakeChunks(start, end, div);
         }
         /// <summary>
         /// Calculates an even divided array of chunks, based on desired lenght
@@ -82,19 +77,12 @@ namespace BRClib
         /// <returns></returns>
         public static Chunk[] CalcChunksByLenght(int start, int end, int chunkLenght)
         {
-            if (end <= start)
-                throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
-                                            nameof(start));
-
             if (chunkLenght <= 0)
                 throw new ArgumentException("Invalid chunk lenght", nameof(chunkLenght));
 
-
             int div = (int)Math.Ceiling((decimal)(end - start + 1) / chunkLenght);
 
-            var chunkArray = MakeChunks(start, end, div);
-
-            return chunkArray;
+            return CalcChunks(start, end, div);
         }
 
         private static Chunk[] MakeChunks(int start, int end, int div)
@@ -103,7 +91,7 @@ namespace BRClib
             int cEnd;
             decimal totalLen = end - start + 1;
             var lenght = (int)Math.Ceiling(totalLen / div);
-            List<Chunk> chunkList = new List<Chunk>();
+            List<Chunk> chunkList = new List<Chunk>(div);
 
             for (int i = 0; i < div; i++)
             {

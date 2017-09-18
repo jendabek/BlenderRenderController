@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace BRClib
 {
@@ -118,6 +119,10 @@ namespace BRClib
             }
         }
 
+        //public string ChunksFolder => Path.Combine(OutputPath, "chunks");
+
+        //public string ChunkTxt => Path.Combine(ChunksFolder, "chunklist.txt");
+
     }
 
     /// <summary>
@@ -154,7 +159,6 @@ namespace BRClib
             _chunkList = new ObservableCollection<Chunk>();
             ChunkLenght = 1;
         }
-
     }
 
     public enum BlenderRenderes

@@ -146,8 +146,9 @@ namespace BRClib
         /// <summary>
         /// Video render formats
         /// </summary>
-        public static readonly string[] VIDEOS =
+        public static readonly string[] VideoFormats =
             { "AVI_JPEG", "AVI_RAW", "H264", "FFMPEG", "THEORA", "XVID" };
+
 
         /// <summary>
         /// Allowed file extentions
@@ -164,17 +165,15 @@ namespace BRClib
 
         /// <summary>
         /// Concatenate command ARGS, join chunks with mixdown
-        /// <para>0=ChunkTxtPath, 1=Mixdown audio, 2=Project name, 3= .EXT</para>
+        /// <para>0=ChunkTxtPath, 1=Mixdown audio, 2=Project name + .EXT</para>
         /// </summary>
-        public const string ConcatenateMixdown = "-f concat -safe 0 -i \"{0}\" -i \"{1}\" -map 0:v -map 1:a -c:v copy \"{2}{3}\" -y";
+        public const string ConcatenateMixdown = "-f concat -safe 0 -i \"{0}\" -i \"{1}\" -map 0:v -map 1:a -c:v copy \"{2}\" -y";
 
         /// <summary>
         /// Concatenate command ARGS, join chunks
-        /// <para>0=ChunkTxtPath, 1=Project name, 2=.EXT</para>
+        /// <para>0=ChunkTxtPath, 1=Project name + .EXT</para>
         /// </summary>
-        public const string ConcatenateOnly = "-f concat -safe 0 -i \"{0}\" -c:v copy \"{1}{2}\" -y";
-
-        public const string ConcatenateProg = "-progress {0} {1}";
+        public const string ConcatenateOnly = "-f concat -safe 0 -i \"{0}\" -c:v copy \"{1}\" -y";
 
         /// <summary>
         /// Get info command ARGS
