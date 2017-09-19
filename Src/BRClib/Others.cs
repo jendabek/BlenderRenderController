@@ -151,9 +151,11 @@ namespace BRClib
 
 
         /// <summary>
-        /// Allowed file extentions
+        /// Allowed video file extentions
         /// </summary>
         public static readonly string[] AllowedFileExts = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
+
+        public static readonly string[] AllowedAudioFileExts = { "mp3", "ac3", "aac", "ogg", "flac", "wav" };
 
     }
 

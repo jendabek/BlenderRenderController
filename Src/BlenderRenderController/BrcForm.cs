@@ -958,11 +958,15 @@ namespace BlenderRenderController
             UpdateUI(AppState.RENDERING_ALL);
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
-            // TODO: Add dialogs to point to diferent elements, so it doesn't depend
-            // only on the current blend and happening to find a mixdown audio
+            // TODO: Add validation to paths returned
+            var manConcat = new ConcatForm();
+            manConcat.ShowDialog();
 
-
-            //await Task.Run(() => Concatenate());
+            if (manConcat.DialogResult == DialogResult.OK)
+            {
+                await Task.Run(() => 
+                Concatenate(manConcat.ChunksTextFile, manConcat.OutputFile, manConcat.MixdownAudioFile));
+            }
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             UpdateUI(AppState.READY_FOR_RENDER);
@@ -1315,7 +1319,7 @@ namespace BlenderRenderController
                     totalEndNumericUpDown.Enabled = false;
                     chunkLengthNumericUpDown.Enabled = false;
                     processCountNumericUpDown.Enabled = false;
-                    concatenatePartsButton.Enabled = false;
+                    //concatenatePartsButton.Enabled = false;
                     reloadBlenderDataButton.Enabled = false;
                     openOutputFolderButton.Enabled = false;
                     outputFolderBrowseButton.Enabled = false;
@@ -1374,8 +1378,7 @@ namespace BlenderRenderController
                     totalEndNumericUpDown.Enabled = startEndCustomRadio.Checked;
                     chunkLengthNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
                     processCountNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
-                    var chunksFolder = Path.Combine(_blendData.OutputPath, Constants.ChunksSubfolder);
-                    concatenatePartsButton.Enabled = Directory.Exists(chunksFolder);
+                    concatenatePartsButton.Enabled = true;
                     reloadBlenderDataButton.Enabled = true;
                     blendBrowseBtn.Enabled = true;
                     showRecentBlendsBtn.Enabled = true;

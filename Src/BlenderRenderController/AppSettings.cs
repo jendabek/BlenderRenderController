@@ -110,6 +110,7 @@ namespace BlenderRenderController
 
         public string FFmpegExeName { get => _ffmpegExeName; }
 
+        //public string AutoMixdownExt { get; set; }
 
         public AppSettings()
         {

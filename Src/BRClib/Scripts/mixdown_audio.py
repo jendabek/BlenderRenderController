@@ -6,14 +6,11 @@ import sys
 blendPath = bpy.context.blend_data.filepath;
 projName  = bpy.path.display_name_from_filepath( blendPath );
 
-# get active scene name
-a_data = bpy.context.scene
-ActiveScene = str(a_data).partition('("')[-1].rpartition('")')[0]
-argv = sys.argv
-argv = argv[argv.index("--") + 1:]
+# get output path
+arg_sep_index = sys.argv.index("--") + 1
+out_arg = sys.argv[arg_sep_index:][0]
 
-#outputPath = bpy.data.scenes[ActiveScene].render.filepath
-outFolderPath = argv[0]
+outFolderPath = out_arg
 mixDownPath = outFolderPath + os.sep + projName + ".ac3"
 
 bpy.ops.sound.mixdown( filepath=mixDownPath,
