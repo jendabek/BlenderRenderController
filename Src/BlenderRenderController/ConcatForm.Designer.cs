@@ -54,6 +54,7 @@
             this.chunksTxtFileTextBox.Size = new System.Drawing.Size(361, 22);
             this.chunksTxtFileTextBox.TabIndex = 0;
             this.chunksTxtFileTextBox.WordWrap = false;
+            this.chunksTxtFileTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.Entries_Validating);
             // 
             // mainLabel
             // 
@@ -74,13 +75,14 @@
             this.outputFileTextBox.Size = new System.Drawing.Size(361, 22);
             this.outputFileTextBox.TabIndex = 2;
             this.outputFileTextBox.WordWrap = false;
+            this.outputFileTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.Entries_Validating);
             // 
             // joinButton
             // 
-            this.joinButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.joinButton.Location = new System.Drawing.Point(283, 232);
+            this.joinButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.joinButton.Location = new System.Drawing.Point(298, 232);
             this.joinButton.Name = "joinButton";
-            this.joinButton.Size = new System.Drawing.Size(105, 33);
+            this.joinButton.Size = new System.Drawing.Size(90, 30);
             this.joinButton.TabIndex = 4;
             this.joinButton.Text = "Join";
             this.joinButton.UseVisualStyleBackColor = true;
@@ -92,9 +94,9 @@
             this.chunksFolderLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chunksFolderLabel.Location = new System.Drawing.Point(24, 60);
             this.chunksFolderLabel.Name = "chunksFolderLabel";
-            this.chunksFolderLabel.Size = new System.Drawing.Size(82, 15);
+            this.chunksFolderLabel.Size = new System.Drawing.Size(89, 15);
             this.chunksFolderLabel.TabIndex = 29;
-            this.chunksFolderLabel.Text = "Chunks folder";
+            this.chunksFolderLabel.Text = "Concat. text file";
             // 
             // outputLabel
             // 
@@ -166,18 +168,20 @@
             this.mixdownFileTextBox.Size = new System.Drawing.Size(361, 22);
             this.mixdownFileTextBox.TabIndex = 30;
             this.mixdownFileTextBox.WordWrap = false;
+            this.mixdownFileTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.Entries_Validating);
             // 
             // errorProvider
             // 
+            this.errorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
             this.errorProvider.ContainerControl = this;
             // 
             // cancelButton
             // 
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cancelButton.Location = new System.Drawing.Point(414, 232);
+            this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cancelButton.Location = new System.Drawing.Point(416, 232);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(105, 33);
+            this.cancelButton.Size = new System.Drawing.Size(90, 30);
             this.cancelButton.TabIndex = 33;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
@@ -213,6 +217,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Concatenation";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConcatForm_FormClosing);
+            this.Shown += new System.EventHandler(this.ConcatForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

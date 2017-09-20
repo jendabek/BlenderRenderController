@@ -969,8 +969,14 @@ namespace BlenderRenderController
             }
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
-            UpdateUI(AppState.READY_FOR_RENDER);
             IsRendering = false;
+
+            if (string.IsNullOrEmpty(_project.BlendPath))
+            {
+                UpdateUI(AppState.AFTER_START);
+            }
+            else
+                UpdateUI(AppState.READY_FOR_RENDER);
         }
         #endregion
 
@@ -1319,7 +1325,7 @@ namespace BlenderRenderController
                     totalEndNumericUpDown.Enabled = false;
                     chunkLengthNumericUpDown.Enabled = false;
                     processCountNumericUpDown.Enabled = false;
-                    //concatenatePartsButton.Enabled = false;
+                    concatenatePartsButton.Enabled = true;
                     reloadBlenderDataButton.Enabled = false;
                     openOutputFolderButton.Enabled = false;
                     outputFolderBrowseButton.Enabled = false;
