@@ -33,8 +33,9 @@ namespace BlenderRenderController
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        const string timePassedFmt = "Time Elapsed: {0}",
-                     etaFmt = "ETR: {0}";
+        const string TimePassedPrefix = "Time Elapsed: ",
+                     ETR_Prefix = "ETR: ",
+                     TimeFmt = @"hh\:mm\:ss";
 
         private AppSettings _appSettings;
         private ProjectSettings _project;
@@ -59,8 +60,8 @@ namespace BlenderRenderController
 
             _project = new ProjectSettings();
             _blendData = new BlendData();
-            framesRendered = new List<int>();
-            _renderProcesses = new List<Process>();
+            //framesRendered = new List<int>();
+            //_renderProcesses = new List<Process>();
             _appSettings = AppSettings.Current;
 
 #if WINDOWS
@@ -400,11 +401,10 @@ namespace BlenderRenderController
 
         #region RenderMethods
 
-        private void RenderChunk(Chunk chunk, string blendPath, BlendData data)
+        private void RenderChunk(Chunk chunk)
         {
-            var chnkFolder = Path.Combine(data.OutputPath, Constants.ChunksSubfolder);
-
-            RenderChunk(chunk, _project.BlendPath, chnkFolder, data.ProjectName);
+            var chnkFolder = Path.Combine(_blendData.OutputPath, Constants.ChunksSubfolder);
+            RenderChunk(chunk, _project.BlendPath, chnkFolder, _blendData.ProjectName);
         }
 
         private void RenderChunk(Chunk chunk, string blendPath, string chunksFolder, string baseFileName)
@@ -468,16 +468,16 @@ namespace BlenderRenderController
             UpdateCurrentChunks(chunks);
 
             startTime = DateTime.Now;
-            framesRendered.Clear();
             Status("Starting render...");
             processesCompletedCount = 0;
             rendersCount = 0;
             _currentChunkIndex = 0;
             IsRendering = true;
             _renderProcesses = new List<Process>(_project.ProcessesCount);
+            framesRendered = new List<int>(chunks.TotalLength());
 
             // render progress reset
-            totalTimeLabel.Text = string.Format(timePassedFmt, Helper.SecondsToString(0, true));
+            totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
             _etaCalc = new ETACalculator(5, 1);
 
 #if WINDOWS
@@ -516,8 +516,8 @@ namespace BlenderRenderController
             renderProgressBar.Value = 0;
             renderProgressBar.Refresh();
 
-            ETALabel.Text = string.Format(etaFmt, Helper.SecondsToString(0, true));
-            totalTimeLabel.Text = string.Format(timePassedFmt, Helper.SecondsToString(0, true));
+            ETALabel.Text = ETR_Prefix + TimeSpan.Zero.ToString(TimeFmt);
+            totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
 
             Text = Constants.APP_TITLE;
 
@@ -594,14 +594,13 @@ namespace BlenderRenderController
         {
             try
             {
-                Chunk currentChunk;
                 if (_currentChunkIndex < _project.ChunkList.Count)
                 {
-                    currentChunk = _project.ChunkList[_currentChunkIndex];
+                    var currentChunk = _project.ChunkList[_currentChunkIndex];
 
                     if (_renderProcesses.Count < _renderProcesses.Capacity)
                     {
-                        RenderChunk(currentChunk, _project.BlendPath, _blendData);
+                        RenderChunk(currentChunk);
                         _currentChunkIndex++;
                     }
                 }
@@ -679,13 +678,13 @@ namespace BlenderRenderController
 
             if (_etaCalc.ETAIsAvailable)
             {
-                var etr = string.Format(etaFmt, Helper.SecondsToString(_etaCalc.ETR.TotalSeconds, true));
+                var etr = ETR_Prefix + _etaCalc.ETR.ToString(TimeFmt);
                 Status(etr, ETALabel);
             }
 
             //time elapsed display
             TimeSpan runTime = DateTime.Now - startTime;
-            var tElapsed = string.Format(timePassedFmt, Helper.SecondsToString(runTime.TotalSeconds, true));
+            var tElapsed = TimePassedPrefix + runTime.ToString(TimeFmt);
             Status(tElapsed, totalTimeLabel);
 
             //title progress
@@ -958,7 +957,6 @@ namespace BlenderRenderController
             UpdateUI(AppState.RENDERING_ALL);
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
-            // TODO: Add validation to paths returned
             var manConcat = new ConcatForm();
             manConcat.ShowDialog();
 
@@ -981,10 +979,7 @@ namespace BlenderRenderController
         #endregion
 
         #region AfterRenderActions
-        /// <summary>
-        /// Checks if rendering process is completed and calls the after
-        /// render actions in a background thread
-        /// </summary>
+
         void AfterRenderBG()
         {
             bool wasComplete = (framesRendered.Count > Math.Round(Convert.ToDouble(_blendData.TotalFrames)) * 0.75);
