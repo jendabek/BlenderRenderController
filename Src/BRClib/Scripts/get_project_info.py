@@ -45,10 +45,15 @@ class ProjectInfo:
         start = scene.frame_start
         end   = scene.frame_end
         totalLength = end - start + 1
-        renderFormat = scene.render.image_settings.file_format
+        imgFormat = scene.render.image_settings.file_format
         resolutionPercentage = scene.render.resolution_percentage
         resolution = "{0} x {1}".format(math.floor(scene.render.resolution_x * resolutionPercentage / 100),
                                         math.floor(scene.render.resolution_y * resolutionPercentage / 100))
+        
+        # ffmpeg info
+        ffmpegFmt = scene.render.ffmpeg.format
+        ffmpegCodec = scene.render.ffmpeg.codec
+
         # calc real fps
         fpsSource  = scene.render.fps
         fpsBase = scene.render.fps_base
@@ -87,7 +92,7 @@ class ProjectInfo:
 		            'outputPath': outputPath,
                     'scenesNum': scenesNum,
 		            'sceneActive': sceneActive,
-		            'renderFormat': renderFormat
+		            'renderFormat': imgFormat
                 };
         else:
             # new format for v0.9.8.0 and later
@@ -102,7 +107,9 @@ class ProjectInfo:
 		            'outputPath': outputPath,
                     'scenesNum': scenesNum,
 		            'sceneActive': sceneActive,
-		            'renderFormat': renderFormat
+		            'imgFormat': imgFormat,
+                    'ffmpegFmt': ffmpegFmt,
+                    'ffmpegCodec': ffmpegCodec
                 };
 
     # fixes relative paths

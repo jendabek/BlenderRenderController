@@ -139,6 +139,7 @@ namespace BlenderRenderController
             // 
             this.totalStartNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "Start", true));
             this.totalStartNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.errorProvider.SetIconAlignment(this.totalStartNumericUpDown, System.Windows.Forms.ErrorIconAlignment.BottomRight);
             this.totalStartNumericUpDown.Location = new System.Drawing.Point(136, 237);
             this.totalStartNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
@@ -211,6 +212,7 @@ namespace BlenderRenderController
             // 
             this.totalEndNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "End", true));
             this.totalEndNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.errorProvider.SetIconAlignment(this.totalEndNumericUpDown, System.Windows.Forms.ErrorIconAlignment.BottomRight);
             this.totalEndNumericUpDown.Location = new System.Drawing.Point(236, 237);
             this.totalEndNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
@@ -734,9 +736,7 @@ namespace BlenderRenderController
             this.concatenatePartsButton.Tag = "DIRENDER";
             this.concatenatePartsButton.Text = "Join Chunks";
             this.concatenatePartsButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolTipInfo.SetToolTip(this.concatenatePartsButton, "!Warning - previous video will be overwritten!\r\n\r\nJoins rendered chunks to get th" +
-        "e final video.\r\nMixdown audio will be used if it is rendered (and found in the o" +
-        "utput folder).");
+            this.toolTipInfo.SetToolTip(this.concatenatePartsButton, "Manually join chunks\r\n");
             this.concatenatePartsButton.UseVisualStyleBackColor = true;
             this.concatenatePartsButton.Click += new System.EventHandler(this.concatenatePartsButton_Click);
             // 

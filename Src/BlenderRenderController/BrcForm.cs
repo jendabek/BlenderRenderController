@@ -240,7 +240,6 @@ namespace BlenderRenderController
             if (!File.Exists(blendFile))
             {
                 MessageBox.Show("File does not exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                // remove and update recent blends...
                 ReadFail();
                 return;
             }
@@ -336,7 +335,7 @@ namespace BlenderRenderController
                 blendDataBindingSource.DataSource = _blendData;
                 blendDataBindingSource.ResetBindings(false);
 
-                if (RenderFormats.IMAGES.Contains(blendData.RenderFormat))
+                if (RenderFormats.IMAGES.Contains(blendData.FileFormat))
                 {
                     Helper.ShowErrors(MessageBoxIcon.Asterisk, AppErrorCode.RENDER_FORMAT_IS_IMAGE);
                 }
@@ -368,7 +367,7 @@ namespace BlenderRenderController
             var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, _project.ProcessesCount);
             UpdateCurrentChunks(chunks);
             _appSettings.AddRecentBlend(blendFile);
-            Status("File loaded");
+            //Status("File loaded");
             UpdateUI(AppState.READY_FOR_RENDER);
         }
 
@@ -729,7 +728,8 @@ namespace BlenderRenderController
             recentBlendsMenu.Items.Clear();
 
             // make blends from recent list
-            foreach (string item in _appSettings.GetRecentBlends())
+            var recentList = _appSettings.GetRecentBlends();
+            foreach (string item in recentList)
             {
                 var menuItem = new ToolStripMenuItem(Path.GetFileNameWithoutExtension(item), Resources.blend_icon);
                 menuItem.ToolTipText = item;
@@ -742,6 +742,20 @@ namespace BlenderRenderController
         {
             ToolStripMenuItem recentItem = (ToolStripMenuItem)sender;
             var blendPath = recentItem.ToolTipText;
+
+            if (!File.Exists(blendPath))
+            {
+                var res = MessageBox.Show("Blend file not found, remove it from the recents list?", "Not found", 
+                                            MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                if (res == DialogResult.Yes)
+                {
+                    _appSettings.RemoveRecentBlend(blendPath);
+                }
+
+                return;
+            }
+
             GetBlendInfo(blendPath);
         }
 
@@ -1210,6 +1224,7 @@ namespace BlenderRenderController
             }
         }
 
+
         private void AuthorLink_Clicked(object sender, EventArgs e)
         {
             var item = sender as ToolStripMenuItem;
@@ -1251,7 +1266,7 @@ namespace BlenderRenderController
             string currency = "USD";                 // AUD, USD, etc.
 
             string url = "https://www.paypal.com/cgi-bin/webscr" +
-                    "?cmd=" + "_donations" +
+                    "?cmd=_donations" +
                     "&business=" + business +
                     "&lc=" + country +
                     "&item_name=" + description +
@@ -1261,23 +1276,12 @@ namespace BlenderRenderController
             Process.Start(url);
         }
 
-
-        private void ForceBindedElementsUpdate(object sender, EventArgs e)
-        {
-            // WinForm databinding in Mono doesn't update the UI elements 
-            // properly, so do it manually
-            blendDataBindingSource.ResetBindings(false);
-            projectSettingsBindingSource.ResetBindings(false);
-        }
-
-
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _settingsForm = new SettingsForm();
             _settingsForm.FormClosed += SettingsForm_FormClosed;
             _settingsForm.ShowDialog();
         }
-
 
         private void toolStripMenuItemBug_Click(object sender, EventArgs e)
         {
@@ -1287,6 +1291,15 @@ namespace BlenderRenderController
         private void clearRecentProjectsListToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _appSettings.ClearRecentBlend();
+        }
+
+
+        private void ForceBindedElementsUpdate(object sender, EventArgs e)
+        {
+            // WinForm databinding in Mono doesn't update the UI elements 
+            // properly, so do it manually
+            blendDataBindingSource.ResetBindings(false);
+            projectSettingsBindingSource.ResetBindings(false);
         }
 
         /// <summary>

@@ -165,6 +165,13 @@ namespace BlenderRenderController
 
             _recentBlends.Insert(0, blendFilePath);
         }
+        public void RemoveRecentBlend(string blendFilePath)
+        {
+            if (_recentBlends.Contains(blendFilePath))
+            {
+                _recentBlends.Remove(blendFilePath);
+            }
+        }
 
         public void ClearRecentBlend()
         {

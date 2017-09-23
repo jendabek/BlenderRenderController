@@ -44,33 +44,6 @@ namespace BlenderRenderController
 
             logger.Warn(errorText);
         }
-        static public void ShowErrors(MessageBoxIcon icon, params AppErrorCode[] errorCodes)
-        {
-            var errorText = "";
-
-            foreach (var errorCode in errorCodes)
-                errorText += SetErrorText(errorCode);
-
-            MessageBox.Show(
-                    errorText,
-                    "",
-                    MessageBoxButtons.OK,
-                    icon);
-
-            logger.Warn(errorText);
-        }
-        static public void ShowErrors(MessageBoxIcon icon, AppErrorCode errorCode)
-        {
-            var errorText = SetErrorText(errorCode);
-
-            MessageBox.Show(
-                errorText,
-                "",
-                MessageBoxButtons.OK,
-                icon);
-
-            logger.Warn(errorText);
-        }
         static public void ShowErrors(MessageBoxIcon icon, string fmt, AppErrorCode errorCode)
         {
             var errorText = SetErrorText(errorCode, fmt);
@@ -82,6 +55,14 @@ namespace BlenderRenderController
                 icon);
 
             logger.Warn(errorText);
+        }
+        static public void ShowErrors(MessageBoxIcon icon, params AppErrorCode[] errorCodes)
+        {
+            ShowErrors(icon, string.Empty, errorCodes);
+        }
+        static public void ShowErrors(MessageBoxIcon icon, AppErrorCode errorCode)
+        {
+            ShowErrors(icon, string.Empty, errorCode);
         }
 
         static private string SetErrorText(AppErrorCode code, string arg1 = "")
@@ -115,16 +96,6 @@ namespace BlenderRenderController
             return sb.ToString();
         }
 
-        static public string FixPath(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                logger.Warn("Failed to fixPath");
-                return null;
-            }
-
-            return path.Trim().TrimEnd('\\');
-        }
 
         //static public string SecondsToString(double seconds, bool digital = false)
         //{

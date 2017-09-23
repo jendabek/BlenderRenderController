@@ -77,17 +77,17 @@ namespace BlenderRenderController
 
         private void changeChunksTextFileButton_Click(object sender, EventArgs e)
         {
-            var saveDialog = new OpenFileDialog()
+            var openDialog = new OpenFileDialog()
             {
                 Title = "Select FFmpeg's concatenation file",
                 CheckFileExists = true
             };
 
-            var res = saveDialog.ShowDialog();
+            var res = openDialog.ShowDialog();
 
             if (res == DialogResult.OK)
             {
-                chunksTxtFileTextBox.Text = saveDialog.FileName;
+                chunksTxtFileTextBox.Text = openDialog.FileName;
             }
 
             Entries_Validating(chunksTxtFileTextBox, new CancelEventArgs());
@@ -101,6 +101,7 @@ namespace BlenderRenderController
             {
                 Title = "Set final video name and location",
                 Filter = MakeDiagFilter(exts),
+                FilterIndex = exts.Length + 1,
                 CheckPathExists = true,
             };
 
@@ -118,18 +119,19 @@ namespace BlenderRenderController
         {
             var exts = RenderFormats.AllowedAudioFileExts;
 
-            var saveDialog = new OpenFileDialog()
+            var openDialog = new OpenFileDialog()
             {
                 Title = "Select mixdown audio file",
                 Filter = MakeDiagFilter(exts),
+                FilterIndex = exts.Length + 1,
                 CheckFileExists = true,
             };
 
-            var res = saveDialog.ShowDialog();
+            var res = openDialog.ShowDialog();
 
             if (res == DialogResult.OK)
             {
-                mixdownFileTextBox.Text = saveDialog.FileName;
+                mixdownFileTextBox.Text = openDialog.FileName;
             }
 
             Entries_Validating(mixdownFileTextBox, new CancelEventArgs());

@@ -13,7 +13,7 @@ namespace BRClib
         private int _start, _end, _scenesNum;
         private double _fps;
         private string _outPath, _projName, 
-            _activeScene, _renderFmt, _res;
+            _activeScene, _fileFmt, _res;
 
         public BlendData() : base() { }
 
@@ -87,11 +87,12 @@ namespace BRClib
             private set => SetProperty(ref _activeScene, value);
         }
 
-        [JsonProperty("renderFormat")]
-        public string RenderFormat
+        // scene.render.image_settings.file_format
+        [JsonProperty("imgFormat")]
+        public string FileFormat
         {
-            get => _renderFmt;
-            private set => SetProperty(ref _renderFmt, value);
+            get => _fileFmt;
+            private set => SetProperty(ref _fileFmt, value);
         }
 
 
@@ -119,9 +120,6 @@ namespace BRClib
             }
         }
 
-        //public string ChunksFolder => Path.Combine(OutputPath, "chunks");
-
-        //public string ChunkTxt => Path.Combine(ChunksFolder, "chunklist.txt");
 
     }
 
