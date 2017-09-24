@@ -9,10 +9,12 @@ namespace UnitTestProject1
     [TestClass]
     public class CalcChunkTests
     {
+        const int RANDOM_TEST_LOOPS = 25;
+
         [TestMethod]
         public void CalcChunks_random_genarations()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < RANDOM_TEST_LOOPS; i++)
             {
                 int[] randPair = RandomParams.GetNumberPair(1, 99999);
 
@@ -31,6 +33,7 @@ namespace UnitTestProject1
                     continue;
                 }
 
+                Console.WriteLine("Number of chunks: " + calcResult.Length);
                 Console.WriteLine("Start: {0}, End: {1}, Total lenght: {2}, CoreCount: {3}", start, end, totalLen, cores);
                 foreach (var res in calcResult)
                 {
@@ -64,7 +67,7 @@ namespace UnitTestProject1
         public void CalcChunks_custom_length()
         {
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < RANDOM_TEST_LOOPS; i++)
             {
                 int[] randPair = RandomParams.GetNumberPair(1, 99999);
 
@@ -77,17 +80,24 @@ namespace UnitTestProject1
                 var maxLen = totalLen * 0.4;
 
                 int len = RandomParams.GetNumber((int)minLen, (int)maxLen);
-
-                Console.WriteLine("Start: {0}, End: {1}, Total legth: {2}", start, end, totalLen);
+                if (len > maxLen || len < minLen)
+                {
+                    // ignore unrealistic lenghts
+                    continue;
+                }
 
                 var calcResult = Chunk.CalcChunksByLenght(start, end, len);
+                Console.WriteLine();
+                Console.WriteLine("Number of chunks: " + calcResult.Length);
+                Console.WriteLine("Start: {0}, End: {1}, Leght: {2}", start, end, len);
                 foreach (var res in calcResult)
                 {
                     Console.WriteLine(res + "   Lenght: " + res.Length);
                 }
-                Console.WriteLine();
-                Console.WriteLine("Number of chunks: " + calcResult.Length);
+
                 Assert.IsFalse(calcResult.Last().End != end, "Last calcResult.End was different then param end");
+                var actualLen = calcResult.First().Length;
+                Assert.AreEqual(len, actualLen, $"Lenght and generated chunk's lenght don't match");
             }
 
         }
@@ -107,30 +117,17 @@ namespace UnitTestProject1
 
             Assert.IsTrue(totalLen == chunks.TotalLength(), "Lenghts are not equal");
         }
-    }
 
-    static class RandomParams
-    {
-        private static readonly Random getRandom = new Random();
-        private static readonly object syncLock = new object();
-
-        public static int GetNumber(int min, int max)
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void Chunks_LenghtCalc_invalid_start_end()
         {
-            lock (syncLock)
-            { // synchronize
-                return getRandom.Next(min, max);
-            }
-        }
-        public static int[] GetNumberPair(int min, int max, bool invert = false)
-        {
-            var r1 = GetNumber(min, max);
-            var r2 = GetNumber(min, max);
+            // start is greater then end
+            var start = 2000;
+            var end = 50;
+            var lenght = 550;
 
-            int[] rnd = { r1, r2 };
-
-            return invert 
-                    ? rnd.OrderByDescending(r => r).ToArray() 
-                    : rnd.OrderBy(r => r).ToArray();
+            var chunks = Chunk.CalcChunksByLenght(start, end, lenght);
         }
     }
 }

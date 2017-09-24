@@ -66,7 +66,10 @@ namespace BRClib
                 // return a single chunk
                 return new Chunk[]{ new Chunk(start, end) };
 
-            return MakeChunks(start, end, div);
+            decimal totalLen = end - start + 1;
+            var lenght = (int)Math.Ceiling(totalLen / div);
+
+            return MakeArray(start, end, lenght);
         }
         /// <summary>
         /// Calculates an even divided array of chunks, based on desired lenght
@@ -80,33 +83,36 @@ namespace BRClib
             if (chunkLenght <= 0)
                 throw new ArgumentException("Invalid chunk lenght", nameof(chunkLenght));
 
-            int div = (int)Math.Ceiling((decimal)(end - start + 1) / chunkLenght);
+            if (end <= start)
+                throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
+                                            nameof(start));
 
-            return CalcChunks(start, end, div);
+
+            return MakeArray(start, end, chunkLenght);
         }
 
-        private static Chunk[] MakeChunks(int start, int end, int div)
+        private static Chunk[] MakeArray(int start, int end, int chunkLen)
         {
-            int cStart = start;
-            int cEnd;
             decimal totalLen = end - start + 1;
-            var lenght = (int)Math.Ceiling(totalLen / div);
+
+            int cStart = start,
+                cEnd,
+                div = (int)Math.Ceiling(totalLen / chunkLen);
+
             List<Chunk> chunkList = new List<Chunk>(div);
 
-            for (int i = 0; i < div; i++)
+            while (chunkList.TotalLength() < totalLen)
             {
-                cEnd = cStart + lenght;
-
+                cEnd = cStart + chunkLen;
                 var chunk = new Chunk(cStart, cEnd);
 
-                if ((chunk.End + 1 < end))
+                if (chunk.End + 1 < end)
                 {
                     chunkList.Add(chunk);
                     cStart = cEnd + 1;
                 }
                 else
                 {
-                    // decide final chunk, the one that matches the project's end
                     var secondLast = chunkList.Last();
 
                     if (secondLast.End == end)
@@ -120,11 +126,13 @@ namespace BRClib
             return chunkList.ToArray();
         }
 
+
         public override string ToString()
         {
             return $"{Start}-{End}";
         }
 
+        #region Equallity
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
@@ -166,7 +174,9 @@ namespace BRClib
 
                 return hash;
             }
-        }
+        } 
+        #endregion
+
     }
 
 }

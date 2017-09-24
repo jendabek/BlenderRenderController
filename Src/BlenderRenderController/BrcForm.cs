@@ -60,8 +60,6 @@ namespace BlenderRenderController
 
             _project = new ProjectSettings();
             _blendData = new BlendData();
-            //framesRendered = new List<int>();
-            //_renderProcesses = new List<Process>();
             _appSettings = AppSettings.Current;
 
 #if WINDOWS
