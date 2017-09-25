@@ -83,7 +83,7 @@
             this.joinButton.Location = new System.Drawing.Point(298, 232);
             this.joinButton.Name = "joinButton";
             this.joinButton.Size = new System.Drawing.Size(90, 30);
-            this.joinButton.TabIndex = 4;
+            this.joinButton.TabIndex = 6;
             this.joinButton.Text = "Join";
             this.joinButton.UseVisualStyleBackColor = true;
             this.joinButton.Click += new System.EventHandler(this.joinCancelButton_Click);
@@ -155,7 +155,7 @@
             this.changeMixdownFileButton.Name = "changeMixdownFileButton";
             this.changeMixdownFileButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 1);
             this.changeMixdownFileButton.Size = new System.Drawing.Size(105, 31);
-            this.changeMixdownFileButton.TabIndex = 31;
+            this.changeMixdownFileButton.TabIndex = 5;
             this.changeMixdownFileButton.Text = "   Change";
             this.changeMixdownFileButton.UseVisualStyleBackColor = true;
             this.changeMixdownFileButton.Click += new System.EventHandler(this.changeMixdownFileButton_Click);
@@ -166,7 +166,7 @@
             this.mixdownFileTextBox.Location = new System.Drawing.Point(27, 176);
             this.mixdownFileTextBox.Name = "mixdownFileTextBox";
             this.mixdownFileTextBox.Size = new System.Drawing.Size(361, 22);
-            this.mixdownFileTextBox.TabIndex = 30;
+            this.mixdownFileTextBox.TabIndex = 4;
             this.mixdownFileTextBox.WordWrap = false;
             this.mixdownFileTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.Entries_Validating);
             // 
@@ -182,7 +182,7 @@
             this.cancelButton.Location = new System.Drawing.Point(416, 232);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(90, 30);
-            this.cancelButton.TabIndex = 33;
+            this.cancelButton.TabIndex = 7;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.joinCancelButton_Click);

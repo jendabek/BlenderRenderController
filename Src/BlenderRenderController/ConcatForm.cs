@@ -42,8 +42,7 @@ namespace BlenderRenderController
         private void ConcatForm_Shown(object sender, EventArgs e)
         {
             // run validation on start
-            Entries_Validating(chunksTxtFileTextBox, new CancelEventArgs());
-            Entries_Validating(outputFileTextBox, new CancelEventArgs());
+            ValidateFields(changeChunksFolderButton);
         }
 
         private void ConcatForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -77,6 +76,8 @@ namespace BlenderRenderController
 
         private void changeChunksTextFileButton_Click(object sender, EventArgs e)
         {
+            var btn = sender as Button;
+
             var openDialog = new OpenFileDialog()
             {
                 Title = "Select FFmpeg's concatenation file",
@@ -90,12 +91,13 @@ namespace BlenderRenderController
                 chunksTxtFileTextBox.Text = openDialog.FileName;
             }
 
-            Entries_Validating(chunksTxtFileTextBox, new CancelEventArgs());
+            ValidateFields(btn);
         }
 
         private void changeOutputFileButton_Click(object sender, EventArgs e)
         {
             var exts = RenderFormats.AllowedFileExts;
+            var btn = sender as Button;
 
             var saveDialog = new SaveFileDialog()
             {
@@ -112,12 +114,13 @@ namespace BlenderRenderController
                 outputFileTextBox.Text = saveDialog.FileName;
             }
 
-            Entries_Validating(outputFileTextBox, new CancelEventArgs());
+            ValidateFields(btn);
         }
 
         private void changeMixdownFileButton_Click(object sender, EventArgs e)
         {
             var exts = RenderFormats.AllowedAudioFileExts;
+            var btn = sender as Button;
 
             var openDialog = new OpenFileDialog()
             {
@@ -134,7 +137,7 @@ namespace BlenderRenderController
                 mixdownFileTextBox.Text = openDialog.FileName;
             }
 
-            Entries_Validating(mixdownFileTextBox, new CancelEventArgs());
+            ValidateFields(btn);
         }
 
         private void Entries_Validating(object sender, CancelEventArgs e)
@@ -203,5 +206,13 @@ namespace BlenderRenderController
             return allErrors.All(e => string.IsNullOrEmpty(e));
         }
 
+        private void ValidateFields(Control original)
+        {
+            chunksTxtFileTextBox.Focus();
+            outputFileTextBox.Focus();
+            mixdownFileTextBox.Focus();
+
+            original.Focus();
+        }
     }
 }
