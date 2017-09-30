@@ -1,6 +1,6 @@
 ﻿rem This bat merges dll files into the EXE
 rem To use it, add the following to the post build options:
-rem IF $(ConfigurationName)==Release call $(SolutionDir)mergeBuild.bat $(TargetName) $(TargetDir)
+rem IF "$(ConfigurationName)"=="Release" call $(SolutionDir)mergeBuild.bat $(TargetName) $(TargetDir)
 
 rem ilmerge path
 set ilmerge=%~dp0\packages\ILMerge.2.14.1208\tools\ILMerge.exe
@@ -13,7 +13,7 @@ set "net_refpath_v452=%ProgramFiles(x86)%\Reference Assemblies\Microsoft\Framewo
 set "net_refpath_v45=%ProgramFiles(x86)%\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"
 
 rem Current reference path
-set net_refpath=%net_refpath_v45%
+set net_refpath=%net_refpath_v452%
 
 set _workDir=%~2
 set _targetName=%~1
