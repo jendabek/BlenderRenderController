@@ -157,6 +157,14 @@ namespace BRClib
 
         public static readonly string[] AllowedAudioFileExts = { "mp3", "ac3", "aac", "ogg", "flac", "wav" };
 
+        // TODO maybe: Make a list that relates format property to output file format
+        static readonly Dictionary<string, string> FormatDictionary = 
+            new Dictionary<string, string>
+            {
+                { "AVI_JPEG", "avi" }, {"AVI_RAW", "avi"}, {"H264", "avi"},
+                { "FFMPEG", "mp4" }
+            };
+
     }
 
     /// <summary>

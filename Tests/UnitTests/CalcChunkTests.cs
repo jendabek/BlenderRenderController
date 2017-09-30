@@ -9,7 +9,7 @@ namespace UnitTestProject1
     [TestClass]
     public class CalcChunkTests
     {
-        const int RANDOM_TEST_LOOPS = 25;
+        const int RANDOM_TEST_LOOPS = 50;
 
         [TestMethod]
         public void CalcChunks_random_genarations()

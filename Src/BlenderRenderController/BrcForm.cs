@@ -43,7 +43,7 @@ namespace BlenderRenderController
         private int rendersCount, processesCompletedCount,
                     _currentChunkIndex, _autoRefStart, _autoRefEnd;
         private List<Process> _renderProcesses;
-        private List<int> framesRendered;
+        private HashSet<int> framesRendered;
         private AppState appState;
         private DateTime startTime;
         private ETACalculator _etaCalc;
@@ -225,7 +225,7 @@ namespace BlenderRenderController
         private void GetBlendInfo(string blendFile)
         {
             // call this if GetBlendInfo fails
-            Action ReadFail = () =>
+            void ReadFail()
             {
                 logger.Error(".blend was NOT loaded");
                 UpdateUI(AppState.AFTER_START);
@@ -471,7 +471,7 @@ namespace BlenderRenderController
             _currentChunkIndex = 0;
             IsRendering = true;
             _renderProcesses = new List<Process>(_project.ProcessesCount);
-            framesRendered = new List<int>(chunks.TotalLength());
+            framesRendered = new HashSet<int>();
 
             // render progress reset
             totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
@@ -584,8 +584,8 @@ namespace BlenderRenderController
 
         /// <summary>
         /// <see cref="processManager"/> ticks calls this method and it controls what
-        /// processes get started for rendering, when to call <see cref="AfterRenderBG"/>
-        /// and updates the progress to the user
+        /// processes get started for rendering, when to call AfterRender and updates
+        /// the progress to the user
         /// </summary>
         private void TryQueueRenderProcess(object sender, EventArgs e)
         {
@@ -612,7 +612,8 @@ namespace BlenderRenderController
                     TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
 #endif
                     processManager.Enabled = false;
-                    AfterRenderBG();
+                    //AfterRenderBG();
+                    afterRenderBGWorker.RunWorkerAsync();
                 }
 
             }
@@ -633,11 +634,7 @@ namespace BlenderRenderController
                 {
                     var line = e.Data.Split(' ')[0].Replace("Fra:", "");
                     int frameBeingRendered = int.Parse(line);
-                    if (!framesRendered.Contains(frameBeingRendered))
-                    {
-                        framesRendered.Add(frameBeingRendered);
-                    }
-
+                    framesRendered.Add(frameBeingRendered);
                 }
             }
         }
@@ -769,12 +766,12 @@ namespace BlenderRenderController
 
             if (ctrl.InvokeRequired)
             {
-                ctrl.Invoke(new StatusUpdate(Status), msg, statusLabel);
+                ctrl.Invoke(new StatusUpdate(Status), msg, ctrl);
             }
             else
             {
                 ctrl.Text = msg;
-                statusLabel.Refresh();
+                ctrl.Refresh();
             }
         }
         #endregion
@@ -828,8 +825,7 @@ namespace BlenderRenderController
             mixdownCom.EnableRaisingEvents = true;
             mixdownCom.Exited += (pSender, pe) =>
             {
-                if (pSender is Process process)
-                    _renderProcesses.Remove(process);
+                _renderProcesses.Remove((Process)pSender);
                 logger.Info("Mixdown done");
             };
 
@@ -933,9 +929,7 @@ namespace BlenderRenderController
             concatenateCom.EnableRaisingEvents = true;
             concatenateCom.Exited += (pSender, pArgs) =>
             {
-                if (pSender is Process process)
-                    _renderProcesses.Remove(process);
-
+                _renderProcesses.Remove((Process)pSender);
                 logger.Info("FFmpeg exited");
             };
             
@@ -992,18 +986,20 @@ namespace BlenderRenderController
 
         #region AfterRenderActions
 
-        void AfterRenderBG()
-        {
-            bool wasComplete = (framesRendered.Count > Math.Round(Convert.ToDouble(_blendData.TotalFrames)) * 0.75);
+        //void AfterRenderBG()
+        //{
+        //    var chunkProportion = _project.ChunkLenght / (double)_blendData.TotalFrames;
 
-            if (wasComplete)
-            {
-                afterRenderBGWorker.RunWorkerAsync();
-            }
-            else
-                StopRender(false);
+        //    bool wasComplete = framesRendered.Count >= _blendData.TotalFrames * 0.9;
 
-        }
+        //    if (wasComplete)
+        //    {
+        //        afterRenderBGWorker.RunWorkerAsync();
+        //    }
+        //    else
+        //        StopRender(false);
+
+        //}
 
         private void AfterRenderBGWorker_DoWork(object sender, DoWorkEventArgs e)
         {
