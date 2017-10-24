@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlenderRenderController", "Src\BlenderRenderController\BlenderRenderController.csproj", "{CD475A2A-67D6-47F3-A776-D03D7FDB29EA}"
 EndProject
@@ -49,5 +49,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C0B6A9DA-7E23-4E44-B642-A1AD4E148634} = {87E2600C-D4BF-467B-9A84-FBA84939EEBF}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3556E1EA-EA6E-45A9-9D5F-2F5447A15708}
 	EndGlobalSection
 EndGlobal

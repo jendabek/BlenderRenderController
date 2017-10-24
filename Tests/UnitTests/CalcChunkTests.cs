@@ -4,7 +4,7 @@ using BRClib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 
-namespace UnitTestProject1
+namespace UnitTests
 {
     [TestClass]
     public class CalcChunkTests

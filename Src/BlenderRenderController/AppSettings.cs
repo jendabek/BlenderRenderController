@@ -242,7 +242,13 @@ namespace BlenderRenderController
             var jsonStr = JsonConvert.SerializeObject(this, Formatting.Indented);
             File.WriteAllText(Path.Combine(_baseDir, SETTINGS_FILE), jsonStr);
         }
-        public static AppSettings Load()
+
+        public void ReLoad()
+        {
+            _instance = Load();
+        }
+
+        static AppSettings Load()
         {
             var settingsPath = Path.Combine(_baseDir, SETTINGS_FILE);
 

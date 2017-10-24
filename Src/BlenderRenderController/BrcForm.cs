@@ -48,7 +48,8 @@ namespace BlenderRenderController
         private DateTime startTime;
         private ETACalculator _etaCalc;
         private SettingsForm _settingsForm;
-        delegate void StatusUpdate(string msg, Control ctrl);
+        // delegate to allow updating UI text from another thread
+        private Action<string, Control> StatusDelegete;
 
 
         public bool IsRendering { get; private set; }
@@ -61,7 +62,7 @@ namespace BlenderRenderController
             _project = new ProjectSettings();
             _blendData = new BlendData();
             _appSettings = AppSettings.Current;
-
+            StatusDelegete = Status;
 #if WINDOWS
             // set the form icon outside designer
             this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
@@ -426,7 +427,7 @@ namespace BlenderRenderController
             renderCom.OutputDataReceived += OnRenderProcessDataRecived;
             renderCom.Exited += (pSender, pArgs) =>
             {
-                // updates the counts
+                // removes process from list and updates the counts
                 _renderProcesses.Remove((Process)pSender);
                 rendersCount--;
                 processesCompletedCount++;
@@ -647,26 +648,22 @@ namespace BlenderRenderController
         /// </summary>
         private void UpdateProgress()
         {
-
             int progressPercentage = (int)Math.Floor((framesRendered.Count / (decimal)_blendData.TotalFrames) * 100);
-            //var chunksTotalCount = Math.Ceiling((decimal)_blendData.TotalFrames / _project.ChunkLenght);
 
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("Completed {0} / {1}", processesCompletedCount, _project.ChunkList.Count);
-            sb.AppendFormat(" chunks, rendered {0} frames in {1} processes", framesRendered.Count, rendersCount);
-            Status(sb.ToString());
-
-#if WINDOWS
-            // taskbar progress
-            TaskbarManager.Instance.SetProgressValue(progressPercentage, 100);
-#endif
-
-            //progress bar
             if (progressPercentage > 100)
                 throw new Exception("Progress is over 100%");
 
-            else
-                renderProgressBar.Value = progressPercentage;
+            var statusReport = string.Format("Completed {0} / {1} chunks, rendered {2} frames in {3} processes",
+                                                processesCompletedCount, _project.ChunkList.Count,
+                                                framesRendered.Count, rendersCount);
+
+            Status(statusReport);
+
+            // progress bar
+#if WINDOWS
+            TaskbarManager.Instance.SetProgressValue(progressPercentage, 100);
+#endif
+            renderProgressBar.Value = progressPercentage;
 
             _etaCalc.Update(progressPercentage / 100f);
 
@@ -766,7 +763,8 @@ namespace BlenderRenderController
 
             if (ctrl.InvokeRequired)
             {
-                ctrl.Invoke(new StatusUpdate(Status), msg, ctrl);
+                //StatusUpdate = Status;
+                ctrl.Invoke(StatusDelegete, msg, ctrl);
             }
             else
             {

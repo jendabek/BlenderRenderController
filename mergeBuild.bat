@@ -60,10 +60,12 @@ ren "%_targetName%.all.exe" "%_targetName%.exe"
 
 echo:
 echo MERGE DONE!
-goto:EOF
+exit 0
 
 :error
 echo Arg error, skipping merge...
+exit 0
 
 :ilmergenotfound
 echo %ilmerge% does not exist
+exit 1

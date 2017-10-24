@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace UnitTestProject1
+namespace UnitTests
 {
     static class RandomParams
     {
@@ -27,5 +28,17 @@ namespace UnitTestProject1
                     : rnd.OrderBy(r => r).ToArray();
         }
 
+        public static int[] GetArray(int min, int max, int numOfElements)
+        {
+            return GetCollection(min, max, numOfElements).ToArray();
+        }
+
+        static IEnumerable<int> GetCollection(int min, int max, int num)
+        {
+            for (int i = 0; i < num; i++)
+            {
+                yield return GetNumber(min, max);
+            }
+        }
     }
 }
