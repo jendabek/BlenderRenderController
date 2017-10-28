@@ -14,7 +14,7 @@ using System.Diagnostics;
 namespace BlenderRenderController
 {
     [JsonObject(Description = "Brc settings")]
-    class AppSettings
+    public class AppSettings
     {
         [JsonProperty("RecentBlends")]
         private ObservableCollection<string> _recentBlends = new ObservableCollection<string>();
@@ -250,7 +250,12 @@ namespace BlenderRenderController
 
         static AppSettings Load()
         {
-            var settingsPath = Path.Combine(_baseDir, SETTINGS_FILE);
+            return Load(Path.Combine(_baseDir, SETTINGS_FILE));
+        }
+
+        public static AppSettings Load(string settingsPath)
+        {
+            //var settingsPath = Path.Combine(_baseDir, SETTINGS_FILE);
 
             var appSet = File.Exists(settingsPath) 
                         ? JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(settingsPath))

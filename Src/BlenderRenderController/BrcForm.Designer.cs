@@ -100,7 +100,7 @@ namespace BlenderRenderController
             this.ETALabel = new System.Windows.Forms.Label();
             this.blendBrowseBtn = new System.Windows.Forms.Button();
             this.openBlendDialog = new System.Windows.Forms.OpenFileDialog();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.startEndFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.processManager = new System.Windows.Forms.Timer(this.components);
             this.blendNameLabel = new System.Windows.Forms.Label();
             this.afterRenderBGWorker = new System.ComponentModel.BackgroundWorker();
@@ -120,7 +120,7 @@ namespace BlenderRenderController
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
+            this.startEndFLP.SuspendLayout();
             this.menuToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
@@ -826,7 +826,7 @@ namespace BlenderRenderController
             // 
             this.rendererRadioButtonCycles.AutoSize = true;
             this.rendererRadioButtonCycles.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(478, 268);
+            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(478, 276);
             this.rendererRadioButtonCycles.Name = "rendererRadioButtonCycles";
             this.rendererRadioButtonCycles.Size = new System.Drawing.Size(60, 19);
             this.rendererRadioButtonCycles.TabIndex = 10;
@@ -841,7 +841,7 @@ namespace BlenderRenderController
             this.rendererRadioButtonBlender.AutoSize = true;
             this.rendererRadioButtonBlender.Checked = true;
             this.rendererRadioButtonBlender.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(364, 268);
+            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(364, 276);
             this.rendererRadioButtonBlender.Name = "rendererRadioButtonBlender";
             this.rendererRadioButtonBlender.Size = new System.Drawing.Size(112, 19);
             this.rendererRadioButtonBlender.TabIndex = 9;
@@ -988,14 +988,14 @@ namespace BlenderRenderController
             // 
             this.openBlendDialog.Filter = "Blend|*.blend";
             // 
-            // flowLayoutPanel1
+            // startEndFLP
             // 
-            this.flowLayoutPanel1.Controls.Add(this.startEndBlendRadio);
-            this.flowLayoutPanel1.Controls.Add(this.startEndCustomRadio);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(27, 220);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(99, 47);
-            this.flowLayoutPanel1.TabIndex = 39;
+            this.startEndFLP.Controls.Add(this.startEndBlendRadio);
+            this.startEndFLP.Controls.Add(this.startEndCustomRadio);
+            this.startEndFLP.Location = new System.Drawing.Point(27, 220);
+            this.startEndFLP.Name = "startEndFLP";
+            this.startEndFLP.Size = new System.Drawing.Size(99, 47);
+            this.startEndFLP.TabIndex = 39;
             // 
             // processManager
             // 
@@ -1092,7 +1092,7 @@ namespace BlenderRenderController
             this.ClientSize = new System.Drawing.Size(664, 621);
             this.Controls.Add(this.menuToolStrip);
             this.Controls.Add(this.blendNameLabel);
-            this.Controls.Add(this.flowLayoutPanel1);
+            this.Controls.Add(this.startEndFLP);
             this.Controls.Add(this.showRecentBlendsBtn);
             this.Controls.Add(this.blendBrowseBtn);
             this.Controls.Add(this.renderInfoLabel);
@@ -1148,8 +1148,8 @@ namespace BlenderRenderController
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.flowLayoutPanel1.PerformLayout();
+            this.startEndFLP.ResumeLayout(false);
+            this.startEndFLP.PerformLayout();
             this.menuToolStrip.ResumeLayout(false);
             this.menuToolStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
@@ -1224,7 +1224,7 @@ namespace BlenderRenderController
         private System.Windows.Forms.OpenFileDialog openBlendDialog;
         private System.Windows.Forms.BindingSource projectSettingsBindingSource;
         private System.Windows.Forms.BindingSource blendDataBindingSource;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.FlowLayoutPanel startEndFLP;
         private System.Windows.Forms.Timer processManager;
         private System.Windows.Forms.Label blendNameLabel;
         private System.ComponentModel.BackgroundWorker afterRenderBGWorker;

@@ -225,13 +225,6 @@ namespace BlenderRenderController
         #region BlendFileInfo
         private void GetBlendInfo(string blendFile)
         {
-            // call this if GetBlendInfo fails
-            void ReadFail()
-            {
-                logger.Error(".blend was NOT loaded");
-                UpdateUI(AppState.AFTER_START);
-                Status("Error loading blend file");
-            };
 
             logger.Info("Loading .blend");
             Status("Reading .blend file...");
@@ -279,19 +272,19 @@ namespace BlenderRenderController
             }
 
             // Get values from streams
-            var fullOutput = getBlendInfoCom.StandardOutput.ReadToEnd();
-            var fullErrors = getBlendInfoCom.StandardError.ReadToEnd();
-            var streamOutput = new List<string>(fullOutput.Split('\n'));
-            var streamErrors = new List<string>(fullErrors.Split('\n'));
+            var stdOutput = getBlendInfoCom.StandardOutput.ReadToEnd();
+            var stdErrors = getBlendInfoCom.StandardError.ReadToEnd();
+            //var streamOutput = new List<string>(fullOutput.Split('\n'));
+            //var streamErrors = new List<string>(fullErrors.Split('\n'));
 
             // errors
-            if (streamErrors.Count > 0)
+            if (stdErrors.Length > 0)
             {
                 logger.Debug("Blender output errors detected.");
-                logger.Trace(fullErrors);
+                logger.Trace(stdErrors);
 
-                // folder count exception
-                if (streamErrors.Contains(Constants.PY_FolderCountError))
+                // detect folder count exception
+                if (stdErrors.Contains(Constants.PY_FolderCountError))
                 {
                     var err = Ui.Dialogs.ShowErrorBox("There was an error parsing the output path", 
                         "Read error", 
@@ -305,9 +298,9 @@ namespace BlenderRenderController
 
             }
 
-            if (streamOutput.Count == 0)
+            if (stdOutput.Length == 0)
             {
-                var detailsContent = "Error output: \n\n" + fullErrors;
+                var detailsContent = "Error output: \n\n" + stdErrors;
 
                 var err = Ui.Dialogs.ShowErrorBox("Could not open project, no information was received", 
                                                 "Failed to read project", 
@@ -319,7 +312,7 @@ namespace BlenderRenderController
             }
 
 
-            var blendData = Utilities.ParsePyOutput(streamOutput);
+            var blendData = Utilities.ParsePyOutput(stdOutput);
 
             if (blendData != null)
             {
@@ -356,7 +349,7 @@ namespace BlenderRenderController
             {
                 //var detailContents = string.Format("# STD output:\n\n{0}\n\n# STD errors:\n\n{1}", fullOutput, fullErrors);
                 var errorBox = Ui.Dialogs.ShowErrorBox("Failed to read blend file info.", 
-                    "Read error", "Error output:\n\n" + fullErrors);
+                    "Read error", "Error output:\n\n" + stdErrors);
 
                 errorBox.Show();
                 ReadFail();
@@ -366,8 +359,16 @@ namespace BlenderRenderController
             var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, _project.ProcessesCount);
             UpdateCurrentChunks(chunks);
             _appSettings.AddRecentBlend(blendFile);
-            //Status("File loaded");
             UpdateUI(AppState.READY_FOR_RENDER);
+            // ---
+
+            // call this if GetBlendInfo fails
+            void ReadFail()
+            {
+                logger.Error(".blend was NOT loaded");
+                UpdateUI(AppState.AFTER_START);
+                Status("Error loading blend file");
+            };
         }
 
         private void blendBrowseBtn_Click(object sender, EventArgs e)
@@ -555,25 +556,9 @@ namespace BlenderRenderController
                     if (dialogResult == DialogResult.No)
                         return;
 
-                    try
-                    {
-                        Helper.ClearFolder(chunksFolder);
-                    }
-                    catch (IOException)
-                    {
-                        string msg = "Can't clear chunk folder, files are in use";
-                        logger.Error(msg);
-                        MessageBox.Show(msg);
-                        return;
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error(ex.Message);
-                        logger.Trace(ex.StackTrace);
-                        MessageBox.Show("An unexpected error ocurred, sorry.\n\n" + ex.Message);
-                        return;
-                    }
+                    var tryToClear = Helper.ClearFolder(chunksFolder);
 
+                    if (!tryToClear) return;
                 }
 
                 RenderAll();
@@ -709,7 +694,7 @@ namespace BlenderRenderController
             logger.Trace(string.Join(", " ,_project.ChunkList));
 
 #if UNIX
-            ForceBindedElementsUpdate(null, null);
+            ForceBindingSourceUpdate();
 #endif
 
         }
@@ -1104,7 +1089,7 @@ namespace BlenderRenderController
                 }
             }
 #if UNIX
-            ForceBindedElementsUpdate(null, null);
+            ForceBindingSourceUpdate();
 #endif
         }
 
@@ -1175,7 +1160,7 @@ namespace BlenderRenderController
                 var expectedChunkLen = (int)Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
                 _project.ChunkLenght = expectedChunkLen;
 #if UNIX
-                ForceBindedElementsUpdate(null, null);
+                ForceBindingSourceUpdate();
 #endif
             }
 
@@ -1287,6 +1272,11 @@ namespace BlenderRenderController
 
 
         private void ForceBindedElementsUpdate(object sender, EventArgs e)
+        {
+            ForceBindingSourceUpdate();
+        }
+
+        private void ForceBindingSourceUpdate()
         {
             // WinForm databinding in Mono doesn't update the UI elements 
             // properly, so do it manually

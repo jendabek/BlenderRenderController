@@ -35,7 +35,7 @@ namespace BRClib
         protected virtual void OnPropertyChanged([CallerMemberName]string pName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(pName));
-            Log.ConditionalDebug("{0} changed", pName);
+            //Log.ConditionalDebug("{0} changed", pName);
         }
     }
 

@@ -13,19 +13,38 @@ namespace BlenderRenderController
     {
         private static Logger logger = LogManager.GetLogger("Helper");
 
-        static public void ClearFolder(string FolderName)
+        static public bool ClearFolder(string FolderName)
         {
-            DirectoryInfo dir = new DirectoryInfo(FolderName);
-
-            foreach (FileInfo fi in dir.GetFiles())
+            try
             {
-                fi.Delete();
+                DirectoryInfo dir = new DirectoryInfo(FolderName);
+
+                foreach (FileInfo fi in dir.GetFiles())
+                {
+                    fi.Delete();
+                }
+
+                foreach (DirectoryInfo di in dir.GetDirectories())
+                {
+                    ClearFolder(di.FullName);
+                    di.Delete();
+                }
+
+                return true;
             }
-
-            foreach (DirectoryInfo di in dir.GetDirectories())
+            catch (IOException)
             {
-                ClearFolder(di.FullName);
-                di.Delete();
+                string msg = "Can't clear chunk folder, files are in use";
+                logger.Error(msg);
+                MessageBox.Show(msg);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                logger.Trace(ex.StackTrace);
+                MessageBox.Show("An unexpected error ocurred, sorry.\n\n" + ex.Message);
+                return false;
             }
         }
         

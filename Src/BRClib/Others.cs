@@ -103,26 +103,25 @@ namespace BRClib
             var fileList = files
                 .Where(f => 
                 {
-                    try
+                    // skip '.' in ext
+                    var ext = Path.GetExtension(f).Substring(1);
+                    var split = f.Split('-');
+
+                    // format: FILENAME-fStart-fEnd.ext
+                    if (split.Length > 2 && exts.Contains(ext))
                     {
-                        // skip '.' in ext
-                        var ext = Path.GetExtension(f).Substring(1);
-                        if (exts.Contains(ext))
-                        {
-                            // only add files with frame range
-                            string numStr = f.Split('-')[f.Split('-').Length - 2];
-                            return int.TryParse(numStr, out int x);
-                        }
-                        else
-                            return false;
+                        // only add files with frame range
+                        string numStr = split[split.Length - 2];
+                        return int.TryParse(numStr, out int x);
                     }
-                    catch (IndexOutOfRangeException)
-                    { return false; }
+
+                    return false;
                 })
                 .OrderBy(s =>
                 {
                     //sort files in list by starting frame
-                    string numStr = s.Split('-')[s.Split('-').Length - 2];
+                    var split = s.Split('-');
+                    string numStr = split[split.Length - 2];
                     return int.Parse(numStr);
                 });
             

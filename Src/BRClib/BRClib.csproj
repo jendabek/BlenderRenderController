@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="BindingBase.cs" />
     <Compile Include="Chunk.cs" />
+    <Compile Include="ConcurrentHashSet.cs" />
     <Compile Include="Extentions.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Others.cs" />

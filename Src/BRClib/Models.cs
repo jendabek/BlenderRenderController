@@ -15,7 +15,7 @@ namespace BRClib
         private string _outPath, _projName, 
             _activeScene, _fileFmt, _res;
 
-        public BlendData() : base() { }
+
 
         [JsonProperty("start")]
         public int Start
