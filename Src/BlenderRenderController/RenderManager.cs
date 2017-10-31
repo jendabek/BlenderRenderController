@@ -10,7 +10,9 @@ using static BRClib.CommandARGS;
 
 namespace BlenderRenderController
 {
-
+    /// <summary>
+    /// Manages the render of a list of <see cref="Chunk"/>s.
+    /// </summary>
     public class RenderManager
     {
         private ConcurrentBag<Process> procBag;
@@ -20,6 +22,7 @@ namespace BlenderRenderController
 
         private Timer timer;
 
+        // Progress stuff
         bool canReportProgress;
         IProgress<RenderProgressInfo> progress;
 
@@ -34,7 +37,10 @@ namespace BlenderRenderController
         public List<Chunk> ChunkList { get; }
         public bool InProgress { get; private set; }
 
-
+        /// <summary>
+        /// Raised when all chunks finish rendering, 'e' is
+        /// the total number of frames rendered
+        /// </summary>
         public event EventHandler<int> Finished;
 
 
@@ -61,7 +67,10 @@ namespace BlenderRenderController
             ChunksFolderPath = Path.Combine(project.BlendData.OutputPath, "chunks");
         }
 
-
+        /// <summary>
+        /// Starts rendering 
+        /// </summary>
+        /// <param name="prog">Progress provider</param>
         public void Start(IProgress<RenderProgressInfo> prog)
         {
             CheckForValidProperties();
@@ -80,11 +89,17 @@ namespace BlenderRenderController
             timer.Start();
         }
 
+        /// <summary>
+        /// Starts rendering
+        /// </summary>
         public void Start()
         {
             Start(null);
         }
 
+        /// <summary>
+        /// Aborts the render process
+        /// </summary>
         public void Abort()
         {
             timer.Stop();
@@ -99,6 +114,11 @@ namespace BlenderRenderController
             if (mustHaveValues.Any(x => string.IsNullOrWhiteSpace(x)))
             {
                 throw new Exception("Required info missing");
+            }
+
+            if (ChunkList.Count == 0)
+            {
+                throw new Exception("Chunk list is empty");
             }
 
             if (!File.Exists(BlendFilePath))
@@ -140,6 +160,7 @@ namespace BlenderRenderController
             renderCom.OutputDataReceived += RenderCom_OutputDataReceived;
             renderCom.Exited += (s, e) =>
             {
+                // decrement counts when the process exits
                 chunksToDo--;
                 chunksInProgress--;
             };
@@ -217,6 +238,8 @@ namespace BlenderRenderController
                 }
                 catch (InvalidOperationException ioex)
                 {
+                    // Processes may be in an invalid state, just swallow the error since we're diposing
+                    // them anyway
                     Trace.WriteLine("Error while killing process\n\n" + ioex.Message, nameof(RenderManager));
                 }
                 finally

@@ -6,16 +6,13 @@ using System.Diagnostics;
 using System.Text;
 using System.IO;
 using System.Threading;
+using static UnitTests.TestHelpers;
 
 namespace UnitTests
 {
     [TestClass]
     public class RenderMngrTests
     {
-        const string BLEND_PATH = @"E:\Bibliotecas E\_projetos\Blender\Video\teste\stuff\test_project.blend";
-        const string SETTINGS_JSON = @"C:\Users\Pedro\Source\Repos\BlenderRenderController\Src\BlenderRenderController\bin\Debug\brc_settings.json";
-        const string OUT_PATH = @"E:\Bibliotecas E\_projetos\Blender\Video\teste\expo";
-        AppSettings settings = AppSettings.Load(SETTINGS_JSON);
         ManualResetEventSlim finishedEvent = new ManualResetEventSlim();
 
         [TestMethod]
@@ -50,7 +47,7 @@ namespace UnitTests
         {
             var blendData = GetBlendData(BLEND_PATH);
             var chunks = Chunk.CalcChunksByLenght(blendData.Start, 3000, 300);
-            var renderMngr = new RenderManager(chunks, settings)
+            var renderMngr = new RenderManager(chunks, Settings)
             {
                 BlendFilePath = BLEND_PATH,
                 ChunksFolderPath = Path.Combine(OUT_PATH, "chunks"),
@@ -65,46 +62,6 @@ namespace UnitTests
             return (chunks, renderMngr);
         }
 
-        BlendData GetBlendData(string blendPath)
-        {
-            var getBlendInfoCom = new Process();
-            var info = new ProcessStartInfo()
-            {
-                FileName = settings.BlenderProgram,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                Arguments = string.Format(CommandARGS.GetInfoComARGS,
-                                            blendPath,
-                                            Path.Combine(settings.ScriptsFolder, "get_project_info.py"))
-            };
-
-            getBlendInfoCom.StartInfo = info;
-            getBlendInfoCom.Start();
-
-            var output = getBlendInfoCom.StandardOutput.ReadToEnd();
-
-            return Utilities.ParsePyOutput(output);
-        }
-
-        void ClearFolder(string path)
-        {
-            DirectoryInfo dir = new DirectoryInfo(path);
-
-            foreach (FileInfo fi in dir.GetFiles())
-            {
-                fi.Delete();
-            }
-
-            foreach (DirectoryInfo di in dir.GetDirectories())
-            {
-                ClearFolder(di.FullName);
-                di.Delete();
-            }
-        }
 
     }
 }

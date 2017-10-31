@@ -51,15 +51,15 @@ namespace BlenderRenderController
         CancellationTokenSource afterRenderCancelSrc;
 
         public bool IsWorking { get; private set; }
-        bool DoingAfterRender
-        {
-            get
-            {
-                Process[] procs = { mixdownProc, concatProc };
-                return procs.All(p => p != null && !p.HasExited);
-            }
-        }
-        //bool doingRender, doingAfterRender;
+        //bool DoingAfterRender
+        //{
+        //    get
+        //    {
+        //        Process[] procs = { mixdownProc, concatProc };
+        //        return procs.All(p => p != null && !p.HasExited);
+        //    }
+        //}
+
 
         public BrcForm()
         {
@@ -218,8 +218,8 @@ namespace BlenderRenderController
                 {
                     StopWork(false);
 
-                    if (DoingAfterRender)
-                        afterRenderCancelSrc.Cancel();
+                    //if (DoingAfterRender)
+                    //    afterRenderCancelSrc.Cancel();
 
                 }
             }
@@ -251,11 +251,8 @@ namespace BlenderRenderController
 
 
         #region BlendFileInfo
-        private void GetBlendInfo(string blendFile)
+        private async void GetBlendInfo(string blendFile)
         {
-
-            logger.Info("Loading .blend");
-            Status("Reading .blend file...");
 
             if (!File.Exists(blendFile))
             {
@@ -270,6 +267,10 @@ namespace BlenderRenderController
                 ReadFail();
                 return;
             }
+
+            renderProgressBar.Style = ProgressBarStyle.Marquee;
+            logger.Info("Loading .blend");
+            Status("Reading .blend file...");
 
             var getBlendInfoCom = new Process();
             var info = new ProcessStartInfo()
@@ -287,21 +288,8 @@ namespace BlenderRenderController
             };
 
             getBlendInfoCom.StartInfo = info;
-
-            try
-            {
-                getBlendInfoCom.Start();
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex.Message);
-                logger.Trace(ex.StackTrace);
-                return;
-            }
-
-            // Get values from streams
-            var stdOutput = getBlendInfoCom.StandardOutput.ReadToEnd();
-            var stdErrors = getBlendInfoCom.StandardError.ReadToEnd();
+            // exec process asynchronoly
+            var (exitCode, stdOutput, stdErrors) = await getBlendInfoCom.StartAsyncGetOutput();
 
             // errors
             if (stdErrors.Length > 0)
@@ -386,6 +374,7 @@ namespace BlenderRenderController
             UpdateCurrentChunks(chunks);
             _appSettings.AddRecentBlend(blendFile);
             UpdateUI(AppState.READY_FOR_RENDER);
+            renderProgressBar.Style = ProgressBarStyle.Blocks;
             // ---
 
             // call this if GetBlendInfo fails
@@ -394,6 +383,7 @@ namespace BlenderRenderController
                 logger.Error(".blend was NOT loaded");
                 UpdateUI(AppState.AFTER_START);
                 Status("Error loading blend file");
+                renderProgressBar.Style = ProgressBarStyle.Blocks;
             };
         }
 
@@ -450,8 +440,6 @@ namespace BlenderRenderController
             renderProgress.ProgressChanged += (s,e) => this.InvokeAction(UpdateProgress, e);
 
             IsWorking = true;
-            //doingRender = true;
-            //DoingAfterRender = false;
 
             // render progress reset
             totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
@@ -473,7 +461,7 @@ namespace BlenderRenderController
 #if WINDOWS
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
 #endif
-            afterRenderCancelSrc.Token.Register(() => 
+            var reg = afterRenderCancelSrc.Token.Register(() => 
             {
                 switch (_appSettings.AfterRender)
                 {
@@ -494,7 +482,6 @@ namespace BlenderRenderController
                 }
             });
 
-            //doingAfterRender = true;
             await Task.Run(() => AfterRenderBG(_appSettings.AfterRender), afterRenderCancelSrc.Token);
 
             if (!afterRenderCancelSrc.Token.IsCancellationRequested)
@@ -502,6 +489,8 @@ namespace BlenderRenderController
                 //doingAfterRender = false;
                 this.InvokeAction(WorkDone);
             }
+
+            reg.Dispose();
         }
 
 
@@ -514,10 +503,8 @@ namespace BlenderRenderController
                     renderManager.Abort();
                 }
 
-                if (DoingAfterRender)
-                {
-                    afterRenderCancelSrc.Cancel();
-                }
+                afterRenderCancelSrc.Cancel();
+
             }
 
 
@@ -551,11 +538,6 @@ namespace BlenderRenderController
                     return;
 
                 StopWork(false);
-
-                if (DoingAfterRender)
-                {
-                    afterRenderCancelSrc.Cancel();
-                }
 
                 logger.Warn("RENDER ABORTED");
             }
@@ -736,19 +718,17 @@ namespace BlenderRenderController
         private async void mixDownButton_Click(object sender, EventArgs e)
         {
             IsWorking = true;
-            //doingAfterRender = true;
             UpdateUI(AppState.RENDERING_ALL);
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
-            afterRenderCancelSrc.Token.Register(() => mixdownProc.Kill());
-
-            //await Task.Run(() => AfterRenderBG(AfterRenderAction.MIXDOWN), afterRenderCancelSrc.Token);
-            await AfterRender(AfterRenderAction.MIXDOWN, afterRenderCancelSrc.Token);
+            var proc = GetMixdownProcess();
+            var exitCode = await proc.StartAsync(afterRenderCancelSrc.Token);
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             UpdateUI(AppState.READY_FOR_RENDER);
             IsWorking = false;
-            //doingAfterRender = false;
+
+            Trace.WriteLine("Mixdown proc exit code: " + exitCode, "Mixdown");
         }
 
         #endregion
@@ -844,17 +824,12 @@ namespace BlenderRenderController
             var manConcat = new ConcatForm();
             manConcat.ShowDialog();
 
-            afterRenderCancelSrc.Token.Register(() => concatProc.Kill());
-
             if (manConcat.DialogResult == DialogResult.OK)
             {
-                await Task.Run(() =>
-                {
-                    concatProc = GetConcatenateProcess(manConcat.OutputFile, manConcat.ChunksTextFile, manConcat.MixdownAudioFile);
-                    concatProc.Start();
-                    concatProc.WaitForExit();
+                var concatProc = GetConcatenateProcess(manConcat.OutputFile, manConcat.ChunksTextFile, manConcat.MixdownAudioFile);
+                var exitCode = await concatProc.StartAsync(afterRenderCancelSrc.Token);
 
-                }, afterRenderCancelSrc.Token);
+                Trace.WriteLine("Concatenation proc exit code: " + exitCode, "Concat");
             }
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
@@ -870,9 +845,53 @@ namespace BlenderRenderController
 
         #endregion
 
-        Task AfterRender(AfterRenderAction action, CancellationToken token)
+        async Task AfterRender(AfterRenderAction action, CancellationToken token)
         {
-            return Task.Run(() => AfterRenderBG(action), token);
+            var chunksFolder = Helper.GetChunksFolder(_project.BlendData);
+
+            string mixFile = null;
+            if ((action & AfterRenderAction.MIXDOWN) != 0)
+            {
+                mixFile = Path.Combine(_project.BlendData.OutputPath, _project.BlendData.ProjectName + ".ac3");
+            }
+
+            if ((action & AfterRenderAction.JOIN) != 0)
+            {
+                // create chunklist.txt
+                if (!CreateChunksTxtFile(chunksFolder))
+                {
+                    // did not create txtFile
+                    return;
+                }
+            }
+
+            Process mixdownProc, concatProc;
+            int? mixEC = null, concEC = null;
+
+            switch (action)
+            {
+                case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
+                    mixdownProc = GetMixdownProcess();
+                    mixEC = await mixdownProc.StartAsync(token);
+
+                    concatProc = GetConcatenateProcess(mixFile);
+                    concEC = await concatProc.StartAsync(token);
+                    break;
+                case AfterRenderAction.JOIN:
+                    concatProc = GetConcatenateProcess(mixFile);
+                    concEC = await concatProc.StartAsync(token);
+                    break;
+                case AfterRenderAction.MIXDOWN:
+                    mixdownProc = GetMixdownProcess();
+                    mixEC = await mixdownProc.StartAsync(token);
+                    break;
+                case AfterRenderAction.NOTHING:
+                default:
+                    return;
+            }
+
+            Trace.WriteLineIf(mixEC != null, "Mixdown proc exit code: " + mixEC, "After Render");
+            Trace.WriteLineIf(concEC != null, "Concat proc exit code: " + concEC, "After Render");
         }
 
         void AfterRenderBG(AfterRenderAction action)
@@ -905,6 +924,7 @@ namespace BlenderRenderController
                     break;
                 case AfterRenderAction.MIXDOWN:
                     ExecMixdown();
+
                     break;
                 case AfterRenderAction.NOTHING:
                 default:

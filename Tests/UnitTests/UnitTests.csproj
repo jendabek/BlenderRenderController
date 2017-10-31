@@ -69,10 +69,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncProcessExtentionTests.cs" />
     <Compile Include="CalcChunkTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomParams.cs" />
     <Compile Include="RenderMngrTests.cs" />
+    <Compile Include="TestHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
