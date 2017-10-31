@@ -47,18 +47,9 @@ namespace BlenderRenderController
         private DateTime startTime;
         private ETACalculator _etaCalc;
         private SettingsForm _settingsForm;
-        Process mixdownProc, concatProc;
         CancellationTokenSource afterRenderCancelSrc;
 
         public bool IsWorking { get; private set; }
-        //bool DoingAfterRender
-        //{
-        //    get
-        //    {
-        //        Process[] procs = { mixdownProc, concatProc };
-        //        return procs.All(p => p != null && !p.HasExited);
-        //    }
-        //}
 
 
         public BrcForm()
@@ -68,7 +59,6 @@ namespace BlenderRenderController
             _project = new ProjectSettings();
             _project.BlendData = new BlendData();
             _appSettings = AppSettings.Current;
-            afterRenderCancelSrc = new CancellationTokenSource();
 #if WINDOWS
             // set the form icon outside designer
             this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
@@ -117,11 +107,6 @@ namespace BlenderRenderController
             totalEndNumericUpDown.EnabledChanged += NumericUpDown_EnableChanged;
             chunkLengthNumericUpDown.EnabledChanged += NumericUpDown_EnableChanged;
             processCountNumericUpDown.EnabledChanged += NumericUpDown_EnableChanged;
-
-            //totalStartNumericUpDown.Paint += NumericUpDown_OnPaint;
-            //totalEndNumericUpDown.Paint += NumericUpDown_OnPaint;
-            //chunkLengthNumericUpDown.Paint += NumericUpDown_OnPaint;
-            //processCountNumericUpDown.Paint += NumericUpDown_OnPaint;
 #endif
         }
 
@@ -133,18 +118,8 @@ namespace BlenderRenderController
             numeric.BackColor = (numeric.Enabled)
                                 ? System.Drawing.Color.White
                                 : System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
-            numeric.Invalidate();
+            //numeric.Invalidate();
         }
-
-
-        private void NumericUpDown_OnPaint(object sender, PaintEventArgs e)
-        {
-            // Work around Mono not gray-ing out if disabled
-            var numeric = sender as NumericUpDown;
-            numeric.BackColor = (numeric.Enabled)
-                                ? System.Drawing.Color.White
-                                : System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
-        } 
 #endif
 
         private void BrcForm_Shown(object sender, EventArgs e)
@@ -217,10 +192,6 @@ namespace BlenderRenderController
                 else
                 {
                     StopWork(false);
-
-                    //if (DoingAfterRender)
-                    //    afterRenderCancelSrc.Cancel();
-
                 }
             }
 
@@ -288,7 +259,8 @@ namespace BlenderRenderController
             };
 
             getBlendInfoCom.StartInfo = info;
-            // exec process asynchronoly
+
+            // exec process asynchronously
             var (exitCode, stdOutput, stdErrors) = await getBlendInfoCom.StartAsyncGetOutput();
 
             // errors
@@ -449,7 +421,6 @@ namespace BlenderRenderController
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
             TaskbarManager.Instance.SetProgressValue(0, 100);
 #endif
-            //renderCancelSrc.Token.Register(() => StopRender(false));
 
             UpdateUI(AppState.RENDERING_ALL);
             renderManager.Start(renderProgress);
@@ -458,39 +429,17 @@ namespace BlenderRenderController
         private async void RenderManager_Finished(object sender, int e)
         {
             this.InvokeAction(() => renderProgressBar.Style = ProgressBarStyle.Marquee);
+            afterRenderCancelSrc = new CancellationTokenSource();
+
 #if WINDOWS
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
 #endif
-            var reg = afterRenderCancelSrc.Token.Register(() => 
-            {
-                switch (_appSettings.AfterRender)
-                {
-                    case AfterRenderAction.JOIN:
-                        if (!concatProc.HasExited)
-                            concatProc.Kill();
-                        break;
-                    case AfterRenderAction.MIXDOWN:
-                        if (!mixdownProc.HasExited)
-                            mixdownProc.Kill();
-                        break;
-                    case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
-                        if (!mixdownProc.HasExited)
-                            mixdownProc.Kill();
-                        if (!concatProc.HasExited)
-                            concatProc.Kill();
-                        break;
-                }
-            });
-
-            await Task.Run(() => AfterRenderBG(_appSettings.AfterRender), afterRenderCancelSrc.Token);
+            await AfterRender(_appSettings.AfterRender, afterRenderCancelSrc.Token);
 
             if (!afterRenderCancelSrc.Token.IsCancellationRequested)
             {
-                //doingAfterRender = false;
                 this.InvokeAction(WorkDone);
             }
-
-            reg.Dispose();
         }
 
 
@@ -503,14 +452,14 @@ namespace BlenderRenderController
                     renderManager.Abort();
                 }
 
-                afterRenderCancelSrc.Cancel();
-
+                if (afterRenderCancelSrc != null)
+                    afterRenderCancelSrc.Cancel();
             }
 
 
             IsWorking = false;
-            renderProgressBar.Style = ProgressBarStyle.Blocks;
             renderProgressBar.Value = 0;
+            renderProgressBar.Style = ProgressBarStyle.Blocks;
             renderProgressBar.Refresh();
 
             ETALabel.Text = ETR_Prefix + TimeSpan.Zero.ToString(TimeFmt);
@@ -537,8 +486,8 @@ namespace BlenderRenderController
                 if (result == DialogResult.No)
                     return;
 
+                // cancel
                 StopWork(false);
-
                 logger.Warn("RENDER ABORTED");
             }
             else
@@ -718,6 +667,8 @@ namespace BlenderRenderController
         private async void mixDownButton_Click(object sender, EventArgs e)
         {
             IsWorking = true;
+            afterRenderCancelSrc = new CancellationTokenSource();
+
             UpdateUI(AppState.RENDERING_ALL);
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
@@ -818,6 +769,8 @@ namespace BlenderRenderController
         private async void concatenatePartsButton_Click(object sender, EventArgs e)
         {
             IsWorking = true;
+            afterRenderCancelSrc = new CancellationTokenSource();
+
             UpdateUI(AppState.RENDERING_ALL);
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
@@ -894,62 +847,6 @@ namespace BlenderRenderController
             Trace.WriteLineIf(concEC != null, "Concat proc exit code: " + concEC, "After Render");
         }
 
-        void AfterRenderBG(AfterRenderAction action)
-        {
-            var chunksFolder = Helper.GetChunksFolder(_project.BlendData);
-
-            string mixFile = null;
-            if ((action & AfterRenderAction.MIXDOWN) != 0)
-            {
-                mixFile = Path.Combine(_project.BlendData.OutputPath, _project.BlendData.ProjectName + ".ac3");
-            }
-
-            if ((action & AfterRenderAction.JOIN) != 0)
-            {
-                // create chunklist.txt
-                if (!CreateChunksTxtFile(chunksFolder))
-                {
-                    // did not create txtFile
-                    return;
-                }
-            }
-
-            switch (action)
-            {
-                case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
-                    ExecBoth();
-                    break;
-                case AfterRenderAction.JOIN:
-                    ExecConcat();
-                    break;
-                case AfterRenderAction.MIXDOWN:
-                    ExecMixdown();
-
-                    break;
-                case AfterRenderAction.NOTHING:
-                default:
-                    return;
-            }
-
-            void ExecMixdown()
-            {
-                mixdownProc = GetMixdownProcess();
-                mixdownProc.Start();
-                mixdownProc.WaitForExit();
-            }
-            void ExecConcat()
-            {
-                concatProc = GetConcatenateProcess(mixFile);
-                concatProc.Start();
-                concatProc.WaitForExit();
-            }
-            void ExecBoth()
-            {
-                ExecMixdown();
-                ExecConcat();
-            }
-        }
-
         void WorkDone()
         {
             StopWork(true);
@@ -964,11 +861,6 @@ namespace BlenderRenderController
                 OpenOutputFolder();
 
             UpdateUI(appState);
-
-            mixdownProc.Dispose();
-            concatProc.Dispose();
-            mixdownProc = null;
-            concatProc = null;
         }
 
 

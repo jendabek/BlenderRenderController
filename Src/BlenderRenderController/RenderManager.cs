@@ -238,8 +238,8 @@ namespace BlenderRenderController
                 }
                 catch (InvalidOperationException ioex)
                 {
-                    // Processes may be in an invalid state, just swallow the error since we're diposing
-                    // them anyway
+                    // Processes may be in an invalid state, just swallow the errors 
+                    // since we're diposing them anyway
                     Trace.WriteLine("Error while killing process\n\n" + ioex.Message, nameof(RenderManager));
                 }
                 finally

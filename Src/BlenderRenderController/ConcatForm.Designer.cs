@@ -206,9 +206,9 @@
             this.Controls.Add(this.mainLabel);
             this.Controls.Add(this.outputFileTextBox);
             this.Controls.Add(this.chunksTxtFileTextBox);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(561, 316);
+            this.MaximumSize = new System.Drawing.Size(620, 316);
+            this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(200, 100);
             this.Name = "ConcatForm";
             this.ShowIcon = false;

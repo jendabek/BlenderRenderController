@@ -1,8 +1,6 @@
 ﻿using NLog;
 using System;
 using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,39 +60,6 @@ namespace BlenderRenderController
 
     public static class Extentions
     {
-        private delegate void SetPropertyThreadSafeDelegate<TResult>(Control @this, Expression<Func<TResult>> property, TResult value);
-
-        public static void SetPropertyThreadSafe<TResult>(this Control @this, Expression<Func<TResult>> property, TResult value)
-        {
-            var propertyInfo = (property.Body as MemberExpression).Member
-                as PropertyInfo;
-
-            if (propertyInfo == null ||
-                !@this.GetType().IsSubclassOf(propertyInfo.ReflectedType) ||
-                @this.GetType().GetProperty(
-                    propertyInfo.Name,
-                    propertyInfo.PropertyType) == null)
-            {
-                throw new ArgumentException("The lambda expression 'property' must reference a valid property on this Control.");
-            }
-
-            if (@this.InvokeRequired)
-            {
-                @this.Invoke(new SetPropertyThreadSafeDelegate<TResult>
-                (SetPropertyThreadSafe),
-                new object[] { @this, property, value });
-            }
-            else
-            {
-                @this.GetType().InvokeMember(
-                    propertyInfo.Name,
-                    BindingFlags.SetProperty,
-                    null,
-                    @this,
-                    new object[] { value });
-            }
-        }
-
         public static void InvokeAction(this Control @this, Action action)
         {
             if (@this.InvokeRequired)
@@ -133,6 +98,7 @@ namespace BlenderRenderController
 
             proc.EnableRaisingEvents = true;
 
+            // register cancel token to kill the process
             var reg = token.Register(() =>
             {
                 try
@@ -155,11 +121,17 @@ namespace BlenderRenderController
             return result;
         }
 
+        /// <summary>
+        /// Starts the process asynchronously
+        /// </summary>
+        /// <param name="token">Cancelation token, calls the <see cref="Process.Kill()"/> method</param>
+        /// <returns>A tuple with the Process exit code, standard output and standard error strings</returns>
         public static async Task<(int, string, string)> StartAsyncGetOutput(this Process proc, CancellationToken token = default(CancellationToken))
         {
             StringBuilder stdOutput = new StringBuilder(),
                           stdErrors = new StringBuilder();
 
+            // read the output and error data
             proc.OutputDataReceived += (s, e) =>
             {
                 if (e.Data != null)
