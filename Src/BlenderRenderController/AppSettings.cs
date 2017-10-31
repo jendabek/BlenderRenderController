@@ -134,7 +134,7 @@ namespace BlenderRenderController
                     FFmpegProgram = DefFFmpegFolder + GetProgramFileName("ffmpeg"),
                     Verbose = false,
                     DisplayToolTips = true,
-                    AfterRender = AfterRenderAction.JOIN_MIXDOWN,
+                    AfterRender = AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN,
                     Renderer = BlenderRenderes.BLENDER_RENDER
                 };
 

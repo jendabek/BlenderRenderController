@@ -72,7 +72,6 @@
     <Compile Include="CalcChunkTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomParams.cs" />
-    <Compile Include="ProcessesTests.cs" />
     <Compile Include="RenderMngrTests.cs" />
   </ItemGroup>
   <ItemGroup>

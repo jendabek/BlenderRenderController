@@ -76,7 +76,6 @@
     <Compile Include="Extentions.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Others.cs" />
-    <Compile Include="ProcessScheduler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

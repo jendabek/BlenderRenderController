@@ -1,56 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Diagnostics;
+using System.Linq;
 
 namespace System.Collections.Concurrent
 {
-    public class ConcurrentHashSet<T> : IDisposable, ICollection<T>
+    [DebuggerDisplay("Count = {Count}")]
+    public class ConcurrentHashSet<T> : ICollection<T>, ISet<T>
     {
-        private readonly ReaderWriterLockSlim _lock;
-        private readonly HashSet<T> _data;
+        private ConcurrentDictionary<T, byte> _data;
 
-        public int Count
-        {
-            get
-            {
-                _lock.EnterReadLock();
-
-                try
-                {
-                    return _data.Count;
-                }
-                finally
-                {
-                    if (_lock.IsReadLockHeld)
-                        _lock.ExitReadLock();
-                }
-            }
-        }
-
+        public int Count => _data.Keys.Count;
         public bool IsReadOnly => false;
 
 
         public ConcurrentHashSet()
         {
-            _data = new HashSet<T>();
-            _lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            _data = new ConcurrentDictionary<T, byte>();
         }
-
-
-        public bool Add(T item)
+        public ConcurrentHashSet(IEnumerable<T> collection)
         {
-            _lock.EnterWriteLock();
-
-            try
-            {
-                return _data.Add(item);
-            }
-            finally
-            {
-                if (_lock.IsWriteLockHeld)
-                    _lock.ExitWriteLock();
-            }
+            var init = collection.Select(i => new KeyValuePair<T, byte>(i, byte.MinValue));
+            _data = new ConcurrentDictionary<T, byte>(init);
         }
+        public ConcurrentHashSet(IEqualityComparer<T> comparer)
+        {
+            _data = new ConcurrentDictionary<T, byte>(comparer);
+        }
+        public ConcurrentHashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
+        {
+            var kvps = collection.Select(c => new KeyValuePair<T, byte>(c, byte.MinValue));
+            _data = new ConcurrentDictionary<T, byte>(kvps, comparer);
+        }
+
+
+        #region ICollection
         void ICollection<T>.Add(T item)
         {
             Add(item);
@@ -58,73 +42,124 @@ namespace System.Collections.Concurrent
 
         public void Clear()
         {
-            _lock.EnterWriteLock();
-            try
-            {
-                _data.Clear();
-            }
-            finally
-            {
-                if (_lock.IsWriteLockHeld)
-                    _lock.ExitWriteLock();
-            }
+            _data.Clear();
         }
 
         public bool Contains(T item)
         {
-            _lock.EnterReadLock();
-            try
-            {
-                return _data.Contains(item);
-            }
-            finally
-            {
-                if (_lock.IsReadLockHeld)
-                    _lock.ExitReadLock();
-            }
+            return _data.ContainsKey(item);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            _lock.EnterReadLock();
-            try
-            {
-                _data.CopyTo(array, arrayIndex);
-            }
-            finally
-            {
-                if (_lock.IsReadLockHeld)
-                    _lock.ExitReadLock();
-            }
-        }
-
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            _lock.EnterReadLock();
-            try
-            {
-                return _data.GetEnumerator();
-            }
-            finally
-            {
-                if (_lock.IsReadLockHeld)
-                    _lock.ExitReadLock();
-            }
+            _data.Keys.CopyTo(array, arrayIndex);
         }
 
         public bool Remove(T item)
         {
-            _lock.EnterWriteLock();
-            try
+            return _data.TryRemove(item, out byte ph);
+        } 
+        #endregion
+
+        #region ISet
+        // For set operations, create new hashset, clear _data and re-add
+        public bool Add(T item)
+        {
+            return _data.TryAdd(item, byte.MinValue);
+        }
+
+        public void UnionWith(IEnumerable<T> other)
+        {
+            var hash = new HashSet<T>(_data.Keys);
+            hash.UnionWith(other);
+
+            Clear();
+
+            foreach (var item in hash)
             {
-                return _data.Remove(item);
+                Add(item);
             }
-            finally
+        }
+
+        public void IntersectWith(IEnumerable<T> other)
+        {
+            var hash = new HashSet<T>(_data.Keys);
+            hash.IntersectWith(other);
+
+            Clear();
+
+            foreach (var item in hash)
             {
-                if (_lock.IsWriteLockHeld)
-                    _lock.ExitWriteLock();
+                Add(item);
             }
+        }
+
+        public void ExceptWith(IEnumerable<T> other)
+        {
+            var hash = new HashSet<T>(_data.Keys);
+            hash.ExceptWith(other);
+
+            Clear();
+
+            foreach (var item in hash)
+            {
+                Add(item);
+            }
+        }
+
+        public void SymmetricExceptWith(IEnumerable<T> other)
+        {
+            var hash = new HashSet<T>(_data.Keys);
+            hash.SymmetricExceptWith(other);
+
+            Clear();
+
+            foreach (var item in hash)
+            {
+                Add(item);
+            }
+        }
+
+        public bool IsSubsetOf(IEnumerable<T> other)
+        {
+            var hash = new HashSet<T>(_data.Keys);
+            return hash.IsSubsetOf(other);
+        }
+
+        public bool IsSupersetOf(IEnumerable<T> other)
+        {
+            var hash = new HashSet<T>(_data.Keys);
+            return hash.IsSupersetOf(other);
+        }
+
+        public bool IsProperSupersetOf(IEnumerable<T> other)
+        {
+            var hash = new HashSet<T>(_data.Keys);
+            return hash.IsProperSupersetOf(other);
+        }
+
+        public bool IsProperSubsetOf(IEnumerable<T> other)
+        {
+            var hash = new HashSet<T>(_data.Keys);
+            return hash.IsProperSupersetOf(other);
+        }
+
+        public bool Overlaps(IEnumerable<T> other)
+        {
+            var hash = new HashSet<T>(_data.Keys);
+            return hash.Overlaps(other);
+        }
+
+        public bool SetEquals(IEnumerable<T> other)
+        {
+            var hash = new HashSet<T>(_data.Keys);
+            return hash.SetEquals(other);
+        }
+        #endregion
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _data.Keys.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -132,28 +167,6 @@ namespace System.Collections.Concurrent
             return GetEnumerator();
         }
 
-
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_lock != null)
-                {
-                    _lock.Dispose();
-                }
-            }
-        }
-
-        ~ConcurrentHashSet()
-        {
-            Dispose(false);
-        }
     }
+
 }

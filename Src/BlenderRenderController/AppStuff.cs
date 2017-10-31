@@ -1,4 +1,8 @@
 ﻿using NLog;
+using System;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Windows.Forms;
 
 namespace BlenderRenderController
 {
@@ -52,4 +56,63 @@ namespace BlenderRenderController
         }
     }
 
+    static class Extentions
+    {
+        private delegate void SetPropertyThreadSafeDelegate<TResult>(Control @this, Expression<Func<TResult>> property, TResult value);
+
+        public static void SetPropertyThreadSafe<TResult>(this Control @this, Expression<Func<TResult>> property, TResult value)
+        {
+            var propertyInfo = (property.Body as MemberExpression).Member
+                as PropertyInfo;
+
+            if (propertyInfo == null ||
+                !@this.GetType().IsSubclassOf(propertyInfo.ReflectedType) ||
+                @this.GetType().GetProperty(
+                    propertyInfo.Name,
+                    propertyInfo.PropertyType) == null)
+            {
+                throw new ArgumentException("The lambda expression 'property' must reference a valid property on this Control.");
+            }
+
+            if (@this.InvokeRequired)
+            {
+                @this.Invoke(new SetPropertyThreadSafeDelegate<TResult>
+                (SetPropertyThreadSafe),
+                new object[] { @this, property, value });
+            }
+            else
+            {
+                @this.GetType().InvokeMember(
+                    propertyInfo.Name,
+                    BindingFlags.SetProperty,
+                    null,
+                    @this,
+                    new object[] { value });
+            }
+        }
+
+        public static void InvokeAction(this Control @this, Action action)
+        {
+            if (@this.InvokeRequired)
+            {
+                @this.Invoke(action);
+            }
+            else
+            {
+                action();
+            }
+        }
+        public static void InvokeAction<T>(this Control @this, Action<T> action, T param)
+        {
+            if (@this.InvokeRequired)
+            {
+                @this.Invoke(action);
+            }
+            else
+            {
+                action(param);
+            }
+
+        }
+    }
 }

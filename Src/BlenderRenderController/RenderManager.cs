@@ -22,7 +22,6 @@ namespace BlenderRenderController
 
         bool canReportProgress;
         IProgress<RenderProgressInfo> progress;
-        RenderProgressInfo lastReport;
 
         AppSettings settings = AppSettings.Current;
 
@@ -30,8 +29,10 @@ namespace BlenderRenderController
         public string BlendFilePath { get; set; }
         public string BaseFileName { get; set; }
         public int MaxConcurrency { get; set; }
+
         public int NumberOfFramesRendered { get => framesRendered.Count; }
         public List<Chunk> ChunkList { get; }
+        public bool InProgress { get; private set; }
 
 
         public event EventHandler<int> Finished;
@@ -42,19 +43,24 @@ namespace BlenderRenderController
             ChunkList = new List<Chunk>(chunks);
 
             timer = new Timer { Interval = 75, AutoReset = true };
-            timer.Elapsed += Timer_Elapsed;
+            timer.Elapsed += TryQueueRenderProcess;
         }
+        // for testing
         public RenderManager(IEnumerable<Chunk> chunks, AppSettings settings)
             : this(chunks)
         {
             this.settings = settings;
         }
+
         public RenderManager(ProjectSettings project)
             : this(project.ChunkList)
         {
             MaxConcurrency = project.ProcessesCount;
             BlendFilePath = project.BlendPath;
+            BaseFileName = project.BlendData.ProjectName;
+            ChunksFolderPath = Path.Combine(project.BlendData.OutputPath, "chunks");
         }
+
 
         public void Start(IProgress<RenderProgressInfo> prog)
         {
@@ -69,8 +75,21 @@ namespace BlenderRenderController
             chunksInProgress = 0;
             chunksToDo = ChunkList.Count;
             initalChunkCount = ChunkList.Count;
+            InProgress = true;
 
             timer.Start();
+        }
+
+        public void Start()
+        {
+            Start(null);
+        }
+
+        public void Abort()
+        {
+            timer.Stop();
+            DisposeProcesses();
+            InProgress = false;
         }
 
         private void CheckForValidProperties()
@@ -98,17 +117,6 @@ namespace BlenderRenderController
                     throw new Exception("Could not create 'chunks' folder", inner);
                 }
             }
-        }
-
-        public void Start()
-        {
-            Start(null);
-        }
-
-        public void Abort()
-        {
-            timer.Stop();
-            DisposeProcesses();
         }
 
         private Process RenderProcessFactory(Chunk chunk)
@@ -154,7 +162,7 @@ namespace BlenderRenderController
             }
         }
 
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        private void TryQueueRenderProcess(object sender, ElapsedEventArgs e)
         {
             if (currentIndex < ChunkList.Count)
             {
@@ -175,8 +183,7 @@ namespace BlenderRenderController
             if (canReportProgress)
             {
                 var progInfo = new RenderProgressInfo(framesRendered.Count, initalChunkCount - chunksToDo);
-                if (lastReport.FramesRendered != progInfo.FramesRendered) progress.Report(progInfo);
-                lastReport = progInfo;
+                progress.Report(progInfo);
             }
 
             if (chunksToDo == 0)
@@ -192,6 +199,7 @@ namespace BlenderRenderController
         {
             Finished?.Invoke(this, NumberOfFramesRendered);
             DisposeProcesses();
+            InProgress = false;
         }
 
         private void DisposeProcesses()
@@ -200,16 +208,27 @@ namespace BlenderRenderController
 
             foreach (var p in procList)
             {
-                if (!p.HasExited)
+                try
                 {
-                    p.Kill();
+                    if (p != null && !p.HasExited)
+                    {
+                        p.Kill();
+                    }
                 }
-                p.Dispose();
+                catch (InvalidOperationException ioex)
+                {
+                    Trace.WriteLine("Error while killing process\n\n" + ioex.Message, nameof(RenderManager));
+                }
+                finally
+                {
+                    p.Dispose();
+                }
             }
+
         }
     }
 
-    public struct RenderProgressInfo
+    public class RenderProgressInfo
     {
         public int FramesRendered { get; }
         public int PartsCompleted { get; }

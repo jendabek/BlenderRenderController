@@ -131,6 +131,13 @@ namespace BRClib
         private readonly ObservableCollection<Chunk> _chunkList;
         private string _blendPath;
         private int _chunkLen, _processCount;
+        private BlendData _bData;
+
+        public BlendData BlendData
+        {
+            get { return _bData; }
+            set { SetProperty(ref _bData, value); }
+        }
 
         public string BlendPath
         {
@@ -164,9 +171,13 @@ namespace BRClib
         BLENDER_RENDER, CYCLES
     }
 
+    [Flags]
     public enum AfterRenderAction
     {
-        JOIN_MIXDOWN = 2, JOIN = 1, NOTHING = 0
+        JOIN = 2,
+        MIXDOWN = 1,
+        NOTHING = 0
     }
+
 
 }

@@ -101,9 +101,7 @@ namespace BlenderRenderController
             this.blendBrowseBtn = new System.Windows.Forms.Button();
             this.openBlendDialog = new System.Windows.Forms.OpenFileDialog();
             this.startEndFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.processManager = new System.Windows.Forms.Timer(this.components);
             this.blendNameLabel = new System.Windows.Forms.Label();
-            this.afterRenderBGWorker = new System.ComponentModel.BackgroundWorker();
             this.menuToolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.verToolStripLbl = new System.Windows.Forms.ToolStripLabel();
@@ -997,11 +995,6 @@ namespace BlenderRenderController
             this.startEndFLP.Size = new System.Drawing.Size(99, 47);
             this.startEndFLP.TabIndex = 39;
             // 
-            // processManager
-            // 
-            this.processManager.Interval = 50;
-            this.processManager.Tick += new System.EventHandler(this.TryQueueRenderProcess);
-            // 
             // blendNameLabel
             // 
             this.blendNameLabel.AutoSize = true;
@@ -1014,12 +1007,6 @@ namespace BlenderRenderController
             this.blendNameLabel.TabIndex = 40;
             this.blendNameLabel.Text = "blend name";
             this.blendNameLabel.Visible = false;
-            // 
-            // afterRenderBGWorker
-            // 
-            this.afterRenderBGWorker.WorkerSupportsCancellation = true;
-            this.afterRenderBGWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AfterRenderBGWorker_DoWork);
-            this.afterRenderBGWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AfterRenderBGWorker_RunWorkerCompleted);
             // 
             // menuToolStrip
             // 
@@ -1225,9 +1212,7 @@ namespace BlenderRenderController
         private System.Windows.Forms.BindingSource projectSettingsBindingSource;
         private System.Windows.Forms.BindingSource blendDataBindingSource;
         private System.Windows.Forms.FlowLayoutPanel startEndFLP;
-        private System.Windows.Forms.Timer processManager;
         private System.Windows.Forms.Label blendNameLabel;
-        private System.ComponentModel.BackgroundWorker afterRenderBGWorker;
         private System.Windows.Forms.ToolStripMenuItem forceUIUpdateToolStripMenuItem;
         private System.Windows.Forms.ToolStrip menuToolStrip;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
