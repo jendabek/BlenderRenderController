@@ -366,4 +366,5 @@ __pycache__/
 *.pyc
 /tools
 /Src/desktop.ini
+/UPLOAD
 >>>>>>> beta

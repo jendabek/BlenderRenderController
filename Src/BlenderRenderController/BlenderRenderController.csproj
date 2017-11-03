@@ -46,9 +46,9 @@
     <StartupObject>
     </StartupObject>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'VM-Debug|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug Unix|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>F:\PCsVirtuais\_transfer\VS\builds\debug\</OutputPath>
+    <OutputPath>bin\Debug Unix\</OutputPath>
     <DefineConstants>TRACE;DEBUG;UNIX</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -57,7 +57,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release Unix|AnyCPU'">
-    <OutputPath>F:\PCsVirtuais\_transfer\VS\builds\release\</OutputPath>
+    <OutputPath>bin\Release Unix\</OutputPath>
     <DefineConstants>TRACE;UNIX</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -211,6 +211,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>IF "$(ConfigurationName)"=="Release" call $(SolutionDir)mergeBuild.bat $(TargetName) $(TargetDir)</PostBuildEvent>
+    <PostBuildEvent>
+powershell -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(SolutionDir)BRC_PostBuild.ps1 -TargetName $(TargetName) -TargetDir $(TargetDir) -ConfigName "$(ConfigurationName)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

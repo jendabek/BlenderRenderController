@@ -34,7 +34,7 @@
     <DocumentationFile>
     </DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'VM-Debug|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug Unix|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\VM-Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
