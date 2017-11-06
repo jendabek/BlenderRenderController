@@ -66,9 +66,7 @@ namespace BRClib
                 // return a single chunk
                 return new Chunk[]{ new Chunk(start, end) };
 
-            decimal totalLen = end - start + 1;
-            var lenght = (int)Math.Ceiling(totalLen / div);
-
+            var lenght = (int)Math.Ceiling((end - start + 1) / (decimal)div);
             return MakeArray(start, end, lenght);
         }
         /// <summary>
@@ -96,10 +94,9 @@ namespace BRClib
             decimal totalLen = end - start + 1;
 
             int cStart = start,
-                cEnd,
-                div = (int)Math.Ceiling(totalLen / chunkLen);
+                cEnd;
 
-            List<Chunk> chunkList = new List<Chunk>(div);
+            List<Chunk> chunkList = new List<Chunk>();
 
             while (chunkList.TotalLength() < totalLen)
             {

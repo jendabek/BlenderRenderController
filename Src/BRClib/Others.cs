@@ -152,16 +152,37 @@ namespace BRClib
         /// <summary>
         /// Allowed video file extentions
         /// </summary>
-        public static readonly string[] AllowedFileExts = { "avi", "mp4", "mov", "mkv", "mpg", "flv" };
+        public static readonly string[] AllowedFileExts = { "avi", "mp4", "mov", "mkv", "mpg", "flv", "dv", "dvd", "ogv" };
 
         public static readonly string[] AllowedAudioFileExts = { "mp3", "ac3", "aac", "ogg", "flac", "wav" };
+
+        public static string GetAudioFileFormat(string codec)
+        {
+            if (codec == null)
+                return null;
+
+            switch (codec)
+            {
+                case "PCM":
+                    return "wav";
+                case "VORBIS":
+                    return "ogg";
+                case "NONE":
+                    return "ac3";
+                default:
+                    return codec.ToLower();
+            }
+
+        }
 
         // TODO maybe: Make a list that relates format property to output file format
         static readonly Dictionary<string, string> FormatDictionary = 
             new Dictionary<string, string>
             {
-                { "AVI_JPEG", "avi" }, {"AVI_RAW", "avi"}, {"H264", "avi"},
-                { "FFMPEG", "mp4" }
+                { "AVI", "avi" }, {"XVID", "avi"}, {"H264", "avi"},
+                { "MPEG4", "mp4" }, { "MPEG1", "mpg" }, {"MPEG2", "dvd"},
+                {"QUICKTIME", "mov"}, {"DV", "dv"}, {"OGG", "ogv"},
+                {"MKV", "mkv"}, {"FLASH", "flv"}
             };
 
     }

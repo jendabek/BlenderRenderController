@@ -200,12 +200,22 @@ namespace BlenderRenderController
 
             if (!File.Exists(BlenderProgram))
             {
-                errors.Add(AppErrorCode.BLENDER_PATH_NOT_SET);
+                if (VerifyLocation(BlenderExeName, "-v", "Blender"))
+                {
+                    BlenderProgram = GetPathFromEnv(BlenderExeName);
+                    return CheckCorrectConfig();
+                }
+                else errors.Add(AppErrorCode.BLENDER_PATH_NOT_SET);
             }
 
             if (!File.Exists(FFmpegProgram))
             {
-                errors.Add(AppErrorCode.FFMPEG_PATH_NOT_SET);
+                if (VerifyLocation(FFmpegExeName, "-version", "ffmpeg version"))
+                {
+                    FFmpegProgram = GetPathFromEnv(FFmpegExeName);
+                    return CheckCorrectConfig();
+                }
+                else errors.Add(AppErrorCode.FFMPEG_PATH_NOT_SET);
             }
 
             if (errors.Count == 0)
@@ -213,12 +223,43 @@ namespace BlenderRenderController
                 return true;
             }
 
-            //if (showErrors)
-            //{
-            //    Helper.ShowErrors(MessageBoxIcon.Exclamation, errors.ToArray());
-            //}
-
             return false;
+        }
+
+        bool VerifyLocation(string exe, string args, string match)
+        {
+            string fullExe = GetPathFromEnv(exe);
+            if (fullExe == null)
+            {
+                return false;
+            }
+
+            Process p = new Process();
+            ProcessStartInfo info = new ProcessStartInfo
+            {
+                FileName = fullExe,
+                Arguments = args,
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
+
+            p.StartInfo = info;
+            p.Start();
+            var line = p.StandardOutput.ReadLine();
+
+            return line.IndexOf(match, StringComparison.InvariantCultureIgnoreCase) == 0;
+        }
+
+        string GetPathFromEnv(string exe)
+        {
+            var PATH = Environment.GetEnvironmentVariable("PATH");
+            var envPaths = PATH.Split(Path.PathSeparator);
+
+            var exePath = envPaths.Select(x => Path.Combine(x, exe))
+                                  .Where(x => File.Exists(x))
+                                  .FirstOrDefault();
+
+            return exePath;
         }
 
         private static string GetProgramFileName(string prog)
@@ -235,17 +276,10 @@ namespace BlenderRenderController
             }
         }
 
-
-
         public void Save()
         {
             var jsonStr = JsonConvert.SerializeObject(this, Formatting.Indented);
             File.WriteAllText(Path.Combine(_baseDir, SETTINGS_FILE), jsonStr);
-        }
-
-        public void ReLoad()
-        {
-            _instance = Load();
         }
 
         static AppSettings Load()

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using static BRClib.CommandARGS;
 
@@ -50,6 +51,7 @@ namespace BlenderRenderController
 
             timer = new Timer { Interval = 75, AutoReset = true };
             timer.Elapsed += TryQueueRenderProcess;
+            MaxConcurrency = 2;
         }
         // for testing
         public RenderManager(IEnumerable<Chunk> chunks, AppSettings settings)
@@ -73,6 +75,12 @@ namespace BlenderRenderController
         /// <param name="prog">Progress provider</param>
         public void Start(IProgress<RenderProgressInfo> prog)
         {
+            // do not start if its already in progress
+            if (InProgress)
+            {
+                return;
+            }
+
             CheckForValidProperties();
 
             progress = prog;
@@ -120,6 +128,11 @@ namespace BlenderRenderController
             {
                 throw new Exception("Chunk list is empty");
             }
+
+            //if (MaxConcurrency < 2)
+            //{
+            //    throw new Exception("Must have a MaxConcurrency value of 2 or more");
+            //}
 
             if (!File.Exists(BlendFilePath))
             {
@@ -185,20 +198,18 @@ namespace BlenderRenderController
 
         private void TryQueueRenderProcess(object sender, ElapsedEventArgs e)
         {
-            if (currentIndex < ChunkList.Count)
+            // start new render procs only within the concurrency limit and until the
+            // end of ChunkList
+            if (currentIndex < ChunkList.Count && chunksInProgress < MaxConcurrency)
             {
                 var currentChunk = ChunkList[currentIndex];
+                var proc = RenderProcessFactory(currentChunk);
+                proc.Start();
+                proc.BeginOutputReadLine();
+                procBag.Add(proc);
 
-                if (chunksInProgress < MaxConcurrency)
-                {
-                    var proc = RenderProcessFactory(currentChunk);
-                    proc.Start();
-                    proc.BeginOutputReadLine();
-                    procBag.Add(proc);
-
-                    chunksInProgress++;
-                    currentIndex++;
-                }
+                chunksInProgress++;
+                currentIndex++;
             }
 
             if (canReportProgress)
@@ -209,7 +220,9 @@ namespace BlenderRenderController
 
             if (chunksToDo == 0)
             {
-                Debug.Assert(framesRendered.Count == ChunkList.TotalLength(), "Frames counted don't match the ChunkList lenght");
+                // all render processes are done at this point
+                Debug.Assert(framesRendered.Count == ChunkList.TotalLength(), 
+                            "Frames counted don't match the ChunkList lenght");
 
                 timer.Stop();
                 OnFinished();

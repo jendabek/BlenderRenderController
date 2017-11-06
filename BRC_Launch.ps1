@@ -32,7 +32,7 @@ del .\tmp\* -Recurse
 Write-Host "Coping files..." -NoNewline
 
 #xcopy "$FilesPath\*" "$DeployPath\tmp\*" /Y /S /F
-copy "$FilesPath\*" "$DeployPath\tmp\" -Force -Recurse
+copy "$FilesPath\*" "$DeployPath\tmp\" -Force -Recurse -Exclude *.pdb
 
 Write-Host "Done"
 

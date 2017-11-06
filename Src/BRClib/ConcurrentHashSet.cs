@@ -6,6 +6,7 @@ using System.Linq;
 namespace System.Collections.Concurrent
 {
     [DebuggerDisplay("Count = {Count}")]
+    [DebuggerTypeProxy(typeof(ConcurrentHashSetDebugView<>))]
     public class ConcurrentHashSet<T> : ICollection<T>, ISet<T>
     {
         private ConcurrentDictionary<T, byte> _data;
@@ -73,12 +74,7 @@ namespace System.Collections.Concurrent
             var hash = new HashSet<T>(_data.Keys);
             hash.UnionWith(other);
 
-            Clear();
-
-            foreach (var item in hash)
-            {
-                Add(item);
-            }
+            InternalReset(hash);
         }
 
         public void IntersectWith(IEnumerable<T> other)
@@ -86,12 +82,7 @@ namespace System.Collections.Concurrent
             var hash = new HashSet<T>(_data.Keys);
             hash.IntersectWith(other);
 
-            Clear();
-
-            foreach (var item in hash)
-            {
-                Add(item);
-            }
+            InternalReset(hash);
         }
 
         public void ExceptWith(IEnumerable<T> other)
@@ -99,12 +90,7 @@ namespace System.Collections.Concurrent
             var hash = new HashSet<T>(_data.Keys);
             hash.ExceptWith(other);
 
-            Clear();
-
-            foreach (var item in hash)
-            {
-                Add(item);
-            }
+            InternalReset(hash);
         }
 
         public void SymmetricExceptWith(IEnumerable<T> other)
@@ -112,12 +98,7 @@ namespace System.Collections.Concurrent
             var hash = new HashSet<T>(_data.Keys);
             hash.SymmetricExceptWith(other);
 
-            Clear();
-
-            foreach (var item in hash)
-            {
-                Add(item);
-            }
+            InternalReset(hash);
         }
 
         public bool IsSubsetOf(IEnumerable<T> other)
@@ -155,6 +136,17 @@ namespace System.Collections.Concurrent
             var hash = new HashSet<T>(_data.Keys);
             return hash.SetEquals(other);
         }
+
+
+        void InternalReset(HashSet<T> set)
+        {
+            Clear();
+
+            foreach (var item in set)
+            {
+                Add(item);
+            }
+        }
         #endregion
 
         public IEnumerator<T> GetEnumerator()
@@ -167,6 +159,28 @@ namespace System.Collections.Concurrent
             return GetEnumerator();
         }
 
+        // for debug view
+        internal T[] ToArray()
+        {
+            T[] newArray = new T[_data.Keys.Count];
+            CopyTo(newArray, 0);
+            return newArray;
+        }
     }
 
+    internal class ConcurrentHashSetDebugView<T>
+    {
+        ConcurrentHashSet<T> _set;
+
+        public ConcurrentHashSetDebugView(ConcurrentHashSet<T> set)
+        {
+            _set = set ?? throw new ArgumentNullException("set");
+        }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+        public T[] Items
+        {
+            get => _set.ToArray();
+        }
+    }
 }
