@@ -110,6 +110,7 @@
       <DependentUpon>ConcatForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ETACalculator.cs" />
+    <Compile Include="Extentions.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

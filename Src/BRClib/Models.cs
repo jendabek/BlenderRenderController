@@ -89,12 +89,15 @@ namespace BRClib
 
         // scene.render.image_settings.file_format
         [JsonProperty("imgFormat")]
-        public string FileFormat
-        {
-            get => _fileFmt;
-            private set => SetProperty(ref _fileFmt, value);
-        }
+        public string FileFormat { get; private set; }
 
+        // scene.render.ffmpeg.format
+        [JsonProperty("ffmpegFmt")]
+        public string FFmpegVideoFormat { get; private set; }
+
+        // scene.render.ffmpeg.audio_codec
+        [JsonProperty("ffmpegAudio")]
+        public string FFmpegAudioCodec { get; private set; }
 
         public TimeSpan? Duration
         {
@@ -120,7 +123,26 @@ namespace BRClib
             }
         }
 
+        public string AudioFileFormat
+        {
+            get
+            {
+                if (FFmpegAudioCodec == null)
+                    return null;
 
+                switch (FFmpegAudioCodec)
+                {
+                    case "PCM":
+                        return "wav";
+                    case "VORBIS":
+                        return "ogg";
+                    case "NONE":
+                        return "ac3";
+                    default:
+                        return FFmpegAudioCodec.ToLower();
+                }
+            }
+        }
     }
 
     /// <summary>

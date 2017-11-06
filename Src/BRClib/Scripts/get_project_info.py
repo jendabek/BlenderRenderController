@@ -53,6 +53,7 @@ class ProjectInfo:
         # ffmpeg info
         ffmpegFmt = scene.render.ffmpeg.format
         ffmpegCodec = scene.render.ffmpeg.codec
+        ffmpegAudio = scene.render.ffmpeg.audio_codec
 
         # calc real fps
         fpsSource  = scene.render.fps
@@ -70,6 +71,7 @@ class ProjectInfo:
         if ".." in outSplit:
             try:
                 print("Path has relative folders '/../'")
+                print("Before: " + outputPath)
                 outputPath = self.fixPath(outSplit)
             except FolderCountError as err:
                 msg, n, g = err.args
@@ -109,7 +111,8 @@ class ProjectInfo:
 		            'sceneActive': sceneActive,
 		            'imgFormat': imgFormat,
                     'ffmpegFmt': ffmpegFmt,
-                    'ffmpegCodec': ffmpegCodec
+                    'ffmpegCodec': ffmpegCodec,
+                    'ffmpegAudio': ffmpegAudio
                 };
 
     # fixes relative paths

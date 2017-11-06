@@ -391,19 +391,13 @@ namespace BlenderRenderController
         private void RenderAll()
         {
             // Calculate chunks
-            Chunk[] chunks;
-            if (renderOptionsCustomRadio.Checked)
-            {
-                chunks = Chunk.CalcChunksByLenght(_project.BlendData.Start, _project.BlendData.End, _project.ChunkLenght);
-            }
-            else
-            {
-                chunks = Chunk.CalcChunks(_project.BlendData.Start, _project.BlendData.End, _project.ProcessesCount);
-            }
+            bool customLen = renderOptionsCustomRadio.Checked;
+            Chunk[] chunks = customLen ? Chunk.CalcChunksByLenght(_project.BlendData.Start, _project.BlendData.End, _project.ChunkLenght)
+                                       : Chunk.CalcChunks(_project.BlendData.Start, _project.BlendData.End, _project.ProcessesCount);
+
             UpdateCurrentChunks(chunks);
 
             startTime = DateTime.Now;
-            Status("Starting render...");
 
             renderManager = new RenderManager(_project);
             renderManager.Finished += RenderManager_Finished;
@@ -422,14 +416,15 @@ namespace BlenderRenderController
             TaskbarManager.Instance.SetProgressValue(0, 100);
 #endif
 
-            UpdateUI(AppState.RENDERING_ALL);
+            UpdateUI(AppState.RENDERING_ALL, "Starting render...");
             renderManager.Start(renderProgress);
         }
 
         private async void RenderManager_Finished(object sender, int e)
         {
             this.InvokeAction(() => renderProgressBar.Style = ProgressBarStyle.Marquee);
-            afterRenderCancelSrc = new CancellationTokenSource();
+            //afterRenderCancelSrc = new CancellationTokenSource();
+            ResetCTS();
 
 #if WINDOWS
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
@@ -667,16 +662,17 @@ namespace BlenderRenderController
         private async void mixDownButton_Click(object sender, EventArgs e)
         {
             IsWorking = true;
-            afterRenderCancelSrc = new CancellationTokenSource();
+            //afterRenderCancelSrc = new CancellationTokenSource();
+            ResetCTS();
 
-            UpdateUI(AppState.RENDERING_ALL);
+            UpdateUI(AppState.RENDERING_ALL, "Rendering Mixdown");
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
             var proc = GetMixdownProcess();
             var exitCode = await proc.StartAsync(afterRenderCancelSrc.Token);
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
-            UpdateUI(AppState.READY_FOR_RENDER);
+            UpdateUI(AppState.READY_FOR_RENDER, "Mixdown complete");
             IsWorking = false;
 
             Trace.WriteLine("Mixdown proc exit code: " + exitCode, "Mixdown");
@@ -769,9 +765,10 @@ namespace BlenderRenderController
         private async void concatenatePartsButton_Click(object sender, EventArgs e)
         {
             IsWorking = true;
-            afterRenderCancelSrc = new CancellationTokenSource();
+            //afterRenderCancelSrc = new CancellationTokenSource();
+            ResetCTS();
 
-            UpdateUI(AppState.RENDERING_ALL);
+            UpdateUI(AppState.RENDERING_ALL, "Concatenating...");
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
             var manConcat = new ConcatForm();
@@ -787,13 +784,14 @@ namespace BlenderRenderController
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             IsWorking = false;
+            var done = "Concatenation complete!";
 
             if (string.IsNullOrEmpty(_project.BlendPath))
             {
-                UpdateUI(AppState.AFTER_START);
+                UpdateUI(AppState.AFTER_START, done);
             }
             else
-                UpdateUI(AppState.READY_FOR_RENDER);
+                UpdateUI(AppState.READY_FOR_RENDER, done);
         }
 
         #endregion
@@ -805,7 +803,8 @@ namespace BlenderRenderController
             string mixFile = null;
             if ((action & AfterRenderAction.MIXDOWN) != 0)
             {
-                mixFile = Path.Combine(_project.BlendData.OutputPath, _project.BlendData.ProjectName + ".ac3");
+                mixFile = Path.Combine(_project.BlendData.OutputPath, 
+                                       _project.BlendData.ProjectName + '.' + _project.BlendData.AudioFileFormat);
             }
 
             if ((action & AfterRenderAction.JOIN) != 0)
@@ -863,6 +862,15 @@ namespace BlenderRenderController
             UpdateUI(appState);
         }
 
+        void ResetCTS()
+        {
+            if (afterRenderCancelSrc != null)
+            {
+                afterRenderCancelSrc.Dispose();
+                afterRenderCancelSrc = null;
+            }
+            afterRenderCancelSrc = new CancellationTokenSource();
+        }
 
 
         private void Enter_GotoNext(object sender, KeyEventArgs e)
@@ -1270,6 +1278,7 @@ namespace BlenderRenderController
                     afterRenderDoNothingRadio.Enabled = false;
                     afterRenderJoinMixdownRadio.Enabled = false;
                     afterRenderJoinRadio.Enabled = false;
+                    msgToSend = statusMsg;
                     break;
             }
 
