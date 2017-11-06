@@ -213,6 +213,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-powershell -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(SolutionDir)BRC_PostBuild.ps1 -TargetName $(TargetName) -TargetDir $(TargetDir) -ConfigName "$(ConfigurationName)"</PostBuildEvent>
+powershell -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(SolutionDir)BRC_PostBuild.ps1 -TargetName $(TargetName) -ConfigName "$(ConfigurationName)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

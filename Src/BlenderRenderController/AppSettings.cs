@@ -240,6 +240,7 @@ namespace BlenderRenderController
                 FileName = fullExe,
                 Arguments = args,
                 UseShellExecute = false,
+                CreateNoWindow = true,
                 RedirectStandardOutput = true
             };
 

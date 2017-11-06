@@ -1,18 +1,19 @@
 ﻿param (
     [string]$TargetName,
-    [string]$TargetDir,
     [string]$ConfigName
 )
 
 $OLDPWD = $PWD.Path
-Set-Location "$TargetDir"
+echo "Current path: $OLDPWD"
 
-$splitPath = $TargetDir.Split('\\')
-
+<#
 if ($ConfigName.Length -eq 0)
 {
     $ConfigName = $splitPath[$splitPath.Length - 1].TrimEnd()
 }
+#>
+
+Write-Host "ConfigName is $ConfigName"
 
 # Linux Vm Transfer folder
 $vmBuildsDir = "F:\PCsVirtuais\_transfer\VS\builds"
@@ -66,12 +67,10 @@ function Merge
 
 if ($ConfigName.Contains("Unix"))
 {
-    del "Microsoft.WindowsAPICodePack*.dll", *.xml
-    ''
-    Write-Host "ConfigName is $ConfigName"
-    $vmdSubDir = $ConfigName.Substring(0, $ConfigName.IndexOf(' '))
-    ''
-    xcopy .\* "$vmBuildsDir\$vmdSubDir\*" /Y /S /F
+    del "Microsoft.WindowsAPICodePack*.dll", *.xml   
+    $vmSubDir = $ConfigName.Substring(0, $ConfigName.IndexOf(' '))
+    #xcopy .\* "$vmBuildsDir\$vmdSubDir\*" /Y /S /F
+    Copy-Item -Path .\* -Destination $vmBuildsDir\$vmSubDir -Force -Recurse
 }
 
 
@@ -80,6 +79,6 @@ if ($ConfigName.Equals("Release"))
     Merge -Filter @('Microsoft.WindowsAPICodePack*.dll', 'System.ValueTuple.dll')
 } 
 
-Set-Location "$OLDPWD"
+#Set-Location "$OLDPWD"
 
 echo "PostBuild Done"

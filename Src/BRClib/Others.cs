@@ -156,25 +156,6 @@ namespace BRClib
 
         public static readonly string[] AllowedAudioFileExts = { "mp3", "ac3", "aac", "ogg", "flac", "wav" };
 
-        public static string GetAudioFileFormat(string codec)
-        {
-            if (codec == null)
-                return null;
-
-            switch (codec)
-            {
-                case "PCM":
-                    return "wav";
-                case "VORBIS":
-                    return "ogg";
-                case "NONE":
-                    return "ac3";
-                default:
-                    return codec.ToLower();
-            }
-
-        }
-
         // TODO maybe: Make a list that relates format property to output file format
         static readonly Dictionary<string, string> FormatDictionary = 
             new Dictionary<string, string>
