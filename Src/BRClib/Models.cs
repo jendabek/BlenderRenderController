@@ -10,7 +10,7 @@ namespace BRClib
     /// </summary>
     public class BlendData : BindingBase
     {
-        private int _start, _end, _scenesNum;
+        private int _start, _end;
         private double _fps;
         private string _outPath, _projName, 
             _activeScene, _fileFmt, _res;
@@ -45,13 +45,6 @@ namespace BRClib
             }
         }
         
-        [JsonProperty("scenesNum")]
-        public int NumberOfScenes
-        {
-            get => _scenesNum;
-            private set => SetProperty(ref _scenesNum, value);
-        }
-
         [JsonProperty("fps")]
         public double Fps
         {

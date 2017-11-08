@@ -353,8 +353,7 @@ namespace BlenderRenderController
             void ReadFail()
             {
                 logger.Error(".blend was NOT loaded");
-                UpdateUI(AppState.AFTER_START);
-                Status("Error loading blend file");
+                UpdateUI(AppState.AFTER_START, "Error loading blend file");
                 renderProgressBar.Style = ProgressBarStyle.Blocks;
             };
         }
@@ -841,7 +840,6 @@ namespace BlenderRenderController
                 default:
                     return;
             }
-
             Trace.WriteLineIf(mixEC != null, "Mixdown proc exit code: " + mixEC, "After Render");
             Trace.WriteLineIf(concEC != null, "Concat proc exit code: " + concEC, "After Render");
         }
