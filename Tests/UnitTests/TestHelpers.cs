@@ -13,10 +13,14 @@ namespace UnitTests
     static class TestHelpers
     {
         public const string BLEND_PATH = @"E:\Bibliotecas E\_projetos\Blender\Video\teste\stuff\test_project.blend";
-        public const string SETTINGS_JSON = @"C:\Users\Pedro\Source\Repos\BlenderRenderController\Src\BlenderRenderController\bin\Debug\brc_settings.json";
         public const string OUT_PATH = @"E:\Bibliotecas E\_projetos\Blender\Video\teste\expo";
-        public static AppSettings Settings = AppSettings.Load(SETTINGS_JSON);
-
+        const string SCRIPTS_DIR = @"C:\Users\Pedro\Source\Repos\BlenderRenderController\Src\BRClib\Scripts";
+        public static AppSettings MockSettings = new AppSettings
+        {
+            BlenderProgram = "C:\\Program Files\\Blender Foundation\\Blender\\blender.exe",
+            FFmpegProgram = "E:\\Programas\\FFmpeg\\Snapshot\\bin\\ffmpeg.exe",
+            Renderer = BlenderRenderes.BLENDER_RENDER
+        };
 
         public static BlendData GetTestBlendData()
         {
@@ -37,16 +41,16 @@ namespace UnitTests
             var getBlendInfoCom = new Process();
             var info = new ProcessStartInfo()
             {
-                FileName = Settings.BlenderProgram,
+                FileName = MockSettings.BlenderProgram,
                 StandardOutputEncoding = Encoding.UTF8,
                 StandardErrorEncoding = Encoding.UTF8,
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
-                CreateNoWindow = true,
+                //CreateNoWindow = true,
                 Arguments = string.Format(CommandARGS.GetInfoComARGS,
                                             blendPath,
-                                            Path.Combine(Settings.ScriptsFolder, "get_project_info.py"))
+                                            Path.Combine(SCRIPTS_DIR, "get_project_info.py"))
             };
 
             getBlendInfoCom.StartInfo = info;

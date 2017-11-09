@@ -546,8 +546,7 @@ namespace BlenderRenderController
             this.infoActiveScene.TabStop = false;
             this.infoActiveScene.Text = "...";
             this.infoActiveScene.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolTipWarn.SetToolTip(this.infoActiveScene, "This program will only render the ACTIVE scene, if you \r\nhave more then one scene" +
-        " on your project sure you \r\nsave it with the scene you want OPEN.");
+            this.toolTipInfo.SetToolTip(this.infoActiveScene, "...");
             // 
             // infoFramesTotalLabel
             // 

@@ -101,6 +101,7 @@ namespace BlenderRenderController
             chunkLengthNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
             processCountNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
 
+            infoActiveScene.TextChanged += (s, args) => toolTipInfo.SetToolTip(infoActiveScene, infoActiveScene.Text);
 #if UNIX
             forceUIUpdateToolStripMenuItem.Visible = true;
             totalStartNumericUpDown.EnabledChanged += NumericUpDown_EnableChanged;
@@ -399,7 +400,7 @@ namespace BlenderRenderController
             startTime = DateTime.Now;
 
             renderManager = new RenderManager(_project);
-            renderManager.Finished += RenderManager_Finished;
+            renderManager.Finished += (s,e) => this.InvokeAction(RenderManager_Finished, e);
 
             renderProgress = new Progress<RenderProgressInfo>();
             renderProgress.ProgressChanged += (s,e) => this.InvokeAction(UpdateProgress, e);
@@ -419,9 +420,9 @@ namespace BlenderRenderController
             renderManager.Start(renderProgress);
         }
 
-        private async void RenderManager_Finished(object sender, int e)
+        private async void RenderManager_Finished(int e)
         {
-            this.InvokeAction(() => renderProgressBar.Style = ProgressBarStyle.Marquee);
+            renderProgressBar.Style = ProgressBarStyle.Marquee;
             //afterRenderCancelSrc = new CancellationTokenSource();
             ResetCTS();
 
@@ -432,7 +433,7 @@ namespace BlenderRenderController
 
             if (!afterRenderCancelSrc.Token.IsCancellationRequested)
             {
-                this.InvokeAction(WorkDone);
+                WorkDone();
             }
         }
 

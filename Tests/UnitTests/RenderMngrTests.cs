@@ -47,7 +47,7 @@ namespace UnitTests
         {
             var blendData = GetBlendData(BLEND_PATH);
             var chunks = Chunk.CalcChunksByLenght(blendData.Start, 3000, 300);
-            var renderMngr = new RenderManager(chunks, Settings)
+            var renderMngr = new RenderManager(chunks, MockSettings)
             {
                 BlendFilePath = BLEND_PATH,
                 ChunksFolderPath = Path.Combine(OUT_PATH, "chunks"),
