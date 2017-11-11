@@ -14,8 +14,34 @@ namespace BlenderRenderController
     /// <summary>
     /// Manages the render of a list of <see cref="Chunk"/>s.
     /// </summary>
+    /// <remarks>
+    /// After calling <see cref="Start"/>, changing any property
+    /// will not affect the in progress render, you must <seealso cref="Abort"/>
+    /// or wait for it to finish, then the next call to <see cref="Start"/> will
+    /// use the new values
+    /// </remarks>
     public class RenderManager
     {
+        // holds info about the current render process, so changes
+        // to RenderManager's properties won't affect a inProgress render
+        class CurrentSettings
+        {
+            public string ChunksPath, BlendPath, BaseFileName;
+            public int Max;
+            //public List<Chunk> Chunks;
+            public IReadOnlyList<Chunk> Chunks;
+
+            public CurrentSettings(RenderManager parent)
+            {
+                Chunks = parent.ChunkList;
+                ChunksPath = parent.ChunksFolderPath;
+                BlendPath = parent.BlendFilePath;
+                BaseFileName = parent.BaseFileName;
+                Max = parent.MaxConcurrency;
+            }
+        }
+        CurrentSettings _rcs;
+
         private ConcurrentBag<Process> procBag;
         private ConcurrentHashSet<int> framesRendered;
         private int chunksToDo, chunksInProgress,
@@ -27,16 +53,17 @@ namespace BlenderRenderController
         bool canReportProgress;
         IProgress<RenderProgressInfo> progress;
 
-        AppSettings settings = AppSettings.Current;
+        AppSettings appSettings = AppSettings.Current;
 
         public string ChunksFolderPath { get; set; }
         public string BlendFilePath { get; set; }
         public string BaseFileName { get; set; }
         public int MaxConcurrency { get; set; }
 
-        public int NumberOfFramesRendered { get => framesRendered.Count; }
-        public List<Chunk> ChunkList { get; }
-        public bool InProgress { get; private set; }
+        public int NumberOfFramesRendered => framesRendered.Count;
+
+        public List<Chunk> ChunkList { get; set; }
+        public bool InProgress { get => _rcs != null; }
 
         /// <summary>
         /// Raised when all chunks finish rendering, 'e' is
@@ -45,24 +72,36 @@ namespace BlenderRenderController
         public event EventHandler<int> Finished;
 
 
-        public RenderManager(IEnumerable<Chunk> chunks)
+        public RenderManager()
         {
-            ChunkList = new List<Chunk>(chunks);
-
             timer = new Timer { Interval = 75, AutoReset = true };
             timer.Elapsed += TryQueueRenderProcess;
             MaxConcurrency = 2;
+        }
+        public RenderManager(IEnumerable<Chunk> chunks) : this()
+        {
+            ChunkList = new List<Chunk>(chunks);
         }
         // for testing
         public RenderManager(IEnumerable<Chunk> chunks, AppSettings settings)
             : this(chunks)
         {
-            this.settings = settings;
+            this.appSettings = settings;
         }
 
         public RenderManager(ProjectSettings project)
             : this(project.ChunkList)
         {
+            Setup(project);
+        }
+
+        /// <summary>
+        /// Setup <see cref="RenderManager"/> using a <see cref="ProjectSettings"/> object
+        /// </summary>
+        /// <param name="project"></param>
+        public void Setup(ProjectSettings project)
+        {
+            ChunkList = new List<Chunk>(project.ChunkList);
             MaxConcurrency = project.ProcessesCount;
             BlendFilePath = project.BlendPath;
             BaseFileName = project.BlendData.ProjectName;
@@ -78,7 +117,7 @@ namespace BlenderRenderController
             // do not start if its already in progress
             if (InProgress)
             {
-                return;
+                throw new InvalidOperationException("A render is already in progress");
             }
 
             CheckForValidProperties();
@@ -92,7 +131,8 @@ namespace BlenderRenderController
             chunksInProgress = 0;
             chunksToDo = ChunkList.Count;
             initalChunkCount = ChunkList.Count;
-            InProgress = true;
+
+            _rcs = new CurrentSettings(this);
 
             timer.Start();
         }
@@ -112,7 +152,7 @@ namespace BlenderRenderController
         {
             timer.Stop();
             DisposeProcesses();
-            InProgress = false;
+            _rcs = null;
         }
 
         private void CheckForValidProperties()
@@ -157,14 +197,14 @@ namespace BlenderRenderController
             var renderCom = new Process();
             var info = new ProcessStartInfo
             {
-                FileName = settings.BlenderProgram,
+                FileName = appSettings.BlenderProgram,
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 Arguments = string.Format(RenderComARGS,
-                                            BlendFilePath,
-                                            Path.Combine(ChunksFolderPath, BaseFileName + "-#"),
-                                            settings.Renderer,
+                                            _rcs.BlendPath,
+                                            Path.Combine(_rcs.ChunksPath, _rcs.BaseFileName + "-#"),
+                                            appSettings.Renderer,
                                             chunk.Start,
                                             chunk.End),
             };
@@ -200,9 +240,9 @@ namespace BlenderRenderController
         {
             // start new render procs only within the concurrency limit and until the
             // end of ChunkList
-            if (currentIndex < ChunkList.Count && chunksInProgress < MaxConcurrency)
+            if (currentIndex < initalChunkCount && chunksInProgress < _rcs.Max)
             {
-                var currentChunk = ChunkList[currentIndex];
+                var currentChunk = _rcs.Chunks[currentIndex];
                 var proc = RenderProcessFactory(currentChunk);
                 proc.Start();
                 proc.BeginOutputReadLine();
@@ -214,14 +254,14 @@ namespace BlenderRenderController
 
             if (canReportProgress)
             {
-                var progInfo = new RenderProgressInfo(framesRendered.Count, initalChunkCount - chunksToDo);
+                var progInfo = new RenderProgressInfo(NumberOfFramesRendered, initalChunkCount - chunksToDo);
                 progress.Report(progInfo);
             }
 
             if (chunksToDo == 0)
             {
                 // all render processes are done at this point
-                Debug.Assert(framesRendered.Count == ChunkList.TotalLength(), 
+                Debug.Assert(NumberOfFramesRendered == _rcs.Chunks.TotalLength(), 
                             "Frames counted don't match the ChunkList lenght");
 
                 timer.Stop();
@@ -233,7 +273,7 @@ namespace BlenderRenderController
         {
             Finished?.Invoke(this, NumberOfFramesRendered);
             DisposeProcesses();
-            InProgress = false;
+            _rcs = null;
         }
 
         private void DisposeProcesses()

@@ -63,6 +63,15 @@ namespace BlenderRenderController
             // set the form icon outside designer
             this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 #endif
+            // RenderManager and progress tracker
+            // Use 'InvokeAction', cause the events come from another thread
+            renderManager = new RenderManager();
+            renderManager.Finished += (s, re) => this.InvokeAction(RenderManager_Finished, re);
+
+            renderProgress = new Progress<RenderProgressInfo>();
+            renderProgress.ProgressChanged += (s, re) => this.InvokeAction(UpdateProgress, re);
+
+            _etaCalc = new ETACalculator(5, 1);
         }
 
         private void BrcForm_Load(object sender, EventArgs e)
@@ -398,18 +407,11 @@ namespace BlenderRenderController
             UpdateCurrentChunks(chunks);
 
             startTime = DateTime.Now;
-
-            renderManager = new RenderManager(_project);
-            renderManager.Finished += (s,e) => this.InvokeAction(RenderManager_Finished, e);
-
-            renderProgress = new Progress<RenderProgressInfo>();
-            renderProgress.ProgressChanged += (s,e) => this.InvokeAction(UpdateProgress, e);
-
             IsWorking = true;
 
-            // render progress reset
+            renderManager.Setup(_project);
+
             totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
-            _etaCalc = new ETACalculator(5, 1);
 
 #if WINDOWS
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
@@ -423,18 +425,14 @@ namespace BlenderRenderController
         private async void RenderManager_Finished(int e)
         {
             renderProgressBar.Style = ProgressBarStyle.Marquee;
-            //afterRenderCancelSrc = new CancellationTokenSource();
-            ResetCTS();
-
 #if WINDOWS
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
 #endif
+            ResetCTS();
+
             await AfterRender(_appSettings.AfterRender, afterRenderCancelSrc.Token);
 
-            if (!afterRenderCancelSrc.Token.IsCancellationRequested)
-            {
-                WorkDone();
-            }
+            WorkDone();
         }
 
 
@@ -451,7 +449,7 @@ namespace BlenderRenderController
                     afterRenderCancelSrc.Cancel();
             }
 
-
+            _etaCalc.Reset();
             IsWorking = false;
             renderProgressBar.Value = 0;
             renderProgressBar.Style = ProgressBarStyle.Blocks;
