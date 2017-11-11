@@ -315,6 +315,8 @@ namespace BlenderRenderController
             }
             else
             {
+                // abort existing processes before throwing
+                Abort();
                 throw new InvalidOperationException("Cannot change property value while Render is in progress");
             }
         }
