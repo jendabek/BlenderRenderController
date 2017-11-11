@@ -417,7 +417,6 @@ namespace BlenderRenderController
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
             TaskbarManager.Instance.SetProgressValue(0, 100);
 #endif
-
             UpdateUI(AppState.RENDERING_ALL, "Starting render...");
             renderManager.Start(renderProgress);
         }

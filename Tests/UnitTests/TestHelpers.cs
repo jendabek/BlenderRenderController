@@ -12,7 +12,7 @@ namespace UnitTests
 {
     static class TestHelpers
     {
-        public const string BLEND_PATH = @"E:\Bibliotecas E\_projetos\Blender\Video\teste\stuff\test_project.blend";
+        public const string BLEND_PATH = @"E:\Bibliotecas E\_projetos\Blender\Video\teste\stuff\test project2.blend";
         public const string OUT_PATH = @"E:\Bibliotecas E\_projetos\Blender\Video\teste\expo";
         const string SCRIPTS_DIR = @"C:\Users\Pedro\Source\Repos\BlenderRenderController\Src\BRClib\Scripts";
         public static AppSettings MockSettings = new AppSettings

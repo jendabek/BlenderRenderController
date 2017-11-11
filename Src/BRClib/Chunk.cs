@@ -59,9 +59,6 @@ namespace BRClib
                 throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
                                             nameof(start));
 
-            if (div == 0)
-                throw new ArgumentException("Divider cannot be 0", nameof(div));
-
             if (div == 1)
                 // return a single chunk
                 return new Chunk[]{ new Chunk(start, end) };
@@ -91,10 +88,9 @@ namespace BRClib
 
         private static Chunk[] MakeArray(int start, int end, int chunkLen)
         {
-            decimal totalLen = end - start + 1;
-
             int cStart = start,
-                cEnd;
+                cEnd,
+                totalLen = end - start + 1;
 
             List<Chunk> chunkList = new List<Chunk>();
 

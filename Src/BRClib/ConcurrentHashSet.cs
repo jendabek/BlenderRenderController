@@ -7,9 +7,13 @@ namespace System.Collections.Concurrent
 {
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(ConcurrentHashSetDebugView<>))]
-    public class ConcurrentHashSet<T> : ICollection<T>, ISet<T>
+    public class ConcurrentHashSet<T> : ICollection<T>
     {
         private ConcurrentDictionary<T, byte> _data;
+        static readonly KeyValuePair<T, byte>[] _emptyArray =
+            new KeyValuePair<T, byte>[0];
+
+        IEqualityComparer<T> m_comparer;
 
         public int Count => _data.Keys.Count;
         public bool IsReadOnly => false;
@@ -21,21 +25,34 @@ namespace System.Collections.Concurrent
         }
         public ConcurrentHashSet(IEnumerable<T> collection)
         {
-            var init = collection.Select(i => new KeyValuePair<T, byte>(i, byte.MinValue));
-            _data = new ConcurrentDictionary<T, byte>(init);
+            InitInternalData(collection);
         }
         public ConcurrentHashSet(IEqualityComparer<T> comparer)
         {
-            _data = new ConcurrentDictionary<T, byte>(comparer);
+            InitInternalData(comp: comparer);
         }
         public ConcurrentHashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
         {
-            var kvps = collection.Select(c => new KeyValuePair<T, byte>(c, byte.MinValue));
-            _data = new ConcurrentDictionary<T, byte>(kvps, comparer);
+            InitInternalData(collection, comparer);
+        }
+
+        
+        // initialize _data, if a collection was passed, convert it to a KeyValuePair
+        // and save a copy of the EqualityComparer
+        void InitInternalData(IEnumerable<T> col = null, IEqualityComparer<T> comp = null)
+        {
+            var kvps = col != null ? col.Select(c => new KeyValuePair<T, byte>(c, 0)) : _emptyArray;
+            m_comparer = comp ?? EqualityComparer<T>.Default;
+
+            _data = new ConcurrentDictionary<T, byte>(kvps, m_comparer);
         }
 
 
-        #region ICollection
+        public bool Add(T item)
+        {
+            return _data.TryAdd(item, 0);
+        }
+
         void ICollection<T>.Add(T item)
         {
             Add(item);
@@ -60,94 +77,7 @@ namespace System.Collections.Concurrent
         {
             return _data.TryRemove(item, out byte ph);
         } 
-        #endregion
 
-        #region ISet
-        // For set operations, create new hashset, clear _data and re-add
-        public bool Add(T item)
-        {
-            return _data.TryAdd(item, byte.MinValue);
-        }
-
-        public void UnionWith(IEnumerable<T> other)
-        {
-            var hash = new HashSet<T>(_data.Keys);
-            hash.UnionWith(other);
-
-            InternalReset(hash);
-        }
-
-        public void IntersectWith(IEnumerable<T> other)
-        {
-            var hash = new HashSet<T>(_data.Keys);
-            hash.IntersectWith(other);
-
-            InternalReset(hash);
-        }
-
-        public void ExceptWith(IEnumerable<T> other)
-        {
-            var hash = new HashSet<T>(_data.Keys);
-            hash.ExceptWith(other);
-
-            InternalReset(hash);
-        }
-
-        public void SymmetricExceptWith(IEnumerable<T> other)
-        {
-            var hash = new HashSet<T>(_data.Keys);
-            hash.SymmetricExceptWith(other);
-
-            InternalReset(hash);
-        }
-
-        public bool IsSubsetOf(IEnumerable<T> other)
-        {
-            var hash = new HashSet<T>(_data.Keys);
-            return hash.IsSubsetOf(other);
-        }
-
-        public bool IsSupersetOf(IEnumerable<T> other)
-        {
-            var hash = new HashSet<T>(_data.Keys);
-            return hash.IsSupersetOf(other);
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<T> other)
-        {
-            var hash = new HashSet<T>(_data.Keys);
-            return hash.IsProperSupersetOf(other);
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<T> other)
-        {
-            var hash = new HashSet<T>(_data.Keys);
-            return hash.IsProperSupersetOf(other);
-        }
-
-        public bool Overlaps(IEnumerable<T> other)
-        {
-            var hash = new HashSet<T>(_data.Keys);
-            return hash.Overlaps(other);
-        }
-
-        public bool SetEquals(IEnumerable<T> other)
-        {
-            var hash = new HashSet<T>(_data.Keys);
-            return hash.SetEquals(other);
-        }
-
-
-        void InternalReset(HashSet<T> set)
-        {
-            Clear();
-
-            foreach (var item in set)
-            {
-                Add(item);
-            }
-        }
-        #endregion
 
         public IEnumerator<T> GetEnumerator()
         {

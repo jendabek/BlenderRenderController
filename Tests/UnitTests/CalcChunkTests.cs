@@ -12,7 +12,7 @@ namespace UnitTests
         const int RANDOM_TEST_LOOPS = 50;
 
         [TestMethod]
-        public void CalcChunks_random_genarations()
+        public void CalcChunks_randomGen_tests()
         {
             for (int i = 0; i < RANDOM_TEST_LOOPS; i++)
             {
@@ -33,6 +33,7 @@ namespace UnitTests
                     continue;
                 }
 
+                Console.WriteLine();
                 Console.WriteLine("Number of chunks: " + calcResult.Length);
                 Console.WriteLine("Start: {0}, End: {1}, Total lenght: {2}, CoreCount: {3}", start, end, totalLen, cores);
                 foreach (var res in calcResult)
@@ -40,7 +41,6 @@ namespace UnitTests
                     Console.WriteLine(res + "   Lenght: " + res.Length);
                 }
 
-                Console.WriteLine();
                 Assert.IsFalse(calcResult.Last().End != end, "Last calcResult.End was diferent then param end");
                 Assert.IsTrue(calcResult.Length == cores, "Number of chunks does not match core count");
 
@@ -49,7 +49,7 @@ namespace UnitTests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void CalcChunks_start_cannot_be_greater_then_end()
+        public void CalcChunks_ThrowOn_start_greater_then_end()
         {
             int[] rnd = RandomParams.GetNumberPair(1, 9999, invert: true);
             int cores = RandomParams.GetNumber(1, 17);
@@ -64,9 +64,8 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void CalcChunks_custom_length()
+        public void CalcChunksByLength_randomGen_tests()
         {
-
             for (int i = 0; i < RANDOM_TEST_LOOPS; i++)
             {
                 int[] randPair = RandomParams.GetNumberPair(1, 99999);
@@ -97,13 +96,13 @@ namespace UnitTests
 
                 Assert.IsFalse(calcResult.Last().End != end, "Last calcResult.End was different then param end");
                 var actualLen = calcResult.First().Length;
-                Assert.AreEqual(len, actualLen, $"Lenght and generated chunk's lenght don't match");
+                Assert.AreEqual(len, actualLen, "Lenght and generated chunk's lenght don't match");
             }
 
         }
 
         [TestMethod]
-        public void Chunks_TotalLenght_is_accuerate()
+        public void CalcChunks_TotalLenght_is_accuerate()
         {
             var start = 1;
             var end = 24000;
@@ -120,7 +119,7 @@ namespace UnitTests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void Chunks_LenghtCalc_invalid_start_end()
+        public void CalcChunksByLength_ThrowOn_invalid_start_end()
         {
             // start is greater then end
             var start = 2000;
@@ -129,5 +128,6 @@ namespace UnitTests
 
             var chunks = Chunk.CalcChunksByLenght(start, end, lenght);
         }
+
     }
 }

@@ -15,33 +15,14 @@ namespace BlenderRenderController
     /// Manages the render of a list of <see cref="Chunk"/>s.
     /// </summary>
     /// <remarks>
-    /// After calling <see cref="Start"/>, changing any property
-    /// will not affect the in progress render, you must <seealso cref="Abort"/>
-    /// or wait for it to finish, then the next call to <see cref="Start"/> will
-    /// use the new values
+    /// Properties values must remain the same once <see cref="Start"/> is called,
+    /// attempting to changing any property while <see cref="InProgress"/> == true
+    /// will throw an Exception, you must <seealso cref="Abort"/>
+    /// or wait for the process to finish before changing any values
     /// </remarks>
     public class RenderManager
     {
-        // holds info about the current render process, so changes
-        // to RenderManager's properties won't affect a inProgress render
-        class CurrentSettings
-        {
-            public string ChunksPath, BlendPath, BaseFileName;
-            public int Max;
-            //public List<Chunk> Chunks;
-            public IReadOnlyList<Chunk> Chunks;
-
-            public CurrentSettings(RenderManager parent)
-            {
-                Chunks = parent.ChunkList;
-                ChunksPath = parent.ChunksFolderPath;
-                BlendPath = parent.BlendFilePath;
-                BaseFileName = parent.BaseFileName;
-                Max = parent.MaxConcurrency;
-            }
-        }
-        CurrentSettings _rcs;
-
+        // State trackers
         private ConcurrentBag<Process> procBag;
         private ConcurrentHashSet<int> framesRendered;
         private int chunksToDo, chunksInProgress,
@@ -55,15 +36,39 @@ namespace BlenderRenderController
 
         AppSettings appSettings = AppSettings.Current;
 
-        public string ChunksFolderPath { get; set; }
-        public string BlendFilePath { get; set; }
-        public string BaseFileName { get; set; }
-        public int MaxConcurrency { get; set; }
+        private string _chunkPath, _blendPath, _fileName;
+        private int _maxC;
+        private IReadOnlyList<Chunk> _chunkList;
+
+        public string ChunksFolderPath
+        {
+            get => _chunkPath;
+            set => SetValue(ref _chunkPath, value);
+        }
+        public string BlendFilePath
+        {
+            get => _blendPath;
+            set => SetValue(ref _blendPath, value);
+        }
+        public string BaseFileName
+        {
+            get => _fileName;
+            set => SetValue(ref _fileName, value);
+        }
+        public int MaxConcurrency
+        {
+            get => _maxC;
+            set => SetValue(ref _maxC, value);
+        }
+        public IReadOnlyList<Chunk> ChunkList
+        {
+            get => _chunkList;
+            set => SetValue(ref _chunkList, value);
+        }
 
         public int NumberOfFramesRendered => framesRendered.Count;
 
-        public List<Chunk> ChunkList { get; set; }
-        public bool InProgress { get => _rcs != null; }
+        public bool InProgress { get => timer.Enabled; }
 
         /// <summary>
         /// Raised when all chunks finish rendering, 'e' is
@@ -90,7 +95,6 @@ namespace BlenderRenderController
         }
 
         public RenderManager(ProjectSettings project)
-            : this(project.ChunkList)
         {
             Setup(project);
         }
@@ -132,8 +136,6 @@ namespace BlenderRenderController
             chunksToDo = ChunkList.Count;
             initalChunkCount = ChunkList.Count;
 
-            _rcs = new CurrentSettings(this);
-
             timer.Start();
         }
 
@@ -150,9 +152,11 @@ namespace BlenderRenderController
         /// </summary>
         public void Abort()
         {
-            timer.Stop();
-            DisposeProcesses();
-            _rcs = null;
+            if (InProgress)
+            {
+                timer.Stop();
+                DisposeProcesses();
+            }
         }
 
         private void CheckForValidProperties()
@@ -202,8 +206,8 @@ namespace BlenderRenderController
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 Arguments = string.Format(RenderComARGS,
-                                            _rcs.BlendPath,
-                                            Path.Combine(_rcs.ChunksPath, _rcs.BaseFileName + "-#"),
+                                            BlendFilePath,
+                                            Path.Combine(ChunksFolderPath, BaseFileName + "-#"),
                                             appSettings.Renderer,
                                             chunk.Start,
                                             chunk.End),
@@ -211,22 +215,16 @@ namespace BlenderRenderController
             renderCom.StartInfo = info;
             renderCom.EnableRaisingEvents = true;
             renderCom.OutputDataReceived += RenderCom_OutputDataReceived;
-            renderCom.Exited += (s, e) =>
-            {
-                // decrement counts when the process exits
-                chunksToDo--;
-                chunksInProgress--;
-            };
+            renderCom.Exited += RenderCom_Exited;
 
             return renderCom;
         }
 
-
+        // read blender's output to see what frames are beeing rendered
         private void RenderCom_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (e.Data != null)
             {
-                // read blender's output to see what frames are beeing rendered
                 if (e.Data.IndexOf("Fra:", StringComparison.InvariantCulture) == 0)
                 {
                     var line = e.Data.Split(' ')[0].Replace("Fra:", "");
@@ -236,13 +234,20 @@ namespace BlenderRenderController
             }
         }
 
+        // decrement counts when a process exits
+        private void RenderCom_Exited(object sender, EventArgs e)
+        {
+            chunksToDo--;
+            chunksInProgress--;
+        }
+
         private void TryQueueRenderProcess(object sender, ElapsedEventArgs e)
         {
             // start new render procs only within the concurrency limit and until the
             // end of ChunkList
-            if (currentIndex < initalChunkCount && chunksInProgress < _rcs.Max)
+            if (currentIndex < initalChunkCount && chunksInProgress < MaxConcurrency)
             {
-                var currentChunk = _rcs.Chunks[currentIndex];
+                var currentChunk = ChunkList[currentIndex];
                 var proc = RenderProcessFactory(currentChunk);
                 proc.Start();
                 proc.BeginOutputReadLine();
@@ -261,7 +266,7 @@ namespace BlenderRenderController
             if (chunksToDo == 0)
             {
                 // all render processes are done at this point
-                Debug.Assert(NumberOfFramesRendered == _rcs.Chunks.TotalLength(), 
+                Debug.Assert(NumberOfFramesRendered == ChunkList.TotalLength(),
                             "Frames counted don't match the ChunkList lenght");
 
                 timer.Stop();
@@ -273,7 +278,6 @@ namespace BlenderRenderController
         {
             Finished?.Invoke(this, NumberOfFramesRendered);
             DisposeProcesses();
-            _rcs = null;
         }
 
         private void DisposeProcesses()
@@ -289,18 +293,30 @@ namespace BlenderRenderController
                         p.Kill();
                     }
                 }
-                catch (InvalidOperationException ioex)
+                catch (Exception ex)
                 {
                     // Processes may be in an invalid state, just swallow the errors 
                     // since we're diposing them anyway
-                    Trace.WriteLine("Error while killing process\n\n" + ioex.Message, nameof(RenderManager));
+                    Trace.WriteLine("Error while killing process\n\n" + ex.Message, nameof(RenderManager));
                 }
                 finally
                 {
                     p.Dispose();
                 }
             }
+        }
 
+        // Property values must only change when there isn't a render in progress
+        void SetValue<T>(ref T storage, T value)
+        {
+            if (!InProgress)
+            {
+                storage = value;
+            }
+            else
+            {
+                throw new InvalidOperationException("Cannot change property value while Render is in progress");
+            }
         }
     }
 

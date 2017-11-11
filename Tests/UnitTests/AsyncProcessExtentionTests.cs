@@ -13,7 +13,7 @@ namespace UnitTests
         ManualResetEventSlim finishedEvent = new ManualResetEventSlim();
 
         [TestMethod]
-        public void run_proc_async()
+        public void StartAsync_exec_GetBlendProc()
         {
             var getBlendInfoProc = GetBlendDataProc(BLEND_PATH);
             var result = getBlendInfoProc.StartAsync().Result;
@@ -23,7 +23,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void run_proc_async_and_get_output()
+        public void StartAsync_exec_GetBlendProc_and_get_output()
         {
             var getBlendInfoProc = GetBlendDataProc(BLEND_PATH);
 

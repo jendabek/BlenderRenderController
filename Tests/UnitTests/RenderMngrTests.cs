@@ -16,7 +16,7 @@ namespace UnitTests
         ManualResetEventSlim finishedEvent = new ManualResetEventSlim();
 
         [TestMethod]
-        public void Mngr_Test()
+        public void RenderManager_BaseTest()
         {
             ClearFolder(OUT_PATH);
 
@@ -26,7 +26,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void Mngr_test_progress_report()
+        public void RenderManager_BaseTest_progress_report()
         {
             ClearFolder(OUT_PATH);
             var progress = new Progress<RenderProgressInfo>();
@@ -37,6 +37,62 @@ namespace UnitTests
             Assert.AreEqual(run.chunks.TotalLength(), run.renderMngr.NumberOfFramesRendered);
         }
 
+        [TestMethod]
+        public void RenderManager_ThrowOn_Properties_changed_while_in_progress()
+        {
+            ClearFolder(OUT_PATH);
+
+            var bData = GetTestBlendData();
+            var chunks = Chunk.CalcChunksByLenght(bData.Start, 5000, 300);
+            var renderMngr = new RenderManager(chunks, MockSettings)
+            {
+                BlendFilePath = BLEND_PATH,
+                ChunksFolderPath = Path.Combine(OUT_PATH, "chunks"),
+                MaxConcurrency = 5,
+                BaseFileName = "UnitTest"
+            };
+
+            Assert.ThrowsException<InvalidOperationException>(() =>
+            {
+                renderMngr.Start();
+
+                Thread.Sleep(TimeSpan.FromSeconds(5));
+
+                renderMngr.MaxConcurrency = 99;
+            }, 
+            "Property value changed while a render in progress");
+
+            //ClearFolder(OUT_PATH);
+            renderMngr.Abort();
+        }
+
+        [TestMethod]
+        public void RenderManager_ThrowOn_Start_called_while_in_progress()
+        {
+            ClearFolder(OUT_PATH);
+
+            var bData = GetBlendData(BLEND_PATH);
+            var chunks = Chunk.CalcChunksByLenght(bData.Start, 5000, 300);
+            var renderMngr = new RenderManager(chunks, MockSettings)
+            {
+                BlendFilePath = BLEND_PATH,
+                ChunksFolderPath = Path.Combine(OUT_PATH, "chunks"),
+                MaxConcurrency = 5,
+                BaseFileName = "UnitTest"
+            };
+
+            Assert.ThrowsException<InvalidOperationException>(() =>
+            {
+                renderMngr.Start();
+                Thread.Sleep(TimeSpan.FromSeconds(5));
+
+                renderMngr.Start();
+            }, 
+            "Start() was called twice");
+
+            //ClearFolder(OUT_PATH);
+            renderMngr.Abort();
+        }
 
         private void Progress_ProgressChanged(object sender, RenderProgressInfo e)
         {
