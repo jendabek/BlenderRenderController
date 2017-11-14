@@ -1,11 +1,11 @@
 ﻿using BRClib;
+using NLog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Timers;
 using static BRClib.CommandARGS;
 
@@ -22,6 +22,8 @@ namespace BlenderRenderController
     /// </remarks>
     public class RenderManager
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         // State trackers
         private ConcurrentBag<Process> procBag;
         private ConcurrentHashSet<int> framesRendered;
@@ -31,10 +33,11 @@ namespace BlenderRenderController
         private Timer timer;
 
         // Progress stuff
-        bool canReportProgress;
-        IProgress<RenderProgressInfo> progress;
+        //bool canReportProgress;
+        //IProgress<RenderProgressInfo> progress;
 
         AppSettings appSettings = AppSettings.Current;
+
 
         private string _chunkPath, _blendPath, _fileName;
         private int _maxC;
@@ -75,7 +78,7 @@ namespace BlenderRenderController
         /// the total number of frames rendered
         /// </summary>
         public event EventHandler<int> Finished;
-
+        public event EventHandler<RenderProgressInfo> ProgressChanged;
 
         public RenderManager()
         {
@@ -115,8 +118,7 @@ namespace BlenderRenderController
         /// <summary>
         /// Starts rendering 
         /// </summary>
-        /// <param name="prog">Progress provider</param>
-        public void Start(IProgress<RenderProgressInfo> prog)
+        public void Start()
         {
             // do not start if its already in progress
             if (InProgress)
@@ -126,8 +128,8 @@ namespace BlenderRenderController
 
             CheckForValidProperties();
 
-            progress = prog;
-            canReportProgress = progress != null;
+            //progress = prog;
+            //canReportProgress = progress != null;
 
             procBag = new ConcurrentBag<Process>();
             framesRendered = new ConcurrentHashSet<int>();
@@ -139,13 +141,6 @@ namespace BlenderRenderController
             timer.Start();
         }
 
-        /// <summary>
-        /// Starts rendering
-        /// </summary>
-        public void Start()
-        {
-            Start(null);
-        }
 
         /// <summary>
         /// Aborts the render process
@@ -162,6 +157,9 @@ namespace BlenderRenderController
         private void CheckForValidProperties()
         {
             string[] mustHaveValues = { ChunksFolderPath, BlendFilePath, BaseFileName };
+
+            //mustHaveValues.Where(p => string.IsNullOrWhiteSpace(p))
+            //              .Select();
 
             if (mustHaveValues.Any(x => string.IsNullOrWhiteSpace(x)))
             {
@@ -257,28 +255,32 @@ namespace BlenderRenderController
                 currentIndex++;
             }
 
-            if (canReportProgress)
-            {
-                var progInfo = new RenderProgressInfo(NumberOfFramesRendered, initalChunkCount - chunksToDo);
-                progress.Report(progInfo);
-            }
+            ReportProgress(new RenderProgressInfo(NumberOfFramesRendered, initalChunkCount - chunksToDo));
 
             if (chunksToDo == 0)
             {
+                timer.Stop();
+
                 // all render processes are done at this point
                 Debug.Assert(NumberOfFramesRendered == ChunkList.TotalLength(),
                             "Frames counted don't match the ChunkList lenght");
 
-                timer.Stop();
                 OnFinished();
             }
         }
 
         private void OnFinished()
         {
-            Finished?.Invoke(this, NumberOfFramesRendered);
+            //Finished?.Invoke(this, NumberOfFramesRendered);
+            Finished.Raise(this, NumberOfFramesRendered);
             DisposeProcesses();
         }
+
+        void ReportProgress(RenderProgressInfo progressInfo)
+        {
+            ProgressChanged.Raise(this, progressInfo);
+        }
+
 
         private void DisposeProcesses()
         {
@@ -297,7 +299,8 @@ namespace BlenderRenderController
                 {
                     // Processes may be in an invalid state, just swallow the errors 
                     // since we're diposing them anyway
-                    Trace.WriteLine("Error while killing process\n\n" + ex.Message, nameof(RenderManager));
+                    //Trace.WriteLine("Error while killing process\n\n" + ex.Message, nameof(RenderManager));
+                    logger.Trace(ex, "Error while disposing processes");
                 }
                 finally
                 {
@@ -317,7 +320,7 @@ namespace BlenderRenderController
             {
                 // abort existing processes before throwing
                 Abort();
-                throw new InvalidOperationException("Cannot change property value while Render is in progress");
+                throw new InvalidOperationException("Cannot change property value while a Render is in progress");
             }
         }
     }

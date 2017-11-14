@@ -171,11 +171,6 @@
     <None Include="Resources\blend-icon.png" />
     <None Include="Resources\Blender Alpha_00000.png" />
     <None Include="Resources\239009-200.png" />
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>
-      </SubType>
-    </Content>
     <EmbeddedResource Include="BrcForm.resx">
       <DependentUpon>BrcForm.cs</DependentUpon>
       <SubType>Designer</SubType>

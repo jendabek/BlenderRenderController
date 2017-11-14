@@ -41,7 +41,6 @@ namespace BlenderRenderController
         private AppSettings _appSettings;
         private ProjectSettings _project;
         private RenderManager renderManager;
-        private Progress<RenderProgressInfo> renderProgress;
         private int _autoRefStart, _autoRefEnd;
         private AppState appState;
         private DateTime startTime;
@@ -63,13 +62,10 @@ namespace BlenderRenderController
             // set the form icon outside designer
             this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 #endif
-            // RenderManager and progress tracker
-            // Use 'InvokeAction', cause the events come from another thread
+            // RenderManager
             renderManager = new RenderManager();
-            renderManager.Finished += (s, re) => this.InvokeAction(RenderManager_Finished, re);
-
-            renderProgress = new Progress<RenderProgressInfo>();
-            renderProgress.ProgressChanged += (s, re) => this.InvokeAction(UpdateProgress, re);
+            renderManager.Finished += RenderManager_Finished;
+            renderManager.ProgressChanged += (s, prog) => UpdateProgress(prog);
 
             _etaCalc = new ETACalculator(5, 1);
         }
@@ -102,7 +98,6 @@ namespace BlenderRenderController
                 }
             };
 
-
             // extra bindings
             totalStartNumericUpDown.DataBindings.Add("Enabled", startEndCustomRadio, "Checked");
             totalEndNumericUpDown.DataBindings.Add("Enabled", startEndCustomRadio, "Checked");
@@ -113,6 +108,7 @@ namespace BlenderRenderController
             infoActiveScene.TextChanged += (s, args) => toolTipInfo.SetToolTip(infoActiveScene, infoActiveScene.Text);
 #if UNIX
             forceUIUpdateToolStripMenuItem.Visible = true;
+            forceUIUpdateToolStripMenuItem.Click += (s,args) => ForceBindingSourceUpdate();
             totalStartNumericUpDown.EnabledChanged += NumericUpDown_EnableChanged;
             totalEndNumericUpDown.EnabledChanged += NumericUpDown_EnableChanged;
             chunkLengthNumericUpDown.EnabledChanged += NumericUpDown_EnableChanged;
@@ -276,8 +272,8 @@ namespace BlenderRenderController
             // errors
             if (stdErrors.Length > 0)
             {
-                logger.Debug("Blender output errors detected.");
-                logger.Trace(stdErrors);
+                logger.Debug("Blender output errors detected:");
+                logger.Trace('\n' + stdErrors + '\n');
 
                 // detect folder count exception
                 if (stdErrors.Contains(Constants.PY_FolderCountError))
@@ -418,10 +414,10 @@ namespace BlenderRenderController
             TaskbarManager.Instance.SetProgressValue(0, 100);
 #endif
             UpdateUI(AppState.RENDERING_ALL, "Starting render...");
-            renderManager.Start(renderProgress);
+            renderManager.Start();
         }
 
-        private async void RenderManager_Finished(int e)
+        private async void RenderManager_Finished(object sender, int e)
         {
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 #if WINDOWS
@@ -484,19 +480,20 @@ namespace BlenderRenderController
             }
             else
             {
-                var chunksFolder = Path.Combine(_project.BlendData.OutputPath, Constants.ChunksSubfolder);
+                var outputDir = _project.BlendData.OutputPath;
 
-                if (Directory.Exists(chunksFolder) && Directory.GetFiles(chunksFolder).Length > 0)
+                if (Directory.Exists(outputDir) && Directory.GetFiles(outputDir).Length > 0)
                 {
-                    var dialogResult = MessageBox.Show("All previously rendered chunks will be deleted.\nDo you want to continue?",
-                                            "Chunks folder not empty",
-                                            MessageBoxButtons.YesNo,
-                                            MessageBoxIcon.Exclamation);
+                    var dialogResult = MessageBox.Show("All existing will be deleted!\n" +
+                                                        "Do you want to continue?",
+                                                        "Output folder not empty",
+                                                        MessageBoxButtons.YesNo,
+                                                        MessageBoxIcon.Exclamation);
 
                     if (dialogResult == DialogResult.No)
                         return;
 
-                    var tryToClear = Helper.ClearFolder(chunksFolder);
+                    var tryToClear = Helper.ClearOutputFolder(outputDir);
 
                     if (!tryToClear) return;
                 }
@@ -516,9 +513,7 @@ namespace BlenderRenderController
         {
             int progressPercentage = (int)Math.Floor((info.FramesRendered / (decimal)_project.BlendData.TotalFrames) * 100);
 
-            var statusReport = $"Completed {info.PartsCompleted} / {_project.ChunkList.Count} chunks, {info.FramesRendered} frames rendered";
-
-            Status(statusReport);
+            Status($"Completed {info.PartsCompleted} / {_project.ChunkList.Count} chunks, {info.FramesRendered} frames rendered");
 
             // progress bar
 #if WINDOWS
@@ -659,7 +654,6 @@ namespace BlenderRenderController
         private async void mixDownButton_Click(object sender, EventArgs e)
         {
             IsWorking = true;
-            //afterRenderCancelSrc = new CancellationTokenSource();
             ResetCTS();
 
             UpdateUI(AppState.RENDERING_ALL, "Rendering Mixdown");
@@ -672,7 +666,7 @@ namespace BlenderRenderController
             UpdateUI(AppState.READY_FOR_RENDER, "Mixdown complete");
             IsWorking = false;
 
-            Trace.WriteLine("Mixdown proc exit code: " + exitCode, "Mixdown");
+            logger.Info("Mixdown proc exit code: " + exitCode);
         }
 
         #endregion
@@ -688,7 +682,6 @@ namespace BlenderRenderController
 
             if (fileListSorted.Count == 0)
             {
-                MessageBox.Show("Failed to get chunk files", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 return false;
             }
 
@@ -708,9 +701,8 @@ namespace BlenderRenderController
 
         private Process GetConcatenateProcess(string mixdownFile = null)
         {
-            var chunksFolder = Helper.GetChunksFolder(_project.BlendData);
-            var chunkFiles = Utilities.GetChunkFiles(chunksFolder);
-            var chunksTxtFile = Helper.GetChunkTxt(_project.BlendData);
+            var chunkFiles = Utilities.GetChunkFiles(_project.ChunkSubdirPath);
+            var chunksTxtFile = Path.Combine(_project.ChunkSubdirPath, Constants.ChunksTxtFileName);
             var videoExt = Path.GetExtension(chunkFiles.FirstOrDefault());
             var projPath = Path.Combine(_project.BlendData.OutputPath, _project.BlendData.ProjectName + videoExt);
 
@@ -747,13 +739,8 @@ namespace BlenderRenderController
             info.Arguments = comArgs;
             concatenateCom.StartInfo = info;
             concatenateCom.EnableRaisingEvents = true;
-            concatenateCom.Exited += (pSender, pArgs) =>
-            {
-                logger.Info("FFmpeg exited");
-            };
             
-            Trace.WriteLine(concatenateCom.StartInfo.Arguments);
-
+            logger.Trace("cmd:> ffmpeg " + concatenateCom.StartInfo.Arguments);
             logger.Info("Joining chunks");
 
             return concatenateCom;
@@ -762,7 +749,6 @@ namespace BlenderRenderController
         private async void concatenatePartsButton_Click(object sender, EventArgs e)
         {
             IsWorking = true;
-            //afterRenderCancelSrc = new CancellationTokenSource();
             ResetCTS();
 
             UpdateUI(AppState.RENDERING_ALL, "Concatenating...");
@@ -773,10 +759,11 @@ namespace BlenderRenderController
 
             if (manConcat.DialogResult == DialogResult.OK)
             {
-                var concatProc = GetConcatenateProcess(manConcat.OutputFile, manConcat.ChunksTextFile, manConcat.MixdownAudioFile);
-                var exitCode = await concatProc.StartAsync(afterRenderCancelSrc.Token);
+                var concatProc = GetConcatenateProcess(manConcat.OutputFile, manConcat.ChunksTextFile, 
+                                                       manConcat.MixdownAudioFile);
 
-                Trace.WriteLine("Concatenation proc exit code: " + exitCode, "Concat");
+                var exitCode = await concatProc.StartAsync(afterRenderCancelSrc.Token);
+                logger.Trace("Concatenation proc exit code: " + exitCode);
             }
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
@@ -795,7 +782,7 @@ namespace BlenderRenderController
 
         async Task AfterRender(AfterRenderAction action, CancellationToken token)
         {
-            var chunksFolder = Helper.GetChunksFolder(_project.BlendData);
+            logger.Info("AfterRender started");
 
             string mixFile = null;
             if ((action & AfterRenderAction.MIXDOWN) != 0)
@@ -807,9 +794,11 @@ namespace BlenderRenderController
             if ((action & AfterRenderAction.JOIN) != 0)
             {
                 // create chunklist.txt
-                if (!CreateChunksTxtFile(chunksFolder))
+                if (!CreateChunksTxtFile(_project.ChunkSubdirPath))
                 {
                     // did not create txtFile
+                    MessageBox.Show("Failed to get chunk files", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+
                     return;
                 }
             }
@@ -838,8 +827,9 @@ namespace BlenderRenderController
                 default:
                     return;
             }
-            Trace.WriteLineIf(mixEC != null, "Mixdown proc exit code: " + mixEC, "After Render");
-            Trace.WriteLineIf(concEC != null, "Concat proc exit code: " + concEC, "After Render");
+
+            if (mixEC != null) logger.Info("Mixdown proc exit code: " + mixEC);
+            if (concEC != null) logger.Info("Concat proc exit code: " + concEC);
         }
 
         void WorkDone()
@@ -1109,11 +1099,6 @@ namespace BlenderRenderController
             _appSettings.ClearRecentBlend();
         }
 
-
-        private void ForceBindedElementsUpdate(object sender, EventArgs e)
-        {
-            ForceBindingSourceUpdate();
-        }
 
         private void ForceBindingSourceUpdate()
         {

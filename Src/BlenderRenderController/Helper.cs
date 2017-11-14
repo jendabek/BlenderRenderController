@@ -13,22 +13,31 @@ namespace BlenderRenderController
     {
         private static Logger logger = LogManager.GetLogger("Helper");
 
-        static public bool ClearFolder(string FolderName)
+        static public bool ClearOutputFolder(string path)
         {
             try
             {
-                DirectoryInfo dir = new DirectoryInfo(FolderName);
+                DirectoryInfo dir = new DirectoryInfo(path);
+                DirectoryInfo[] subDirs = dir.GetDirectories();
 
+                // clear files in the output
                 foreach (FileInfo fi in dir.GetFiles())
                 {
                     fi.Delete();
                 }
 
-                foreach (DirectoryInfo di in dir.GetDirectories())
+                // clear files in the 'chunks' subdir
+                var chunkSDir = subDirs.FirstOrDefault(di => di.Name == Constants.ChunksSubfolder);
+                if (chunkSDir != null)
                 {
-                    ClearFolder(di.FullName);
-                    di.Delete();
+                    Directory.Delete(chunkSDir.FullName, true);
                 }
+
+                //foreach (DirectoryInfo di in dir.GetDirectories())
+                //{
+                //    ClearOutputFolder(di.FullName);
+                //    di.Delete();
+                //}
 
                 return true;
             }
@@ -164,22 +173,22 @@ namespace BlenderRenderController
             return controlsWithTags;
         }
 
-        public static string GetChunksFolder(string blendOutput)
-        {
-            return Path.Combine(blendOutput, "chunks");
-        }
-        public static string GetChunksFolder(BlendData blendData)
-        {
-            return GetChunksFolder(blendData.OutputPath);
-        }
-        public static string GetChunkTxt(string blendOutput)
-        {
-            return Path.Combine(GetChunksFolder(blendOutput), "chunklist.txt");
-        }
-        public static string GetChunkTxt(BlendData blendData)
-        {
-            return GetChunkTxt(blendData.OutputPath);
-        }
+        //public static string GetChunksFolder(string blendOutput)
+        //{
+        //    return Path.Combine(blendOutput, "chunks");
+        //}
+        //public static string GetChunksFolder(BlendData blendData)
+        //{
+        //    return GetChunksFolder(blendData.OutputPath);
+        //}
+        //public static string GetChunkTxt(string blendOutput)
+        //{
+        //    return Path.Combine(GetChunksFolder(blendOutput), "chunklist.txt");
+        //}
+        //public static string GetChunkTxt(BlendData blendData)
+        //{
+        //    return GetChunkTxt(blendData.OutputPath);
+        //}
 
     }
 }

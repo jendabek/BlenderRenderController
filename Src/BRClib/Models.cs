@@ -174,6 +174,17 @@ namespace BRClib
             set => SetProperty(ref _processCount, value);
         }
 
+        public string ChunkSubdirPath
+        {
+            get
+            {
+                if (BlendData == null) return null;
+
+                return Path.Combine(BlendData.OutputPath, "chunks");
+            }
+        }
+
+
         public ProjectSettings() : base()
         {
             _chunkList = new ObservableCollection<Chunk>();

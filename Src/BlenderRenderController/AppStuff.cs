@@ -29,25 +29,4 @@ namespace BlenderRenderController
         RENDER_FORMAT_IS_IMAGE, BLEND_OUTPUT_INVALID, UNKNOWN_OS
     }
 
-    class NlogHelper
-    {
-        public static void ChangeLogLevel(LogLevel level, string loggerName = null)
-        {
-            foreach (var rule in LogManager.Configuration.LoggingRules)
-            {
-                if (!string.IsNullOrEmpty(loggerName))
-                {
-                    if (rule.NameMatches(loggerName))
-                        rule.EnableLoggingForLevel(level);
-
-                    else
-                        continue;
-                }
-                else
-                    rule.EnableLoggingForLevel(level);
-            }
-
-            LogManager.ReconfigExistingLoggers();
-        }
-    }
 }

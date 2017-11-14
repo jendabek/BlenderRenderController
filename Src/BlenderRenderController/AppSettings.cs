@@ -290,24 +290,9 @@ namespace BlenderRenderController
 
         public static AppSettings Load(string settingsPath)
         {
-            //var settingsPath = Path.Combine(_baseDir, SETTINGS_FILE);
-
-            var appSet = File.Exists(settingsPath) 
+            return File.Exists(settingsPath) 
                         ? JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(settingsPath))
                         : AppSettings.Defaults;
-
-            // apply log
-            if (appSet.Verbose)
-            {
-                //string[] names = { typeof(BrcForm).FullName, typeof(Helper).FullName };
-                foreach (var rule in LogManager.Configuration.LoggingRules)
-                {
-                    if (rule.NameMatches(typeof(BrcForm).FullName))
-                        rule.EnableLoggingForLevel(LogLevel.Info);
-                }
-            }
-
-            return appSet;
         }
     }
 }
