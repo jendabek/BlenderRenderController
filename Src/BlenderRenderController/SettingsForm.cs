@@ -1,11 +1,4 @@
-﻿// For Mono compatible Unix builds, uncomment
-// the next line or compile with /d:UNIX
-//#define UNIX
-#if !WINDOWS && !UNIX
-#define WINDOWS
-#elif UNIX
-#undef WINDOWS
-#endif
+﻿// For Mono compatible Unix builds compile with /d:UNIX
 
 using NLog;
 using System;

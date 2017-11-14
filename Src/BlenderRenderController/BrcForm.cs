@@ -1,13 +1,13 @@
 // For Mono compatible Unix builds compile with /d:UNIX
-#if !WINDOWS && !UNIX
-#error You must define a platform (WINDOWS or UNIX)
+#if !WIN && !UNIX
+#error You must define a platform (WIN or UNIX)
 #elif UNIX
-#undef WINDOWS
+#undef WIN
 #endif
 
 using BlenderRenderController.Properties;
 using BRClib;
-#if WINDOWS
+#if WIN
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Taskbar;
 #endif
@@ -58,7 +58,7 @@ namespace BlenderRenderController
             _project = new ProjectSettings();
             _project.BlendData = new BlendData();
             _appSettings = AppSettings.Current;
-#if WINDOWS
+#if WIN
             // set the form icon outside designer
             this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 #endif
@@ -143,7 +143,7 @@ namespace BlenderRenderController
                                 "set the paths in the Settings window";
                 string cap = "Setup required";
                 string info = "Paths missing";
-#if WINDOWS
+#if WIN
                 var td = new TaskDialog()
                 {
                     Caption = cap,
@@ -292,12 +292,12 @@ namespace BlenderRenderController
 
             if (stdOutput.Length == 0)
             {
-                var detailsContent = "Error output: \n\n" + stdErrors;
+                var detailsContent = $"Blender exited w/ code {exitCode}\nOutput:\n\n" + stdErrors;
 
-                var err = Ui.Dialogs.ShowErrorBox("Could not open project, no information was received", 
-                                                "Failed to read project", 
-                                                "Error", 
-                                                detailsContent);
+                var err = Ui.Dialogs.ShowErrorBox("Could not open project, no information was received.", 
+                                                  "Failed to read project", 
+                                                  "Error", 
+                                                  detailsContent);
                 err.Show();
                 ReadFail();
                 return;
@@ -409,7 +409,7 @@ namespace BlenderRenderController
 
             totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
 
-#if WINDOWS
+#if WIN
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
             TaskbarManager.Instance.SetProgressValue(0, 100);
 #endif
@@ -420,7 +420,7 @@ namespace BlenderRenderController
         private async void RenderManager_Finished(object sender, int e)
         {
             renderProgressBar.Style = ProgressBarStyle.Marquee;
-#if WINDOWS
+#if WIN
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
 #endif
             ResetCTS();
@@ -455,7 +455,7 @@ namespace BlenderRenderController
 
             Text = Constants.APP_TITLE;
 
-#if WINDOWS
+#if WIN
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
 #endif
 
@@ -516,7 +516,7 @@ namespace BlenderRenderController
             Status($"Completed {info.PartsCompleted} / {_project.ChunkList.Count} chunks, {info.FramesRendered} frames rendered");
 
             // progress bar
-#if WINDOWS
+#if WIN
             TaskbarManager.Instance.SetProgressValue(progressPercentage, 100);
 #endif
             renderProgressBar.Value = progressPercentage;
@@ -645,7 +645,7 @@ namespace BlenderRenderController
             mixdownCom.EnableRaisingEvents = true;
             mixdownCom.Exited += (pSender, pe) =>
             {
-                logger.Info("Mixdown done");
+                logger.Info("Blender mixdown exit code: " + (pSender as Process).ExitCode);
             };
 
             return mixdownCom;
@@ -660,13 +660,11 @@ namespace BlenderRenderController
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
             var proc = GetMixdownProcess();
-            var exitCode = await proc.StartAsync(afterRenderCancelSrc.Token);
+            await proc.StartAsync(afterRenderCancelSrc.Token);
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             UpdateUI(AppState.READY_FOR_RENDER, "Mixdown complete");
             IsWorking = false;
-
-            logger.Info("Mixdown proc exit code: " + exitCode);
         }
 
         #endregion
@@ -739,6 +737,10 @@ namespace BlenderRenderController
             info.Arguments = comArgs;
             concatenateCom.StartInfo = info;
             concatenateCom.EnableRaisingEvents = true;
+            concatenateCom.Exited += (s, e) =>
+            {
+                logger.Info("FFmpeg exit code: " + (s as Process).ExitCode);
+            };
             
             logger.Trace("cmd:> ffmpeg " + concatenateCom.StartInfo.Arguments);
             logger.Info("Joining chunks");
@@ -762,8 +764,7 @@ namespace BlenderRenderController
                 var concatProc = GetConcatenateProcess(manConcat.OutputFile, manConcat.ChunksTextFile, 
                                                        manConcat.MixdownAudioFile);
 
-                var exitCode = await concatProc.StartAsync(afterRenderCancelSrc.Token);
-                logger.Trace("Concatenation proc exit code: " + exitCode);
+                await concatProc.StartAsync(afterRenderCancelSrc.Token);
             }
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
@@ -788,7 +789,8 @@ namespace BlenderRenderController
             if ((action & AfterRenderAction.MIXDOWN) != 0)
             {
                 mixFile = Path.Combine(_project.BlendData.OutputPath, 
-                                       _project.BlendData.ProjectName + '.' + _project.BlendData.AudioFileFormat);
+                                       _project.BlendData.ProjectName + '.' + 
+                                       _project.BlendData.AudioFileFormat);
             }
 
             if ((action & AfterRenderAction.JOIN) != 0)
@@ -804,32 +806,29 @@ namespace BlenderRenderController
             }
 
             Process mixdownProc, concatProc;
-            int? mixEC = null, concEC = null;
 
             switch (action)
             {
                 case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
                     mixdownProc = GetMixdownProcess();
-                    mixEC = await mixdownProc.StartAsync(token);
+                    await mixdownProc.StartAsync(token);
 
                     concatProc = GetConcatenateProcess(mixFile);
-                    concEC = await concatProc.StartAsync(token);
+                    await concatProc.StartAsync(token);
                     break;
                 case AfterRenderAction.JOIN:
                     concatProc = GetConcatenateProcess(mixFile);
-                    concEC = await concatProc.StartAsync(token);
+                    await concatProc.StartAsync(token);
                     break;
                 case AfterRenderAction.MIXDOWN:
                     mixdownProc = GetMixdownProcess();
-                    mixEC = await mixdownProc.StartAsync(token);
+                    await mixdownProc.StartAsync(token);
                     break;
                 case AfterRenderAction.NOTHING:
                 default:
                     return;
             }
 
-            if (mixEC != null) logger.Info("Mixdown proc exit code: " + mixEC);
-            if (concEC != null) logger.Info("Concat proc exit code: " + concEC);
         }
 
         void WorkDone()
@@ -943,7 +942,7 @@ namespace BlenderRenderController
         private void outputFolderBrowseButton_Click(object sender, EventArgs e)
         {
 
-#if WINDOWS
+#if WIN
             var folderPicker = new CommonOpenFileDialog
             {
                 InitialDirectory = _project.BlendData.OutputPath,
