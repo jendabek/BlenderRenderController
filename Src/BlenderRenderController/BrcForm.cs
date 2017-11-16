@@ -402,6 +402,8 @@ namespace BlenderRenderController
 
             UpdateCurrentChunks(chunks);
 
+            logger.Info(() => "Chunks: " + string.Join(", ", chunks));
+
             IsWorking = true;
 
             renderManager.Setup(_project);
@@ -561,9 +563,6 @@ namespace BlenderRenderController
             }
 
             _project.ChunkLenght = _project.ChunkList.First().Length;
-
-            logger.Debug("ChunkLenght: {0}", _project.ChunkLenght);
-            logger.Trace(string.Join(", " ,_project.ChunkList));
 
 #if UNIX
             ForceBindingSourceUpdate();
