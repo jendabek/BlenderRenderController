@@ -43,7 +43,7 @@ namespace BlenderRenderController
         private RenderManager renderManager;
         private int _autoRefStart, _autoRefEnd;
         private AppState appState;
-        private DateTime startTime;
+        Stopwatch chrono;
         private ETACalculator _etaCalc;
         private SettingsForm _settingsForm;
         CancellationTokenSource afterRenderCancelSrc;
@@ -67,7 +67,7 @@ namespace BlenderRenderController
             renderManager.Finished += RenderManager_Finished;
             renderManager.ProgressChanged += (s, prog) => UpdateProgress(prog);
 
-            _etaCalc = new ETACalculator(5, 1);
+            chrono = new Stopwatch();
         }
 
         private void BrcForm_Load(object sender, EventArgs e)
@@ -272,8 +272,8 @@ namespace BlenderRenderController
             // errors
             if (stdErrors.Length > 0)
             {
-                logger.Debug("Blender output errors detected:");
-                logger.Trace('\n' + stdErrors + '\n');
+                logger.Debug("Blender output errors detected");
+                Debug.WriteLine('\n' + stdErrors + '\n');
 
                 // detect folder count exception
                 if (stdErrors.Contains(Constants.PY_FolderCountError))
@@ -292,7 +292,7 @@ namespace BlenderRenderController
 
             if (stdOutput.Length == 0)
             {
-                var detailsContent = $"Blender exited w/ code {exitCode}\nOutput:\n\n" + stdErrors;
+                var detailsContent = $"Blender's exit code {exitCode}\nOutput:\n\n" + stdErrors;
 
                 var err = Ui.Dialogs.ShowErrorBox("Could not open project, no information was received.", 
                                                   "Failed to read project", 
@@ -402,10 +402,10 @@ namespace BlenderRenderController
 
             UpdateCurrentChunks(chunks);
 
-            startTime = DateTime.Now;
             IsWorking = true;
 
             renderManager.Setup(_project);
+            _etaCalc = new ETACalculator(5, 1);
 
             totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
 
@@ -414,6 +414,8 @@ namespace BlenderRenderController
             TaskbarManager.Instance.SetProgressValue(0, 100);
 #endif
             UpdateUI(AppState.RENDERING_ALL, "Starting render...");
+
+            chrono.Start();
             renderManager.Start();
         }
 
@@ -444,7 +446,8 @@ namespace BlenderRenderController
                     afterRenderCancelSrc.Cancel();
             }
 
-            _etaCalc.Reset();
+            _etaCalc = null;
+            chrono.Reset();
             IsWorking = false;
             renderProgressBar.Value = 0;
             renderProgressBar.Style = ProgressBarStyle.Blocks;
@@ -476,7 +479,6 @@ namespace BlenderRenderController
 
                 // cancel
                 StopWork(false);
-                logger.Warn("RENDER ABORTED");
             }
             else
             {
@@ -499,7 +501,6 @@ namespace BlenderRenderController
                 }
 
                 RenderAll();
-                logger.Info("RENDER STARTED");
             }
         }
 
@@ -530,7 +531,7 @@ namespace BlenderRenderController
             }
 
             //time elapsed display
-            TimeSpan runTime = DateTime.Now - startTime;
+            TimeSpan runTime = chrono.Elapsed;
             var tElapsed = TimePassedPrefix + runTime.ToString(TimeFmt);
             Status(tElapsed, totalTimeLabel);
 
@@ -561,7 +562,7 @@ namespace BlenderRenderController
 
             _project.ChunkLenght = _project.ChunkList.First().Length;
 
-            logger.Debug("ChunkLenght: " + _project.ChunkLenght);
+            logger.Debug("ChunkLenght: {0}", _project.ChunkLenght);
             logger.Trace(string.Join(", " ,_project.ChunkList));
 
 #if UNIX
@@ -617,7 +618,15 @@ namespace BlenderRenderController
             if (ctrl == null)
                 ctrl = statusLabel;
 
-            ctrl.InvokeAction(() => ctrl.Text = msg);
+            if (ctrl.InvokeRequired)
+            {
+                Action changeTxt = () => ctrl.Text = msg;
+                ctrl.Invoke(changeTxt);
+            }
+            else
+            {
+                ctrl.Text = msg;
+            }
         }
 
         #endregion
@@ -645,8 +654,11 @@ namespace BlenderRenderController
             mixdownCom.EnableRaisingEvents = true;
             mixdownCom.Exited += (pSender, pe) =>
             {
-                logger.Info("Blender mixdown exit code: " + (pSender as Process).ExitCode);
+                logger.Info("Mixdown exit code: " + (pSender as Process).ExitCode);
             };
+
+            logger.Info("Rendering mixdown");
+            logger.Trace("cmd:> blender " + mixdownCom.StartInfo.Arguments);
 
             return mixdownCom;
         }
@@ -656,7 +668,7 @@ namespace BlenderRenderController
             IsWorking = true;
             ResetCTS();
 
-            UpdateUI(AppState.RENDERING_ALL, "Rendering Mixdown");
+            UpdateUI(AppState.RENDERING_ALL, "Rendering mixdown...");
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
             var proc = GetMixdownProcess();
@@ -739,7 +751,7 @@ namespace BlenderRenderController
             concatenateCom.EnableRaisingEvents = true;
             concatenateCom.Exited += (s, e) =>
             {
-                logger.Info("FFmpeg exit code: " + (s as Process).ExitCode);
+                logger.Info("FFmpeg exit code: {0}", (s as Process).ExitCode);
             };
             
             logger.Trace("cmd:> ffmpeg " + concatenateCom.StartInfo.Arguments);

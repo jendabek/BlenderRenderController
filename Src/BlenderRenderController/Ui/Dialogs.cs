@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#if WINDOWS
+#if WIN
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Controls;
 #endif
@@ -16,7 +16,7 @@ namespace BlenderRenderController.Ui
 {
     class Dialogs
     {
-#if WINDOWS
+#if WIN
         public static TaskDialog ShowErrorBox(string textBody, string mainText, string caption, string details)
         {
             var td = new TaskDialog();

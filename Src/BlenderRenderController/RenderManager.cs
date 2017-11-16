@@ -23,6 +23,7 @@ namespace BlenderRenderController
     public class RenderManager
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
+        //private static Logger logger = LogManager.GetLogger("renderlog");
 
         // State trackers
         private ConcurrentBag<Process> procBag;
@@ -123,13 +124,11 @@ namespace BlenderRenderController
             // do not start if its already in progress
             if (InProgress)
             {
+                Abort();
                 throw new InvalidOperationException("A render is already in progress");
             }
 
             CheckForValidProperties();
-
-            //progress = prog;
-            //canReportProgress = progress != null;
 
             procBag = new ConcurrentBag<Process>();
             framesRendered = new ConcurrentHashSet<int>();
@@ -138,6 +137,7 @@ namespace BlenderRenderController
             chunksToDo = ChunkList.Count;
             initalChunkCount = ChunkList.Count;
 
+            logger.Info("RENDER STARTING");
             timer.Start();
         }
 
@@ -151,6 +151,7 @@ namespace BlenderRenderController
             {
                 timer.Stop();
                 DisposeProcesses();
+                logger.Warn("RENDER ABORTED");
             }
         }
 
@@ -237,6 +238,8 @@ namespace BlenderRenderController
         {
             chunksToDo--;
             chunksInProgress--;
+
+            logger.Trace("Render proc exited with code {0}", (sender as Process).ExitCode);
         }
 
         private void TryQueueRenderProcess(object sender, ElapsedEventArgs e)
@@ -253,6 +256,8 @@ namespace BlenderRenderController
 
                 chunksInProgress++;
                 currentIndex++;
+
+                logger.Trace("Started render n. {0}, frames {1}", currentIndex, currentChunk);
             }
 
             ReportProgress(new RenderProgressInfo(NumberOfFramesRendered, initalChunkCount - chunksToDo));
@@ -271,9 +276,9 @@ namespace BlenderRenderController
 
         private void OnFinished()
         {
-            //Finished?.Invoke(this, NumberOfFramesRendered);
             Finished.Raise(this, NumberOfFramesRendered);
             DisposeProcesses();
+            logger.Info("Render finished sucessfully");
         }
 
         void ReportProgress(RenderProgressInfo progressInfo)
@@ -299,7 +304,6 @@ namespace BlenderRenderController
                 {
                     // Processes may be in an invalid state, just swallow the errors 
                     // since we're diposing them anyway
-                    //Trace.WriteLine("Error while killing process\n\n" + ex.Message, nameof(RenderManager));
                     logger.Trace(ex, "Error while disposing processes");
                 }
                 finally
