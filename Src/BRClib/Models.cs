@@ -190,6 +190,8 @@ namespace BRClib
             _chunkList = new ObservableCollection<Chunk>();
             ChunkLenght = 1;
         }
+
+
     }
 
     public enum BlenderRenderes

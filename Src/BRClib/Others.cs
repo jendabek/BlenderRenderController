@@ -142,11 +142,8 @@ namespace BRClib
             { "PNG", "BMP", "IRIS", "JPEG", "JPEG2000", "TARGA", "TARGA_RAW",
             "CINEON", "DPX", "OPEN_EXR_MULTILAYER", "OPEN_EXR", "HDR", "TIFF" };
 
-        /// <summary>
-        /// Video render formats
-        /// </summary>
-        public static readonly string[] VideoFormats =
-            { "AVI_JPEG", "AVI_RAW", "H264", "FFMPEG", "THEORA", "XVID" };
+        //public static readonly string[] VideoFormats =
+        //    { "AVI_JPEG", "AVI_RAW", "H264", "FFMPEG", "THEORA", "XVID" };
 
 
         /// <summary>
@@ -157,14 +154,14 @@ namespace BRClib
         public static readonly string[] AllowedAudioFileExts = { "mp3", "ac3", "aac", "ogg", "flac", "wav" };
 
         // TODO maybe: Make a list that relates format property to output file format
-        static readonly Dictionary<string, string> FormatDictionary = 
-            new Dictionary<string, string>
-            {
-                { "AVI", "avi" }, {"XVID", "avi"}, {"H264", "avi"},
-                { "MPEG4", "mp4" }, { "MPEG1", "mpg" }, {"MPEG2", "dvd"},
-                {"QUICKTIME", "mov"}, {"DV", "dv"}, {"OGG", "ogv"},
-                {"MKV", "mkv"}, {"FLASH", "flv"}
-            };
+        //public static readonly Dictionary<string, string> ExtForEncoding = 
+        //    new Dictionary<string, string>
+        //    {
+        //        { "AVI", "avi" }, {"XVID", "avi"}, {"H264", "avi"},
+        //        { "MPEG4", "mp4" }, { "MPEG1", "mpg" }, {"MPEG2", "dvd"},
+        //        {"QUICKTIME", "mov"}, {"DV", "dv"}, {"OGG", "ogv"},
+        //        {"MKV", "mkv"}, {"FLASH", "flv"}
+        //    };
 
     }
 
@@ -173,10 +170,51 @@ namespace BRClib
     /// </summary>
     public static class CommandARGS
     {
+        // 0=ChunkTxtPath, 1=MixdownInclude, 2=Optional duration, 3=Final file path + .EXT
+        //const string _concatBase = "-f concat -safe 0 -i \"{0}\" {1} -c:v copy {2} \"{3}\" -y";
 
+
+        public static string GetConcatenationArgs(string chunksTxt, TimeSpan? duration, string output, string mixdown = null)
+        {
+            if (duration == null) return GetConcatenationArgs(chunksTxt, output, mixdown);
+
+            string args = "-f concat -safe 0 ";
+
+            // chunkTxt
+            args += "-i \"" + chunksTxt + "\" ";
+            // mixdown audio
+            if (!string.IsNullOrWhiteSpace(mixdown)) args += "-i \"" + mixdown + "\" -map 0:v -map 1:a ";
+            // encoder
+            args += "-c:v copy ";
+            // duration
+            args += "-t " + duration.Value.ToString(@"hh\:mm\:ss") + ' ';
+            // output
+            args += "\"" + output + "\" -y";
+
+            return args;
+        }
+
+        public static string GetConcatenationArgs(string chunksTxt, string output, string mixdown = null)
+        {
+            string args = "-f concat -safe 0 ";
+
+            // chunkTxt
+            args += "-i \"" + chunksTxt + "\" ";
+            // mixdown audio
+            if (!string.IsNullOrWhiteSpace(mixdown)) args += "-i \"" + mixdown + "\" -map 0:v -map 1:a ";
+            // encoder
+            args += "-c:v copy ";
+            // output
+            args += "\"" + output + "\" -y";
+
+            return args;
+        }
+
+
+        /*
         /// <summary>
         /// Concatenate command ARGS, join chunks with mixdown
-        /// <para>0=ChunkTxtPath, 1=Mixdown audio, 2=Final file path + .EXT</para>
+        /// <para>0=ChunkTxtPath, 1=Mixdown audio, 2=Final file path + .EXT, </para>
         /// </summary>
         public const string ConcatenateMixdown = "-f concat -safe 0 -i \"{0}\" -i \"{1}\" -map 0:v -map 1:a -c:v copy \"{2}\" -y";
 
@@ -185,6 +223,7 @@ namespace BRClib
         /// <para>0=ChunkTxtPath, 1=Final file path + .EXT</para>
         /// </summary>
         public const string ConcatenateOnly = "-f concat -safe 0 -i \"{0}\" -c:v copy \"{1}\" -y";
+        */
 
         /// <summary>
         /// Get info command ARGS

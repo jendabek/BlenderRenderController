@@ -33,6 +33,17 @@ namespace BlenderRenderController
             }
 
         }
+        public static void InvokeAction<TArgs>(this Control @this, Action<object, TArgs> action, object obj, TArgs e)
+        {
+            if (@this.InvokeRequired)
+            {
+                @this.Invoke(action, obj, e);
+            }
+            else
+            {
+                action(obj, e);
+            }
+        }
 
         /// <summary>
         /// Starts the process asynchronously

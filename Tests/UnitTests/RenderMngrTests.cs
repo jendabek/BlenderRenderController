@@ -60,7 +60,7 @@ namespace UnitTests
 
                 renderMngr.MaxConcurrency = 99;
             }, 
-            "Property value changed while a render in progress");
+            "Property value changed while a render was in progress");
 
             //ClearFolder(OUT_PATH);
             renderMngr.Abort();

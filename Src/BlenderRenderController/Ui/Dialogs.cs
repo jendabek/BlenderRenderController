@@ -1,15 +1,11 @@
 ﻿// For Mono compatible Unix builds compile with /d:UNIX
 
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 #if WIN
 using Microsoft.WindowsAPICodePack.Dialogs;
-using Microsoft.WindowsAPICodePack.Controls;
 #endif
 
 namespace BlenderRenderController.Ui
@@ -17,7 +13,7 @@ namespace BlenderRenderController.Ui
     class Dialogs
     {
 #if WIN
-        public static TaskDialog ShowErrorBox(string textBody, string mainText, string caption, string details)
+        public static DialogResult ShowErrorBox(string textBody, string mainText, string caption, string details)
         {
             var td = new TaskDialog();
             td.Text = textBody;
@@ -32,9 +28,11 @@ namespace BlenderRenderController.Ui
             td.FooterIcon = TaskDialogStandardIcon.Information;
             td.StandardButtons = TaskDialogStandardButtons.Ok;
 
-            return td;
+            return ToDR(td.Show());
+
+            //return td;
         }
-        public static TaskDialog ShowErrorBox(string textBody, string mainText, string details)
+        public static DialogResult ShowErrorBox(string textBody, string mainText, string details)
         {
             var td = new TaskDialog();
             td.Text = textBody;
@@ -49,19 +47,45 @@ namespace BlenderRenderController.Ui
             td.FooterIcon = TaskDialogStandardIcon.Information;
             td.StandardButtons = TaskDialogStandardButtons.Ok;
 
-            return td;
+            return ToDR(td.Show());
+
+            //return td;
+        }
+
+        static DialogResult ToDR(TaskDialogResult tdr)
+        {
+            switch (tdr)
+            {
+                case TaskDialogResult.None:
+                    return DialogResult.None;
+                case TaskDialogResult.Ok:
+                    return DialogResult.OK;
+                case TaskDialogResult.Yes:
+                    return DialogResult.Yes;
+                case TaskDialogResult.No:
+                    return DialogResult.No;
+                case TaskDialogResult.Cancel:
+                    return DialogResult.Cancel;
+                case TaskDialogResult.Retry:
+                    return DialogResult.Retry;
+                case TaskDialogResult.Close:
+                    return DialogResult.Abort;
+                case TaskDialogResult.CustomButtonClicked:
+                default:
+                    throw new NotSupportedException("Task result not supported");
+            }
         }
 #else
-        public static ErrorBox ShowErrorBox(string textBody, string mainText, string caption, string details)
+        public static DialogResult ShowErrorBox(string textBody, string mainText, string caption, string details)
         {
             string msg = mainText + "\n\n" + textBody;
             ErrorBox eb = new ErrorBox(msg, caption, details);
-            return eb;
+            return eb.ShowDialog();
         }
-        public static ErrorBox ShowErrorBox(string textBody, string mainText, string details)
+        public static DialogResult ShowErrorBox(string textBody, string mainText, string details)
         {
             ErrorBox eb = new ErrorBox(textBody, mainText, details);
-            return eb;
+            return eb.ShowDialog();
         }
 #endif
     }

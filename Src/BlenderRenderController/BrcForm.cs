@@ -41,6 +41,7 @@ namespace BlenderRenderController
         private AppSettings _appSettings;
         private ProjectSettings _project;
         private RenderManager renderManager;
+        Progress<RenderProgressInfo> _renderProg;
         private int _autoRefStart, _autoRefEnd;
         private AppState appState;
         Stopwatch chrono;
@@ -65,7 +66,8 @@ namespace BlenderRenderController
             // RenderManager
             renderManager = new RenderManager();
             renderManager.Finished += RenderManager_Finished;
-            renderManager.ProgressChanged += (s, prog) => UpdateProgress(prog);
+            //renderManager.ProgressChanged += (s, prog) => UpdateProgress(prog);
+            _renderProg = new Progress<RenderProgressInfo>(UpdateProgress);
 
             chrono = new Stopwatch();
         }
@@ -81,7 +83,7 @@ namespace BlenderRenderController
             // load recent blends from file
             UpdateRecentBlendsMenu();
 
-            _appSettings.RecentBlends_Changed += AppSettings_RecentBlends_Changed;
+            _appSettings.RecentBlends_Changed += (s, args) => UpdateRecentBlendsMenu();
 
             processCountNumericUpDown.Maximum = 
             _project.ProcessesCount = Environment.ProcessorCount;
@@ -204,11 +206,6 @@ namespace BlenderRenderController
             logger.Info("Program closing");
         }
 
-        private void AppSettings_RecentBlends_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            UpdateRecentBlendsMenu();
-        }
-
         private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             // when closing the Settings window, check if valid
@@ -283,7 +280,7 @@ namespace BlenderRenderController
                         "Script failed to parse the relative output path into an absolute path, try " +
                         "changing the path in your project\n\nError: " + Constants.PY_FolderCountError);
 
-                    err.Show();
+                    //err.Show();
                     ReadFail();
                     return;
                 }
@@ -298,7 +295,7 @@ namespace BlenderRenderController
                                                   "Failed to read project", 
                                                   "Error", 
                                                   detailsContent);
-                err.Show();
+                //err.Show();
                 ReadFail();
                 return;
             }
@@ -343,7 +340,7 @@ namespace BlenderRenderController
                 var errorBox = Ui.Dialogs.ShowErrorBox("Failed to read blend file info.", 
                     "Read error", "Error output:\n\n" + stdErrors);
 
-                errorBox.Show();
+                //errorBox.Show();
                 ReadFail();
                 return;
             }
@@ -397,8 +394,9 @@ namespace BlenderRenderController
         {
             // Calculate chunks
             bool customLen = renderOptionsCustomRadio.Checked;
-            Chunk[] chunks = customLen ? Chunk.CalcChunksByLenght(_project.BlendData.Start, _project.BlendData.End, _project.ChunkLenght)
-                                       : Chunk.CalcChunks(_project.BlendData.Start, _project.BlendData.End, _project.ProcessesCount);
+            Chunk[] chunks = customLen 
+                ? Chunk.CalcChunksByLenght(_project.BlendData.Start, _project.BlendData.End, _project.ChunkLenght)
+                : Chunk.CalcChunks(_project.BlendData.Start, _project.BlendData.End, _project.ProcessesCount);
 
             UpdateCurrentChunks(chunks);
 
@@ -418,7 +416,8 @@ namespace BlenderRenderController
             UpdateUI(AppState.RENDERING_ALL, "Starting render...");
 
             chrono.Start();
-            renderManager.Start();
+            //renderManager.Start();
+            renderManager.Start(_renderProg);
         }
 
         private async void RenderManager_Finished(object sender, int e)
@@ -607,6 +606,9 @@ namespace BlenderRenderController
             GetBlendInfo(blendPath);
         }
 
+
+        delegate void StatusDelegate(string msg, Control control);
+
         /// <summary>
         /// Thread safe method to change UI text
         /// </summary>
@@ -619,8 +621,7 @@ namespace BlenderRenderController
 
             if (ctrl.InvokeRequired)
             {
-                Action changeTxt = () => ctrl.Text = msg;
-                ctrl.Invoke(changeTxt);
+                ctrl.Invoke(new StatusDelegate(Status), msg, ctrl);
             }
             else
             {
@@ -708,55 +709,35 @@ namespace BlenderRenderController
             return true;
         }
 
-        private Process GetConcatenateProcess(string mixdownFile = null)
+        private Process GetConcatenateProcess(string outputPath, string chunkTxtPath, TimeSpan duration, string mixdownFile = null)
         {
-            var chunkFiles = Utilities.GetChunkFiles(_project.ChunkSubdirPath);
-            var chunksTxtFile = Path.Combine(_project.ChunkSubdirPath, Constants.ChunksTxtFileName);
-            var videoExt = Path.GetExtension(chunkFiles.FirstOrDefault());
-            var projPath = Path.Combine(_project.BlendData.OutputPath, _project.BlendData.ProjectName + videoExt);
-
-            return GetConcatenateProcess(projPath, chunksTxtFile, mixdownFile);
+            string comArgs = CommandARGS.GetConcatenationArgs(chunkTxtPath, duration, outputPath, mixdownFile);
+            return GetConcatenateProcess(comArgs);
         }
 
-        private Process GetConcatenateProcess(string finalPath, string chunkTxtPath, string mixdownFile = null)
+        Process GetConcatenateProcess(string args)
         {
-            string comArgs;
-
-            //mixdown audio NOT found
-            if (string.IsNullOrWhiteSpace(mixdownFile))
-            {
-                Status("Joining chunks, please wait...");
-                comArgs = string.Format(CommandARGS.ConcatenateOnly,
-                            chunkTxtPath,
-                            finalPath);
-            }
-            //mixdown audio found
-            else
-            {
-                Status("Joining chunks with mixdown audio...");
-                comArgs = string.Format(CommandARGS.ConcatenateMixdown,
-                            chunkTxtPath,
-                            mixdownFile,
-                            finalPath);
-            }
-
             var concatenateCom = new Process();
-            var info = new ProcessStartInfo();
-            info.FileName = _appSettings.FFmpegProgram;
-            info.CreateNoWindow = true;
-            info.UseShellExecute = false;
-            info.Arguments = comArgs;
+            var info = new ProcessStartInfo
+            {
+                FileName = _appSettings.FFmpegProgram,
+                CreateNoWindow = true,
+                Arguments = args,
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
             concatenateCom.StartInfo = info;
             concatenateCom.EnableRaisingEvents = true;
             concatenateCom.Exited += (s, e) =>
             {
                 logger.Info("FFmpeg exit code: {0}", (s as Process).ExitCode);
             };
-            
+
             logger.Trace("cmd:> ffmpeg " + concatenateCom.StartInfo.Arguments);
             logger.Info("Joining chunks");
 
             return concatenateCom;
+
         }
 
         private async void concatenatePartsButton_Click(object sender, EventArgs e)
@@ -772,8 +753,11 @@ namespace BlenderRenderController
 
             if (manConcat.DialogResult == DialogResult.OK)
             {
-                var concatProc = GetConcatenateProcess(manConcat.OutputFile, manConcat.ChunksTextFile, 
-                                                       manConcat.MixdownAudioFile);
+                var concatArgs = CommandARGS.GetConcatenationArgs(manConcat.ChunksTextFile, 
+                                                                  manConcat.OutputFile, 
+                                                                  manConcat.MixdownAudioFile);
+
+                var concatProc = GetConcatenateProcess(concatArgs);
 
                 await concatProc.StartAsync(afterRenderCancelSrc.Token);
             }
@@ -816,7 +800,14 @@ namespace BlenderRenderController
                 }
             }
 
+
             Process mixdownProc, concatProc;
+
+            var videoExt = Path.GetExtension(Utilities.GetChunkFiles(_project.ChunkSubdirPath).First());
+            var projFinalPath = Path.Combine(_project.BlendData.OutputPath, _project.BlendData.ProjectName + videoExt);
+            var chunksTxt = Path.Combine(_project.ChunkSubdirPath, Constants.ChunksTxtFileName);
+
+            var concatArgs = CommandARGS.GetConcatenationArgs(chunksTxt, _project.BlendData.Duration, projFinalPath, mixFile);
 
             switch (action)
             {
@@ -824,11 +815,12 @@ namespace BlenderRenderController
                     mixdownProc = GetMixdownProcess();
                     await mixdownProc.StartAsync(token);
 
-                    concatProc = GetConcatenateProcess(mixFile);
+                    concatProc = GetConcatenateProcess(concatArgs);
+                    //var concatRes = await concatProc.StartAsyncGetOutput(token);
                     await concatProc.StartAsync(token);
                     break;
                 case AfterRenderAction.JOIN:
-                    concatProc = GetConcatenateProcess(mixFile);
+                    concatProc = GetConcatenateProcess(concatArgs);
                     await concatProc.StartAsync(token);
                     break;
                 case AfterRenderAction.MIXDOWN:

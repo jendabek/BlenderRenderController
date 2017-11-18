@@ -33,17 +33,11 @@ namespace BlenderRenderController
                     Directory.Delete(chunkSDir.FullName, true);
                 }
 
-                //foreach (DirectoryInfo di in dir.GetDirectories())
-                //{
-                //    ClearOutputFolder(di.FullName);
-                //    di.Delete();
-                //}
-
                 return true;
             }
             catch (IOException)
             {
-                string msg = "Can't clear chunk folder, files are in use";
+                string msg = "Can't clear output folder, there're files are in use";
                 logger.Error(msg);
                 MessageBox.Show(msg);
                 return false;
@@ -69,18 +63,6 @@ namespace BlenderRenderController
                     "",
                     MessageBoxButtons.OK,
                     icon);
-
-            logger.Warn(errorText);
-        }
-        static public void ShowErrors(MessageBoxIcon icon, string fmt, AppErrorCode errorCode)
-        {
-            var errorText = SetErrorText(errorCode, fmt);
-
-            MessageBox.Show(
-                errorText,
-                "",
-                MessageBoxButtons.OK,
-                icon);
 
             logger.Warn(errorText);
         }

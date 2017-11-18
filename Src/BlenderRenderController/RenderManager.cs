@@ -34,8 +34,8 @@ namespace BlenderRenderController
         private Timer timer;
 
         // Progress stuff
-        //bool canReportProgress;
-        //IProgress<RenderProgressInfo> progress;
+        bool canReportProgress;
+        IProgress<RenderProgressInfo> progress;
 
         AppSettings appSettings = AppSettings.Current;
 
@@ -79,7 +79,7 @@ namespace BlenderRenderController
         /// the total number of frames rendered
         /// </summary>
         public event EventHandler<int> Finished;
-        public event EventHandler<RenderProgressInfo> ProgressChanged;
+        //public event EventHandler<RenderProgressInfo> ProgressChanged;
 
         public RenderManager()
         {
@@ -119,7 +119,8 @@ namespace BlenderRenderController
         /// <summary>
         /// Starts rendering 
         /// </summary>
-        public void Start()
+        /// <param name="progress">Progress handler</param>
+        public void Start(IProgress<RenderProgressInfo> progress)
         {
             // do not start if its already in progress
             if (InProgress)
@@ -129,6 +130,9 @@ namespace BlenderRenderController
             }
 
             CheckForValidProperties();
+
+            this.progress = progress;
+            canReportProgress = progress != null;
 
             procBag = new ConcurrentBag<Process>();
             framesRendered = new ConcurrentHashSet<int>();
@@ -141,6 +145,10 @@ namespace BlenderRenderController
             timer.Start();
         }
 
+        /// <summary>
+        /// Starts rendering 
+        /// </summary>
+        public void Start() => Start(null);
 
         /// <summary>
         /// Aborts the render process
@@ -283,7 +291,8 @@ namespace BlenderRenderController
 
         void ReportProgress(RenderProgressInfo progressInfo)
         {
-            ProgressChanged.Raise(this, progressInfo);
+            //ProgressChanged.Raise(this, progressInfo);
+            if (canReportProgress) progress.Report(progressInfo);
         }
 
 
@@ -293,6 +302,9 @@ namespace BlenderRenderController
 
             foreach (var p in procList)
             {
+                p.Exited -= RenderCom_Exited;
+                p.OutputDataReceived -= RenderCom_OutputDataReceived;
+
                 try
                 {
                     if (p != null && !p.HasExited)
