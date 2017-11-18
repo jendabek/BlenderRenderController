@@ -23,7 +23,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using static BRClib.CommandARGS;
 
 namespace BlenderRenderController
 {
@@ -256,7 +256,7 @@ namespace BlenderRenderController
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                Arguments = string.Format(CommandARGS.GetInfoComARGS,
+                Arguments = string.Format(GetInfoComARGS,
                                             blendFile,
                                             Path.Combine(_appSettings.ScriptsFolder, Constants.PyGetInfo))
             };
@@ -264,7 +264,7 @@ namespace BlenderRenderController
             getBlendInfoCom.StartInfo = info;
 
             // exec process asynchronously
-            var (exitCode, stdOutput, stdErrors) = await getBlendInfoCom.StartAsyncGetOutput();
+            var (exitCode, stdOutput, stdErrors) = await getBlendInfoCom.StartAsync(true);
 
             // errors
             if (stdErrors.Length > 0)
@@ -428,9 +428,30 @@ namespace BlenderRenderController
 #endif
             ResetCTS();
 
-            await AfterRender(_appSettings.AfterRender, afterRenderCancelSrc.Token);
+            var AR = await AfterRender(_appSettings.AfterRender, afterRenderCancelSrc.Token);
 
-            WorkDone();
+            // all slow work is done
+            StopWork(true);
+
+            if (AR) // AfterActions ran Ok
+            {
+                var dialog = 
+                    MessageBox.Show("Open destination folder?",
+                        "Work complete!",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Information);
+
+                if (dialog == DialogResult.Yes)
+                    OpenOutputFolder();
+
+                UpdateUI(AppState.READY_FOR_RENDER);
+
+            }
+            else // Erros detected
+            {
+                UpdateUI(AppState.READY_FOR_RENDER, "Errors detected");
+            }
+
         }
 
 
@@ -643,7 +664,7 @@ namespace BlenderRenderController
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                Arguments = string.Format(CommandARGS.MixdownComARGS,
+                Arguments = string.Format(MixdownComARGS,
                                            _project.BlendPath,
                                            _project.BlendData.Start,
                                            _project.BlendData.End,
@@ -672,7 +693,18 @@ namespace BlenderRenderController
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
             var proc = GetMixdownProcess();
-            await proc.StartAsync(afterRenderCancelSrc.Token);
+            var result = await proc.StartAsync(true, afterRenderCancelSrc.Token);
+
+            if (result.eCode != 0)
+            {
+                var logFile = Path.Combine(_project.BlendData.OutputPath, GetRandSulfix("ErrorLog_"));
+                Helper.ReportProcFail("Mixdown, manual", result.eCode, result.stdError, logFile);
+
+                var dialog = MessageBox.Show(Resources.Unexp_eCode_msg, Resources.Error,
+                                            MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+
+                if (dialog == DialogResult.Yes) Process.Start(logFile);
+            }
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             UpdateUI(AppState.READY_FOR_RENDER, "Mixdown complete");
@@ -707,12 +739,6 @@ namespace BlenderRenderController
             }
 
             return true;
-        }
-
-        private Process GetConcatenateProcess(string outputPath, string chunkTxtPath, TimeSpan duration, string mixdownFile = null)
-        {
-            string comArgs = CommandARGS.GetConcatenationArgs(chunkTxtPath, duration, outputPath, mixdownFile);
-            return GetConcatenateProcess(comArgs);
         }
 
         Process GetConcatenateProcess(string args)
@@ -753,13 +779,25 @@ namespace BlenderRenderController
 
             if (manConcat.DialogResult == DialogResult.OK)
             {
-                var concatArgs = CommandARGS.GetConcatenationArgs(manConcat.ChunksTextFile, 
-                                                                  manConcat.OutputFile, 
-                                                                  manConcat.MixdownAudioFile);
+                var concatArgs = GetConcatenationArgs(manConcat.ChunksTextFile, 
+                                                        manConcat.OutputFile, 
+                                                        manConcat.MixdownAudioFile);
 
                 var concatProc = GetConcatenateProcess(concatArgs);
 
-                await concatProc.StartAsync(afterRenderCancelSrc.Token);
+                var result = await concatProc.StartAsync(true, afterRenderCancelSrc.Token);
+
+                if (result.eCode != 0)
+                {
+                    var logFile = Path.Combine(Path.GetDirectoryName(manConcat.OutputFile), GetRandSulfix("ErrorLog_"));
+                    Helper.ReportProcFail("FFmpeg, manual concat", result.eCode, result.stdError, logFile);
+
+                    var msg = string.Format(Resources.Unexp_eCode_msg, "FFmpeg, manual concat", result.eCode);
+                    var dialog = MessageBox.Show(msg, Resources.Error,
+                                                MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+
+                    if (dialog == DialogResult.Yes) Process.Start(logFile);
+                }
             }
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
@@ -776,7 +814,7 @@ namespace BlenderRenderController
 
         #endregion
 
-        async Task AfterRender(AfterRenderAction action, CancellationToken token)
+        async Task<bool> AfterRender(AfterRenderAction action, CancellationToken token)
         {
             logger.Info("AfterRender started");
 
@@ -795,60 +833,97 @@ namespace BlenderRenderController
                 {
                     // did not create txtFile
                     MessageBox.Show("Failed to get chunk files", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-
-                    return;
+                    return false;
                 }
             }
 
-
-            Process mixdownProc, concatProc;
-
+            // get the video ext from the rendered chunks name
             var videoExt = Path.GetExtension(Utilities.GetChunkFiles(_project.ChunkSubdirPath).First());
             var projFinalPath = Path.Combine(_project.BlendData.OutputPath, _project.BlendData.ProjectName + videoExt);
             var chunksTxt = Path.Combine(_project.ChunkSubdirPath, Constants.ChunksTxtFileName);
+            var concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, _project.BlendData.Duration, mixFile);
 
-            var concatArgs = CommandARGS.GetConcatenationArgs(chunksTxt, _project.BlendData.Duration, projFinalPath, mixFile);
+            Process mixdownProc = GetMixdownProcess(), 
+                    concatProc = GetConcatenateProcess(concatArgs);
+
+            (int eCode, string, string stdErr) concatRes = (0, null, null), 
+                                                mixdownRes = (0, null, null);
 
             switch (action)
             {
                 case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
-                    mixdownProc = GetMixdownProcess();
-                    await mixdownProc.StartAsync(token);
-
-                    concatProc = GetConcatenateProcess(concatArgs);
-                    //var concatRes = await concatProc.StartAsyncGetOutput(token);
-                    await concatProc.StartAsync(token);
+                    mixdownRes = await mixdownProc.StartAsync(true, token);
+                    concatRes = await concatProc.StartAsync(true, token);
                     break;
                 case AfterRenderAction.JOIN:
-                    concatProc = GetConcatenateProcess(concatArgs);
-                    await concatProc.StartAsync(token);
+                    concatRes = await concatProc.StartAsync(true, token);
                     break;
                 case AfterRenderAction.MIXDOWN:
-                    mixdownProc = GetMixdownProcess();
-                    await mixdownProc.StartAsync(token);
+                    mixdownRes = await mixdownProc.StartAsync(true, token);
                     break;
                 case AfterRenderAction.NOTHING:
                 default:
-                    return;
+                    break;
             }
 
+            // check for bad exit codes
+            Dictionary<string, (int eCode, string stdErr)> results = 
+                new Dictionary<string, (int, string)>
+                {
+                    ["Mixdown"] = (mixdownRes.eCode, mixdownRes.stdErr),
+                    ["FFmpeg"] = (concatRes.eCode, concatRes.stdErr)
+                };
+
+            string arTmpFile = Path.Combine(_project.BlendData.OutputPath, GetRandSulfix("AfterRenderError_"));
+            var invalidRes = results.Where(r => r.Value.eCode != 0).ToList();
+
+            if (invalidRes.Count > 0)
+            {
+                foreach (var res in invalidRes)
+                {
+                    if (arTmpFile == null)
+                    {
+                        var nTmp = Path.GetTempFileName();
+                        arTmpFile = Path.Combine(Path.GetTempPath(), "BRC_" + Path.GetFileName(nTmp));
+                        File.Move(nTmp, arTmpFile);
+                    }
+
+                    Helper.ReportProcFail(res.Key, res.Value.eCode, res.Value.stdErr, arTmpFile);
+                }
+
+                var dialog = MessageBox.Show(Resources.AR_error_msg, Resources.Error,
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                if (dialog == DialogResult.Yes) Process.Start(arTmpFile);
+
+                return false;
+            }
+
+            return true;
         }
 
-        void WorkDone()
+        string GetRandSulfix(string baseName)
         {
-            StopWork(true);
-
-            var openOutputFolderQuestion =
-                    MessageBox.Show("Open the folder with the video?",
-                                    "Work complete!",
-                                    MessageBoxButtons.YesNo,
-                                    MessageBoxIcon.Information);
-
-            if (openOutputFolderQuestion == DialogResult.Yes)
-                OpenOutputFolder();
-
-            UpdateUI(appState);
+            var tmp = Path.GetRandomFileName();
+            return baseName + tmp.Replace(Path.GetExtension(tmp), ".txt"); 
         }
+
+
+        //void WorkDone()
+        //{
+        //    StopWork(true);
+
+        //    var dialogResult =
+        //            MessageBox.Show("Open destination folder?",
+        //                            "Work complete!",
+        //                            MessageBoxButtons.YesNo,
+        //                            MessageBoxIcon.Information);
+
+        //    if (dialogResult == DialogResult.Yes)
+        //        OpenOutputFolder();
+
+        //    UpdateUI(appState);
+        //}
 
         void ResetCTS()
         {

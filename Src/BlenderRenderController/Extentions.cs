@@ -68,9 +68,18 @@ namespace BlenderRenderController
         /// Starts the process asynchronously and reads its standard output and error streams
         /// </summary>
         /// <param name="token">Cancelation token, calls the <see cref="Process.Kill()"/> method</param>
+        /// <param name="getStdStreams">If set to true, this method will read and return the Std streams 
+        /// content for you, otherwise the tuple's strings will be null</param>
         /// <returns>A tuple with the Process exit code, standard output and standard error contents respectively</returns>
-        public static async Task<(int, string, string)> StartAsyncGetOutput(this Process proc, CancellationToken token = default(CancellationToken))
+        public static async Task<(int eCode, string stdOut, string stdError)> 
+            StartAsync(this Process proc, bool getStdStreams, CancellationToken token = default(CancellationToken))
         {
+            if (!getStdStreams)
+            {
+                var ec = await proc.StartAsync(token);
+                return (ec, null, null);
+            }
+
             // in this case, we will be returning the value
             // of the output streams
             proc.EnableRaisingEvents = true;
@@ -222,7 +231,6 @@ namespace BlenderRenderController
                 }
             }
         }
-
 
     }
 }

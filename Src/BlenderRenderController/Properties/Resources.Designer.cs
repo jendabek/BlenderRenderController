@@ -61,6 +61,28 @@ namespace BlenderRenderController.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The chunks rendered sucessfully, but one or more After Render actions have failed failed, check your output content. See logs?.
+        /// </summary>
+        internal static string AR_error_msg {
+            get {
+                return ResourceManager.GetString("AR_error_msg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exit code: {0}
+        ///
+        ///Std Error:
+        ///{1}
+        ///.
+        /// </summary>
+        internal static string BadProcResult_Report {
+            get {
+                return ResourceManager.GetString("BadProcResult_Report", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap blend_icon {
@@ -181,6 +203,15 @@ namespace BlenderRenderController.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        internal static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap folder_icon {
@@ -297,6 +328,15 @@ namespace BlenderRenderController.Properties {
             get {
                 object obj = ResourceManager.GetObject("stop_icon_small", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} exited with a code {1}, see logs?.
+        /// </summary>
+        internal static string Unexp_eCode_msg {
+            get {
+                return ResourceManager.GetString("Unexp_eCode_msg", resourceCulture);
             }
         }
         

@@ -170,44 +170,46 @@ namespace BRClib
     /// </summary>
     public static class CommandARGS
     {
-        // 0=ChunkTxtPath, 1=MixdownInclude, 2=Optional duration, 3=Final file path + .EXT
-        //const string _concatBase = "-f concat -safe 0 -i \"{0}\" {1} -c:v copy {2} \"{3}\" -y";
+        // 0=ChunkTxtPath, 1=Optional mixdown input, 2=Optional duration, 3=Final file path + .EXT
+        const string CONCAT_BASE = "-f concat -safe 0 -i \"{0}\" {1} -c:v copy {2} \"{3}\" -y";
 
-
-        public static string GetConcatenationArgs(string chunksTxt, TimeSpan? duration, string output, string mixdown = null)
+        public static string GetConcatenationArgs(string chunksTxt, string outputFile, TimeSpan? duration = null, string mixdown = null)
         {
-            if (duration == null) return GetConcatenationArgs(chunksTxt, output, mixdown);
+            //if (duration == null) return GetConcatenationArgs(chunksTxt, output, mixdown);
 
-            string args = "-f concat -safe 0 ";
+            var mixdownText = !string.IsNullOrWhiteSpace(mixdown) 
+                                ? "-i \"" + mixdown + "\" -map 0:v -map 1:a" : "";
 
-            // chunkTxt
-            args += "-i \"" + chunksTxt + "\" ";
-            // mixdown audio
-            if (!string.IsNullOrWhiteSpace(mixdown)) args += "-i \"" + mixdown + "\" -map 0:v -map 1:a ";
-            // encoder
-            args += "-c:v copy ";
-            // duration
-            args += "-t " + duration.Value.ToString(@"hh\:mm\:ss") + ' ';
-            // output
-            args += "\"" + output + "\" -y";
+            var durationText = duration.HasValue 
+                                ? "-t " + duration.Value.ToString(@"hh\:mm\:ss") : "";
 
-            return args;
+            return string.Format(CONCAT_BASE, chunksTxt, mixdownText, durationText, outputFile);
         }
+
+
+        //public static string GetConcatenationArgs(string chunksTxt, string output, TimeSpan? duration = null, string mixdown = null)
+        //{
+        //    if (duration == null) return GetConcatenationArgs(chunksTxt, output, mixdown);
+
+        //    string args = "-f concat -safe 0 ";
+
+        //    // chunkTxt
+        //    args += "-i \"" + chunksTxt + "\" ";
+        //    // mixdown audio
+        //    if (!string.IsNullOrWhiteSpace(mixdown)) args += "-i \"" + mixdown + "\" -map 0:v -map 1:a ";
+        //    // encoder
+        //    args += "-c:v copy ";
+        //    // duration
+        //    args += "-t " + duration.Value.ToString(@"hh\:mm\:ss") + ' ';
+        //    // output
+        //    args += "\"" + output + "\" -y";
+
+        //    return args;
+        //}
 
         public static string GetConcatenationArgs(string chunksTxt, string output, string mixdown = null)
         {
-            string args = "-f concat -safe 0 ";
-
-            // chunkTxt
-            args += "-i \"" + chunksTxt + "\" ";
-            // mixdown audio
-            if (!string.IsNullOrWhiteSpace(mixdown)) args += "-i \"" + mixdown + "\" -map 0:v -map 1:a ";
-            // encoder
-            args += "-c:v copy ";
-            // output
-            args += "\"" + output + "\" -y";
-
-            return args;
+            return GetConcatenationArgs(chunksTxt, output, null, mixdown);
         }
 
 
