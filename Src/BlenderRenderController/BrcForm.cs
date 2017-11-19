@@ -428,6 +428,8 @@ namespace BlenderRenderController
 #endif
             ResetCTS();
 
+            Status("Chunk rendering complete");
+
             var AR = await AfterRender(_appSettings.AfterRender, afterRenderCancelSrc.Token);
 
             // all slow work is done
@@ -843,7 +845,6 @@ namespace BlenderRenderController
             var concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, _project.BlendData.Duration, mixFile);
 
 
-
             Process mixdownProc = GetMixdownProcess(), 
                     concatProc = GetConcatenateProcess(concatArgs);
 
@@ -853,13 +854,19 @@ namespace BlenderRenderController
             switch (action)
             {
                 case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
+                    Status("Joining chunks w/ custom mixdown");
+
                     mixdownRes = await mixdownProc.StartAsync(true, token);
                     concatRes = await concatProc.StartAsync(true, token);
                     break;
                 case AfterRenderAction.JOIN:
+                    Status("Joining chunks");
+
                     concatRes = await concatProc.StartAsync(true, token);
                     break;
                 case AfterRenderAction.MIXDOWN:
+                    Status("Rendering mixdown");
+
                     mixdownRes = await mixdownProc.StartAsync(true, token);
                     break;
                 case AfterRenderAction.NOTHING:
@@ -875,11 +882,11 @@ namespace BlenderRenderController
                     ["FFmpeg"] = concatRes
                 };
 
-            string arTmpFile = Path.Combine(_project.BlendData.OutputPath, GetRandSulfix("AfterRenderError_"));
             var invalidRes = results.Where(r => r.Value.eCode != 0).ToList();
 
             if (invalidRes.Count > 0)
             {
+                string arTmpFile = Path.Combine(_project.BlendData.OutputPath, GetRandSulfix("AfterRenderError_"));
                 foreach (var res in invalidRes)
                 {
                     if (arTmpFile == null)
@@ -909,22 +916,6 @@ namespace BlenderRenderController
             return baseName + tmp.Replace(Path.GetExtension(tmp), ".txt"); 
         }
 
-
-        //void WorkDone()
-        //{
-        //    StopWork(true);
-
-        //    var dialogResult =
-        //            MessageBox.Show("Open destination folder?",
-        //                            "Work complete!",
-        //                            MessageBoxButtons.YesNo,
-        //                            MessageBoxIcon.Information);
-
-        //    if (dialogResult == DialogResult.Yes)
-        //        OpenOutputFolder();
-
-        //    UpdateUI(appState);
-        //}
 
         void ResetCTS()
         {
