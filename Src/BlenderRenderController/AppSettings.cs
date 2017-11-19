@@ -96,8 +96,6 @@ namespace BlenderRenderController
             return _recentBlends;
         }
 
-        [JsonIgnore]
-        public int RecentBlendsCount => _recentBlends.Count;
 
         [JsonIgnore]
         public string ScriptsFolder
@@ -167,10 +165,7 @@ namespace BlenderRenderController
         }
         public void RemoveRecentBlend(string blendFilePath)
         {
-            if (_recentBlends.Contains(blendFilePath))
-            {
-                _recentBlends.Remove(blendFilePath);
-            }
+            _recentBlends.Remove(blendFilePath);
         }
 
         public void ClearRecentBlend()
@@ -180,23 +175,15 @@ namespace BlenderRenderController
                 var response = MessageBox.Show(
                                  "This will clear all files in the recent blends list, are you sure?", 
                                  "Clear recent blends?",
-                                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                                 MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
-                switch (response)
-                {
-                    case DialogResult.Yes:
-                        _recentBlends.Clear();
-                        break;
-                    case DialogResult.No:
-                    default:
-                        break;
-                }
+                if (response == DialogResult.Yes) _recentBlends.Clear();
             }
         }
 
         public bool CheckCorrectConfig()
         {
-            List<AppErrorCode> errors = new List<AppErrorCode>();
+            //List<AppErrorCode> errors = new List<AppErrorCode>();
 
             if (!File.Exists(BlenderProgram))
             {
@@ -205,7 +192,7 @@ namespace BlenderRenderController
                     BlenderProgram = GetPathFromEnv(BlenderExeName);
                     return CheckCorrectConfig();
                 }
-                else errors.Add(AppErrorCode.BLENDER_PATH_NOT_SET);
+                else return false;
             }
 
             if (!File.Exists(FFmpegProgram))
@@ -215,15 +202,15 @@ namespace BlenderRenderController
                     FFmpegProgram = GetPathFromEnv(FFmpegExeName);
                     return CheckCorrectConfig();
                 }
-                else errors.Add(AppErrorCode.FFMPEG_PATH_NOT_SET);
+                else return false;
             }
 
-            if (errors.Count == 0)
-            {
-                return true;
-            }
+            //if (errors.Count == 0)
+            //{
+            //    return true;
+            //}
 
-            return false;
+            return true;
         }
 
         bool VerifyLocation(string exe, string args, string match)
@@ -253,10 +240,9 @@ namespace BlenderRenderController
 
         string GetPathFromEnv(string exe)
         {
-            var PATH = Environment.GetEnvironmentVariable("PATH");
-            var envPaths = PATH.Split(Path.PathSeparator);
+            var PATH = Environment.GetEnvironmentVariable("PATH").Split(Path.PathSeparator);
 
-            var exePath = envPaths.Select(x => Path.Combine(x, exe))
+            var exePath = PATH.Select(x => Path.Combine(x, exe))
                                   .Where(x => File.Exists(x))
                                   .FirstOrDefault();
 

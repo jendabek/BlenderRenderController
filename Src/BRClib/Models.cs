@@ -178,7 +178,8 @@ namespace BRClib
         {
             get
             {
-                if (BlendData == null) return null;
+                if (BlendData == null || BlendData.OutputPath == null)
+                    return null;
 
                 return Path.Combine(BlendData.OutputPath, "chunks");
             }

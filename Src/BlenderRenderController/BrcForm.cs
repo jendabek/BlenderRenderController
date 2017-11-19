@@ -264,7 +264,7 @@ namespace BlenderRenderController
             getBlendInfoCom.StartInfo = info;
 
             // exec process asynchronously
-            var (exitCode, stdOutput, stdErrors) = await getBlendInfoCom.StartAsync(true);
+            var (exitCode, stdOutput, stdErrors) = await getBlendInfoCom.StartAsync(true, true);
 
             // errors
             if (stdErrors.Length > 0)
@@ -660,7 +660,6 @@ namespace BlenderRenderController
             var info = new ProcessStartInfo()
             {
                 FileName = _appSettings.BlenderProgram,
-                StandardOutputEncoding = Encoding.UTF8,
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -843,11 +842,13 @@ namespace BlenderRenderController
             var chunksTxt = Path.Combine(_project.ChunkSubdirPath, Constants.ChunksTxtFileName);
             var concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, _project.BlendData.Duration, mixFile);
 
+
+
             Process mixdownProc = GetMixdownProcess(), 
                     concatProc = GetConcatenateProcess(concatArgs);
 
-            (int eCode, string, string stdErr) concatRes = (0, null, null), 
-                                                mixdownRes = (0, null, null);
+            (int eCode, string stdErr) concatRes = (0, null), 
+                                        mixdownRes = (0, null);
 
             switch (action)
             {
@@ -870,8 +871,8 @@ namespace BlenderRenderController
             Dictionary<string, (int eCode, string stdErr)> results = 
                 new Dictionary<string, (int, string)>
                 {
-                    ["Mixdown"] = (mixdownRes.eCode, mixdownRes.stdErr),
-                    ["FFmpeg"] = (concatRes.eCode, concatRes.stdErr)
+                    ["Mixdown"] = mixdownRes,
+                    ["FFmpeg"] = concatRes
                 };
 
             string arTmpFile = Path.Combine(_project.BlendData.OutputPath, GetRandSulfix("AfterRenderError_"));

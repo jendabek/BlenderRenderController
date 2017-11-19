@@ -116,8 +116,6 @@ namespace BlenderRenderController
                 sw.Write(name + ' ');
                 sw.WriteLine(content);
             }
-
-
         }
 
         //static public string SecondsToString(double seconds, bool digital = false)

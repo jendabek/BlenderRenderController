@@ -65,18 +65,19 @@ namespace BlenderRenderController
         }
 
         /// <summary>
-        /// Starts the process asynchronously and reads its standard output and error streams
+        /// Starts the process asynchronously and optionally reads its standard output and error streams
         /// </summary>
         /// <param name="token">Cancelation token, calls the <see cref="Process.Kill()"/> method</param>
-        /// <param name="getStdStreams">If set to true, this method will read and return the Std streams 
-        /// content for you, otherwise the tuple's strings will be null</param>
-        /// <returns>A tuple with the Process exit code, standard output and standard error contents respectively</returns>
+        /// <param name="getStdOut">If set to true, this method will read and return the Std Output 
+        /// content as a string, otherwise "stdOut" will be null</param>
+        /// <returns>A tuple with the Process exit code and, optionally, its standard output and standard error 
+        /// contents as strings</returns>
         public static async Task<(int eCode, string stdOut, string stdError)> 
-            StartAsync(this Process proc, bool getStdStreams, CancellationToken token = default(CancellationToken))
+            StartAsync(this Process proc, bool getStdOut, bool getStdErr, CancellationToken token = default(CancellationToken))
         {
-            if (!getStdStreams)
+            if (!getStdOut && !getStdErr)
             {
-                var ec = await proc.StartAsync(token);
+                var ec = await StartAsync(proc, token).ConfigureAwait(false);
                 return (ec, null, null);
             }
 
@@ -84,13 +85,13 @@ namespace BlenderRenderController
             // of the output streams
             proc.EnableRaisingEvents = true;
             proc.StartInfo.UseShellExecute = false;
-            proc.StartInfo.RedirectStandardOutput = true;
-            proc.StartInfo.RedirectStandardError = true;
+            proc.StartInfo.RedirectStandardOutput = getStdOut;
+            proc.StartInfo.RedirectStandardError = getStdErr;
 
-            StringBuilder stdOutput = new StringBuilder(),
-                          stdErrors = new StringBuilder();
+            StringBuilder stdOutput = new StringBuilder();
+            StringBuilder stdErrors = new StringBuilder();
 
-            // read the output and error data
+            // handlers to read the output and error data
             DataReceivedEventHandler outHandler = null, errHandler = null;
 
             outHandler = (s, e) =>
@@ -112,8 +113,9 @@ namespace BlenderRenderController
             // unregister events on exit
             proc.Exited += (s, e) => 
             {
-                proc.OutputDataReceived -= outHandler;
-                proc.ErrorDataReceived -= errHandler;
+                var p = s as Process;
+                p.OutputDataReceived -= outHandler;
+                p.ErrorDataReceived -= errHandler;
             };
 
             proc.OutputDataReceived += outHandler;
@@ -128,11 +130,25 @@ namespace BlenderRenderController
             return (result, stdOutput.ToString(), stdErrors.ToString());
         }
 
+        /// <summary>
+        /// Starts the process asynchronously and optionally reads its standard error stream
+        /// </summary>
+        /// <param name="getStdErr">If set to true, this method will read and return the Std Error 
+        /// contents as a string, otherwise "stdError" will be null</param>
+        /// <param name="token">Cancelation token, calls the <see cref="Process.Kill()"/> method</param>
+        /// <returns>A tuple with the Process exit code and, optionally, its standard error content
+        /// as a string</returns>
+        public static async Task<(int eCode, string stdError)> 
+            StartAsync(this Process proc, bool getStdErr, CancellationToken token = default(CancellationToken))
+        {
+            var result = await StartAsync(proc, false, getStdErr, token).ConfigureAwait(false);
+            return (result.eCode, result.stdError);
+        }
 
         private static Task<int> RunProcessAsync(Process proc)
         {
             var tcs = new TaskCompletionSource<int>();
-            proc.Exited += (s, e) => tcs.SetResult(proc.ExitCode);
+            proc.Exited += (s, e) => tcs.SetResult((s as Process).ExitCode);
 
             bool started = proc.Start();
             if (!started)
@@ -167,9 +183,9 @@ namespace BlenderRenderController
                 {
                     proc.Kill();
                 }
-                catch (InvalidOperationException ioex)
+                catch (Exception ex)
                 {
-                    Trace.WriteLine("Error killing process: " + ioex.Message, "Proc Extentions");
+                    Debug.WriteLine(ex.ToString(), category: "Proc Extentions");
                 }
                 finally
                 {
@@ -177,6 +193,7 @@ namespace BlenderRenderController
                 }
             }
         }
+
 
         /// <summary>
         /// Safely raises any EventHandler event asynchronously.

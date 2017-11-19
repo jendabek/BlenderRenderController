@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Timers;
+using Interlocked = System.Threading.Interlocked;
 using static BRClib.CommandARGS;
 
 namespace BlenderRenderController
@@ -23,7 +24,6 @@ namespace BlenderRenderController
     public class RenderManager
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        //private static Logger logger = LogManager.GetLogger("renderlog");
 
         // State trackers
         private ConcurrentBag<Process> procBag;
@@ -244,10 +244,22 @@ namespace BlenderRenderController
         // decrement counts when a process exits
         private void RenderCom_Exited(object sender, EventArgs e)
         {
-            chunksToDo--;
-            chunksInProgress--;
-
+            //--chunksToDo;
+            --chunksInProgress;
+         
             logger.Trace("Render proc exited with code {0}", (sender as Process).ExitCode);
+
+            // check if the overall render is done
+            if (Interlocked.Decrement(ref chunksToDo) == 0)
+            {
+                timer.Stop();
+
+                // all render processes are done at this point
+                Debug.Assert(NumberOfFramesRendered == ChunkList.TotalLength(),
+                            "Frames counted don't match the ChunkList TotalLenght");
+
+                OnFinished(NumberOfFramesRendered);
+            }
         }
 
         private void TryQueueRenderProcess(object sender, ElapsedEventArgs e)
@@ -265,28 +277,28 @@ namespace BlenderRenderController
                 chunksInProgress++;
                 currentIndex++;
 
-                logger.Trace("Started render n. {0}, frames {1}", currentIndex, currentChunk);
+                logger.Trace("Started render n. {0}, frames: {1}", currentIndex, currentChunk);
             }
 
             ReportProgress(new RenderProgressInfo(NumberOfFramesRendered, initalChunkCount - chunksToDo));
 
-            if (chunksToDo == 0)
-            {
-                timer.Stop();
+            //if (chunksToDo == 0)
+            //{
+            //    timer.Stop();
 
-                // all render processes are done at this point
-                Debug.Assert(NumberOfFramesRendered == ChunkList.TotalLength(),
-                            "Frames counted don't match the ChunkList lenght");
+            //    // all render processes are done at this point
+            //    Debug.Assert(NumberOfFramesRendered == ChunkList.TotalLength(),
+            //                "Frames counted don't match the ChunkList lenght");
 
-                OnFinished();
-            }
+            //    OnFinished(NumberOfFramesRendered);
+            //}
         }
 
-        private void OnFinished()
+        private void OnFinished(int framesRendered)
         {
-            Finished.Raise(this, NumberOfFramesRendered);
             DisposeProcesses();
-            logger.Info("Render finished sucessfully");
+            Finished.Raise(this, framesRendered);
+            logger.Info("RENDER FINISHED");
         }
 
         void ReportProgress(RenderProgressInfo progressInfo)
@@ -302,12 +314,12 @@ namespace BlenderRenderController
 
             foreach (var p in procList)
             {
-                p.Exited -= RenderCom_Exited;
-                p.OutputDataReceived -= RenderCom_OutputDataReceived;
-
                 try
                 {
-                    if (p != null && !p.HasExited)
+                    p.Exited -= RenderCom_Exited;
+                    p.OutputDataReceived -= RenderCom_OutputDataReceived;
+
+                    if (!p.HasExited)
                     {
                         p.Kill();
                     }
@@ -316,13 +328,14 @@ namespace BlenderRenderController
                 {
                     // Processes may be in an invalid state, just swallow the errors 
                     // since we're diposing them anyway
-                    logger.Trace(ex, "Error while disposing processes");
+                    Debug.WriteLine(ex.ToString(), "RenderManager Proc dispose");
                 }
                 finally
                 {
                     p.Dispose();
                 }
             }
+
         }
 
         // Property values must only change when there isn't a render in progress
