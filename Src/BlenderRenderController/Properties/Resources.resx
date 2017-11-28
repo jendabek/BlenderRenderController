@@ -200,7 +200,7 @@
     <value>..\Resources\AfterRender_BadResult_Repot.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="AR_error_msg" xml:space="preserve">
-    <value>The chunks rendered sucessfully, but one or more After Render actions have failed, check your output content. A log was saved, press 'Yes' to open it.</value>
+    <value>The chunks rendered sucessfully, but one or more After Render actions have failed, check your output content.</value>
   </data>
   <data name="Error" xml:space="preserve">
     <value>Error</value>

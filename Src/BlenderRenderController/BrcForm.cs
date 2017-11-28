@@ -65,12 +65,16 @@ namespace BlenderRenderController
 #endif
             // RenderManager
             renderManager = new RenderManager();
-            renderManager.Finished += RenderManager_Finished;
+            renderManager.ChunksFinished += RenderManager_ChunksFinished;
+            renderManager.AllFinished += RenderManager_AllFinished; ;
+            renderManager.AfterRenderStarted += RenderManager_AfterRenderStarted;
             //renderManager.ProgressChanged += (s, prog) => UpdateProgress(prog);
             _renderProg = new Progress<RenderProgressInfo>(UpdateProgress);
 
             chrono = new Stopwatch();
+            _etaCalc = new ETACalculator(5, 1);
         }
+
 
         private void BrcForm_Load(object sender, EventArgs e)
         {
@@ -108,6 +112,22 @@ namespace BlenderRenderController
             processCountNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
 
             infoActiveScene.TextChanged += (s, args) => toolTipInfo.SetToolTip(infoActiveScene, infoActiveScene.Text);
+
+            // set what afterRenderRadio button is checked
+            switch (_appSettings.AfterRender)
+            {
+                case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
+                    afterRenderJoinMixdownRadio.Checked = true;
+                    break;
+                case AfterRenderAction.JOIN:
+                    afterRenderJoinRadio.Checked = true;
+                    break;
+                case AfterRenderAction.NOTHING:
+                    afterRenderDoNothingRadio.Checked = true;
+                    break;
+                default:
+                    goto case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN;
+            }
 #if UNIX
             forceUIUpdateToolStripMenuItem.Visible = true;
             forceUIUpdateToolStripMenuItem.Click += (s,args) => ForceBindingSourceUpdate();
@@ -264,7 +284,8 @@ namespace BlenderRenderController
             getBlendInfoCom.StartInfo = info;
 
             // exec process asynchronously
-            var (exitCode, stdOutput, stdErrors) = await getBlendInfoCom.StartAsync(true, true);
+            var pResult = await getBlendInfoCom.StartAsync(true, true);
+            var (exitCode, stdOutput, stdErrors) = (pResult.ExitCode, pResult.StdOutput, pResult.StdError);
 
             // errors
             if (stdErrors.Length > 0)
@@ -405,7 +426,7 @@ namespace BlenderRenderController
             IsWorking = true;
 
             renderManager.Setup(_project);
-            _etaCalc = new ETACalculator(5, 1);
+            renderManager.Action = _appSettings.AfterRender;
 
             totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
 
@@ -416,28 +437,26 @@ namespace BlenderRenderController
             UpdateUI(AppState.RENDERING_ALL, "Starting render...");
 
             chrono.Start();
-            //renderManager.Start();
-            renderManager.Start(_renderProg);
+            renderManager.StartAsync(_renderProg);
         }
 
-        private async void RenderManager_Finished(object sender, int e)
+        private void RenderManager_ChunksFinished(object sender, int e)
         {
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 #if WIN
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
 #endif
-            ResetCTS();
-
             Status("Chunk rendering complete");
+        }
 
-            var AR = await AfterRender(_appSettings.AfterRender, afterRenderCancelSrc.Token);
-
+        private void RenderManager_AllFinished(object sender, EventArgs e)
+        {
             // all slow work is done
             StopWork(true);
 
-            if (AR) // AfterActions ran Ok
+            if (renderManager.GetAfterRenderResult()) // AfterActions ran Ok
             {
-                var dialog = 
+                var dialog =
                     MessageBox.Show("Open destination folder?",
                         "Work complete!",
                         MessageBoxButtons.YesNo,
@@ -449,13 +468,39 @@ namespace BlenderRenderController
                 UpdateUI(AppState.READY_FOR_RENDER);
 
             }
-            else // Erros detected
+            else if (!renderManager.WasAborted) // Erros detected
             {
+                var dialog = MessageBox.Show(Resources.AR_error_msg, Resources.Error,
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+
+
                 UpdateUI(AppState.READY_FOR_RENDER, "Errors detected");
+            }
+            else // operation aborted
+            {
+                UpdateUI(AppState.READY_FOR_RENDER, "Operation Aborted");
             }
 
         }
 
+        private void RenderManager_AfterRenderStarted(object sender, AfterRenderAction e)
+        {
+            switch (e)
+            {
+                case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
+                    Status("Joining chunks w/ custom mixdown");
+                    break;
+                case AfterRenderAction.JOIN:
+                    Status("Joining chunks");
+                    break;
+                case AfterRenderAction.MIXDOWN:
+                    Status("Rendering mixdown");
+                    break;
+                default:
+                    break;
+            }
+        }
 
         private void StopWork(bool wasComplete)
         {
@@ -470,7 +515,7 @@ namespace BlenderRenderController
                     afterRenderCancelSrc.Cancel();
             }
 
-            _etaCalc = null;
+            _etaCalc.Reset();
             chrono.Reset();
             IsWorking = false;
             renderProgressBar.Value = 0;
@@ -508,9 +553,10 @@ namespace BlenderRenderController
             {
                 var outputDir = _project.BlendData.OutputPath;
 
-                if (Directory.Exists(outputDir) && Directory.GetFiles(outputDir).Length > 0)
+                if ((Directory.Exists(outputDir) && Directory.GetFiles(outputDir).Length > 0)
+                    || Directory.Exists(_project.ChunkSubdirPath))
                 {
-                    var dialogResult = MessageBox.Show("All existing will be deleted!\n" +
+                    var dialogResult = MessageBox.Show("All existing files will be deleted!\n" +
                                                         "Do you want to continue?",
                                                         "Output folder not empty",
                                                         MessageBoxButtons.YesNo,
@@ -654,36 +700,6 @@ namespace BlenderRenderController
 
         #endregion
 
-        #region Mixdown
-
-        private Process GetMixdownProcess()
-        {
-            var mixdownCom = new Process();
-            var info = new ProcessStartInfo()
-            {
-                FileName = _appSettings.BlenderProgram,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                Arguments = string.Format(MixdownComARGS,
-                                           _project.BlendPath,
-                                           _project.BlendData.Start,
-                                           _project.BlendData.End,
-                                           Path.Combine(_appSettings.ScriptsFolder, Constants.PyMixdown),
-                                           _project.BlendData.OutputPath)
-            };
-            mixdownCom.StartInfo = info;
-            mixdownCom.EnableRaisingEvents = true;
-            mixdownCom.Exited += (pSender, pe) =>
-            {
-                logger.Info("Mixdown exit code: " + (pSender as Process).ExitCode);
-            };
-
-            logger.Info("Rendering mixdown");
-            logger.Trace("cmd:> blender " + mixdownCom.StartInfo.Arguments);
-
-            return mixdownCom;
-        }
 
         private async void mixDownButton_Click(object sender, EventArgs e)
         {
@@ -693,78 +709,34 @@ namespace BlenderRenderController
             UpdateUI(AppState.RENDERING_ALL, "Rendering mixdown...");
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
-            var proc = GetMixdownProcess();
-            var result = await proc.StartAsync(true, afterRenderCancelSrc.Token);
+            var mixArgs = string.Format(MixdownComARGS,
+                                       _project.BlendPath,
+                                       _project.BlendData.Start,
+                                       _project.BlendData.End,
+                                       Path.Combine(_appSettings.ScriptsFolder, Constants.PyMixdown),
+                                       _project.BlendData.OutputPath);
 
-            if (result.eCode != 0)
+            var mixProc = ProcessFactory.MixdownProcess(_appSettings.BlenderProgram, mixArgs);
+            var pr = new ProcessRunner(mixProc);
+            var result = await pr.Run(afterRenderCancelSrc.Token);
+
+            if (result)
             {
-                var logFile = Path.Combine(_project.BlendData.OutputPath, GetRandSulfix("ErrorLog_"));
-                Helper.ReportProcFail("Mixdown, manual", result.eCode, result.stdError, logFile);
-
-                var dialog = MessageBox.Show(Resources.Unexp_eCode_msg, Resources.Error,
-                                            MessageBoxButtons.YesNo, MessageBoxIcon.Error);
-
-                if (dialog == DialogResult.Yes) Process.Start(logFile);
+                UpdateUI(AppState.READY_FOR_RENDER, "Mixdown complete");
             }
+            else
+            {
+                MessageBox.Show("Something went wrong, check logs at the output folder...", 
+                        Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                pr.SaveReport(_project.BlendData.OutputPath);
+
+                UpdateUI(AppState.READY_FOR_RENDER, "Something went wrong...");
+            }
+
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
-            UpdateUI(AppState.READY_FOR_RENDER, "Mixdown complete");
             IsWorking = false;
-        }
-
-        #endregion
-
-        #region Concatenate
-
-        bool CreateChunksTxtFile(string chunksFolder)
-        {
-            // TODO: Find a way to get the videos file ext
-            // before rendering ends
-
-            var fileListSorted = Utilities.GetChunkFiles(chunksFolder);
-
-            if (fileListSorted.Count == 0)
-            {
-                return false;
-            }
-
-            string chunksTxtFile = Path.Combine(chunksFolder, Constants.ChunksTxtFileName); 
-
-            //write txt for FFmpeg concatenation
-            using (StreamWriter partListWriter = new StreamWriter(chunksTxtFile))
-            {
-                foreach (var filePath in fileListSorted)
-                {
-                    partListWriter.WriteLine("file '{0}'", filePath);
-                }
-            }
-
-            return true;
-        }
-
-        Process GetConcatenateProcess(string args)
-        {
-            var concatenateCom = new Process();
-            var info = new ProcessStartInfo
-            {
-                FileName = _appSettings.FFmpegProgram,
-                CreateNoWindow = true,
-                Arguments = args,
-                UseShellExecute = false,
-                RedirectStandardOutput = true
-            };
-            concatenateCom.StartInfo = info;
-            concatenateCom.EnableRaisingEvents = true;
-            concatenateCom.Exited += (s, e) =>
-            {
-                logger.Info("FFmpeg exit code: {0}", (s as Process).ExitCode);
-            };
-
-            logger.Trace("cmd:> ffmpeg " + concatenateCom.StartInfo.Arguments);
-            logger.Info("Joining chunks");
-
-            return concatenateCom;
-
         }
 
         private async void concatenatePartsButton_Click(object sender, EventArgs e)
@@ -780,24 +752,28 @@ namespace BlenderRenderController
 
             if (manConcat.DialogResult == DialogResult.OK)
             {
-                var concatArgs = GetConcatenationArgs(manConcat.ChunksTextFile, 
-                                                        manConcat.OutputFile, 
+                var concatArgs = GetConcatenationArgs(manConcat.ChunksTextFile,
+                                                        manConcat.OutputFile,
                                                         manConcat.MixdownAudioFile);
 
-                var concatProc = GetConcatenateProcess(concatArgs);
 
-                var result = await concatProc.StartAsync(true, afterRenderCancelSrc.Token);
+                var concatProc = ProcessFactory.ConcatProcess(_appSettings.FFmpegProgram, concatArgs);
+                var pr = new ProcessRunner(concatProc);
+                var result = await pr.Run(afterRenderCancelSrc.Token);
 
-                if (result.eCode != 0)
+                if (result)
                 {
-                    var logFile = Path.Combine(Path.GetDirectoryName(manConcat.OutputFile), GetRandSulfix("ErrorLog_"));
-                    Helper.ReportProcFail("FFmpeg, manual concat", result.eCode, result.stdError, logFile);
+                    UpdateUI(AppState.READY_FOR_RENDER, "Concatenation complete");
+                }
+                else
+                {
+                    MessageBox.Show("Something went wrong, check logs at the output folder...",
+                             Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                    var msg = string.Format(Resources.Unexp_eCode_msg, "FFmpeg, manual concat", result.eCode);
-                    var dialog = MessageBox.Show(msg, Resources.Error,
-                                                MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    var outFolder = Path.GetDirectoryName(manConcat.OutputFile);
+                    pr.SaveReport(outFolder);
 
-                    if (dialog == DialogResult.Yes) Process.Start(logFile);
+                    UpdateUI(AppState.READY_FOR_RENDER, "Something went wrong...");
                 }
             }
 
@@ -811,109 +787,6 @@ namespace BlenderRenderController
             }
             else
                 UpdateUI(AppState.READY_FOR_RENDER, done);
-        }
-
-        #endregion
-
-        async Task<bool> AfterRender(AfterRenderAction action, CancellationToken token)
-        {
-            logger.Info("AfterRender started");
-
-            string mixFile = null;
-            if ((action & AfterRenderAction.MIXDOWN) != 0)
-            {
-                mixFile = Path.Combine(_project.BlendData.OutputPath, 
-                                       _project.BlendData.ProjectName + '.' + 
-                                       _project.BlendData.AudioFileFormat);
-            }
-
-            if ((action & AfterRenderAction.JOIN) != 0)
-            {
-                // create chunklist.txt
-                if (!CreateChunksTxtFile(_project.ChunkSubdirPath))
-                {
-                    // did not create txtFile
-                    MessageBox.Show("Failed to get chunk files", "Error", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                    return false;
-                }
-            }
-
-            // get the video ext from the rendered chunks name
-            var videoExt = Path.GetExtension(Utilities.GetChunkFiles(_project.ChunkSubdirPath).First());
-            var projFinalPath = Path.Combine(_project.BlendData.OutputPath, _project.BlendData.ProjectName + videoExt);
-            var chunksTxt = Path.Combine(_project.ChunkSubdirPath, Constants.ChunksTxtFileName);
-            var concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, _project.BlendData.Duration, mixFile);
-
-
-            Process mixdownProc = GetMixdownProcess(), 
-                    concatProc = GetConcatenateProcess(concatArgs);
-
-            (int eCode, string stdErr) concatRes = (0, null), 
-                                        mixdownRes = (0, null);
-
-            switch (action)
-            {
-                case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
-                    Status("Joining chunks w/ custom mixdown");
-
-                    mixdownRes = await mixdownProc.StartAsync(true, token);
-                    concatRes = await concatProc.StartAsync(true, token);
-                    break;
-                case AfterRenderAction.JOIN:
-                    Status("Joining chunks");
-
-                    concatRes = await concatProc.StartAsync(true, token);
-                    break;
-                case AfterRenderAction.MIXDOWN:
-                    Status("Rendering mixdown");
-
-                    mixdownRes = await mixdownProc.StartAsync(true, token);
-                    break;
-                case AfterRenderAction.NOTHING:
-                default:
-                    break;
-            }
-
-            // check for bad exit codes
-            Dictionary<string, (int eCode, string stdErr)> results = 
-                new Dictionary<string, (int, string)>
-                {
-                    ["Mixdown"] = mixdownRes,
-                    ["FFmpeg"] = concatRes
-                };
-
-            var invalidRes = results.Where(r => r.Value.eCode != 0).ToList();
-
-            if (invalidRes.Count > 0)
-            {
-                string arTmpFile = Path.Combine(_project.BlendData.OutputPath, GetRandSulfix("AfterRenderError_"));
-                foreach (var res in invalidRes)
-                {
-                    if (arTmpFile == null)
-                    {
-                        var nTmp = Path.GetTempFileName();
-                        arTmpFile = Path.Combine(Path.GetTempPath(), "BRC_" + Path.GetFileName(nTmp));
-                        File.Move(nTmp, arTmpFile);
-                    }
-
-                    Helper.ReportProcFail(res.Key, res.Value.eCode, res.Value.stdErr, arTmpFile);
-                }
-
-                var dialog = MessageBox.Show(Resources.AR_error_msg, Resources.Error,
-                                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-                if (dialog == DialogResult.Yes) Process.Start(arTmpFile);
-
-                return false;
-            }
-
-            return true;
-        }
-
-        string GetRandSulfix(string baseName)
-        {
-            var tmp = Path.GetRandomFileName();
-            return baseName + tmp.Replace(Path.GetExtension(tmp), ".txt"); 
         }
 
 

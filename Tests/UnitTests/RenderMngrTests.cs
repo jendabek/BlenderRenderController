@@ -47,14 +47,14 @@ namespace UnitTests
             var renderMngr = new RenderManager(chunks, MockSettings)
             {
                 BlendFilePath = BLEND_PATH,
-                ChunksFolderPath = Path.Combine(OUT_PATH, "chunks"),
+                OutputPath = OUT_PATH,
                 MaxConcurrency = 5,
-                BaseFileName = "UnitTest"
+                OutputFileName = "UnitTest"
             };
 
             Assert.ThrowsException<InvalidOperationException>(() =>
             {
-                renderMngr.Start();
+                renderMngr.StartAsync();
 
                 Thread.Sleep(TimeSpan.FromSeconds(5));
 
@@ -76,17 +76,17 @@ namespace UnitTests
             var renderMngr = new RenderManager(chunks, MockSettings)
             {
                 BlendFilePath = BLEND_PATH,
-                ChunksFolderPath = Path.Combine(OUT_PATH, "chunks"),
+                OutputPath = OUT_PATH,
                 MaxConcurrency = 5,
-                BaseFileName = "UnitTest"
+                OutputFileName = "UnitTest"
             };
 
             Assert.ThrowsException<InvalidOperationException>(() =>
             {
-                renderMngr.Start();
+                renderMngr.StartAsync();
                 Thread.Sleep(TimeSpan.FromSeconds(5));
 
-                renderMngr.Start();
+                renderMngr.StartAsync();
             }, 
             "Start() was called twice");
 
@@ -106,13 +106,13 @@ namespace UnitTests
             var renderMngr = new RenderManager(chunks, MockSettings)
             {
                 BlendFilePath = BLEND_PATH,
-                ChunksFolderPath = Path.Combine(OUT_PATH, "chunks"),
+                OutputPath = OUT_PATH,
                 MaxConcurrency = 5,
-                BaseFileName = "UnitTest"
+                OutputFileName = "UnitTest"
             };
-            renderMngr.Finished += (s, e) => finishedEvent.Set();
+            renderMngr.ChunksFinished += (s, e) => finishedEvent.Set();
 
-            renderMngr.Start(progress);
+            renderMngr.StartAsync(progress);
             finishedEvent.Wait();
 
             return (chunks, renderMngr);

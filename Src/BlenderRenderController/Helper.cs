@@ -107,16 +107,7 @@ namespace BlenderRenderController
             return sb.ToString();
         }
 
-        static public void ReportProcFail(string name, int exitCode, string logFilePath, string stdErr = null)
-        {
-            var content = string.Format(Resources.BadProcResult_Report, exitCode, stdErr);
-            using (StreamWriter sw = File.AppendText(logFilePath))
-            {
-                sw.Write("\n\n");
-                sw.Write(name + ' ');
-                sw.WriteLine(content);
-            }
-        }
+
 
         //static public string SecondsToString(double seconds, bool digital = false)
         //{

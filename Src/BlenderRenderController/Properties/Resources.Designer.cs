@@ -61,7 +61,7 @@ namespace BlenderRenderController.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The chunks rendered sucessfully, but one or more After Render actions have failed, check your output content. A log was saved, press &apos;Yes&apos; to open it..
+        ///   Looks up a localized string similar to The chunks rendered sucessfully, but one or more After Render actions have failed, check your output content..
         /// </summary>
         internal static string AR_error_msg {
             get {

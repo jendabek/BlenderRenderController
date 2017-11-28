@@ -13,7 +13,7 @@ namespace BRClib
         private int _start, _end;
         private double _fps;
         private string _outPath, _projName, 
-            _activeScene, _fileFmt, _res;
+            _activeScene, _res;
 
 
 
@@ -116,26 +116,26 @@ namespace BRClib
             }
         }
 
-        public string AudioFileFormat
-        {
-            get
-            {
-                if (FFmpegAudioCodec == null)
-                    return null;
+        //public string AudioFileFormat
+        //{
+        //    get
+        //    {
+        //        if (FFmpegAudioCodec == null)
+        //            return null;
 
-                switch (FFmpegAudioCodec)
-                {
-                    case "PCM":
-                        return "wav";
-                    case "VORBIS":
-                        return "ogg";
-                    case "NONE":
-                        return "ac3";
-                    default:
-                        return FFmpegAudioCodec.ToLower();
-                }
-            }
-        }
+        //        switch (FFmpegAudioCodec)
+        //        {
+        //            case "PCM":
+        //                return "wav";
+        //            case "VORBIS":
+        //                return "ogg";
+        //            case "NONE":
+        //                return "ac3";
+        //            default:
+        //                return FFmpegAudioCodec.ToLower();
+        //        }
+        //    }
+        //}
     }
 
     /// <summary>
@@ -203,9 +203,9 @@ namespace BRClib
     [Flags]
     public enum AfterRenderAction
     {
-        JOIN = 2,
-        MIXDOWN = 1,
-        NOTHING = 0
+        JOIN = 0x2,
+        MIXDOWN = 0x1,
+        NOTHING = 0x0
     }
 
 
