@@ -291,20 +291,6 @@ namespace BlenderRenderController
             {
                 logger.Debug("Blender output errors detected");
                 Debug.WriteLine('\n' + stdErrors + '\n');
-
-                // detect folder count exception
-                if (stdErrors.Contains(Constants.PY_FolderCountError))
-                {
-                    var err = Ui.Dialogs.ShowErrorBox("There was an error parsing the output path", 
-                        "Read error", 
-                        "Script failed to parse the relative output path into an absolute path, try " +
-                        "changing the path in your project\n\nError: " + Constants.PY_FolderCountError);
-
-                    //err.Show();
-                    ReadFail();
-                    return;
-                }
-
             }
 
             if (stdOutput.Length == 0)
@@ -319,7 +305,6 @@ namespace BlenderRenderController
                 ReadFail();
                 return;
             }
-
 
             var blendData = Utilities.ParsePyOutput(stdOutput);
 
