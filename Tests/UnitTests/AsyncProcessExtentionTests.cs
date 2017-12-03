@@ -27,14 +27,14 @@ namespace UnitTests
         {
             var getBlendInfoProc = GetBlendDataProc(BLEND_PATH);
 
-            var (exitCode, stdOutput, stdErrors) = getBlendInfoProc.StartAsyncGetOutput().Result;
+            var report = getBlendInfoProc.StartAsync(true, true).Result;
 
             // assert sucess exit code
-            Assert.AreEqual(0, exitCode);
+            Assert.AreEqual(0, report.ExitCode);
 
-            Console.WriteLine("Std output: \n" + stdOutput);
+            Console.WriteLine("Std output: \n" + report.StdOutput);
             Console.WriteLine(new String('-', 50));
-            Console.WriteLine("Std error: \n" + stdErrors);
+            Console.WriteLine("Std error: \n" + report.StdError);
 
         }
     }

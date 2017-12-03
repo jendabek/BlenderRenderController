@@ -77,8 +77,8 @@ namespace BlenderRenderController
         /// <returns>A <see cref="ProcessResult"/> object with the exit code and, optionally, its 
         /// standard output and standard error contents as strings</returns>
         public async static Task<ProcessResult> StartAsync (this Process proc, 
-                                                            bool getStdOut = false, 
-                                                            bool getStdErr = false, 
+                                                            bool getStdOut, 
+                                                            bool getStdErr, 
                                                             CancellationToken token = default)
         {
             if (!getStdErr && !getStdOut)
@@ -132,7 +132,7 @@ namespace BlenderRenderController
             procExited = (s, e) =>
             {
                 var p = s as Process;
-                tcs.SetResult((s as Process).ExitCode);
+                tcs.SetResult(p.ExitCode);
                 p.Exited -= procExited;
             };
 
@@ -179,7 +179,6 @@ namespace BlenderRenderController
         {
             var localMCD = thisEvent;
             AsyncCallback callback = ar => ((EventHandler<TArgs>)ar.AsyncState).EndInvoke(ar);
-            
 
             foreach (Delegate d in localMCD.GetInvocationList())
             {
@@ -206,7 +205,6 @@ namespace BlenderRenderController
         {
             var localMCD = thisEvent;
             AsyncCallback callback = ar => ((EventHandler)ar.AsyncState).EndInvoke(ar);
-            
 
             foreach (Delegate d in localMCD.GetInvocationList())
             {

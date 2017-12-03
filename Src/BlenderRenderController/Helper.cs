@@ -38,7 +38,7 @@ namespace BlenderRenderController
             }
             catch (IOException)
             {
-                string msg = "Can't clear output folder, there're files are in use";
+                string msg = "Can't clear output folder, files are in use";
                 logger.Error(msg);
                 MessageBox.Show(msg);
                 return false;

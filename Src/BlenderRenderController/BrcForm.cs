@@ -65,8 +65,7 @@ namespace BlenderRenderController
 #endif
             // RenderManager
             renderManager = new RenderManager();
-            renderManager.ChunksFinished += RenderManager_ChunksFinished;
-            renderManager.AllFinished += RenderManager_AllFinished; ;
+            renderManager.Finished += RenderManager_Finished; ;
             renderManager.AfterRenderStarted += RenderManager_AfterRenderStarted;
             //renderManager.ProgressChanged += (s, prog) => UpdateProgress(prog);
             _renderProg = new Progress<RenderProgressInfo>(UpdateProgress);
@@ -440,16 +439,7 @@ namespace BlenderRenderController
             renderManager.StartAsync(_renderProg);
         }
 
-        private void RenderManager_ChunksFinished(object sender, int e)
-        {
-            renderProgressBar.Style = ProgressBarStyle.Marquee;
-#if WIN
-            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
-#endif
-            Status("Chunk rendering complete");
-        }
-
-        private void RenderManager_AllFinished(object sender, EventArgs e)
+        private void RenderManager_Finished(object sender, EventArgs e)
         {
             // all slow work is done
             StopWork(true);
@@ -486,6 +476,11 @@ namespace BlenderRenderController
 
         private void RenderManager_AfterRenderStarted(object sender, AfterRenderAction e)
         {
+            renderProgressBar.Style = ProgressBarStyle.Marquee;
+#if WIN
+            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
+#endif
+
             switch (e)
             {
                 case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:

@@ -25,6 +25,7 @@ namespace BlenderRenderController
 
         // State trackers
         private ConcurrentBag<Process> procBag;
+        //private List<Process> procBag;
         private ConcurrentHashSet<int> framesRendered;
         private int chunksToDo, chunksInProgress,
                     initalChunkCount, currentIndex;
@@ -34,6 +35,8 @@ namespace BlenderRenderController
         // Progress stuff
         bool canReportProgress;
         IProgress<RenderProgressInfo> progress;
+        int _reportCount;
+        const int PROG_STACK_SIZE = 3;
 
         AppSettings appSettings = AppSettings.Current;
 
@@ -76,16 +79,11 @@ namespace BlenderRenderController
 
         public bool WasAborted { get; private set; }
 
-        /// <summary>
-        /// Raised when all chunks finish rendering, 'e' is
-        /// the total number of frames rendered
-        /// </summary>
-        public event EventHandler<int> ChunksFinished;
 
         /// <summary>
         /// Raised when AfterRender actions finish
         /// </summary>
-        public event EventHandler AllFinished;
+        public event EventHandler Finished;
 
         public event EventHandler<RenderProgressInfo> ProgressChanged;
 
@@ -147,15 +145,7 @@ namespace BlenderRenderController
             this.progress = progress;
             canReportProgress = progress != null;
 
-            procBag = new ConcurrentBag<Process>();
-            framesRendered = new ConcurrentHashSet<int>();
-            currentIndex = 0;
-            chunksInProgress = 0;
-            chunksToDo = ChunkList.Count;
-            initalChunkCount = ChunkList.Count;
-            _afterRenderReport = new Dictionary<string, ProcessResult>();
-            _arCts = new CancellationTokenSource();
-            WasAborted = false;
+            ResetFields();
 
             logger.Info("RENDER STARTING");
             timer.Start();
@@ -226,6 +216,21 @@ namespace BlenderRenderController
             }
         }
 
+        void ResetFields()
+        {
+            procBag = new ConcurrentBag<Process>();
+            //procBag = new List<Process>();
+            framesRendered = new ConcurrentHashSet<int>();
+            currentIndex = 0;
+            chunksInProgress = 0;
+            chunksToDo = ChunkList.Count;
+            initalChunkCount = ChunkList.Count;
+            _afterRenderReport = new Dictionary<string, ProcessResult>();
+            _arCts = new CancellationTokenSource();
+            WasAborted = false;
+            _reportCount = 0;
+        }
+
         Process CreateRenderProcess(Chunk chunk)
         {
             var renderCom = new Process();
@@ -249,7 +254,6 @@ namespace BlenderRenderController
 
             return renderCom;
         }
-
 
         bool CreateChunksTxtFile(string chunksFolder)
         {
@@ -285,8 +289,7 @@ namespace BlenderRenderController
                 if (e.Data.IndexOf("Fra:", StringComparison.InvariantCulture) == 0)
                 {
                     var line = e.Data.Split(' ')[0].Replace("Fra:", "");
-                    int frameBeingRendered = int.Parse(line);
-                    framesRendered.Add(frameBeingRendered);
+                    framesRendered.Add(int.Parse(line));
                 }
             }
         }
@@ -330,14 +333,17 @@ namespace BlenderRenderController
                 logger.Trace("Started render n. {0}, frames: {1}", currentIndex, currentChunk);
             }
 
-            ReportProgress(new RenderProgressInfo(NumberOfFramesRendered, initalChunkCount - chunksToDo));
+            ReportProgress(NumberOfFramesRendered, initalChunkCount - chunksToDo);
         }
 
         private void OnChunksFinished(int framesRendered)
         {
             DisposeProcesses();
-            ChunksFinished?.Raise(this, framesRendered);
+            //ChunksFinished?.Raise(this, framesRendered);
             logger.Info("RENDER FINISHED");
+
+            // Send a '100%' ProgressReport
+            ReportProgress(NumberOfFramesRendered, 0);
 
             _arState = Task.Factory.StartNew(() =>
             {
@@ -347,15 +353,27 @@ namespace BlenderRenderController
 
             _arState.ContinueWith(t =>
             {
-                AllFinished?.Raise(this, EventArgs.Empty);
+                OnAllFinished();
             },
             TaskContinuationOptions.ExecuteSynchronously);
         }
 
-        void ReportProgress(RenderProgressInfo progressInfo)
+        void OnAllFinished()
         {
-            ProgressChanged?.Raise(this, progressInfo);
-            if (canReportProgress) progress.Report(progressInfo);
+            Finished?.Raise(this, EventArgs.Empty);
+        }
+
+
+        void ReportProgress(int framesRendered, int chunksCompleted)
+        {
+            // Stagger report sending to save some heap allocation
+            if (_reportCount++ % PROG_STACK_SIZE == 0)
+            {
+                var progressInfo = new RenderProgressInfo(framesRendered, chunksCompleted);
+
+                ProgressChanged?.Raise(this, progressInfo);
+                if (canReportProgress) progress.Report(progressInfo);
+            }
         }
 
         private void DisposeProcesses()
@@ -412,12 +430,12 @@ namespace BlenderRenderController
 
         bool AfterRenderProc(AfterRenderAction action)
         {
+            AfterRenderStarted.Raise(this, action);
+
             if (action == AfterRenderAction.NOTHING)
             {
                 return true;
             }
-
-            AfterRenderStarted.Raise(this, action);
 
             logger.Info("AfterRender started. Action: {0}", action);
 
