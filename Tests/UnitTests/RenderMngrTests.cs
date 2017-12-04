@@ -20,9 +20,21 @@ namespace UnitTests
         {
             ClearFolder(OUT_PATH);
 
-            var run = RunManager();
+            var blendData = GetBlendData(BLEND_PATH);
+            var chunks = Chunk.CalcChunksByLength(blendData.Start, 3000, 300);
+            var renderMngr = new RenderManager(chunks, MockSettings)
+            {
+                BlendFilePath = BLEND_PATH,
+                OutputPath = OUT_PATH,
+                MaxConcurrency = 5,
+                OutputFileName = "UnitTest"
+            };
+            renderMngr.Finished += (s, e) => finishedEvent.Set();
 
-            Assert.AreEqual(run.chunks.TotalLength(), run.renderMngr.NumberOfFramesRendered);
+            renderMngr.StartAsync();
+            finishedEvent.Wait();
+
+            Assert.AreEqual(chunks.TotalLength(), renderMngr.NumberOfFramesRendered);
         }
 
         [TestMethod]
@@ -32,11 +44,23 @@ namespace UnitTests
             var progress = new Progress<RenderProgressInfo>();
             progress.ProgressChanged += Progress_ProgressChanged;
 
-            var run = RunManager(progress);
+            var blendData = GetBlendData(BLEND_PATH);
+            var chunks = Chunk.CalcChunksByLength(blendData.Start, 3000, 300);
+            var renderMngr = new RenderManager(chunks, MockSettings)
+            {
+                BlendFilePath = BLEND_PATH,
+                OutputPath = OUT_PATH,
+                MaxConcurrency = 5,
+                OutputFileName = "UnitTest"
+            };
+            renderMngr.Finished += (s, e) => finishedEvent.Set();
 
-            Assert.AreEqual(run.chunks.TotalLength(), run.renderMngr.NumberOfFramesRendered);
+            renderMngr.StartAsync(progress);
+            finishedEvent.Wait();
+
+            Assert.AreEqual(chunks.TotalLength(), renderMngr.NumberOfFramesRendered);
         }
-
+        /*
         [TestMethod]
         public void RenderManager_ThrowOn_Properties_changed_while_in_progress()
         {
@@ -65,14 +89,14 @@ namespace UnitTests
             //ClearFolder(OUT_PATH);
             renderMngr.Abort();
         }
-
+        */
         [TestMethod]
         public void RenderManager_ThrowOn_Start_called_while_in_progress()
         {
             ClearFolder(OUT_PATH);
 
             var bData = GetBlendData(BLEND_PATH);
-            var chunks = Chunk.CalcChunksByLenght(bData.Start, 5000, 300);
+            var chunks = Chunk.CalcChunksByLength(bData.Start, 5000, 300);
             var renderMngr = new RenderManager(chunks, MockSettings)
             {
                 BlendFilePath = BLEND_PATH,
@@ -98,26 +122,5 @@ namespace UnitTests
         {
             Console.WriteLine("Progress report: {0} frames rendered, {1} parts completed", e.FramesRendered, e.PartsCompleted);
         }
-
-        private (Chunk[] chunks, RenderManager renderMngr) RunManager(IProgress<RenderProgressInfo> progress = null)
-        {
-            var blendData = GetBlendData(BLEND_PATH);
-            var chunks = Chunk.CalcChunksByLenght(blendData.Start, 3000, 300);
-            var renderMngr = new RenderManager(chunks, MockSettings)
-            {
-                BlendFilePath = BLEND_PATH,
-                OutputPath = OUT_PATH,
-                MaxConcurrency = 5,
-                OutputFileName = "UnitTest"
-            };
-            renderMngr.ChunksFinished += (s, e) => finishedEvent.Set();
-
-            renderMngr.StartAsync(progress);
-            finishedEvent.Wait();
-
-            return (chunks, renderMngr);
-        }
-
-
     }
 }

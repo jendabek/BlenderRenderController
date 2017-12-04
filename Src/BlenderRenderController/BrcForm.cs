@@ -351,7 +351,7 @@ namespace BlenderRenderController
             }
 
             var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, _project.ProcessesCount);
-            UpdateCurrentChunks(chunks);
+            UpdateCurrentChunks(chunks.ToArray());
             _appSettings.AddRecentBlend(blendFile);
             UpdateUI(AppState.READY_FOR_RENDER);
             renderProgressBar.Style = ProgressBarStyle.Blocks;
@@ -399,11 +399,11 @@ namespace BlenderRenderController
         {
             // Calculate chunks
             bool customLen = renderOptionsCustomRadio.Checked;
-            Chunk[] chunks = customLen 
-                ? Chunk.CalcChunksByLenght(_project.BlendData.Start, _project.BlendData.End, _project.ChunkLenght)
+            var chunks = customLen 
+                ? Chunk.CalcChunksByLength(_project.BlendData.Start, _project.BlendData.End, _project.ChunkLenght)
                 : Chunk.CalcChunks(_project.BlendData.Start, _project.BlendData.End, _project.ProcessesCount);
 
-            UpdateCurrentChunks(chunks);
+            UpdateCurrentChunks(chunks.ToArray());
 
             logger.Info(() => "Chunks: " + string.Join(", ", chunks));
 
@@ -825,8 +825,8 @@ namespace BlenderRenderController
                     var currentEnd = totalEndNumericUpDown.Value;
                     var currentProcessors = processCountNumericUpDown.Value;
 
-                    var expectedChunkLen = (int)Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
-                    _project.ChunkLenght = expectedChunkLen;
+                    var expectedChunkLen = Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
+                    _project.ChunkLenght = (int)expectedChunkLen;
                 }
             }
             else if (radio.Name == startEndBlendRadio.Name)
@@ -836,7 +836,6 @@ namespace BlenderRenderController
                     // set to blend values
                     _project.BlendData.Start = _autoRefStart;
                     _project.BlendData.End = _autoRefEnd;
-
                 }
             }
 #if UNIX

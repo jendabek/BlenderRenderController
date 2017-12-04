@@ -18,9 +18,13 @@ namespace BRClib
         /// </summary>
         public int End { get; set; }
         /// <summary>
-        /// The <see cref="Chunk"/>'s length in N# of frames
+        /// The <see cref="Chunk"/>'s frame length
         /// </summary>
-        public int Length => End - Start;
+        /// <remarks>
+        /// A Chunk's Lenght is measured inclusively, 
+        /// so the lenght of: {1-2400} is 2400, not 2399.
+        /// </remarks>
+        public int Length => End - Start + 1;
         /// <summary>
         /// Returns if current <see cref="Chunk"/> is valid
         /// </summary>
@@ -47,13 +51,12 @@ namespace BRClib
         }
 
         /// <summary>
-        /// Calculates an even divided array of chunks
+        /// Calculates an even divided collection of chunks
         /// </summary>
         /// <param name="start">Project's start frame</param>
         /// <param name="end">Project's end frame</param>
         /// <param name="div">Number of chunks desired</param>
-        /// <returns></returns>
-        public static Chunk[] CalcChunks(int start, int end, int div)
+        public static IEnumerable<Chunk> CalcChunks(int start, int end, int div)
         {
             if (end <= start)
                 throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
@@ -63,62 +66,83 @@ namespace BRClib
                 // return a single chunk
                 return new Chunk[]{ new Chunk(start, end) };
 
-            var lenght = (int)Math.Ceiling((end - start + 1) / (decimal)div);
-            return MakeArray(start, end, lenght);
+            decimal lenght = Math.Ceiling((end - start + 1) / (decimal)div);
+            return GenChunks(start, end, (int)lenght);
         }
         /// <summary>
-        /// Calculates an even divided array of chunks, based on desired lenght
+        /// Calculates an even divided collection of chunks, based on desired lenght
         /// </summary>
         /// <param name="start">Project's start frame</param>
         /// <param name="end">Project's end frame</param>
         /// <param name="chunkLenght">Desired chunk lenght</param>
-        /// <returns></returns>
-        public static Chunk[] CalcChunksByLenght(int start, int end, int chunkLenght)
+        public static IEnumerable<Chunk> CalcChunksByLength(int start, int end, int chunkLenght)
         {
-            if (chunkLenght <= 0)
+            if (chunkLenght <= 1)
                 throw new ArgumentException("Invalid chunk lenght", nameof(chunkLenght));
 
             if (end <= start)
                 throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
                                             nameof(start));
 
-
-            return MakeArray(start, end, chunkLenght);
+            return GenChunks(start, end, chunkLenght);
         }
 
-        private static Chunk[] MakeArray(int start, int end, int chunkLen)
+        private static List<Chunk> GenChunks(int start, int end, int chunkLen)
         {
             int cStart = start,
                 cEnd,
-                totalLen = end - start + 1;
+                cDiff = chunkLen - 1;
+
+            int totalLen = end - start + 1;
 
             List<Chunk> chunkList = new List<Chunk>();
 
             while (chunkList.TotalLength() < totalLen)
             {
-                cEnd = cStart + chunkLen;
-                var chunk = new Chunk(cStart, cEnd);
+                cEnd = cStart + cDiff;
 
-                if (chunk.End + 1 < end)
+                if (cEnd + 1 < end)
                 {
-                    chunkList.Add(chunk);
+                    chunkList.Add(new Chunk(cStart, cEnd));
                     cStart = cEnd + 1;
                 }
                 else
                 {
-                    var secondLast = chunkList.Last();
-
-                    if (secondLast.End == end)
-                        break;
-
-                    var finalChunk = new Chunk(secondLast.End + 1, end);
-                    chunkList.Add(finalChunk);
+                    // this should be the last chunk
+                    // to be added
+                    chunkList.Add(new Chunk(cStart, end));
                 }
             }
 
-            return chunkList.ToArray();
+            return chunkList;
         }
 
+        // For SOME REASON the code below causes outofmemory exceptions on my unit tests,
+        // affects CalcChunksByLength, but not CalcChunks
+        /*
+        private static IEnumerable<Chunk> GenChunks(int start, int end, int chunkLen)
+        {
+            int cStart = start,
+                cEnd = 0,
+                cDiff = chunkLen - 1;
+
+            while (cEnd < end)
+            {
+                cEnd = cStart + cDiff;
+
+                if (cEnd + 1 < end)
+                {
+                    var chunk = new Chunk(cStart, cEnd);
+                    cStart = cEnd + 1;
+                    yield return chunk;
+                }
+                else
+                {
+                    yield return new Chunk(cStart, end);
+                }
+            }
+        }
+        */
 
         public override string ToString()
         {

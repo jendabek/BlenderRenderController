@@ -16,7 +16,7 @@ namespace BRClib
 
             foreach (var chunk in chunks)
             {
-                len += chunk.Length + 1;
+                len += chunk.Length;
             }
 
             return len;
