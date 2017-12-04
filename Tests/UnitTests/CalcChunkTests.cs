@@ -12,7 +12,7 @@ namespace UnitTests
     {
         // How many times the tests w/ random values
         // will loop
-        const int RANDOM_TEST_LOOPS = 100_000;
+        const int RANDOM_TEST_LOOPS = 10_000;
 
         // the max value for random frame numbers
         const int MAX_FRAME = 99_999;
@@ -20,7 +20,10 @@ namespace UnitTests
         // the max value for random core counts
         const int MAX_CORES = 17;
 
-
+        // TODO: Enforce this?
+        // avoids attempting calculations w/ 
+        // unrealistic small lenghts
+        const int MIN_CHUNK_LEN = 50;
 
         [TestMethod]
         public void CalcChunks_randomGen_tests()
@@ -34,29 +37,24 @@ namespace UnitTests
                 var end = randPair[1];
 
                 var totalLen = end - start + 1;
-                var minLen = totalLen * 0.05;
-                var maxLen = totalLen * 0.5;
 
-                if (totalLen > maxLen || totalLen < minLen)
+                if (totalLen < MIN_CHUNK_LEN)
                 {
-                    // ignore unrealistic lenghts
                     continue;
                 }
 
-                //var calcResult = Chunk.CalcChunks(start, end, cores).ToArray();
                 var calcResult = new List<Chunk>(Chunk.CalcChunks(start, end, cores));
+                //var calcResult = Chunk.CalcChunks(start, end, cores);
 
                 Console.WriteLine();
-                Console.WriteLine("Number of chunks: " + calcResult.Count);
+                Console.WriteLine("{0}: Number of chunks: {1}", i, calcResult.Count);
                 Console.WriteLine("Start: {0}, End: {1}, Total lenght: {2}, CoreCount: {3}", start, end, totalLen, cores);
 
                 foreach (var res in calcResult)
                 {
-                    Console.WriteLine(res + "   Lenght: " + res.Length);
+                    Console.WriteLine(res + "\tLenght: " + res.Length);
                 }
 
-                Assert.IsTrue(calcResult.Count == cores, "Number of chunks does not match core count ({0} != {1})", 
-                                                            calcResult.Count, cores);
                 Assert.AreEqual(start, calcResult.First().Start, "First calcResult.Start was diferent then param start");
                 Assert.AreEqual(end, calcResult.Last().End, "Last calcResult.End was diferent then param end");
             }
@@ -65,9 +63,6 @@ namespace UnitTests
         [TestMethod]
         public void CalcChunksByLength_randomGen_tests()
         {
-            const int MIN_CHUNK_LEN = 50;
-            var calcResult = new List<Chunk>();
-
             for (int i = 0; i < RANDOM_TEST_LOOPS; i++)
             {
                 int[] randPair = RandomParams.GetNumberPair(1, MAX_FRAME);
@@ -87,20 +82,22 @@ namespace UnitTests
                 var maxLen = totalLen * 0.5;
 
                 int len = RandomParams.GetNumber((int)minLen, (int)maxLen);
-                if (len > maxLen || len < minLen)
+
+                // ignore small spans
+                if (len < MIN_CHUNK_LEN)
                 {
-                    // ignore unrealistic lenghts
                     continue;
                 }
 
-                calcResult.AddRange(Chunk.CalcChunksByLength(start, end, len));
+                var calcResult = new List<Chunk>(Chunk.CalcChunksByLength(start, end, len));
+                //var calcResult = Chunk.CalcChunksByLength(start, end, len);
 
                 Console.WriteLine();
-                Console.WriteLine("Number of chunks: " + calcResult.Count);
+                Console.WriteLine("{0}: Number of chunks: {1}", i, calcResult.Count);
                 Console.WriteLine("Start: {0}, End: {1}, Leght: {2}", start, end, len);
                 foreach (var res in calcResult)
                 {
-                    Console.WriteLine(res + "   Lenght: " + res.Length);
+                    Console.WriteLine(res + "\tLenght: " + res.Length);
                 }
 
                 var actualLen = calcResult.First().Length;
@@ -108,10 +105,7 @@ namespace UnitTests
 
                 Assert.AreEqual(start, calcResult.First().Start, "First calcResult.Start was diferent then param start");
                 Assert.AreEqual(end, calcResult.Last().End, "Last calcResult.End was diferent then param end");
-
-                calcResult.Clear();
             }
-
         }
 
         [TestMethod]

@@ -64,9 +64,11 @@ namespace BRClib
 
             if (div == 1)
                 // return a single chunk
-                return new Chunk[]{ new Chunk(start, end) };
+                //return new Chunk[]{ new Chunk(start, end) };
+                return new List<Chunk> { new Chunk(start, end) };
 
-            decimal lenght = Math.Ceiling((end - start + 1) / (decimal)div);
+            var lenght = Math.Ceiling((end - start + 1) / (decimal)div);
+
             return GenChunks(start, end, (int)lenght);
         }
         /// <summary>
@@ -87,6 +89,7 @@ namespace BRClib
             return GenChunks(start, end, chunkLenght);
         }
 
+         /*
         private static List<Chunk> GenChunks(int start, int end, int chunkLen)
         {
             int cStart = start,
@@ -108,18 +111,16 @@ namespace BRClib
                 }
                 else
                 {
-                    // this should be the last chunk
-                    // to be added
+                    // last chunk matches the end
                     chunkList.Add(new Chunk(cStart, end));
                 }
             }
 
             return chunkList;
         }
+         */
 
-        // For SOME REASON the code below causes outofmemory exceptions on my unit tests,
-        // affects CalcChunksByLength, but not CalcChunks
-        /*
+        // !! DO NOT REMOVE BREAK STATEMENT AFTER LAST CHUNK (outofmemory in big loops?) !!
         private static IEnumerable<Chunk> GenChunks(int start, int end, int chunkLen)
         {
             int cStart = start,
@@ -138,11 +139,12 @@ namespace BRClib
                 }
                 else
                 {
+                    // last chunk, matches the 'end'
                     yield return new Chunk(cStart, end);
+                    break;
                 }
             }
         }
-        */
 
         public override string ToString()
         {
