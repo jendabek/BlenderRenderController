@@ -12,7 +12,7 @@ namespace UnitTests
     {
         // How many times the tests w/ random values
         // will loop
-        const int RANDOM_TEST_LOOPS = 10_000;
+        const int RANDOM_TEST_LOOPS = 1_000;
 
         // the max value for random frame numbers
         const int MAX_FRAME = 99_999;
@@ -47,7 +47,6 @@ namespace UnitTests
 
                 Console.WriteLine("\n{0}: Number of chunks: {1}", i, calcResult.Count);
                 Console.WriteLine("Start: {0}, End: {1}, Total lenght: {2}, CoreCount: {3}", start, end, totalLen, cores);
-
                 foreach (var res in calcResult)
                 {
                     Console.WriteLine(res + "\tLenght: " + res.Length);
@@ -162,6 +161,8 @@ namespace UnitTests
                 var chunks = Chunk.CalcChunksByLength(2000, 50, 0);
             });
         }
+
+
 
         // check if the list of chunks is sequential
         bool CheckStartAndEnd(List<Chunk> chunks)

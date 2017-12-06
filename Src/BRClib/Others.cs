@@ -175,8 +175,9 @@ namespace BRClib
 
         public static string GetConcatenationArgs(string chunksTxt, string outputFile, TimeSpan? duration = null, string mixdown = null)
         {
-            var mixdownText = !string.IsNullOrWhiteSpace(mixdown) 
-                                ? "-i \"" + mixdown + "\" -map 0:v -map 1:a" : "";
+            bool incMixFlag = !string.IsNullOrWhiteSpace(mixdown) && File.Exists(mixdown);
+
+            var mixdownText = incMixFlag ? "-i \"" + mixdown + "\" -map 0:v -map 1:a" : "";
 
             var durationText = duration.HasValue 
                                 ? "-t " + duration.Value.ToString(@"hh\:mm\:ss") : "";

@@ -908,8 +908,8 @@ namespace BlenderRenderController
 
             if (renderOptionsAutoRadio.Checked)
             {
-                var expectedChunkLen = (int)Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
-                _project.ChunkLenght = expectedChunkLen;
+                var expectedChunkLen = Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
+                _project.ChunkLenght = (int)expectedChunkLen;
 #if UNIX
                 ForceBindingSourceUpdate();
 #endif

@@ -65,7 +65,7 @@ namespace BlenderRenderController
 
         public string BlendFilePath { get; set; }
 
-        public string MixdownAudioFilePath { get; set; }
+        public string MixdownFile { get; set; }
 
         public string OutputFileName { get; set; }
 
@@ -125,6 +125,28 @@ namespace BlenderRenderController
             OutputFileName = project.BlendData.ProjectName;
             OutputPath = project.BlendData.OutputPath;
             Duration = project.BlendData.Duration.Value;
+
+            var mixdownFmt = project.BlendData.FFmpegAudioCodec;
+            var fullOutPath = Path.Combine(OutputPath, OutputFileName);
+
+            if (mixdownFmt != null)
+            {
+                switch (mixdownFmt)
+                {
+                    case "PCM":
+                        MixdownFile = Path.ChangeExtension(OutputFileName, "wav");
+                        break;
+                    case "VORBIS":
+                        MixdownFile = Path.ChangeExtension(OutputFileName, "ogg");
+                        break;
+                    case "NONE":
+                        MixdownFile = Path.ChangeExtension(OutputFileName, "ac3");
+                        break;
+                    default:
+                        MixdownFile = Path.ChangeExtension(OutputFileName, mixdownFmt.ToLower());
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -430,7 +452,7 @@ namespace BlenderRenderController
 
         bool AfterRenderProc(AfterRenderAction action)
         {
-            AfterRenderStarted.Raise(this, action);
+            AfterRenderStarted?.Raise(this, action);
 
             if (action == AfterRenderAction.NOTHING)
             {
@@ -467,6 +489,7 @@ namespace BlenderRenderController
 
             var projFinalPath = Path.Combine(OutputPath, OutputFileName);
             var chunksTxt = Path.Combine(ChunksFolderPath, Constants.ChunksTxtFileName);
+            var mixdownPath = Path.Combine(OutputPath, MixdownFile);
 
 
             Process mixdownProc = null, concatProc = null;
@@ -476,11 +499,11 @@ namespace BlenderRenderController
                                                  Path.Combine(appSettings.ScriptsFolder,
                                                               Constants.PyMixdown),
                                                  OutputPath);
+            string concatArgs;
 
             _afterRenderReport.Add(MIX_KEY, new ProcessResult());
             _afterRenderReport.Add(CONCAT_KEY, new ProcessResult());
 
-            var concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, Duration, MixdownAudioFilePath);
 
             if (_arCts.IsCancellationRequested) return false;
 
@@ -493,14 +516,9 @@ namespace BlenderRenderController
 
                     if (_arCts.IsCancellationRequested) return false;
 
-                    // we're calling this here because the mixdown file must exist for this
-                    // check to work
-                    if (string.IsNullOrWhiteSpace(MixdownAudioFilePath))
-                    {
-                        MixdownAudioFilePath = GetMixdownFileName();
-                    }
-
-                    concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, Duration, MixdownAudioFilePath);
+                    // we're creating the args here because the mixdown file
+                    // must exist for this to work
+                    concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, Duration, mixdownPath);
                     concatProc = ProcessFactory.ConcatProcess(AppSettings.Current.FFmpegProgram, concatArgs);
 
                     RunProc(ref concatProc, CONCAT_KEY);
@@ -508,6 +526,7 @@ namespace BlenderRenderController
                     break;
                 case AfterRenderAction.JOIN:
 
+                    concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, Duration, mixdownPath);
                     concatProc = ProcessFactory.ConcatProcess(AppSettings.Current.FFmpegProgram, concatArgs);
                     RunProc(ref concatProc, CONCAT_KEY);
 
