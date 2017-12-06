@@ -184,30 +184,9 @@ namespace BRClib
             return string.Format(CONCAT_BASE, chunksTxt, mixdownText, durationText, outputFile);
         }
 
-
-        //public static string GetConcatenationArgs(string chunksTxt, string output, TimeSpan? duration = null, string mixdown = null)
-        //{
-        //    if (duration == null) return GetConcatenationArgs(chunksTxt, output, mixdown);
-
-        //    string args = "-f concat -safe 0 ";
-
-        //    // chunkTxt
-        //    args += "-i \"" + chunksTxt + "\" ";
-        //    // mixdown audio
-        //    if (!string.IsNullOrWhiteSpace(mixdown)) args += "-i \"" + mixdown + "\" -map 0:v -map 1:a ";
-        //    // encoder
-        //    args += "-c:v copy ";
-        //    // duration
-        //    args += "-t " + duration.Value.ToString(@"hh\:mm\:ss") + ' ';
-        //    // output
-        //    args += "\"" + output + "\" -y";
-
-        //    return args;
-        //}
-
-        public static string GetConcatenationArgs(string chunksTxt, string output, string mixdown = null)
+        public static string GetConcatenationArgs(string chunksTxt, string outputFile, string mixdown = null)
         {
-            return GetConcatenationArgs(chunksTxt, output, null, mixdown);
+            return GetConcatenationArgs(chunksTxt, outputFile, null, mixdown);
         }
 
 
@@ -226,7 +205,7 @@ namespace BRClib
         */
 
         /// <summary>
-        /// Get info command ARGS
+        /// Get blend file info command ARGS
         /// <para>0=Blend file, 1=get_project_info.py</para>
         /// </summary>
         public const string GetInfoComARGS = "-b \"{0}\" -P \"{1}\"";

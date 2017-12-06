@@ -190,6 +190,7 @@ namespace BRClib
         {
             _chunkList = new ObservableCollection<Chunk>();
             ChunkLenght = 1;
+            ChunkLenght = 50;
         }
 
 

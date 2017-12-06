@@ -25,13 +25,6 @@ namespace BRClib
         /// so the lenght of: {1-2400} is 2400, not 2399.
         /// </remarks>
         public int Length => End - Start + 1;
-        /// <summary>
-        /// Returns if current <see cref="Chunk"/> is valid
-        /// </summary>
-        public bool IsValid
-        {
-            get => Start < End && Length > 0;
-        }
 
 
         /// <summary>
@@ -50,27 +43,79 @@ namespace BRClib
 
         }
 
+
+        public override string ToString()
+        {
+            return $"{Start}-{End}";
+        }
+
+
+        #region Equallity
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            return Equals((Chunk)obj);
+        }
+
+        public bool Equals(Chunk c)
+        {
+            return Start == c.Start
+                && End == c.End;
+        }
+
+        public static bool operator ==(Chunk c1, Chunk c2)
+        {
+            return c1.Equals(c2);
+        }
+        public static bool operator !=(Chunk c1, Chunk c2)
+        {
+            return !(c1.Equals(c2));
+        }
+
+
+        public override int GetHashCode()
+        {
+            const int HashBase = 233;
+            const int HashMulti = 13;
+
+            unchecked
+            {
+                int hash = HashBase;
+                hash = (hash * HashMulti) ^ Start.GetHashCode();
+                hash = (hash * HashMulti) ^ End.GetHashCode();
+
+                return hash;
+            }
+        }
+        #endregion
+
+
+
         /// <summary>
         /// Calculates an even divided collection of chunks
         /// </summary>
         /// <param name="start">Project's start frame</param>
         /// <param name="end">Project's end frame</param>
-        /// <param name="div">Number of chunks desired</param>
-        public static IEnumerable<Chunk> CalcChunks(int start, int end, int div)
+        /// <param name="chunkNum">Number of chunks desired</param>
+        public static IEnumerable<Chunk> CalcChunks(int start, int end, int chunkNum)
         {
             if (end <= start)
                 throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
                                             nameof(start));
 
-            if (div == 1)
+            if (chunkNum == 1)
                 // return a single chunk
-                //return new Chunk[]{ new Chunk(start, end) };
-                return new List<Chunk> { new Chunk(start, end) };
+                return new Chunk[] { new Chunk(start, end) };
 
-            var lenght = Math.Ceiling((end - start + 1) / (decimal)div);
+            var lenght = Math.Ceiling((end - start + 1) / (decimal)chunkNum);
 
             return GenChunks(start, end, (int)lenght);
         }
+        
         /// <summary>
         /// Calculates an even divided collection of chunks, based on desired lenght
         /// </summary>
@@ -133,9 +178,8 @@ namespace BRClib
 
                 if (cEnd + 1 < end)
                 {
-                    var chunk = new Chunk(cStart, cEnd);
+                    yield return new Chunk(cStart, cEnd);
                     cStart = cEnd + 1;
-                    yield return chunk;
                 }
                 else
                 {
@@ -145,56 +189,6 @@ namespace BRClib
                 }
             }
         }
-
-        public override string ToString()
-        {
-            return $"{Start}-{End}";
-        }
-
-        #region Equallity
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            var chunk = (Chunk)obj;
-
-            return Equals(chunk);
-        }
-
-        public bool Equals(Chunk c)
-        {
-            return Start == c.Start
-                && End == c.End;
-        }
-
-        public static bool operator ==(Chunk c1, Chunk c2)
-        {
-            return c1.Equals(c2);
-        }
-        public static bool operator !=(Chunk c1, Chunk c2)
-        {
-            return !(c1.Equals(c2));
-        }
-
-
-        public override int GetHashCode()
-        {
-            const int HashBase = 233;
-            const int HashMulti = 13;
-
-            unchecked
-            {
-                int hash = HashBase;
-                hash = (hash * HashMulti) ^ Start.GetHashCode();
-                hash = (hash * HashMulti) ^ End.GetHashCode();
-
-                return hash;
-            }
-        } 
-        #endregion
 
     }
 

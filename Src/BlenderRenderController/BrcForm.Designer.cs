@@ -585,7 +585,7 @@ namespace BlenderRenderController
             0,
             0});
             this.chunkLengthNumericUpDown.Minimum = new decimal(new int[] {
-            1,
+            50,
             0,
             0,
             0});
@@ -596,7 +596,7 @@ namespace BlenderRenderController
             this.chunkLengthNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTipInfo.SetToolTip(this.chunkLengthNumericUpDown, resources.GetString("chunkLengthNumericUpDown.ToolTip"));
             this.chunkLengthNumericUpDown.Value = new decimal(new int[] {
-            1,
+            50,
             0,
             0,
             0});
@@ -1048,6 +1048,7 @@ namespace BlenderRenderController
             // 
             // errorProvider
             // 
+            this.errorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
             this.errorProvider.ContainerControl = this;
             // 
             // label5

@@ -788,7 +788,6 @@ namespace BlenderRenderController
                 SelectNextControl((Control)sender, true, true, true, true);
                 e.SuppressKeyPress = true; //disables sound
             }
-
         }
 
         private void openOutputFolderButton_Click(object sender, EventArgs e)
@@ -826,7 +825,9 @@ namespace BlenderRenderController
                     var currentProcessors = processCountNumericUpDown.Value;
 
                     var expectedChunkLen = Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
+
                     _project.ChunkLenght = (int)expectedChunkLen;
+                    //chunkLengthNumericUpDown.Value = expectedChunkLen;
                 }
             }
             else if (radio.Name == startEndBlendRadio.Name)
@@ -920,7 +921,6 @@ namespace BlenderRenderController
 
         private void StartEnd_Validating(object sender, CancelEventArgs e)
         {
-            // TODO: Handle invalid values
             if (totalStartNumericUpDown.Value >= totalEndNumericUpDown.Value)
             {
                 errorProvider.
@@ -931,6 +931,14 @@ namespace BlenderRenderController
             {
                 errorProvider
                     .SetError(totalEndNumericUpDown, "End frame cannot be equal or less then Start frame");
+                e.Cancel = true;
+            }
+            else if ((totalEndNumericUpDown.Value - totalStartNumericUpDown.Value + 1) < 50)
+            {
+                var msg = "Project must be at least 50 frames long";
+
+                errorProvider.SetError(totalEndNumericUpDown, msg);
+                errorProvider.SetError(totalStartNumericUpDown, msg);
                 e.Cancel = true;
             }
             else
