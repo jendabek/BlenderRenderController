@@ -20,7 +20,6 @@ namespace UnitTests
         // the max value for random core counts
         const int MAX_CORES = 17;
 
-        // TODO: Enforce this?
         // avoids attempting calculations w/ 
         // unrealistic small lenghts
         const int MIN_CHUNK_LEN = 50;
@@ -46,8 +45,7 @@ namespace UnitTests
                 var calcResult = new List<Chunk>(Chunk.CalcChunks(start, end, cores));
                 //var calcResult = Chunk.CalcChunks(start, end, cores);
 
-                Console.WriteLine();
-                Console.WriteLine("{0}: Number of chunks: {1}", i, calcResult.Count);
+                Console.WriteLine("\n{0}: Number of chunks: {1}", i, calcResult.Count);
                 Console.WriteLine("Start: {0}, End: {1}, Total lenght: {2}, CoreCount: {3}", start, end, totalLen, cores);
 
                 foreach (var res in calcResult)
@@ -57,6 +55,7 @@ namespace UnitTests
 
                 Assert.AreEqual(start, calcResult.First().Start, "First calcResult.Start was diferent then param start");
                 Assert.AreEqual(end, calcResult.Last().End, "Last calcResult.End was diferent then param end");
+                Assert.IsTrue(CheckStartAndEnd(calcResult), "There are unexpected gaps between Chunks");
             }
         }
 
@@ -92,8 +91,7 @@ namespace UnitTests
                 var calcResult = new List<Chunk>(Chunk.CalcChunksByLength(start, end, len));
                 //var calcResult = Chunk.CalcChunksByLength(start, end, len);
 
-                Console.WriteLine();
-                Console.WriteLine("{0}: Number of chunks: {1}", i, calcResult.Count);
+                Console.WriteLine("\n{0}: Number of chunks: {1}", i, calcResult.Count);
                 Console.WriteLine("Start: {0}, End: {1}, Leght: {2}", start, end, len);
                 foreach (var res in calcResult)
                 {
@@ -105,6 +103,7 @@ namespace UnitTests
 
                 Assert.AreEqual(start, calcResult.First().Start, "First calcResult.Start was diferent then param start");
                 Assert.AreEqual(end, calcResult.Last().End, "Last calcResult.End was diferent then param end");
+                Assert.IsTrue(CheckStartAndEnd(calcResult), "There are unexpected gaps between Chunks");
             }
         }
 
@@ -140,6 +139,17 @@ namespace UnitTests
                 var chunks = Chunk.CalcChunks(2000, 50, 550);
             });
 
+            // start cannot be equal to end
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                var chunks = Chunk.CalcChunks(2000, 2000, 550);
+            });
+
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                var chunks = Chunk.CalcChunksByLength(2000, 2000, 550);
+            });
+
             // div cannot 0
             Assert.ThrowsException<DivideByZeroException>(() =>
             {
@@ -153,5 +163,29 @@ namespace UnitTests
             });
         }
 
+        // check if the list of chunks is sequential
+        bool CheckStartAndEnd(List<Chunk> chunks)
+        {
+            using (var cEnum = chunks.GetEnumerator())
+            {
+                while (cEnum.MoveNext())
+                {
+                    Chunk c1, c2;
+
+                    c1 = cEnum.Current;
+
+                    if (cEnum.MoveNext())
+                    {
+                        c2 = cEnum.Current;
+                    }
+                    else break;
+
+                    // there cannot be wider gaps between items
+                    if (c2.Start != c1.End + 1) return false;
+                }
+
+                return true;
+            }
+        }
     }
 }
