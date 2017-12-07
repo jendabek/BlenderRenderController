@@ -4,17 +4,6 @@ import bpy
 import math
 
 
-class Error(Exception):
-    pass
-
-class FolderCountError(Error):
-    
-    def __init__(self, msg, needed, got):
-        self.needed = needed
-        self.got = got
-        self.msg = msg
-
-
 class ProjectInfo:
     
 

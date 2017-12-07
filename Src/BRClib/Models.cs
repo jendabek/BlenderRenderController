@@ -189,7 +189,6 @@ namespace BRClib
         public ProjectSettings() : base()
         {
             _chunkList = new ObservableCollection<Chunk>();
-            ChunkLenght = 1;
             ChunkLenght = 50;
         }
 

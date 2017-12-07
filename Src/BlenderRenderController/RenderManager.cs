@@ -127,7 +127,6 @@ namespace BlenderRenderController
             Duration = project.BlendData.Duration.Value;
 
             var mixdownFmt = project.BlendData.FFmpegAudioCodec;
-            var fullOutPath = Path.Combine(OutputPath, OutputFileName);
 
             if (mixdownFmt != null)
             {
@@ -563,7 +562,9 @@ namespace BlenderRenderController
                             sw.Write("\n\n");
                             sw.Write("Mixdown ");
                             sw.WriteLine(string.Format(Resources.BadProcResult_Report,
-                                mixdownProc.ExitCode, _afterRenderReport[MIX_KEY].StdError, _afterRenderReport[MIX_KEY].StdOutput));
+                                                        mixdownProc.ExitCode, 
+                                                        _afterRenderReport[MIX_KEY].StdError, 
+                                                        _afterRenderReport[MIX_KEY].StdOutput));
                         }
 
                         if (concatProc?.ExitCode != 0)
@@ -571,7 +572,9 @@ namespace BlenderRenderController
                             sw.Write("\n\n");
                             sw.Write("FFMpeg concat ");
                             sw.WriteLine(string.Format(Resources.BadProcResult_Report,
-                                concatProc.ExitCode, _afterRenderReport[CONCAT_KEY].StdError, _afterRenderReport[CONCAT_KEY].StdOutput));
+                                                        concatProc.ExitCode, 
+                                                        _afterRenderReport[CONCAT_KEY].StdError, 
+                                                        _afterRenderReport[CONCAT_KEY].StdOutput));
                         } 
                     }
 
