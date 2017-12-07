@@ -128,23 +128,21 @@ namespace BlenderRenderController
 
             var mixdownFmt = project.BlendData.FFmpegAudioCodec;
 
-            if (mixdownFmt != null)
+            switch (mixdownFmt)
             {
-                switch (mixdownFmt)
-                {
-                    case "PCM":
-                        MixdownFile = Path.ChangeExtension(OutputFileName, "wav");
-                        break;
-                    case "VORBIS":
-                        MixdownFile = Path.ChangeExtension(OutputFileName, "ogg");
-                        break;
-                    case "NONE":
-                        MixdownFile = Path.ChangeExtension(OutputFileName, "ac3");
-                        break;
-                    default:
-                        MixdownFile = Path.ChangeExtension(OutputFileName, mixdownFmt.ToLower());
-                        break;
-                }
+                case "PCM":
+                    MixdownFile = Path.ChangeExtension(OutputFileName, "wav");
+                    break;
+                case "VORBIS":
+                    MixdownFile = Path.ChangeExtension(OutputFileName, "ogg");
+                    break;
+                case null:
+                case "NONE":
+                    MixdownFile = Path.ChangeExtension(OutputFileName, "ac3");
+                    break;
+                default:
+                    MixdownFile = Path.ChangeExtension(OutputFileName, mixdownFmt.ToLower());
+                    break;
             }
         }
 
