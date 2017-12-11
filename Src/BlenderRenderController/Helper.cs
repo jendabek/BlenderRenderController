@@ -57,7 +57,7 @@ namespace BlenderRenderController
             var errorText = "";
 
             foreach (var errorCode in errorCodes)
-                errorText += SetErrorText(errorCode, fmt);
+                errorText += GetErrorText(errorCode, fmt);
 
             MessageBox.Show(
                     errorText,
@@ -76,7 +76,7 @@ namespace BlenderRenderController
             ShowErrors(icon, string.Empty, errorCode);
         }
 
-        static private string SetErrorText(AppErrorCode code, string arg1 = "")
+        static private string GetErrorText(AppErrorCode code, string arg1 = "")
         {
             var sb = new StringBuilder();
 

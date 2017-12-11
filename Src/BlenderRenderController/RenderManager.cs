@@ -1,4 +1,5 @@
-﻿using BRClib;
+﻿using BlenderRenderController.Infra;
+using BRClib;
 using NLog;
 using System;
 using System.Collections.Concurrent;
@@ -19,16 +20,23 @@ namespace BlenderRenderController
     /// <summary>
     /// Manages the render process of a list of <see cref="Chunk"/>s.
     /// </summary>
+    /// <remarks>
+    /// Properties values must remain the same once <see cref="Start"/> is called,
+    /// attempting to call <see cref="Setup(ProjectSettings)"/> while 
+    /// <see cref="InProgress"/> is true will throw an Exception, 
+    /// you must <seealso cref="Abort"/> or wait for the process to finish before 
+    /// changing any values
+    /// </remarks>
     public class RenderManager
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // State trackers
         private ConcurrentBag<Process> procBag;
-        //private List<Process> procBag;
         private ConcurrentHashSet<int> framesRendered;
         private int chunksToDo, chunksInProgress,
-                    initalChunkCount, currentIndex;
+                    initalChunkCount, currentIndex,
+                    maxConcurrency;
 
         private Timer timer;
 
@@ -39,6 +47,7 @@ namespace BlenderRenderController
         const int PROG_STACK_SIZE = 3;
 
         AppSettings appSettings = AppSettings.Current;
+        ProjectSettings _proj;
 
         // after render
         Dictionary<string, ProcessResult> _afterRenderReport;
@@ -48,36 +57,64 @@ namespace BlenderRenderController
         CancellationTokenSource _arCts;
 
 
-        public AfterRenderAction Action { get; set; } = AfterRenderAction.NOTHING;
-
-        public TimeSpan Duration { get; set; }
-
-        public string OutputPath { get; set; }
-
-        public string ChunksFolderPath
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(OutputPath)) return null;
-                return Path.Combine(OutputPath, Constants.ChunksSubfolder);
-            }
-        }
-
-        public string BlendFilePath { get; set; }
-
-        public string MixdownFile { get; set; }
-
-        public string OutputFileName { get; set; }
-
-        public int MaxConcurrency { get; set; }
-
-        public IReadOnlyList<Chunk> ChunkList { get; set; }
-
         public int NumberOfFramesRendered => framesRendered.Count;
 
         public bool InProgress { get => timer.Enabled; }
 
         public bool WasAborted { get; private set; }
+
+        string ChunksFolderPath
+        {
+            get
+            {
+                if (_proj == null || string.IsNullOrWhiteSpace(_proj.BlendData.OutputPath)) return null;
+                return Path.Combine(_proj.BlendData.OutputPath, Constants.ChunksSubfolder);
+            }
+        }
+
+        //string OutputFileName
+        //{
+        //    get
+        //    {
+        //        if (ChunksFolderPath == null)
+        //        {
+        //            return null;
+        //        }
+
+        //        var videoExt = Path.GetExtension(Utilities.GetChunkFiles(ChunksFolderPath).FirstOrDefault());
+
+        //        return _proj.BlendData.ProjectName + videoExt;
+        //    }
+        //}
+
+        string MixdownFile
+        {
+            get
+            {
+                if (_proj == null || _proj.BlendData.ProjectName == null) return null;
+
+                var mixdownFmt = _proj.BlendData.FFmpegAudioCodec;
+                var projName = _proj.BlendData.ProjectName;
+
+                switch (mixdownFmt)
+                {
+                    case "PCM":
+                        return Path.ChangeExtension(projName, "wav");
+                    case "VORBIS":
+                        return Path.ChangeExtension(projName, "ogg");
+                    case null:
+                    case "NONE":
+                        return Path.ChangeExtension(projName, "ac3");
+                    default:
+                        return Path.ChangeExtension(projName, mixdownFmt.ToLower());
+                }
+            }
+        }
+
+        public AfterRenderAction Action { get; set; } = AfterRenderAction.NOTHING;
+
+        IReadOnlyList<Chunk> ChunkList;
+        SimpleSyncObject _sync = new SimpleSyncObject();
 
 
         /// <summary>
@@ -89,25 +126,26 @@ namespace BlenderRenderController
 
         public event EventHandler<AfterRenderAction> AfterRenderStarted;
 
-
+        
         public RenderManager()
         {
-            timer = new Timer { Interval = 75, AutoReset = true };
+            timer = new Timer
+            {
+                Interval = 75,
+                AutoReset = true,
+                SynchronizingObject = _sync,
+            };
+
             timer.Elapsed += TryQueueRenderProcess;
-            MaxConcurrency = 2;
         }
-        public RenderManager(IEnumerable<Chunk> chunks) : this()
-        {
-            ChunkList = new List<Chunk>(chunks);
-        }
+
         // for testing
-        public RenderManager(IEnumerable<Chunk> chunks, AppSettings settings)
-            : this(chunks)
+        internal RenderManager(AppSettings settings) : this()
         {
             this.appSettings = settings;
         }
 
-        public RenderManager(ProjectSettings project)
+        public RenderManager(ProjectSettings project) : this()
         {
             Setup(project);
         }
@@ -119,31 +157,13 @@ namespace BlenderRenderController
         /// <param name="project"></param>
         public void Setup(ProjectSettings project)
         {
-            ChunkList = new List<Chunk>(project.ChunkList);
-            MaxConcurrency = project.ProcessesCount;
-            BlendFilePath = project.BlendPath;
-            OutputFileName = project.BlendData.ProjectName;
-            OutputPath = project.BlendData.OutputPath;
-            Duration = project.BlendData.Duration.Value;
-
-            var mixdownFmt = project.BlendData.FFmpegAudioCodec;
-
-            switch (mixdownFmt)
+            if (InProgress)
             {
-                case "PCM":
-                    MixdownFile = Path.ChangeExtension(OutputFileName, "wav");
-                    break;
-                case "VORBIS":
-                    MixdownFile = Path.ChangeExtension(OutputFileName, "ogg");
-                    break;
-                case null:
-                case "NONE":
-                    MixdownFile = Path.ChangeExtension(OutputFileName, "ac3");
-                    break;
-                default:
-                    MixdownFile = Path.ChangeExtension(OutputFileName, mixdownFmt.ToLower());
-                    break;
+                Abort();
+                throw new InvalidOperationException("Cannot change settings while a render is in progress!");
             }
+
+            _proj = project;
         }
 
         /// <summary>
@@ -197,29 +217,26 @@ namespace BlenderRenderController
 
         private void CheckForValidProperties()
         {
-            string[] mustHaveValues = { ChunksFolderPath, BlendFilePath, OutputFileName };
+            //string[] mustHaveValues = { ChunksFolderPath, _proj.BlendPath, OutputFileName };
 
-            //mustHaveValues.Where(p => string.IsNullOrWhiteSpace(p))
-            //              .Select();
+            //if (mustHaveValues.Any(x => string.IsNullOrWhiteSpace(x)))
+            //{
+            //    throw new Exception("Required info missing");
+            //}
 
-            if (mustHaveValues.Any(x => string.IsNullOrWhiteSpace(x)))
+            if (_proj == null)
             {
-                throw new Exception("Required info missing");
+                throw new Exception("Invalid settings");
             }
 
-            if (ChunkList.Count == 0)
+            if (_proj.ChunkList.Count == 0)
             {
                 throw new Exception("Chunk list is empty");
             }
 
-            //if (MaxConcurrency < 2)
-            //{
-            //    throw new Exception("Must have a MaxConcurrency value of 2 or more");
-            //}
-
-            if (!File.Exists(BlendFilePath))
+            if (!File.Exists(_proj.BlendPath))
             {
-                throw new FileNotFoundException("Could not find 'blend' file", BlendFilePath);
+                throw new FileNotFoundException("Could not find 'blend' file", _proj.BlendPath);
             }
 
             if (!Directory.Exists(ChunksFolderPath))
@@ -237,8 +254,8 @@ namespace BlenderRenderController
 
         void ResetFields()
         {
+            ChunkList = _proj.ChunkList.ToList();
             procBag = new ConcurrentBag<Process>();
-            //procBag = new List<Process>();
             framesRendered = new ConcurrentHashSet<int>();
             currentIndex = 0;
             chunksInProgress = 0;
@@ -248,6 +265,7 @@ namespace BlenderRenderController
             _arCts = new CancellationTokenSource();
             WasAborted = false;
             _reportCount = 0;
+            maxConcurrency = _proj.MaxConcurrency;
         }
 
         Process CreateRenderProcess(Chunk chunk)
@@ -260,8 +278,8 @@ namespace BlenderRenderController
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 Arguments = string.Format(RenderComARGS,
-                                            BlendFilePath,
-                                            Path.Combine(ChunksFolderPath, OutputFileName + "-#"),
+                                            _proj.BlendPath,
+                                            Path.Combine(ChunksFolderPath, _proj.BlendData.ProjectName + "-#"),
                                             appSettings.Renderer,
                                             chunk.Start,
                                             chunk.End),
@@ -299,7 +317,6 @@ namespace BlenderRenderController
             return true;
         }
 
-
         // read blender's output to see what frames are beeing rendered
         private void RenderCom_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
@@ -327,7 +344,7 @@ namespace BlenderRenderController
                 timer.Stop();
 
                 // all render processes are done at this point
-                Debug.Assert(NumberOfFramesRendered == ChunkList.TotalLength(),
+                Debug.Assert(framesRendered.ToList().Count == ChunkList.TotalLength(),
                             "Frames counted don't match the ChunkList TotalLenght");
 
                 OnChunksFinished(NumberOfFramesRendered);
@@ -338,13 +355,14 @@ namespace BlenderRenderController
         {
             // start new render procs only within the concurrency limit and until the
             // end of ChunkList
-            if (currentIndex < initalChunkCount && chunksInProgress < MaxConcurrency)
+            if (currentIndex < initalChunkCount && chunksInProgress < maxConcurrency)
             {
                 var currentChunk = ChunkList[currentIndex];
                 var proc = CreateRenderProcess(currentChunk);
                 proc.Start();
                 proc.BeginOutputReadLine();
                 procBag.Add(proc);
+
 
                 chunksInProgress++;
                 currentIndex++;
@@ -425,21 +443,6 @@ namespace BlenderRenderController
 
         }
 
-
-        string GetMixdownFileName()
-        {
-            string[] outPathFiles = Directory.GetFiles(OutputPath);
-            var exts = RenderFormats.AllowedAudioFileExts.Select(e => '.' + e);
-            var fullOutPath = Path.Combine(OutputPath, OutputFileName);
-
-            var res = from fFile in outPathFiles
-                      from e in exts
-                      let match = Path.ChangeExtension(fullOutPath, e)
-                      where File.Exists(match) select match;
-
-            return res.FirstOrDefault();
-        }
-
         string GetRandSulfix(string baseName)
         {
             var tmp = Path.GetRandomFileName();
@@ -471,31 +474,19 @@ namespace BlenderRenderController
             // full range of frames
             var fullc = new Chunk(ChunkList.First().Start, ChunkList.Last().End);
 
-            // get the video ext from the rendered chunks name
             var videoExt = Path.GetExtension(Utilities.GetChunkFiles(ChunksFolderPath).First());
-
-            // fix OutputFileName if needed
-            if (string.IsNullOrWhiteSpace(OutputFileName))
-            {
-                OutputFileName = "BrcOutput" + videoExt;
-            }
-            else if (!Path.HasExtension(OutputFileName))
-            {
-                OutputFileName += videoExt;
-            }
-
-            var projFinalPath = Path.Combine(OutputPath, OutputFileName);
+            var projFinalPath = Path.Combine(_proj.BlendData.OutputPath, _proj.BlendData.ProjectName + videoExt);
             var chunksTxt = Path.Combine(ChunksFolderPath, Constants.ChunksTxtFileName);
-            var mixdownPath = Path.Combine(OutputPath, MixdownFile);
+            var mixdownPath = Path.Combine(_proj.BlendData.OutputPath, MixdownFile);
 
 
             Process mixdownProc = null, concatProc = null;
             string mixdownArgs = string.Format(MixdownComARGS,
-                                                 BlendFilePath,
+                                                 _proj.BlendPath,
                                                  fullc.Start, fullc.End,
                                                  Path.Combine(appSettings.ScriptsFolder,
                                                               Constants.PyMixdown),
-                                                 OutputPath);
+                                                 _proj.BlendData.OutputPath);
             string concatArgs;
 
             _afterRenderReport.Add(MIX_KEY, new ProcessResult());
@@ -515,7 +506,7 @@ namespace BlenderRenderController
 
                     // we're creating the args here because the mixdown file
                     // must exist for this to work
-                    concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, Duration, mixdownPath);
+                    concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, _proj.BlendData.Duration, mixdownPath);
                     concatProc = ProcessFactory.ConcatProcess(AppSettings.Current.FFmpegProgram, concatArgs);
 
                     RunProc(ref concatProc, CONCAT_KEY);
@@ -523,7 +514,7 @@ namespace BlenderRenderController
                     break;
                 case AfterRenderAction.JOIN:
 
-                    concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, Duration, mixdownPath);
+                    concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, _proj.BlendData.Duration, mixdownPath);
                     concatProc = ProcessFactory.ConcatProcess(AppSettings.Current.FFmpegProgram, concatArgs);
                     RunProc(ref concatProc, CONCAT_KEY);
 
@@ -547,7 +538,7 @@ namespace BlenderRenderController
             if (badProcResults.Length > 0)
             {
                 // create a file report file
-                string arReportFile = Path.Combine(OutputPath, GetRandSulfix("AfterRenderReport_"));
+                string arReportFile = Path.Combine(_proj.BlendData.OutputPath, GetRandSulfix("AfterRenderReport_"));
 
                 using (var sw = File.AppendText(arReportFile))
                 {

@@ -72,15 +72,15 @@ namespace BlenderRenderController
         string _stdErr, _stdOut, _procName;
         int _procExitCode;
 
-        public ProcessRunner()
-        { }
+        public string StdOutput => _stdOut;
+        public string StdError => _stdErr;
+        public int ExitCode => _procExitCode;
+
 
         public ProcessRunner(Process process)
         {
             _proc = process;
         }
-
-        public Process Process { get => _proc; set => _proc = value; }
 
 
         public Task<bool> Run(CancellationToken token = default)
@@ -131,11 +131,9 @@ namespace BlenderRenderController
     /// </summary>
     public class ProcessResult
     {
-        public ProcessResult()
-        {}
+        public ProcessResult() {}
 
-        public ProcessResult(int exitCode) : this(exitCode, null, null)
-        { }
+        public ProcessResult(int exitCode) : this(exitCode, null, null) { }
 
         public ProcessResult(int exitCode, string stdOutput, string stdError)
         {

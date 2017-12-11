@@ -38,16 +38,16 @@ namespace BlenderRenderController
                      ETR_Prefix = "ETR: ",
                      TimeFmt = @"hh\:mm\:ss";
 
-        private AppSettings _appSettings;
-        private ProjectSettings _project;
-        private RenderManager renderManager;
+        AppSettings _appSettings;
+        ProjectSettings _project;
+        RenderManager _renderMngr;
         Progress<RenderProgressInfo> _renderProg;
-        private int _autoRefStart, _autoRefEnd;
-        private AppState appState;
-        Stopwatch chrono;
-        private ETACalculator _etaCalc;
-        private SettingsForm _settingsForm;
-        CancellationTokenSource afterRenderCancelSrc;
+        int _autoStartF, _autoEndF;
+        AppState appState;
+        Stopwatch _chrono;
+        ETACalculator _etaCalc;
+        SettingsForm _settingsForm;
+        CancellationTokenSource _afterRenderCancelSrc;
 
         public bool IsWorking { get; private set; }
 
@@ -64,13 +64,13 @@ namespace BlenderRenderController
             this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 #endif
             // RenderManager
-            renderManager = new RenderManager();
-            renderManager.Finished += RenderManager_Finished; ;
-            renderManager.AfterRenderStarted += RenderManager_AfterRenderStarted;
+            _renderMngr = new RenderManager();
+            _renderMngr.Finished += RenderManager_Finished; ;
+            _renderMngr.AfterRenderStarted += RenderManager_AfterRenderStarted;
             //renderManager.ProgressChanged += (s, prog) => UpdateProgress(prog);
             _renderProg = new Progress<RenderProgressInfo>(UpdateProgress);
 
-            chrono = new Stopwatch();
+            _chrono = new Stopwatch();
             _etaCalc = new ETACalculator(5, 1);
         }
 
@@ -89,7 +89,7 @@ namespace BlenderRenderController
             _appSettings.RecentBlends_Changed += (s, args) => UpdateRecentBlendsMenu();
 
             processCountNumericUpDown.Maximum = 
-            _project.ProcessesCount = Environment.ProcessorCount;
+            _project.MaxConcurrency = Environment.ProcessorCount;
 
             // set source for project binding
             projectSettingsBindingSource.DataSource = _project;
@@ -284,18 +284,17 @@ namespace BlenderRenderController
 
             // exec process asynchronously
             var pResult = await getBlendInfoCom.StartAsync(true, true);
-            var (exitCode, stdOutput, stdErrors) = (pResult.ExitCode, pResult.StdOutput, pResult.StdError);
 
             // errors
-            if (stdErrors.Length > 0)
+            if (pResult.StdOutput.Length > 0)
             {
                 logger.Debug("Blender output errors detected");
-                Debug.WriteLine('\n' + stdErrors + '\n');
+                //Debug.WriteLine('\n' + pResult.StdError + '\n');
             }
 
-            if (stdOutput.Length == 0)
+            if (pResult.StdOutput.Length == 0)
             {
-                var detailsContent = $"Blender's exit code {exitCode}\nOutput:\n\n" + stdErrors;
+                var detailsContent = $"Blender's exit code {pResult.ExitCode}\nOutput:\n\n" + pResult.StdError;
 
                 var err = Ui.Dialogs.ShowErrorBox("Could not open project, no information was received.", 
                                                   "Failed to read project", 
@@ -306,7 +305,7 @@ namespace BlenderRenderController
                 return;
             }
 
-            var blendData = Utilities.ParsePyOutput(stdOutput);
+            var blendData = Utilities.ParsePyOutput(pResult.StdOutput);
 
             if (blendData != null)
             {
@@ -314,8 +313,8 @@ namespace BlenderRenderController
                 _project.BlendPath = blendFile;
 
                 // save copy of start and end frames values
-                _autoRefStart = blendData.Start;
-                _autoRefEnd = blendData.End;
+                _autoStartF = blendData.Start;
+                _autoEndF = blendData.End;
 
                 // refresh binding source for blend data
                 blendDataBindingSource.DataSource = _project.BlendData;
@@ -343,14 +342,14 @@ namespace BlenderRenderController
             {
                 //var detailContents = string.Format("# STD output:\n\n{0}\n\n# STD errors:\n\n{1}", fullOutput, fullErrors);
                 var errorBox = Ui.Dialogs.ShowErrorBox("Failed to read blend file info.", 
-                    "Read error", "Error output:\n\n" + stdErrors);
+                    "Read error", "Error output:\n\n" + pResult.StdError);
 
                 //errorBox.Show();
                 ReadFail();
                 return;
             }
 
-            var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, _project.ProcessesCount);
+            var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, _project.MaxConcurrency);
             UpdateCurrentChunks(chunks.ToArray());
             _appSettings.AddRecentBlend(blendFile);
             UpdateUI(AppState.READY_FOR_RENDER);
@@ -400,8 +399,13 @@ namespace BlenderRenderController
             // Calculate chunks
             bool customLen = renderOptionsCustomRadio.Checked;
             var chunks = customLen 
-                ? Chunk.CalcChunksByLength(_project.BlendData.Start, _project.BlendData.End, _project.ChunkLenght)
-                : Chunk.CalcChunks(_project.BlendData.Start, _project.BlendData.End, _project.ProcessesCount);
+                ? Chunk.CalcChunksByLength(_project.BlendData.Start, 
+                                           _project.BlendData.End,
+                                           _project.ChunkLenght)
+                
+                : Chunk.CalcChunks(_project.BlendData.Start, 
+                                   _project.BlendData.End,
+                                   _project.MaxConcurrency);
 
             UpdateCurrentChunks(chunks.ToArray());
 
@@ -409,8 +413,8 @@ namespace BlenderRenderController
 
             IsWorking = true;
 
-            renderManager.Setup(_project);
-            renderManager.Action = _appSettings.AfterRender;
+            _renderMngr.Setup(_project);
+            _renderMngr.Action = _appSettings.AfterRender;
 
             totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
 
@@ -420,8 +424,8 @@ namespace BlenderRenderController
 #endif
             UpdateUI(AppState.RENDERING_ALL, "Starting render...");
 
-            chrono.Start();
-            renderManager.StartAsync(_renderProg);
+            _chrono.Start();
+            _renderMngr.StartAsync(_renderProg);
         }
 
         private void RenderManager_Finished(object sender, EventArgs e)
@@ -429,7 +433,7 @@ namespace BlenderRenderController
             // all slow work is done
             StopWork(true);
 
-            if (renderManager.GetAfterRenderResult()) // AfterActions ran Ok
+            if (_renderMngr.GetAfterRenderResult()) // AfterActions ran Ok
             {
                 var dialog =
                     MessageBox.Show("Open destination folder?",
@@ -443,7 +447,7 @@ namespace BlenderRenderController
                 UpdateUI(AppState.READY_FOR_RENDER);
 
             }
-            else if (!renderManager.WasAborted) // Erros detected
+            else if (!_renderMngr.WasAborted) // Erros detected
             {
                 var dialog = MessageBox.Show(Resources.AR_error_msg, Resources.Error,
                                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -486,17 +490,17 @@ namespace BlenderRenderController
         {
             if (!wasComplete)
             {
-                if (renderManager != null && renderManager.InProgress)
+                if (_renderMngr != null && _renderMngr.InProgress)
                 {
-                    renderManager.Abort();
+                    _renderMngr.Abort();
                 }
 
-                if (afterRenderCancelSrc != null)
-                    afterRenderCancelSrc.Cancel();
+                if (_afterRenderCancelSrc != null)
+                    _afterRenderCancelSrc.Cancel();
             }
 
             _etaCalc.Reset();
-            chrono.Reset();
+            _chrono.Reset();
             IsWorking = false;
             renderProgressBar.Value = 0;
             renderProgressBar.Style = ProgressBarStyle.Blocks;
@@ -562,7 +566,7 @@ namespace BlenderRenderController
         /// </summary>
         private void UpdateProgress(RenderProgressInfo info)
         {
-            int progressPercentage = (int)Math.Floor((info.FramesRendered / (decimal)_project.BlendData.TotalFrames) * 100);
+            int progressPercentage = (int)Math.Floor((info.FramesRendered / (double)_project.BlendData.TotalFrames) * 100);
 
             Status($"Completed {info.PartsCompleted} / {_project.ChunkList.Count} chunks, {info.FramesRendered} frames rendered");
 
@@ -581,7 +585,7 @@ namespace BlenderRenderController
             }
 
             //time elapsed display
-            TimeSpan runTime = chrono.Elapsed;
+            TimeSpan runTime = _chrono.Elapsed;
             var tElapsed = TimePassedPrefix + runTime.ToString(TimeFmt);
             Status(tElapsed, totalTimeLabel);
 
@@ -599,8 +603,7 @@ namespace BlenderRenderController
             bool ignore = (newChunks.TotalLength() > _project.BlendData.TotalFrames) 
                         || newChunks.SequenceEqual(_project.ChunkList);
 
-            if (ignore)
-                return;
+            if (ignore) return;
 
             if (_project.ChunkList.Count > 0)
                 _project.ChunkList.Clear();
@@ -698,7 +701,7 @@ namespace BlenderRenderController
 
             var mixProc = ProcessFactory.MixdownProcess(_appSettings.BlenderProgram, mixArgs);
             var pr = new ProcessRunner(mixProc);
-            var result = await pr.Run(afterRenderCancelSrc.Token);
+            var result = await pr.Run(_afterRenderCancelSrc.Token);
 
             if (result)
             {
@@ -739,7 +742,7 @@ namespace BlenderRenderController
 
                 var concatProc = ProcessFactory.ConcatProcess(_appSettings.FFmpegProgram, concatArgs);
                 var pr = new ProcessRunner(concatProc);
-                var result = await pr.Run(afterRenderCancelSrc.Token);
+                var result = await pr.Run(_afterRenderCancelSrc.Token);
 
                 if (result)
                 {
@@ -772,12 +775,12 @@ namespace BlenderRenderController
 
         void ResetCTS()
         {
-            if (afterRenderCancelSrc != null)
+            if (_afterRenderCancelSrc != null)
             {
-                afterRenderCancelSrc.Dispose();
-                afterRenderCancelSrc = null;
+                _afterRenderCancelSrc.Dispose();
+                _afterRenderCancelSrc = null;
             }
-            afterRenderCancelSrc = new CancellationTokenSource();
+            _afterRenderCancelSrc = new CancellationTokenSource();
         }
 
 
@@ -818,7 +821,7 @@ namespace BlenderRenderController
             {
                 if (radio.Checked)
                 {
-                    _project.ProcessesCount = Environment.ProcessorCount;
+                    _project.MaxConcurrency = Environment.ProcessorCount;
                     // recalc auto chunks:
                     var currentStart = totalStartNumericUpDown.Value;
                     var currentEnd = totalEndNumericUpDown.Value;
@@ -835,8 +838,8 @@ namespace BlenderRenderController
                 if (radio.Checked)
                 {
                     // set to blend values
-                    _project.BlendData.Start = _autoRefStart;
-                    _project.BlendData.End = _autoRefEnd;
+                    _project.BlendData.Start = _autoStartF;
+                    _project.BlendData.End = _autoEndF;
                 }
             }
 #if UNIX

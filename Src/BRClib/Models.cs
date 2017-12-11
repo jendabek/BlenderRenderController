@@ -16,7 +16,6 @@ namespace BRClib
             _activeScene, _res;
 
 
-
         [JsonProperty("start")]
         public int Start
         {
@@ -145,7 +144,7 @@ namespace BRClib
     {
         private readonly ObservableCollection<Chunk> _chunkList;
         private string _blendPath;
-        private int _chunkLen, _processCount;
+        private int _chunkLen, _maxC;
         private BlendData _bData;
 
         public BlendData BlendData
@@ -168,10 +167,10 @@ namespace BRClib
             set => SetProperty(ref _chunkLen, value);
         }
 
-        public int ProcessesCount
+        public int MaxConcurrency
         {
-            get => _processCount;
-            set => SetProperty(ref _processCount, value);
+            get => _maxC;
+            set => SetProperty(ref _maxC, value);
         }
 
         public string ChunkSubdirPath

@@ -34,12 +34,14 @@ namespace BlenderRenderController
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BrcForm));
             this.renderProgressBar = new System.Windows.Forms.ProgressBar();
             this.totalStartNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.blendDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.startFrameLabel = new System.Windows.Forms.Label();
             this.outputFolderTextBox = new System.Windows.Forms.TextBox();
             this.statusLabel = new System.Windows.Forms.Label();
             this.totalFrameCountLabel = new System.Windows.Forms.Label();
             this.totalEndNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.processCountNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.projectSettingsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.processCountLabel = new System.Windows.Forms.Label();
             this.totalTimeLabel = new System.Windows.Forms.Label();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,11 +109,11 @@ namespace BlenderRenderController
             this.donationTSBtn = new System.Windows.Forms.ToolStripButton();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.label5 = new System.Windows.Forms.Label();
-            this.blendDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.projectSettingsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).BeginInit();
             this.infoPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).BeginInit();
             this.panel1.SuspendLayout();
@@ -119,8 +121,6 @@ namespace BlenderRenderController
             this.startEndFLP.SuspendLayout();
             this.menuToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // renderProgressBar
@@ -153,6 +153,10 @@ namespace BlenderRenderController
             this.totalStartNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
             this.totalStartNumericUpDown.Validating += new System.ComponentModel.CancelEventHandler(this.StartEnd_Validating);
             this.totalStartNumericUpDown.Validated += new System.EventHandler(this.StartEndNumeric_Validated);
+            // 
+            // blendDataBindingSource
+            // 
+            this.blendDataBindingSource.DataSource = typeof(BRClib.BlendData);
             // 
             // startFrameLabel
             // 
@@ -229,7 +233,7 @@ namespace BlenderRenderController
             // 
             // processCountNumericUpDown
             // 
-            this.processCountNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "ProcessesCount", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.processCountNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "MaxConcurrency", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.processCountNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.processCountNumericUpDown.Location = new System.Drawing.Point(542, 237);
             this.processCountNumericUpDown.Minimum = new decimal(new int[] {
@@ -240,7 +244,7 @@ namespace BlenderRenderController
             this.processCountNumericUpDown.Name = "processCountNumericUpDown";
             this.processCountNumericUpDown.Size = new System.Drawing.Size(88, 22);
             this.processCountNumericUpDown.TabIndex = 8;
-            this.processCountNumericUpDown.Tag = "DIRENDER";
+            this.processCountNumericUpDown.Tag = "";
             this.processCountNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTipInfo.SetToolTip(this.processCountNumericUpDown, "Maximum number of Blender processes that will be parallely rendering your video.\r" +
         "\n\"Auto\" = number of your PC\'s logical processors (threads), this should work the" +
@@ -251,6 +255,10 @@ namespace BlenderRenderController
             0,
             0});
             this.processCountNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
+            // 
+            // projectSettingsBindingSource
+            // 
+            this.projectSettingsBindingSource.DataSource = typeof(BRClib.ProjectSettings);
             // 
             // processCountLabel
             // 
@@ -1062,14 +1070,6 @@ namespace BlenderRenderController
             this.label5.TabIndex = 25;
             this.label5.Text = "Extras";
             // 
-            // blendDataBindingSource
-            // 
-            this.blendDataBindingSource.DataSource = typeof(BRClib.BlendData);
-            // 
-            // projectSettingsBindingSource
-            // 
-            this.projectSettingsBindingSource.DataSource = typeof(BRClib.ProjectSettings);
-            // 
             // BrcForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -1123,8 +1123,10 @@ namespace BlenderRenderController
             this.Load += new System.EventHandler(this.BrcForm_Load);
             this.Shown += new System.EventHandler(this.BrcForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).EndInit();
             this.infoPanel.ResumeLayout(false);
             this.infoPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).EndInit();
@@ -1137,8 +1139,6 @@ namespace BlenderRenderController
             this.menuToolStrip.ResumeLayout(false);
             this.menuToolStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -22,13 +22,21 @@ namespace UnitTests
 
             var blendData = GetBlendData(BLEND_PATH);
             var chunks = Chunk.CalcChunksByLength(blendData.Start, 3000, 300);
-            var renderMngr = new RenderManager(chunks, MockSettings)
+
+            var mockProj = new ProjectSettings
             {
-                BlendFilePath = BLEND_PATH,
-                OutputPath = OUT_PATH,
+                BlendData = new BlendData
+                {
+                    OutputPath = OUT_PATH,
+                    ProjectName = "UnitTest"
+                },
+                BlendPath = BLEND_PATH,
                 MaxConcurrency = 5,
-                OutputFileName = "UnitTest"
             };
+
+            var renderMngr = new RenderManager(MockSettings);
+            renderMngr.Setup(mockProj);
+
             renderMngr.Finished += (s, e) => finishedEvent.Set();
 
             renderMngr.StartAsync();
@@ -46,13 +54,19 @@ namespace UnitTests
 
             var blendData = GetBlendData(BLEND_PATH);
             var chunks = Chunk.CalcChunksByLength(blendData.Start, 3000, 300);
-            var renderMngr = new RenderManager(chunks, MockSettings)
+            var mockProj = new ProjectSettings
             {
-                BlendFilePath = BLEND_PATH,
-                OutputPath = OUT_PATH,
+                BlendData = new BlendData
+                {
+                    OutputPath = OUT_PATH,
+                    ProjectName = "UnitTest"
+                },
+                BlendPath = BLEND_PATH,
                 MaxConcurrency = 5,
-                OutputFileName = "UnitTest"
             };
+
+            var renderMngr = new RenderManager(MockSettings);
+            renderMngr.Setup(mockProj);
             renderMngr.Finished += (s, e) => finishedEvent.Set();
 
             renderMngr.StartAsync(progress);
@@ -60,21 +74,28 @@ namespace UnitTests
 
             Assert.AreEqual(chunks.TotalLength(), renderMngr.NumberOfFramesRendered);
         }
-        /*
+        
         [TestMethod]
         public void RenderManager_ThrowOn_Properties_changed_while_in_progress()
         {
             ClearFolder(OUT_PATH);
 
             var bData = GetTestBlendData();
-            var chunks = Chunk.CalcChunksByLenght(bData.Start, 5000, 300);
-            var renderMngr = new RenderManager(chunks, MockSettings)
+            var chunks = Chunk.CalcChunksByLength(bData.Start, 5000, 300);
+
+            var mockProj = new ProjectSettings
             {
-                BlendFilePath = BLEND_PATH,
-                OutputPath = OUT_PATH,
+                BlendData = new BlendData
+                {
+                    OutputPath = OUT_PATH,
+                    ProjectName = "UnitTest"
+                },
+                BlendPath = BLEND_PATH,
                 MaxConcurrency = 5,
-                OutputFileName = "UnitTest"
             };
+
+            var renderMngr = new RenderManager(MockSettings);
+            renderMngr.Setup(mockProj);
 
             Assert.ThrowsException<InvalidOperationException>(() =>
             {
@@ -82,14 +103,14 @@ namespace UnitTests
 
                 Thread.Sleep(TimeSpan.FromSeconds(5));
 
-                renderMngr.MaxConcurrency = 99;
+                renderMngr.Setup(new ProjectSettings());
             }, 
             "Property value changed while a render was in progress");
 
             //ClearFolder(OUT_PATH);
             renderMngr.Abort();
         }
-        */
+        
         [TestMethod]
         public void RenderManager_ThrowOn_Start_called_while_in_progress()
         {
@@ -97,13 +118,19 @@ namespace UnitTests
 
             var bData = GetBlendData(BLEND_PATH);
             var chunks = Chunk.CalcChunksByLength(bData.Start, 5000, 300);
-            var renderMngr = new RenderManager(chunks, MockSettings)
+            var mockProj = new ProjectSettings
             {
-                BlendFilePath = BLEND_PATH,
-                OutputPath = OUT_PATH,
+                BlendData = new BlendData
+                {
+                    OutputPath = OUT_PATH,
+                    ProjectName = "UnitTest"
+                },
+                BlendPath = BLEND_PATH,
                 MaxConcurrency = 5,
-                OutputFileName = "UnitTest"
             };
+
+            var renderMngr = new RenderManager(MockSettings);
+            renderMngr.Setup(mockProj);
 
             Assert.ThrowsException<InvalidOperationException>(() =>
             {

@@ -168,6 +168,7 @@
     <Compile Include="SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Infra\Sync.cs" />
     <Compile Include="Ui\Dialogs.cs" />
     <Compile Include="Ui\ErrorBox.cs">
       <SubType>Form</SubType>

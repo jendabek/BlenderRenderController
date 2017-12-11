@@ -174,7 +174,7 @@ namespace BlenderRenderController
         /// Safely raises any EventHandler event asynchronously.
         /// </summary>
         /// <param name="sender">The object raising the event (usually this).</param>
-        /// <param name="args">The TEventArgs for this event.</param>
+        /// <param name="args">The TArgs for this event.</param>
         public static void Raise<TArgs>(this MulticastDelegate thisEvent, object sender, TArgs args)
         {
             var localMCD = thisEvent;
