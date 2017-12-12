@@ -23,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug Unix|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,6 +44,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release Unix|AnyCPU'">
     <OutputPath>bin\Release Unix\</OutputPath>
@@ -52,6 +55,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -72,6 +76,11 @@
   <ItemGroup>
     <Compile Include="BindingBase.cs" />
     <Compile Include="Chunk.cs" />
+    <Compile Include="Commands\Concat.cs" />
+    <Compile Include="Commands\ExternalCommand.cs" />
+    <Compile Include="Commands\GetInfo.cs" />
+    <Compile Include="Commands\Mixdown.cs" />
+    <Compile Include="Commands\Render.cs" />
     <Compile Include="ConcurrentHashSet.cs" />
     <Compile Include="Extentions.cs" />
     <Compile Include="Models.cs" />

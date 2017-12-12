@@ -1,5 +1,6 @@
 ﻿using BlenderRenderController.Infra;
 using BRClib;
+using BRClib.Commands;
 using NLog;
 using System;
 using System.Collections.Concurrent;
@@ -131,7 +132,7 @@ namespace BlenderRenderController
         {
             timer = new Timer
             {
-                Interval = 75,
+                Interval = 100,
                 AutoReset = true,
                 SynchronizingObject = _sync,
             };
@@ -480,14 +481,22 @@ namespace BlenderRenderController
             var mixdownPath = Path.Combine(_proj.BlendData.OutputPath, MixdownFile);
 
 
+            MixdownCmd mixdown = new MixdownCmd(appSettings.BlenderProgram)
+            {
+                BlendFile = _proj.BlendPath,
+                MixdownScript = Path.Combine(appSettings.ScriptsFolder, Constants.PyMixdown),
+                Range = fullc,
+                OutputFolder = _proj.BlendData.OutputPath
+            };
+
+            ConcatCmd concat = new ConcatCmd(appSettings.FFmpegProgram)
+            {
+                ConcatTextFile = chunksTxt,
+                OutputFile = projFinalPath,
+                Duration = _proj.BlendData.Duration
+            };
+
             Process mixdownProc = null, concatProc = null;
-            string mixdownArgs = string.Format(MixdownComARGS,
-                                                 _proj.BlendPath,
-                                                 fullc.Start, fullc.End,
-                                                 Path.Combine(appSettings.ScriptsFolder,
-                                                              Constants.PyMixdown),
-                                                 _proj.BlendData.OutputPath);
-            string concatArgs;
 
             _afterRenderReport.Add(MIX_KEY, new ProcessResult());
             _afterRenderReport.Add(CONCAT_KEY, new ProcessResult());
@@ -499,29 +508,28 @@ namespace BlenderRenderController
             {
                 case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
 
-                    mixdownProc = ProcessFactory.MixdownProcess(AppSettings.Current.BlenderProgram, mixdownArgs);
+                    mixdownProc = mixdown.GetProcess();
                     RunProc(ref mixdownProc, MIX_KEY);
 
                     if (_arCts.IsCancellationRequested) return false;
 
                     // we're creating the args here because the mixdown file
                     // must exist for this to work
-                    concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, _proj.BlendData.Duration, mixdownPath);
-                    concatProc = ProcessFactory.ConcatProcess(AppSettings.Current.FFmpegProgram, concatArgs);
+                    concat.MixdownFile = mixdownPath;
 
+                    concatProc = concat.GetProcess();
                     RunProc(ref concatProc, CONCAT_KEY);
 
                     break;
                 case AfterRenderAction.JOIN:
 
-                    concatArgs = GetConcatenationArgs(chunksTxt, projFinalPath, _proj.BlendData.Duration, mixdownPath);
-                    concatProc = ProcessFactory.ConcatProcess(AppSettings.Current.FFmpegProgram, concatArgs);
+                    concatProc = concat.GetProcess();
                     RunProc(ref concatProc, CONCAT_KEY);
 
                     break;
                 case AfterRenderAction.MIXDOWN:
 
-                    mixdownProc = ProcessFactory.MixdownProcess(AppSettings.Current.BlenderProgram, mixdownArgs);
+                    mixdownProc = mixdown.GetProcess();
                     RunProc(ref mixdownProc, MIX_KEY);
 
                     break;

@@ -7,6 +7,7 @@
 
 using BlenderRenderController.Properties;
 using BRClib;
+using BRClib.Commands;
 #if WIN
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Taskbar;
@@ -265,25 +266,16 @@ namespace BlenderRenderController
             logger.Info("Loading .blend");
             Status("Reading .blend file...");
 
-            var getBlendInfoCom = new Process();
-            var info = new ProcessStartInfo()
-            {
-                FileName = _appSettings.BlenderProgram,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                Arguments = string.Format(GetInfoComARGS,
-                                            blendFile,
-                                            Path.Combine(_appSettings.ScriptsFolder, Constants.PyGetInfo))
-            };
-
-            getBlendInfoCom.StartInfo = info;
-
             // exec process asynchronously
-            var pResult = await getBlendInfoCom.StartAsync(true, true);
+            var giScript = Path.Combine(_appSettings.ScriptsFolder,
+                                        Constants.PyGetInfo);
+
+            var giCmd = new GetInfoCmd(_appSettings.BlenderProgram, 
+                                        blendFile, 
+                                        giScript);
+
+            //var pResult = await giCmd.GetProcess().StartAsync(true, true);
+            var pResult = await giCmd.StartAsync(true, true);
 
             // errors
             if (pResult.StdOutput.Length > 0)
@@ -523,7 +515,7 @@ namespace BlenderRenderController
             if (IsWorking)
             {
                 var result = MessageBox.Show("Are you sure you want to stop?",
-                                                "",
+                                                "Cancel",
                                                 MessageBoxButtons.YesNo,
                                                 MessageBoxIcon.Exclamation);
 
@@ -692,16 +684,15 @@ namespace BlenderRenderController
             UpdateUI(AppState.RENDERING_ALL, "Rendering mixdown...");
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
-            var mixArgs = string.Format(MixdownComARGS,
-                                       _project.BlendPath,
-                                       _project.BlendData.Start,
-                                       _project.BlendData.End,
-                                       Path.Combine(_appSettings.ScriptsFolder, Constants.PyMixdown),
-                                       _project.BlendData.OutputPath);
+            var mix = new MixdownCmd(_appSettings.BlenderProgram,
+                                    _project.BlendPath, 
+                                    _project.BlendData.Start, 
+                                    _project.BlendData.End, 
+                                    Path.Combine(_appSettings.ScriptsFolder, 
+                                                Constants.PyMixdown),
+                                    _project.BlendData.OutputPath);
 
-            var mixProc = ProcessFactory.MixdownProcess(_appSettings.BlenderProgram, mixArgs);
-            var pr = new ProcessRunner(mixProc);
-            var result = await pr.Run(_afterRenderCancelSrc.Token);
+            var result = await mix.Run(_afterRenderCancelSrc.Token);
 
             if (result)
             {
@@ -712,7 +703,7 @@ namespace BlenderRenderController
                 MessageBox.Show("Something went wrong, check logs at the output folder...", 
                         Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                pr.SaveReport(_project.BlendData.OutputPath);
+                mix.SaveReport(_project.BlendData.OutputPath);
 
                 UpdateUI(AppState.READY_FOR_RENDER, "Something went wrong...");
             }
@@ -735,14 +726,21 @@ namespace BlenderRenderController
 
             if (manConcat.DialogResult == DialogResult.OK)
             {
-                var concatArgs = GetConcatenationArgs(manConcat.ChunksTextFile,
-                                                        manConcat.OutputFile,
-                                                        manConcat.MixdownAudioFile);
+                //var concatArgs = GetConcatenationArgs(manConcat.ChunksTextFile,
+                //                                        manConcat.OutputFile,
+                //                                        manConcat.MixdownAudioFile);
 
 
-                var concatProc = ProcessFactory.ConcatProcess(_appSettings.FFmpegProgram, concatArgs);
-                var pr = new ProcessRunner(concatProc);
-                var result = await pr.Run(_afterRenderCancelSrc.Token);
+                //var concatProc = ProcessFactory.ConcatProcess(_appSettings.FFmpegProgram, concatArgs);
+                //var pr = new ProcessRunner(concatProc);
+                //var result = await pr.Run(_afterRenderCancelSrc.Token);
+
+                var concat = new ConcatCmd(_appSettings.FFmpegProgram,
+                                        manConcat.ChunksTextFile,
+                                        manConcat.OutputFile,
+                                        manConcat.MixdownAudioFile);
+
+                var result = await concat.Run(_afterRenderCancelSrc.Token);
 
                 if (result)
                 {
@@ -754,7 +752,7 @@ namespace BlenderRenderController
                              Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     var outFolder = Path.GetDirectoryName(manConcat.OutputFile);
-                    pr.SaveReport(outFolder);
+                    concat.SaveReport(outFolder);
 
                     UpdateUI(AppState.READY_FOR_RENDER, "Something went wrong...");
                 }

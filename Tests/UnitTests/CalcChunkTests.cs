@@ -4,6 +4,7 @@ using BRClib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Collections.Generic;
+using System.Text;
 
 namespace UnitTests
 {
@@ -27,7 +28,11 @@ namespace UnitTests
         [TestMethod]
         public void CalcChunks_randomGen_tests()
         {
-            for (int i = 0; i < RANDOM_TEST_LOOPS; i++)
+            StringBuilder sb = new StringBuilder();
+            int skips = 0;
+            int i = 0;
+
+            for (;i < RANDOM_TEST_LOOPS; i++)
             {
                 int[] randPair = RandomParams.GetNumberPair(1, MAX_FRAME);
 
@@ -39,29 +44,37 @@ namespace UnitTests
 
                 if (totalLen < MIN_CHUNK_LEN)
                 {
+                    skips++;
                     continue;
                 }
 
                 var calcResult = new List<Chunk>(Chunk.CalcChunks(start, end, cores));
-                //var calcResult = Chunk.CalcChunks(start, end, cores);
 
-                Console.WriteLine("\n{0}: Number of chunks: {1}", i, calcResult.Count);
-                Console.WriteLine("Start: {0}, End: {1}, Total lenght: {2}, CoreCount: {3}", start, end, totalLen, cores);
+                sb.AppendFormat("\n{0}: Number of chunks: {1}\n", i, calcResult.Count);
+                sb.AppendFormat("Start: {0}, End: {1}, Total lenght: {2}, CoreCount: {3}\n", start, end, totalLen, cores);
                 foreach (var res in calcResult)
                 {
-                    Console.WriteLine(res + "\tLenght: " + res.Length);
+                    sb.AppendLine(res + "\tLenght: " + res.Length);
                 }
 
                 Assert.AreEqual(start, calcResult.First().Start, "First calcResult.Start was diferent then param start");
                 Assert.AreEqual(end, calcResult.Last().End, "Last calcResult.End was diferent then param end");
                 Assert.IsTrue(CheckStartAndEnd(calcResult), "There are unexpected gaps between Chunks");
+                Assert.AreEqual(totalLen, calcResult.TotalLength(), "Lenghts don't match");
             }
+
+            Console.WriteLine("CalcChunks Random test ran {0} times", i - skips);
+            Console.Write(sb.ToString());
         }
 
         [TestMethod]
         public void CalcChunksByLength_randomGen_tests()
         {
-            for (int i = 0; i < RANDOM_TEST_LOOPS; i++)
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            int skips = 0;
+
+            for (; i < RANDOM_TEST_LOOPS; i++)
             {
                 int[] randPair = RandomParams.GetNumberPair(1, MAX_FRAME);
 
@@ -72,6 +85,7 @@ namespace UnitTests
                 // ignore small spans
                 if (totalLen < MIN_CHUNK_LEN)
                 {
+                    skips++;
                     continue;
                 }
 
@@ -84,17 +98,17 @@ namespace UnitTests
                 // ignore small spans
                 if (len < MIN_CHUNK_LEN)
                 {
+                    skips++;
                     continue;
                 }
 
                 var calcResult = new List<Chunk>(Chunk.CalcChunksByLength(start, end, len));
-                //var calcResult = Chunk.CalcChunksByLength(start, end, len);
 
-                Console.WriteLine("\n{0}: Number of chunks: {1}", i, calcResult.Count);
-                Console.WriteLine("Start: {0}, End: {1}, Leght: {2}", start, end, len);
+                sb.AppendFormat("\n{0}: Number of chunks: {1}, Chunk lenght: {2}\n", i, calcResult.Count, len);
+                sb.AppendFormat("Start frame: {0}, End frame: {1}, Total lenght: {2}\n", start, end, totalLen);
                 foreach (var res in calcResult)
                 {
-                    Console.WriteLine(res + "\tLenght: " + res.Length);
+                    sb.AppendLine(res + "\tLenght: " + res.Length);
                 }
 
                 var actualLen = calcResult.First().Length;
@@ -103,7 +117,11 @@ namespace UnitTests
                 Assert.AreEqual(start, calcResult.First().Start, "First calcResult.Start was diferent then param start");
                 Assert.AreEqual(end, calcResult.Last().End, "Last calcResult.End was diferent then param end");
                 Assert.IsTrue(CheckStartAndEnd(calcResult), "There are unexpected gaps between Chunks");
+                Assert.AreEqual(totalLen, calcResult.TotalLength(), "Total Lenghts don't match");
             }
+
+            Console.WriteLine("CalcChunksByLength Random test ran {0} times", i - skips);
+            Console.Write(sb.ToString());
         }
 
         [TestMethod]
