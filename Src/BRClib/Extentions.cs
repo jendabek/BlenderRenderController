@@ -90,14 +90,7 @@ namespace BRClib
         {
             var tcs = new TaskCompletionSource<int>();
 
-            EventHandler procExited = (s, e) =>
-            {
-                var p = s as Process;
-                tcs.SetResult(p.ExitCode);
-                //p.Exited -= procExited;
-            };
-
-            proc.Exited += procExited;
+            proc.Exited += (s, e) => tcs.SetResult((s as Process).ExitCode);
 
             // Not sure about the guarantees of the Exited event in case of
             // process reuse

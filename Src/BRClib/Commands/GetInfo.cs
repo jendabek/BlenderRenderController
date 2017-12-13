@@ -9,7 +9,7 @@ namespace BRClib.Commands
     public class GetInfoCmd : ExternalCommand
     {
         // 0=Blend file, 1=get_project_info.py
-        const string GETINFO_BASE = "-b \"{0}\" -P \"{1}\"";
+        const string GETINFO_FMT = "-b \"{0}\" -P \"{1}\"";
 
         public GetInfoCmd(string programPath) : base(programPath)
         {
@@ -28,7 +28,7 @@ namespace BRClib.Commands
 
         protected override string GetArgs()
         {
-            return String.Format(GETINFO_BASE,
+            return String.Format(GETINFO_FMT,
                                     BlendFile, 
                                     ProjInfoScript);
         }

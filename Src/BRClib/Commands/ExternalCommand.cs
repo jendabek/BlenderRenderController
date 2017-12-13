@@ -42,9 +42,9 @@ namespace BRClib.Commands
             }
         }
 
-        protected string StdOutput => _stdOut;
-        protected string StdError => _stdErr;
-        protected int ExitCode => _procExitCode;
+        public string StdOutput => _stdOut;
+        public string StdError => _stdErr;
+        public int ExitCode => _procExitCode;
 
 
         public ExternalCommand(string programPath)
@@ -83,67 +83,21 @@ namespace BRClib.Commands
 
         protected abstract string GetArgs();
 
-        public virtual Task<bool> Run(CancellationToken token = default)
+        public virtual Task<int> RunAsync(CancellationToken token = default)
         {
             var process = GetProcess();
-            var tcs = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<int>();
 
             var pTask = process.StartAsync(true, true, token);
 
             pTask.ContinueWith(t =>
             {
-                tcs.SetResult(false);
-            },
-            TaskContinuationOptions.OnlyOnCanceled);
-
-            pTask.ContinueWith(t =>
-            {
                 _procExitCode = t.Result.ExitCode;
                 _stdOut = t.Result.StdOutput;
                 _stdErr = t.Result.StdError;
 
-                tcs.SetResult(_procExitCode == 0);
-            },
-            TaskContinuationOptions.ExecuteSynchronously |
-            TaskContinuationOptions.OnlyOnRanToCompletion);
-
-            return tcs.Task;
-        }
-
-        public Task<int> StartAsync(CancellationToken token = default)
-        {
-            var process = GetProcess();
-            var tcs = new TaskCompletionSource<int>();
-
-            var pTask = process.StartAsync(token);
-
-            pTask.ContinueWith(t =>
-            {
-                _procExitCode = t.Result;
                 tcs.SetResult(_procExitCode);
             },
-            TaskContinuationOptions.ExecuteSynchronously);
-
-            return tcs.Task;
-        }
-
-        public Task<ProcessResult> StartAsync(bool getStdOut,
-                                              bool getStdErr,
-                                              CancellationToken token = default)
-        {
-            var process = GetProcess();
-            var tcs = new TaskCompletionSource<ProcessResult>();
-
-            var pTask = process.StartAsync(getStdOut, getStdErr, token);
-
-            pTask.ContinueWith(t =>
-            {
-                _procExitCode = t.Result.ExitCode;
-                _stdOut = t.Result.StdOutput;
-                _stdErr = t.Result.StdError;
-
-                tcs.SetResult(t.Result);
-            }, 
             TaskContinuationOptions.ExecuteSynchronously);
 
             return tcs.Task;

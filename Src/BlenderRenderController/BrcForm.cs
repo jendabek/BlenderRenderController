@@ -275,18 +275,18 @@ namespace BlenderRenderController
                                         giScript);
 
             //var pResult = await giCmd.GetProcess().StartAsync(true, true);
-            var pResult = await giCmd.StartAsync(true, true);
+            var pResult = await giCmd.RunAsync();
 
             // errors
-            if (pResult.StdOutput.Length > 0)
+            if (giCmd.StdOutput.Length > 0)
             {
                 logger.Debug("Blender output errors detected");
                 //Debug.WriteLine('\n' + pResult.StdError + '\n');
             }
 
-            if (pResult.StdOutput.Length == 0)
+            if (giCmd.StdOutput.Length == 0)
             {
-                var detailsContent = $"Blender's exit code {pResult.ExitCode}\nOutput:\n\n" + pResult.StdError;
+                var detailsContent = $"Blender's exit code {giCmd.ExitCode}\nOutput:\n\n" + giCmd.StdError;
 
                 var err = Ui.Dialogs.ShowErrorBox("Could not open project, no information was received.", 
                                                   "Failed to read project", 
@@ -297,7 +297,7 @@ namespace BlenderRenderController
                 return;
             }
 
-            var blendData = Utilities.ParsePyOutput(pResult.StdOutput);
+            var blendData = Utilities.ParsePyOutput(giCmd.StdOutput);
 
             if (blendData != null)
             {
@@ -334,7 +334,7 @@ namespace BlenderRenderController
             {
                 //var detailContents = string.Format("# STD output:\n\n{0}\n\n# STD errors:\n\n{1}", fullOutput, fullErrors);
                 var errorBox = Ui.Dialogs.ShowErrorBox("Failed to read blend file info.", 
-                    "Read error", "Error output:\n\n" + pResult.StdError);
+                    "Read error", "Error output:\n\n" + giCmd.StdError);
 
                 //errorBox.Show();
                 ReadFail();
@@ -692,9 +692,9 @@ namespace BlenderRenderController
                                                 Constants.PyMixdown),
                                     _project.BlendData.OutputPath);
 
-            var result = await mix.Run(_afterRenderCancelSrc.Token);
+            var result = await mix.RunAsync(_afterRenderCancelSrc.Token);
 
-            if (result)
+            if (result == 0)
             {
                 UpdateUI(AppState.READY_FOR_RENDER, "Mixdown complete");
             }
@@ -726,23 +726,14 @@ namespace BlenderRenderController
 
             if (manConcat.DialogResult == DialogResult.OK)
             {
-                //var concatArgs = GetConcatenationArgs(manConcat.ChunksTextFile,
-                //                                        manConcat.OutputFile,
-                //                                        manConcat.MixdownAudioFile);
-
-
-                //var concatProc = ProcessFactory.ConcatProcess(_appSettings.FFmpegProgram, concatArgs);
-                //var pr = new ProcessRunner(concatProc);
-                //var result = await pr.Run(_afterRenderCancelSrc.Token);
-
                 var concat = new ConcatCmd(_appSettings.FFmpegProgram,
                                         manConcat.ChunksTextFile,
                                         manConcat.OutputFile,
                                         manConcat.MixdownAudioFile);
 
-                var result = await concat.Run(_afterRenderCancelSrc.Token);
+                var result = await concat.RunAsync(_afterRenderCancelSrc.Token);
 
-                if (result)
+                if (result == 0)
                 {
                     UpdateUI(AppState.READY_FOR_RENDER, "Concatenation complete");
                 }

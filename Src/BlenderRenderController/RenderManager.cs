@@ -92,10 +92,12 @@ namespace BlenderRenderController
         {
             get
             {
-                if (_proj == null || _proj.BlendData.ProjectName == null) return null;
+                if (_proj == null) return null;
 
                 var mixdownFmt = _proj.BlendData.FFmpegAudioCodec;
                 var projName = _proj.BlendData.ProjectName;
+
+                if (projName == null) return null;
 
                 switch (mixdownFmt)
                 {
@@ -348,7 +350,7 @@ namespace BlenderRenderController
                 Debug.Assert(framesRendered.ToList().Count == ChunkList.TotalLength(),
                             "Frames counted don't match the ChunkList TotalLenght");
 
-                OnChunksFinished(NumberOfFramesRendered);
+                OnChunksFinished();
             }
         }
 
@@ -364,7 +366,6 @@ namespace BlenderRenderController
                 proc.BeginOutputReadLine();
                 procBag.Add(proc);
 
-
                 chunksInProgress++;
                 currentIndex++;
 
@@ -374,10 +375,9 @@ namespace BlenderRenderController
             ReportProgress(NumberOfFramesRendered, initalChunkCount - chunksToDo);
         }
 
-        private void OnChunksFinished(int framesRendered)
+        private void OnChunksFinished()
         {
             DisposeProcesses();
-            //ChunksFinished?.Raise(this, framesRendered);
             logger.Info("RENDER FINISHED");
 
             // Send a '100%' ProgressReport
@@ -391,16 +391,10 @@ namespace BlenderRenderController
 
             _arState.ContinueWith(t =>
             {
-                OnAllFinished();
+                Finished?.Raise(this, EventArgs.Empty);
             },
             TaskContinuationOptions.ExecuteSynchronously);
         }
-
-        void OnAllFinished()
-        {
-            Finished?.Raise(this, EventArgs.Empty);
-        }
-
 
         void ReportProgress(int framesRendered, int chunksCompleted)
         {
