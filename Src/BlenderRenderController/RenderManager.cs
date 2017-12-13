@@ -11,7 +11,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using static BRClib.CommandARGS;
 using Resources = BlenderRenderController.Properties.Resources;
 using Timer = System.Timers.Timer;
 
@@ -280,7 +279,7 @@ namespace BlenderRenderController
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                Arguments = string.Format(RenderComARGS,
+                Arguments = string.Format("-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a",
                                             _proj.BlendPath,
                                             Path.Combine(ChunksFolderPath, _proj.BlendData.ProjectName + "-#"),
                                             appSettings.Renderer,
