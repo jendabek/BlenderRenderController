@@ -41,7 +41,7 @@ namespace BlenderRenderController
         AppSettings _appSettings;
         ProjectSettings _project;
         RenderManager _renderMngr;
-        Progress<RenderProgressInfo> _renderProg;
+        //Progress<RenderProgressInfo> _renderProg;
         int _autoStartF, _autoEndF;
         AppState appState;
         Stopwatch _chrono;
@@ -67,8 +67,8 @@ namespace BlenderRenderController
             _renderMngr = new RenderManager();
             _renderMngr.Finished += RenderManager_Finished; ;
             _renderMngr.AfterRenderStarted += RenderManager_AfterRenderStarted;
-            //renderManager.ProgressChanged += (s, prog) => UpdateProgress(prog);
-            _renderProg = new Progress<RenderProgressInfo>(UpdateProgress);
+            _renderMngr.ProgressChanged += (s, prog) => UpdateProgress(prog);
+            //_renderProg = new Progress<RenderProgressInfo>(UpdateProgress);
 
             _chrono = new Stopwatch();
             _etaCalc = new ETACalculator(5, 1);
@@ -416,7 +416,8 @@ namespace BlenderRenderController
             UpdateUI(AppState.RENDERING_ALL, "Starting render...");
 
             _chrono.Start();
-            _renderMngr.StartAsync(_renderProg);
+            //_renderMngr.StartAsync(_renderProg);
+            _renderMngr.StartAsync();
         }
 
         private void RenderManager_Finished(object sender, EventArgs e)
@@ -986,20 +987,20 @@ namespace BlenderRenderController
 
         private void donateButton_Click(object sender, EventArgs e)
         {
-            string business = "jendabek@gmail.com";  // your paypal email
-            string description = "Donation for Blender Render Controller";
-            string country = "CZE";                  // AU, US, etc.
-            string currency = "USD";                 // AUD, USD, etc.
+            //string business = "jendabek@gmail.com";  // your paypal email
+            //string description = "Donation for Blender Render Controller";
+            //string country = "CZE";                  // AU, US, etc.
+            //string currency = "USD";                 // AUD, USD, etc.
 
-            string url = "https://www.paypal.com/cgi-bin/webscr" +
-                    "?cmd=_donations" +
-                    "&business=" + business +
-                    "&lc=" + country +
-                    "&item_name=" + description +
-                    "&currency_code=" + currency +
-                    "&bn=PP%2dDonationsBF";
+            //string url = "https://www.paypal.com/cgi-bin/webscr" +
+            //        "?cmd=_donations" +
+            //        "&business=" + business +
+            //        "&lc=" + country +
+            //        "&item_name=" + description +
+            //        "&currency_code=" + currency +
+            //        "&bn=PP%2dDonationsBF";
 
-            Process.Start(url);
+            //Process.Start(url);
         }
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1011,7 +1012,9 @@ namespace BlenderRenderController
 
         private void toolStripMenuItemBug_Click(object sender, EventArgs e)
         {
-            Process.Start("https://github.com/jendabek/BlenderRenderController/issues");
+            string url = "https://github.com/jendabek/BlenderRenderController/wiki/Reporting-an-issue";
+
+            Process.Start(url);
         }
 
         private void clearRecentProjectsListToolStripMenuItem_Click(object sender, EventArgs e)

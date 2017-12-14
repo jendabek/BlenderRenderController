@@ -27,7 +27,7 @@ namespace BRClib
         }
 
         /// <summary>
-        /// Starts the process asynchronously
+        /// Starts a process asynchronously
         /// </summary>
         /// <param name="token">Cancelation token, calls the <see cref="Process.Kill()"/> method</param>
         /// <returns>The processe's exit code</returns>
@@ -46,7 +46,7 @@ namespace BRClib
         }
 
         /// <summary>
-        /// Starts the process asynchronously and optionally reads its standard output and error streams
+        /// Starts a process asynchronously and optionally reads its standard output and error streams
         /// </summary>
         /// <param name="token">Cancelation token, calls <see cref="Process.Kill()"/></param>
         /// <param name="getStdOut">If set to true, this method will read the Std Output and
@@ -56,9 +56,9 @@ namespace BRClib
         /// <returns>A <see cref="ProcessResult"/> object with the exit code and, optionally, its 
         /// standard output and standard error contents as strings</returns>
         public async static Task<ProcessResult> StartAsync(this Process proc,
-                                                            bool getStdOut,
-                                                            bool getStdErr,
-                                                            CancellationToken token = default)
+                                                           bool getStdOut,
+                                                           bool getStdErr,
+                                                           CancellationToken token = default)
         {
             if (!getStdErr && !getStdOut)
             {

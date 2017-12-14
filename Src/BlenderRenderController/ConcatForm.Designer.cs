@@ -48,10 +48,10 @@
             // 
             // chunksTxtFileTextBox
             // 
-            this.chunksTxtFileTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chunksTxtFileTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chunksTxtFileTextBox.Location = new System.Drawing.Point(27, 78);
             this.chunksTxtFileTextBox.Name = "chunksTxtFileTextBox";
-            this.chunksTxtFileTextBox.Size = new System.Drawing.Size(361, 22);
+            this.chunksTxtFileTextBox.Size = new System.Drawing.Size(361, 20);
             this.chunksTxtFileTextBox.TabIndex = 0;
             this.chunksTxtFileTextBox.WordWrap = false;
             this.chunksTxtFileTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.Entries_Validating);
@@ -69,10 +69,10 @@
             // 
             // outputFileTextBox
             // 
-            this.outputFileTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.outputFileTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.outputFileTextBox.Location = new System.Drawing.Point(27, 127);
             this.outputFileTextBox.Name = "outputFileTextBox";
-            this.outputFileTextBox.Size = new System.Drawing.Size(361, 22);
+            this.outputFileTextBox.Size = new System.Drawing.Size(361, 20);
             this.outputFileTextBox.TabIndex = 2;
             this.outputFileTextBox.WordWrap = false;
             this.outputFileTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.Entries_Validating);
@@ -162,10 +162,10 @@
             // 
             // mixdownFileTextBox
             // 
-            this.mixdownFileTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.mixdownFileTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.mixdownFileTextBox.Location = new System.Drawing.Point(27, 176);
             this.mixdownFileTextBox.Name = "mixdownFileTextBox";
-            this.mixdownFileTextBox.Size = new System.Drawing.Size(361, 22);
+            this.mixdownFileTextBox.Size = new System.Drawing.Size(361, 20);
             this.mixdownFileTextBox.TabIndex = 4;
             this.mixdownFileTextBox.WordWrap = false;
             this.mixdownFileTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.Entries_Validating);

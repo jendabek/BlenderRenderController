@@ -75,7 +75,6 @@ namespace BRClib.Commands
                 Log.Info("{0} exit code: {1}", _procName, (ps as Process).ExitCode);
             };
 
-            Log.Info("Running {0}", _procName);
             Log.Debug("cmd:> {0} {1}", _procName, proc.StartInfo.Arguments);
 
             return proc;
@@ -118,7 +117,7 @@ namespace BRClib.Commands
 
         public override string ToString()
         {
-            return $"{GetType().Name}: {_procName} {GetArgs()}";
+            return $"{GetType().Name}:> {_procName} {GetArgs()}";
         }
     }
 }

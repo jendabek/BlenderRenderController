@@ -9,16 +9,18 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using BRClib;
-
+using static BRClib.RenderFormats;
 
 namespace BlenderRenderController
 {
     public partial class ConcatForm : Form
     {
-        string dialogBasePath;
+        string _dialogBasePath, _chunksFolder;
 
         public string ChunksTextFile { get; set; }
+
         public string OutputFile { get; set; }
+
         public string MixdownAudioFile { get; set; }
 
 
@@ -29,14 +31,14 @@ namespace BlenderRenderController
 
         public ConcatForm(string outputPath, string projName) : this()
         {
-            dialogBasePath = outputPath;
+            _dialogBasePath = outputPath;
 
-            var chunksFolder = Path.Combine(dialogBasePath, Constants.ChunksSubfolder);
+            var chunksFolder = Path.Combine(_dialogBasePath, Constants.ChunksSubfolder);
             var chunkFiles = Directory.GetFiles(chunksFolder);
             var ext = Path.GetExtension(chunkFiles.FirstOrDefault() ?? "");
 
             ChunksTextFile = Path.Combine(chunksFolder, Constants.ChunksTxtFileName);
-            OutputFile = Path.Combine(dialogBasePath, projName + ext);
+            OutputFile = Path.Combine(_dialogBasePath, projName + ext);
         }
 
         private void ConcatForm_Shown(object sender, EventArgs e)
@@ -61,7 +63,8 @@ namespace BlenderRenderController
             {
                 if (!CheckEntries())
                 {
-                    MessageBox.Show("One or more fields are not valid", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("One or more fields are not valid", "Error", 
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -80,7 +83,7 @@ namespace BlenderRenderController
 
             var openDialog = new OpenFileDialog()
             {
-                Title = "Select FFmpeg's concatenation file",
+                Title = "Select FFmpeg's concatenation script file",
                 CheckFileExists = true
             };
 
@@ -89,6 +92,7 @@ namespace BlenderRenderController
             if (res == DialogResult.OK)
             {
                 chunksTxtFileTextBox.Text = openDialog.FileName;
+                _chunksFolder = Path.GetDirectoryName(openDialog.FileName);
             }
 
             ValidateFields(btn);
@@ -96,14 +100,14 @@ namespace BlenderRenderController
 
         private void changeOutputFileButton_Click(object sender, EventArgs e)
         {
-            var exts = RenderFormats.AllowedFileExts;
+            var exts = AllowedFileExts;
             var btn = sender as Button;
 
             var saveDialog = new SaveFileDialog()
             {
                 Title = "Set final video name and location",
                 Filter = MakeDiagFilter(exts),
-                FilterIndex = exts.Length + 1,
+                FilterIndex = GetPreferedExtIndex(exts),
                 CheckPathExists = true,
             };
 
@@ -119,14 +123,13 @@ namespace BlenderRenderController
 
         private void changeMixdownFileButton_Click(object sender, EventArgs e)
         {
-            var exts = RenderFormats.AllowedAudioFileExts;
             var btn = sender as Button;
 
             var openDialog = new OpenFileDialog()
             {
                 Title = "Select mixdown audio file",
-                Filter = MakeDiagFilter(exts),
-                FilterIndex = exts.Length + 1,
+                Filter = MakeDiagFilter(AllowedAudioFileExts),
+                FilterIndex = 0,
                 CheckFileExists = true,
             };
 
@@ -185,13 +188,28 @@ namespace BlenderRenderController
 
             foreach (var ext in extentions)
             {
-                sb.AppendFormat("{0} files (*.{0})|*.{0}", ext);
-                sb.Append('|');
+                var descExt = ext.Substring(1).ToUpper();
+                sb.AppendFormat("{0} files (*{1})|*{1}|", descExt, ext);
             }
 
             sb.Append("All files (*.*)|*.*");
 
             return sb.ToString();
+        }
+
+        private int GetPreferedExtIndex(string[] extentions)
+        {
+            if (string.IsNullOrEmpty(_chunksFolder))
+            {
+                return extentions.Length + 1;
+            }
+
+            var afe = extentions.ToList();
+            var cFileExts = Directory.GetFiles(_chunksFolder)
+                .Select(f => Path.GetExtension(f));
+
+            var idx = afe.FindIndex(f => cFileExts.Contains(f));
+            return idx;
         }
 
         private bool CheckEntries()

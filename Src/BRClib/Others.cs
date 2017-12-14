@@ -104,7 +104,7 @@ namespace BRClib
                 .Where(f => 
                 {
                     // skip '.' in ext
-                    var ext = Path.GetExtension(f).Substring(1);
+                    var ext = Path.GetExtension(f);
                     var split = f.Split('-');
 
                     // format: FILENAME-fStart-fEnd.ext
@@ -149,9 +149,9 @@ namespace BRClib
         /// <summary>
         /// Allowed video file extentions
         /// </summary>
-        public static readonly string[] AllowedFileExts = { "avi", "mp4", "mov", "mkv", "mpg", "flv", "dv", "dvd", "ogv" };
+        public static readonly string[] AllowedFileExts = { ".avi", ".mp4", ".mov", ".mkv", ".mpg", ".flv", ".dv", ".dvd", ".ogv" };
 
-        public static readonly string[] AllowedAudioFileExts = { "mp3", "ac3", "aac", "ogg", "flac", "wav" };
+        public static readonly string[] AllowedAudioFileExts = { ".mp3", ".ac3", ".aac", ".ogg", ".flac", ".wav" };
 
         // TODO maybe: Make a list that relates format property to output file format
         //public static readonly Dictionary<string, string> ExtForEncoding = 
