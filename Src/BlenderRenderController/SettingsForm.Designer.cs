@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.blenderPathTextBox = new System.Windows.Forms.TextBox();
-            this.appSettingsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.blenderExeLabel = new System.Windows.Forms.Label();
             this.ffmpegPathTextBox = new System.Windows.Forms.TextBox();
             this.okButton = new System.Windows.Forms.Button();
@@ -41,6 +40,7 @@
             this.blenderChangePathButton = new System.Windows.Forms.Button();
             this.chkBoxVerboseLog = new System.Windows.Forms.CheckBox();
             this.settingsToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.appSettingsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.appSettingsBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,22 +48,18 @@
             // 
             this.blenderPathTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.appSettingsBindingSource, "BlenderProgram", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.blenderPathTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blenderPathTextBox.Location = new System.Drawing.Point(32, 91);
+            this.blenderPathTextBox.Location = new System.Drawing.Point(24, 81);
             this.blenderPathTextBox.Name = "blenderPathTextBox";
-            this.blenderPathTextBox.Size = new System.Drawing.Size(361, 22);
+            this.blenderPathTextBox.Size = new System.Drawing.Size(482, 22);
             this.blenderPathTextBox.TabIndex = 0;
             this.blenderPathTextBox.WordWrap = false;
-            // 
-            // appSettingsBindingSource
-            // 
-            this.appSettingsBindingSource.DataSource = typeof(BlenderRenderController.AppSettings);
             // 
             // blenderExeLabel
             // 
             this.blenderExeLabel.AutoSize = true;
             this.blenderExeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.blenderExeLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.blenderExeLabel.Location = new System.Drawing.Point(20, 31);
+            this.blenderExeLabel.Location = new System.Drawing.Point(12, 21);
             this.blenderExeLabel.Name = "blenderExeLabel";
             this.blenderExeLabel.Size = new System.Drawing.Size(213, 20);
             this.blenderExeLabel.TabIndex = 26;
@@ -73,18 +69,18 @@
             // 
             this.ffmpegPathTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.appSettingsBindingSource, "FFmpegProgram", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.ffmpegPathTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ffmpegPathTextBox.Location = new System.Drawing.Point(32, 142);
+            this.ffmpegPathTextBox.Location = new System.Drawing.Point(24, 146);
             this.ffmpegPathTextBox.Name = "ffmpegPathTextBox";
-            this.ffmpegPathTextBox.Size = new System.Drawing.Size(361, 22);
+            this.ffmpegPathTextBox.Size = new System.Drawing.Size(482, 22);
             this.ffmpegPathTextBox.TabIndex = 2;
             this.ffmpegPathTextBox.WordWrap = false;
             // 
             // okButton
             // 
             this.okButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.okButton.Location = new System.Drawing.Point(352, 220);
+            this.okButton.Location = new System.Drawing.Point(371, 235);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(168, 38);
+            this.okButton.Size = new System.Drawing.Size(135, 38);
             this.okButton.TabIndex = 4;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
@@ -94,7 +90,7 @@
             // 
             this.blenderLabel.AutoSize = true;
             this.blenderLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blenderLabel.Location = new System.Drawing.Point(29, 73);
+            this.blenderLabel.Location = new System.Drawing.Point(21, 63);
             this.blenderLabel.Name = "blenderLabel";
             this.blenderLabel.Size = new System.Drawing.Size(50, 15);
             this.blenderLabel.TabIndex = 29;
@@ -104,7 +100,7 @@
             // 
             this.ffmpegLabel.AutoSize = true;
             this.ffmpegLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ffmpegLabel.Location = new System.Drawing.Point(29, 124);
+            this.ffmpegLabel.Location = new System.Drawing.Point(21, 128);
             this.ffmpegLabel.Name = "ffmpegLabel";
             this.ffmpegLabel.Size = new System.Drawing.Size(53, 15);
             this.ffmpegLabel.TabIndex = 29;
@@ -116,7 +112,7 @@
             this.ffmpegDownloadLabel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ffmpegDownloadLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ffmpegDownloadLabel.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.ffmpegDownloadLabel.Location = new System.Drawing.Point(341, 167);
+            this.ffmpegDownloadLabel.Location = new System.Drawing.Point(317, 179);
             this.ffmpegDownloadLabel.Name = "ffmpegDownloadLabel";
             this.ffmpegDownloadLabel.Size = new System.Drawing.Size(63, 15);
             this.ffmpegDownloadLabel.TabIndex = 29;
@@ -128,10 +124,9 @@
             this.ffmpegChangePathButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ffmpegChangePathButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
             this.ffmpegChangePathButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ffmpegChangePathButton.Location = new System.Drawing.Point(419, 137);
+            this.ffmpegChangePathButton.Location = new System.Drawing.Point(411, 174);
             this.ffmpegChangePathButton.Name = "ffmpegChangePathButton";
-            this.ffmpegChangePathButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 1);
-            this.ffmpegChangePathButton.Size = new System.Drawing.Size(105, 31);
+            this.ffmpegChangePathButton.Size = new System.Drawing.Size(95, 25);
             this.ffmpegChangePathButton.TabIndex = 3;
             this.ffmpegChangePathButton.Text = "   Change";
             this.ffmpegChangePathButton.UseVisualStyleBackColor = true;
@@ -142,10 +137,9 @@
             this.blenderChangePathButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.blenderChangePathButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
             this.blenderChangePathButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.blenderChangePathButton.Location = new System.Drawing.Point(419, 86);
+            this.blenderChangePathButton.Location = new System.Drawing.Point(411, 109);
             this.blenderChangePathButton.Name = "blenderChangePathButton";
-            this.blenderChangePathButton.Padding = new System.Windows.Forms.Padding(7, 0, 0, 1);
-            this.blenderChangePathButton.Size = new System.Drawing.Size(105, 31);
+            this.blenderChangePathButton.Size = new System.Drawing.Size(95, 25);
             this.blenderChangePathButton.TabIndex = 1;
             this.blenderChangePathButton.Text = "   Change";
             this.blenderChangePathButton.UseVisualStyleBackColor = true;
@@ -156,7 +150,7 @@
             this.chkBoxVerboseLog.AutoSize = true;
             this.chkBoxVerboseLog.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this.appSettingsBindingSource, "Verbose", true));
             this.chkBoxVerboseLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkBoxVerboseLog.Location = new System.Drawing.Point(41, 239);
+            this.chkBoxVerboseLog.Location = new System.Drawing.Point(24, 246);
             this.chkBoxVerboseLog.Name = "chkBoxVerboseLog";
             this.chkBoxVerboseLog.Size = new System.Drawing.Size(102, 19);
             this.chkBoxVerboseLog.TabIndex = 30;
@@ -165,12 +159,16 @@
         "es will always be logged.");
             this.chkBoxVerboseLog.UseVisualStyleBackColor = true;
             // 
+            // appSettingsBindingSource
+            // 
+            this.appSettingsBindingSource.DataSource = typeof(BlenderRenderController.AppSettings);
+            // 
             // SettingsForm
             // 
             this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(545, 277);
+            this.ClientSize = new System.Drawing.Size(524, 286);
             this.Controls.Add(this.chkBoxVerboseLog);
             this.Controls.Add(this.ffmpegDownloadLabel);
             this.Controls.Add(this.ffmpegLabel);
@@ -183,8 +181,9 @@
             this.Controls.Add(this.blenderPathTextBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(561, 316);
-            this.MinimumSize = new System.Drawing.Size(561, 316);
+            this.MaximumSize = new System.Drawing.Size(560, 340);
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(540, 310);
             this.Name = "SettingsForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;

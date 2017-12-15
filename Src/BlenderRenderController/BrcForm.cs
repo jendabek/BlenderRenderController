@@ -718,13 +718,15 @@ namespace BlenderRenderController
             IsWorking = true;
             ResetCTS();
 
+            var startingState = appState;
+
             UpdateUI(AppState.RENDERING_ALL, "Concatenating...");
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
             var manConcat = new ConcatForm();
-            manConcat.ShowDialog();
+            var dResult = manConcat.ShowDialog();
 
-            if (manConcat.DialogResult == DialogResult.OK)
+            if (dResult == DialogResult.OK)
             {
                 var concat = new ConcatCmd(_appSettings.FFmpegProgram,
                                         manConcat.ChunksTextFile,
@@ -735,7 +737,7 @@ namespace BlenderRenderController
 
                 if (result == 0)
                 {
-                    UpdateUI(AppState.READY_FOR_RENDER, "Concatenation complete");
+                    UpdateUI(startingState, "Concatenation complete");
                 }
                 else
                 {
@@ -745,20 +747,16 @@ namespace BlenderRenderController
                     var outFolder = Path.GetDirectoryName(manConcat.OutputFile);
                     concat.SaveReport(outFolder);
 
-                    UpdateUI(AppState.READY_FOR_RENDER, "Something went wrong...");
+                    UpdateUI(startingState, "Something went wrong...");
                 }
+            }
+            else
+            {
+                UpdateUI(startingState);
             }
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             IsWorking = false;
-            var done = "Concatenation complete!";
-
-            if (string.IsNullOrEmpty(_project.BlendPath))
-            {
-                UpdateUI(AppState.AFTER_START, done);
-            }
-            else
-                UpdateUI(AppState.READY_FOR_RENDER, done);
         }
 
 
