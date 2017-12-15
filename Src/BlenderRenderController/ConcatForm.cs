@@ -184,32 +184,35 @@ namespace BlenderRenderController
 
         private string MakeDiagFilter(string[] extentions)
         {
-            var sb = new StringBuilder();
+            var filter = "All files (*.*)|*.*|";
 
-            foreach (var ext in extentions)
-            {
-                var descExt = ext.Substring(1).ToUpper();
-                sb.AppendFormat("{0} files (*{1})|*{1}|", descExt, ext);
-            }
+            // build filter entries from extentions
+            var fExts = extentions.Select(s => s.Where(c => char.IsLetterOrDigit(c)))
+                                  .Select(iec => new string(iec.ToArray()))
+                                  .Select(a => new { desc = a.ToUpper(), ext = a })
+                                  .Select(a => $"{a.desc} files (*.{a.ext})|*.{a.ext}");
 
-            sb.Append("All files (*.*)|*.*");
+            filter += string.Join("|", fExts);
 
-            return sb.ToString();
+            return filter;
         }
 
         private int GetPreferedExtIndex(string[] extentions)
         {
             if (string.IsNullOrEmpty(_chunksFolder))
             {
-                return extentions.Length + 1;
+                return 0;
             }
 
             var afe = extentions.ToList();
+
             var cFileExts = Directory.GetFiles(_chunksFolder)
                 .Select(f => Path.GetExtension(f));
 
             var idx = afe.FindIndex(f => cFileExts.Contains(f));
-            return idx;
+
+            // +2 to compensate for 'all files' entry and beeing 1 based
+            return idx + 2;
         }
 
         private bool CheckEntries()
