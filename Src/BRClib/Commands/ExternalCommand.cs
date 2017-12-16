@@ -19,10 +19,9 @@ namespace BRClib.Commands
                                             "Std Error:\n{2}\n\n" +
                                             "Std Output:\n{3}";
 
-        string _stdErr, _stdOut, _procName;
-        int _procExitCode;
+        string _stdErr, _stdOut, _procName, _rfn;
+        int _eCode;
 
-        string _rfn;
 
         public string ProgramPath { get; set; }
 
@@ -42,9 +41,9 @@ namespace BRClib.Commands
             }
         }
 
-        public string StdOutput => _stdOut;
-        public string StdError => _stdErr;
-        public int ExitCode => _procExitCode;
+        public virtual string StdOutput => _stdOut;
+        public virtual string StdError => _stdErr;
+        public virtual int ExitCode => _eCode;
 
 
         public ExternalCommand(string programPath)
@@ -57,8 +56,13 @@ namespace BRClib.Commands
 
         public virtual Process GetProcess()
         {
+            if (!File.Exists(ProgramPath))
+            {
+                throw new FileNotFoundException();
+            }
+
             var proc = new Process();
-            var info = new ProcessStartInfo()
+            proc.StartInfo = new ProcessStartInfo()
             {
                 FileName = ProgramPath,
                 CreateNoWindow = true,
@@ -69,7 +73,6 @@ namespace BRClib.Commands
 
                 Arguments = GetArgs()
             };
-            proc.StartInfo = info;
             proc.Exited += (ps, pe) =>
             {
                 Log.Info("{0} exit code: {1}", _procName, (ps as Process).ExitCode);
@@ -91,11 +94,11 @@ namespace BRClib.Commands
 
             pTask.ContinueWith(t =>
             {
-                _procExitCode = t.Result.ExitCode;
+                _eCode = t.Result.ExitCode;
                 _stdOut = t.Result.StdOutput;
                 _stdErr = t.Result.StdError;
 
-                tcs.SetResult(_procExitCode);
+                tcs.SetResult(ExitCode);
             },
             TaskContinuationOptions.ExecuteSynchronously);
 
@@ -109,8 +112,8 @@ namespace BRClib.Commands
             string fmt = REPORT_FMT;
             using (var sw = File.AppendText(filePath))
             {
-                sw.WriteLine(string.Format(fmt, _procName, _procExitCode, 
-                                            _stdErr, _stdOut));
+                sw.WriteLine(string.Format(fmt, _procName, ExitCode, 
+                                            StdError, StdOutput));
                 sw.Write("\n\n");
             }
         }

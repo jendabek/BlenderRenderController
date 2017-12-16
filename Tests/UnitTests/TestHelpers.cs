@@ -1,5 +1,6 @@
 ﻿using BlenderRenderController;
 using BRClib;
+using BRClib.Commands;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,7 +20,7 @@ namespace UnitTests
         {
             BlenderProgram = "C:\\Program Files\\Blender Foundation\\Blender\\blender.exe",
             FFmpegProgram = "E:\\Programas\\FFmpeg\\Snapshot\\bin\\ffmpeg.exe",
-            Renderer = BlenderRenderes.BLENDER_RENDER
+            Renderer = Renderer.BLENDER_RENDER
         };
 
         public static BlendData GetTestBlendData()
@@ -29,33 +30,30 @@ namespace UnitTests
 
         public static BlendData GetBlendData(string blendPath)
         {
-            var getBlendInfoCom = GetBlendDataProc(blendPath);
-            getBlendInfoCom.Start();
-            var output = getBlendInfoCom.StandardOutput.ReadToEnd();
+            var getInfoCmd = new GetInfoCmd(MockSettings.BlenderProgram)
+            {
+                BlendFile = blendPath,
+                ProjInfoScript = Path.Combine(SCRIPTS_DIR, "get_project_info.py")
+            };
+
+
+            var proc = getInfoCmd.GetProcess();
+
+            proc.Start();
+            var output = proc.StandardOutput.ReadToEnd();
 
             return Utilities.ParsePyOutput(output);
         }
 
-        public static Process GetBlendDataProc(string blendPath)
+        public static Process GetBlendDataProc(string path)
         {
-            var getBlendInfoCom = new Process();
-            var info = new ProcessStartInfo()
+            var getInfoCmd = new GetInfoCmd(MockSettings.BlenderProgram)
             {
-                FileName = MockSettings.BlenderProgram,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                //CreateNoWindow = true,
-                Arguments = string.Format(CommandARGS.GetInfoComARGS,
-                                            blendPath,
-                                            Path.Combine(SCRIPTS_DIR, "get_project_info.py"))
+                BlendFile = path,
+                ProjInfoScript = Path.Combine(SCRIPTS_DIR, "get_project_info.py")
             };
 
-            getBlendInfoCom.StartInfo = info;
-
-            return getBlendInfoCom;
+            return getInfoCmd.GetProcess();
         }
 
         public static void ClearFolder(string path)

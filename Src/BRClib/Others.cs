@@ -57,9 +57,7 @@ namespace BRClib
             }
 
             var json = jsonInfo.ToString();
-            var bData = JsonConvert.DeserializeObject<BlendData>(json);
-
-            return bData;
+            return JsonConvert.DeserializeObject<BlendData>(json);
         }
 
         /// <summary>
@@ -74,8 +72,7 @@ namespace BRClib
         /// </remarks>
         public static BlendData ParsePyOutput(string outputString)
         {
-            string[] outLineSplit = outputString.Split('\n');
-            return ParsePyOutput(outLineSplit);
+            return ParsePyOutput(outputString.Split('\n'));
         }
 
         /// <summary>
@@ -103,7 +100,6 @@ namespace BRClib
             var fileList = files
                 .Where(f => 
                 {
-                    // skip '.' in ext
                     var ext = Path.GetExtension(f);
                     var split = f.Split('-');
 

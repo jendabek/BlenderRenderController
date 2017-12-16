@@ -194,7 +194,7 @@ namespace BRClib
 
     }
 
-    public enum BlenderRenderes
+    public enum Renderer
     {
         BLENDER_RENDER, CYCLES
     }

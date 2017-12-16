@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BlenderRenderController;
+using BRClib;
 using System.Threading;
 using static UnitTests.TestHelpers;
 
@@ -10,8 +10,6 @@ namespace UnitTests
     [TestClass]
     public class AsyncProcessExtentionTests
     {
-        ManualResetEventSlim finishedEvent = new ManualResetEventSlim();
-
         [TestMethod]
         public void StartAsync_exec_GetBlendProc()
         {

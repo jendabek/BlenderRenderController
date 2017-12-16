@@ -160,6 +160,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Infra\RecentBlendsCollection.cs" />
     <Compile Include="RenderManager.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>

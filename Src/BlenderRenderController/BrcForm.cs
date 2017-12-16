@@ -43,7 +43,7 @@ namespace BlenderRenderController
         RenderManager _renderMngr;
         //Progress<RenderProgressInfo> _renderProg;
         int _autoStartF, _autoEndF;
-        AppState appState;
+        AppState _appState;
         Stopwatch _chrono;
         ETACalculator _etaCalc;
         SettingsForm _settingsForm;
@@ -77,6 +77,9 @@ namespace BlenderRenderController
 
         private void BrcForm_Load(object sender, EventArgs e)
         {
+            // TODO: Setup a paypal for donations
+            donationTSBtn.Enabled = false;
+
             //add version numbers to label
             verToolStripLbl.Text = " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(); 
 
@@ -86,7 +89,7 @@ namespace BlenderRenderController
             // load recent blends from file
             UpdateRecentBlendsMenu();
 
-            _appSettings.RecentBlends_Changed += (s, args) => UpdateRecentBlendsMenu();
+            _appSettings.RecentProjects.CollectionChanged += (s, args) => UpdateRecentBlendsMenu();
 
             processCountNumericUpDown.Maximum = 
             _project.MaxConcurrency = Environment.ProcessorCount;
@@ -232,7 +235,7 @@ namespace BlenderRenderController
             if (_appSettings.CheckCorrectConfig())
             {
                 // ignore if file is already loaded
-                if (appState == AppState.READY_FOR_RENDER)
+                if (_appState == AppState.READY_FOR_RENDER)
                     return;
 
                 UpdateUI(AppState.AFTER_START);
@@ -342,7 +345,7 @@ namespace BlenderRenderController
 
             var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, _project.MaxConcurrency);
             UpdateCurrentChunks(chunks.ToArray());
-            _appSettings.AddRecentBlend(blendFile);
+            _appSettings.RecentProjects.Add(blendFile);
             UpdateUI(AppState.READY_FOR_RENDER);
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             // ---
@@ -619,14 +622,15 @@ namespace BlenderRenderController
             recentBlendsMenu.Items.Clear();
 
             // make blends from recent list
-            var recentList = _appSettings.GetRecentBlends();
-            foreach (string item in recentList)
+            foreach (string item in _appSettings.RecentProjects)
             {
                 var menuItem = new ToolStripMenuItem(Path.GetFileNameWithoutExtension(item), Resources.blend_icon);
                 menuItem.ToolTipText = item;
                 menuItem.Click += RecentBlendsItem_Click;
                 recentBlendsMenu.Items.Add(menuItem);
             }
+
+            UpdateUI();
         }
 
         private void RecentBlendsItem_Click(object sender, EventArgs e)
@@ -641,7 +645,7 @@ namespace BlenderRenderController
 
                 if (res == DialogResult.Yes)
                 {
-                    _appSettings.RemoveRecentBlend(blendPath);
+                    _appSettings.RecentProjects.Remove(blendPath);
                 }
 
                 return;
@@ -718,7 +722,7 @@ namespace BlenderRenderController
             IsWorking = true;
             ResetCTS();
 
-            var startingState = appState;
+            var startingState = _appState;
 
             UpdateUI(AppState.RENDERING_ALL, "Concatenating...");
             renderProgressBar.Style = ProgressBarStyle.Marquee;
@@ -770,21 +774,6 @@ namespace BlenderRenderController
             _afterRenderCancelSrc = new CancellationTokenSource();
         }
 
-
-        private void Enter_GotoNext(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter || (e.KeyCode == Keys.Return))
-            {
-                SelectNextControl((Control)sender, true, true, true, true);
-                e.SuppressKeyPress = true; //disables sound
-            }
-        }
-
-        private void openOutputFolderButton_Click(object sender, EventArgs e)
-        {
-            OpenOutputFolder();
-        }
-
         private void OpenOutputFolder()
         {
             if (Directory.Exists(_project.BlendData.OutputPath))
@@ -798,6 +787,21 @@ namespace BlenderRenderController
                                 MessageBoxIcon.Exclamation);
             }
 
+        }
+
+
+        private void Enter_GotoNext(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter || (e.KeyCode == Keys.Return))
+            {
+                SelectNextControl((Control)sender, true, true, true, true);
+                e.SuppressKeyPress = true; //disables sound
+            }
+        }
+
+        private void openOutputFolderButton_Click(object sender, EventArgs e)
+        {
+            OpenOutputFolder();
         }
 
         private void AutoOptionsRadio_CheckedChanged(object sender, EventArgs e)
@@ -942,10 +946,10 @@ namespace BlenderRenderController
             if (radio.Checked)
             {
                 if (radio.Name == rendererRadioButtonBlender.Name)
-                    _appSettings.Renderer = BlenderRenderes.BLENDER_RENDER;
+                    _appSettings.Renderer = Renderer.BLENDER_RENDER;
 
                 else
-                    _appSettings.Renderer = BlenderRenderes.CYCLES;
+                    _appSettings.Renderer = Renderer.CYCLES;
             }
         }
 
@@ -1017,7 +1021,12 @@ namespace BlenderRenderController
 
         private void clearRecentProjectsListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _appSettings.ClearRecentBlend();
+            var response = MessageBox.Show(
+                 "This will clear all files in the recent blends list, are you sure?",
+                 "Clear recent blends?",
+                 MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+            if (response == DialogResult.Yes) _appSettings.RecentProjects.Clear();
         }
 
 
@@ -1045,27 +1054,41 @@ namespace BlenderRenderController
         /// <param name="statusMsg">Overrides the default message sent to <see cref="Status"/></param>
         private void UpdateUI(AppState? newState = null, string statusMsg = null)
         {
-            appState = newState ?? appState;
+            _appState = newState ?? _appState;
             string msgToSend = null;
 
-            renderAllButton.Text = (appState == AppState.RENDERING_ALL)
-                                    ? "Stop Render"
-                                    : "Start Render";
+            // render bnt
+            if (_appState == AppState.RENDERING_ALL)
+            {
+                renderAllButton.Text = "Stop Render";
+                renderAllButton.Image = Resources.stop_icon_small;
+            }
+            else
+            {
+                renderAllButton.Text = "Start Render";
+                renderAllButton.Image = Resources.render_icon_small;
+            }
 
-            renderAllButton.Image = (appState == AppState.RENDERING_ALL)
-                                    ? Resources.stop_icon_small
-                                    : Resources.render_icon_small;
+            // showRecents btn
+            if (_appState == AppState.RENDERING_ALL || 
+                _appState == AppState.NOT_CONFIGURED)
+            {
+                showRecentBlendsBtn.Enabled = false;
+            }
+            else
+            {
+                showRecentBlendsBtn.Enabled = recentBlendsMenu.Items.Count > 0;
+            }
 
             // the world's longest switch block!
             // enabling / disabling UI according to current app state
-            switch (appState)
+            switch (_appState)
             {
                 case AppState.AFTER_START:
                     blendNameLabel.Visible = false;
                     renderAllButton.Enabled = false;
                     menuToolStrip.Enabled = true;
                     blendBrowseBtn.Enabled = true;
-                    showRecentBlendsBtn.Enabled = true;
                     mixDownButton.Enabled = false;
                     totalStartNumericUpDown.Enabled = false;
                     totalEndNumericUpDown.Enabled = false;
@@ -1103,7 +1126,6 @@ namespace BlenderRenderController
                     concatenatePartsButton.Enabled = false;
                     reloadBlenderDataButton.Enabled = false;
                     blendBrowseBtn.Enabled = false;
-                    showRecentBlendsBtn.Enabled = false;
                     outputFolderBrowseButton.Enabled = false;
                     openOutputFolderButton.Enabled = false;
                     outputFolderTextBox.Enabled = false;
@@ -1135,7 +1157,6 @@ namespace BlenderRenderController
                     concatenatePartsButton.Enabled = true;
                     reloadBlenderDataButton.Enabled = true;
                     blendBrowseBtn.Enabled = true;
-                    showRecentBlendsBtn.Enabled = true;
                     outputFolderBrowseButton.Enabled = true;
                     outputFolderTextBox.Enabled = true;
                     openOutputFolderButton.Enabled = true;
@@ -1165,7 +1186,6 @@ namespace BlenderRenderController
                     concatenatePartsButton.Enabled = false;
                     reloadBlenderDataButton.Enabled = false;
                     blendBrowseBtn.Enabled = false;
-                    showRecentBlendsBtn.Enabled = false;
                     outputFolderBrowseButton.Enabled = false;
                     outputFolderTextBox.Enabled = false;
                     openOutputFolderButton.Enabled = true;

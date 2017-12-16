@@ -149,7 +149,6 @@ namespace BlenderRenderController
             this.totalStartNumericUpDown.TabIndex = 5;
             this.totalStartNumericUpDown.Tag = "DIRENDER";
             this.totalStartNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolTipInfo.SetToolTip(this.totalStartNumericUpDown, "You know what it is.");
             this.totalStartNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
             this.totalStartNumericUpDown.Validating += new System.ComponentModel.CancelEventHandler(this.StartEnd_Validating);
             this.totalStartNumericUpDown.Validated += new System.EventHandler(this.StartEndNumeric_Validated);
@@ -247,8 +246,8 @@ namespace BlenderRenderController
             this.processCountNumericUpDown.Tag = "";
             this.processCountNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTipInfo.SetToolTip(this.processCountNumericUpDown, "Maximum number of Blender processes that will be parallely rendering your video.\r" +
-        "\n\"Auto\" = number of your PC\'s logical processors (threads), this should work the" +
-        " best.\r\n\r\n");
+        "\n\r\n\"Auto\" = number of your PC\'s logical processors (threads), this should work t" +
+        "he best.\r\n\r\n");
             this.processCountNumericUpDown.Value = new decimal(new int[] {
             1,
             0,
@@ -636,7 +635,7 @@ namespace BlenderRenderController
             this.afterRenderJoinRadio.TabIndex = 33;
             this.afterRenderJoinRadio.Tag = "";
             this.afterRenderJoinRadio.Text = "Automatically join chunks";
-            this.toolTipInfo.SetToolTip(this.afterRenderJoinRadio, resources.GetString("afterRenderJoinRadio.ToolTip"));
+            this.toolTipInfo.SetToolTip(this.afterRenderJoinRadio, "This option will:\r\n\r\n1. Render all chunks,\r\n2. Join the chunks together.");
             this.afterRenderJoinRadio.UseVisualStyleBackColor = true;
             this.afterRenderJoinRadio.CheckedChanged += new System.EventHandler(this.AfterRenderAction_Changed);
             // 
@@ -651,7 +650,7 @@ namespace BlenderRenderController
             this.afterRenderDoNothingRadio.Tag = "";
             this.afterRenderDoNothingRadio.Text = "Render just chunks";
             this.toolTipInfo.SetToolTip(this.afterRenderDoNothingRadio, "Will render only chunks.\r\nStill, you can render mixdown separately and join it ma" +
-        "nually by buttons on the right.\r\n");
+        "nually using the buttons on the right.\r\n");
             this.afterRenderDoNothingRadio.UseVisualStyleBackColor = true;
             this.afterRenderDoNothingRadio.CheckedChanged += new System.EventHandler(this.AfterRenderAction_Changed);
             // 
@@ -749,7 +748,7 @@ namespace BlenderRenderController
             this.mixDownButton.Tag = "DIFNL;DIRENDER";
             this.mixDownButton.Text = "Render Mixdown";
             this.mixDownButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolTipInfo.SetToolTip(this.mixDownButton, "Renders an audio file for the final video.");
+            this.toolTipInfo.SetToolTip(this.mixDownButton, "Renders the current project\'s audio.");
             this.mixDownButton.UseVisualStyleBackColor = true;
             this.mixDownButton.Click += new System.EventHandler(this.mixDownButton_Click);
             // 

@@ -8,7 +8,7 @@ namespace BRClib.Commands
         const string RENDER_FMT = "-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a";
 
         public RenderCmd(string program, string blendFile, string outputFile, 
-                      BlenderRenderes renderer, Chunk range) : base(program)
+                      Renderer renderer, Chunk range) : base(program)
         {
             BlendFile = blendFile;
             OutputFile = outputFile;
@@ -18,7 +18,7 @@ namespace BRClib.Commands
 
         public string BlendFile { get; set; }
         public string OutputFile { get; set; }
-        public BlenderRenderes Renderer { get; set; }
+        public Renderer Renderer { get; set; }
         public Chunk Range { get; set; }
 
         protected override string GetArgs()
