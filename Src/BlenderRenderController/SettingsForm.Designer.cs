@@ -30,7 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             this.blenderPathTextBox = new System.Windows.Forms.TextBox();
-            this.blenderExeLabel = new System.Windows.Forms.Label();
+            this.appSettingsBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.label1 = new System.Windows.Forms.Label();
             this.ffmpegPathTextBox = new System.Windows.Forms.TextBox();
             this.okButton = new System.Windows.Forms.Button();
             this.blenderLabel = new System.Windows.Forms.Label();
@@ -40,7 +41,7 @@
             this.blenderChangePathButton = new System.Windows.Forms.Button();
             this.chkBoxVerboseLog = new System.Windows.Forms.CheckBox();
             this.settingsToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.appSettingsBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.chkBoxDelChunks = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.appSettingsBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -54,16 +55,20 @@
             this.blenderPathTextBox.TabIndex = 0;
             this.blenderPathTextBox.WordWrap = false;
             // 
-            // blenderExeLabel
+            // appSettingsBindingSource
             // 
-            this.blenderExeLabel.AutoSize = true;
-            this.blenderExeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
-            this.blenderExeLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.blenderExeLabel.Location = new System.Drawing.Point(12, 21);
-            this.blenderExeLabel.Name = "blenderExeLabel";
-            this.blenderExeLabel.Size = new System.Drawing.Size(213, 20);
-            this.blenderExeLabel.TabIndex = 26;
-            this.blenderExeLabel.Text = "Paths to required programs";
+            this.appSettingsBindingSource.DataSource = typeof(BlenderRenderController.AppSettings);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.label1.Location = new System.Drawing.Point(12, 21);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(213, 20);
+            this.label1.TabIndex = 26;
+            this.label1.Text = "Paths to required programs";
             // 
             // ffmpegPathTextBox
             // 
@@ -159,9 +164,19 @@
         "es will always be logged.");
             this.chkBoxVerboseLog.UseVisualStyleBackColor = true;
             // 
-            // appSettingsBindingSource
+            // chkBoxDelChunks
             // 
-            this.appSettingsBindingSource.DataSource = typeof(BlenderRenderController.AppSettings);
+            this.chkBoxDelChunks.AutoSize = true;
+            this.chkBoxDelChunks.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this.appSettingsBindingSource, "DeleteChunksFolder", true));
+            this.chkBoxDelChunks.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkBoxDelChunks.Location = new System.Drawing.Point(24, 221);
+            this.chkBoxDelChunks.Name = "chkBoxDelChunks";
+            this.chkBoxDelChunks.Size = new System.Drawing.Size(168, 19);
+            this.chkBoxDelChunks.TabIndex = 31;
+            this.chkBoxDelChunks.Text = "Delete chunks when done";
+            this.settingsToolTip.SetToolTip(this.chkBoxDelChunks, "Individual Chunks will be deleted after the joining process is completed.\r\n\r\nObs:" +
+        " This setting is ignored if no joining action is chosen.");
+            this.chkBoxDelChunks.UseVisualStyleBackColor = true;
             // 
             // SettingsForm
             // 
@@ -169,6 +184,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(524, 286);
+            this.Controls.Add(this.chkBoxDelChunks);
             this.Controls.Add(this.chkBoxVerboseLog);
             this.Controls.Add(this.ffmpegDownloadLabel);
             this.Controls.Add(this.ffmpegLabel);
@@ -176,7 +192,7 @@
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.ffmpegChangePathButton);
             this.Controls.Add(this.blenderChangePathButton);
-            this.Controls.Add(this.blenderExeLabel);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.ffmpegPathTextBox);
             this.Controls.Add(this.blenderPathTextBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -199,7 +215,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.Label blenderExeLabel;
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button blenderChangePathButton;
         private System.Windows.Forms.Button ffmpegChangePathButton;
         private System.Windows.Forms.Button okButton;
@@ -211,5 +227,6 @@
         private System.Windows.Forms.CheckBox chkBoxVerboseLog;
         private System.Windows.Forms.ToolTip settingsToolTip;
         private System.Windows.Forms.BindingSource appSettingsBindingSource;
+        private System.Windows.Forms.CheckBox chkBoxDelChunks;
     }
 }

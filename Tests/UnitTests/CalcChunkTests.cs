@@ -63,7 +63,7 @@ namespace UnitTests
                 Assert.AreEqual(totalLen, calcResult.TotalLength(), "Lenghts don't match");
             }
 
-            Console.WriteLine("CalcChunks Random test ran {0} times", i - skips);
+            Console.WriteLine("CalcChunks Random test. {0} runs", i - skips);
             Console.Write(sb.ToString());
         }
 
@@ -120,7 +120,7 @@ namespace UnitTests
                 Assert.AreEqual(totalLen, calcResult.TotalLength(), "Total Lenghts don't match");
             }
 
-            Console.WriteLine("CalcChunksByLength Random test ran {0} times", i - skips);
+            Console.WriteLine("CalcChunksByLength Random test. {0} runs", i - skips);
             Console.Write(sb.ToString());
         }
 
@@ -168,7 +168,7 @@ namespace UnitTests
             });
 
             // div cannot 0
-            Assert.ThrowsException<DivideByZeroException>(() =>
+            Assert.ThrowsException<ArgumentException>(() =>
             {
                 var chunks = Chunk.CalcChunks(50, 2000, 0);
             });

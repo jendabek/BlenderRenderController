@@ -118,17 +118,16 @@ namespace BlenderRenderController
             // set what afterRenderRadio button is checked
             switch (_appSettings.AfterRender)
             {
-                case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
-                    afterRenderJoinMixdownRadio.Checked = true;
-                    break;
                 case AfterRenderAction.JOIN:
                     afterRenderJoinRadio.Checked = true;
                     break;
                 case AfterRenderAction.NOTHING:
                     afterRenderDoNothingRadio.Checked = true;
                     break;
+                case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
                 default:
-                    goto case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN;
+                    afterRenderJoinMixdownRadio.Checked = true;
+                    break;
             }
 #if UNIX
             forceUIUpdateToolStripMenuItem.Visible = true;
@@ -430,24 +429,36 @@ namespace BlenderRenderController
 
             if (_renderMngr.GetAfterRenderResult()) // AfterActions ran Ok
             {
-                var dialog =
-                    MessageBox.Show("Open destination folder?",
-                        "Work complete!",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Information);
+                if (_renderMngr.Action != AfterRenderAction.NOTHING && 
+                    _appSettings.DeleteChunksFolder)
+                {
+                    try
+                    {
+                        Directory.Delete(_project.ChunkSubdirPath, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Failed to clear 'chunks' folder:\n\n" + ex.Message, 
+                                        Resources.Error, 
+                                        MessageBoxButtons.OK, 
+                                        MessageBoxIcon.Error);
+                    }
+                }
+
+                var dialog = MessageBox.Show("Open destination folder?",
+                                                "Work complete!",
+                                                MessageBoxButtons.YesNo,
+                                                MessageBoxIcon.Information);
 
                 if (dialog == DialogResult.Yes)
                     OpenOutputFolder();
 
                 UpdateUI(AppState.READY_FOR_RENDER);
-
             }
             else if (!_renderMngr.WasAborted) // Erros detected
             {
                 var dialog = MessageBox.Show(Resources.AR_error_msg, Resources.Error,
                                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-
 
                 UpdateUI(AppState.READY_FOR_RENDER, "Errors detected");
             }

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+
 using Resources = BlenderRenderController.Properties.Resources;
 using Timer = System.Timers.Timer;
 
@@ -139,6 +140,8 @@ namespace BlenderRenderController
             };
 
             timer.Elapsed += TryQueueRenderProcess;
+
+            Action = appSettings.AfterRender;
         }
 
         // for testing

@@ -90,6 +90,7 @@ namespace BlenderRenderController
         public bool DisplayToolTips { get; set; }
         public AfterRenderAction AfterRender { get; set; }
         public Renderer Renderer { get; set; }
+        public bool DeleteChunksFolder { get; set; }
 
 
         public string ScriptsFolder
@@ -123,7 +124,8 @@ namespace BlenderRenderController
                     AfterRender = AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN,
                     Renderer = Renderer.BLENDER_RENDER,
                     ScriptsFolder = Path.Combine(_baseDir, Constants.ScriptsSubfolder),
-                    RecentProjects = new RecentBlendsCollection()
+                    RecentProjects = new RecentBlendsCollection(),
+                    DeleteChunksFolder = false
                 };
             }
         }

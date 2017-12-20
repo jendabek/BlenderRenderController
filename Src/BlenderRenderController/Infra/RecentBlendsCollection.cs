@@ -10,7 +10,7 @@ namespace BlenderRenderController.Infra
     {
         uint _capacity = 10;
 
-        public int Capacity
+        public int MaxElements
         {
             get => (int)_capacity;
             set => _capacity = (uint)value;
@@ -29,9 +29,9 @@ namespace BlenderRenderController.Infra
             }
 
             // remove last if capacity is reached
-            if (index == Capacity)
+            if (index == MaxElements)
             {
-                Items.RemoveAt(Capacity - 1);
+                Items.RemoveAt(MaxElements - 1);
             }
 
             // elements are inserted at the front

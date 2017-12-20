@@ -29,7 +29,7 @@ namespace BRClib
         /// <summary>
         /// Starts a process asynchronously
         /// </summary>
-        /// <param name="token">Cancelation token, calls the <see cref="Process.Kill()"/> method</param>
+        /// <param name="token">Cancelation token, calls <see cref="Process.Kill()"/></param>
         /// <returns>The processe's exit code</returns>
         public static async Task<int> StartAsync(this Process proc, CancellationToken token = default)
         {

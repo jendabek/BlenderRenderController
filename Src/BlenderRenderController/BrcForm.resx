@@ -132,6 +132,53 @@
   <metadata name="menuToolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>24, 17</value>
   </metadata>
+  <metadata name="recentBlendsMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>19, 48</value>
+  </metadata>
+  <metadata name="toolTipInfo.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>215, 47</value>
+  </metadata>
+  <data name="renderInfoLabel.ToolTip" xml:space="preserve">
+    <value>Make sure that Blender itself can render your project (or the selected frame range) well.
+If there is an issue in a video produced by this tool, it is the most likely caused by an incorrect Blender rendering.
+If you experience issues with sound, make sure you use the method with mixdown audio (checkboxes above).
+
+
+</value>
+  </data>
+  <metadata name="toolTipWarn.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>210, 16</value>
+  </metadata>
+  <metadata name="projectSettingsBindingSource.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>676, 44</value>
+  </metadata>
+  <data name="chunkLengthLabel.ToolTip" xml:space="preserve">
+    <value>Video is divided into "chunks" (segments or parts), each process works on different one.
+Chunk Size sets the length (frame count) of these parts.
+
+If "Auto" is checked, Chunk Size = framecount / number of processes - this is recomended
+for most cases.
+</value>
+  </data>
+  <data name="chunkLengthNumericUpDown.ToolTip" xml:space="preserve">
+    <value>Video is divided into "chunks" (segments or parts), each process works on different one.
+Chunk Size sets the length (frame count) of these parts.
+
+If "Auto" is checked, Chunk Size = framecount / number of processes - this is recomended
+for most cases.</value>
+  </data>
+  <data name="afterRenderJoinMixdownRadio.ToolTip" xml:space="preserve">
+    <value>This option will:
+
+1. Render all chunks.
+2. Render the audio in a separeted file.
+3. Join chunks together using the above audio file to get the final video.
+
+Strongly recommended method - it avoids audio issues.</value>
+  </data>
+  <metadata name="projectSettingsBindingSource.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>676, 44</value>
+  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="settingsToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -236,49 +283,9 @@
         xap72xQAAAAASUVORK5CYII=
 </value>
   </data>
-  <metadata name="recentBlendsMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>19, 48</value>
-  </metadata>
-  <data name="renderInfoLabel.ToolTip" xml:space="preserve">
-    <value>Make sure that Blender itself can render your project (or the selected frame range) well.
-If there is an issue in a video produced by this tool, it is the most likely caused by an incorrect Blender rendering.
-If you experience issues with sound, make sure you use the method with mixdown audio (checkboxes above).
-
-
-</value>
-  </data>
   <metadata name="toolTipWarn.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>210, 16</value>
   </metadata>
-  <metadata name="projectSettingsBindingSource.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>676, 44</value>
-  </metadata>
-  <data name="chunkLengthLabel.ToolTip" xml:space="preserve">
-    <value>Video is divided into "chunks" (segments or parts), each process works on different one.
-Chunk Size sets the length (frame count) of these parts.
-
-"Auto" = framecount / number of processes - this allows to render whole video
-by chosen number of processes without unnecesarray process stopping / starting.
-
-</value>
-  </data>
-  <data name="chunkLengthNumericUpDown.ToolTip" xml:space="preserve">
-    <value>Video is divided into "chunks" (segments or parts), each process works on different one.
-Chunk Size sets the length (frame count) of these parts.
-
-If "Auto" is checked = framecount / number of processes - this allows to render whole video
-by chosen number of processes without unnecesarray process stopping / starting.
-</value>
-  </data>
-  <data name="afterRenderJoinMixdownRadio.ToolTip" xml:space="preserve">
-    <value>This option will:
-
-1. Render all chunks.
-2. Render the audio in a separeted file.
-3. Join chunks together using the above audio file to get the final video.
-
-Strongly recommended method - it avoids audio issues.</value>
-  </data>
   <metadata name="openBlendDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>433, 23</value>
   </metadata>

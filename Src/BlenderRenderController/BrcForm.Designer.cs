@@ -245,9 +245,9 @@ namespace BlenderRenderController
             this.processCountNumericUpDown.TabIndex = 8;
             this.processCountNumericUpDown.Tag = "";
             this.processCountNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolTipInfo.SetToolTip(this.processCountNumericUpDown, "Maximum number of Blender processes that will be parallely rendering your video.\r" +
-        "\n\r\n\"Auto\" = number of your PC\'s logical processors (threads), this should work t" +
-        "he best.\r\n\r\n");
+            this.toolTipInfo.SetToolTip(this.processCountNumericUpDown, "Maximum number of Blender processes that will run in parallel when rendering your" +
+        " video.\r\n\r\nIf \"Auto\" is checked, Max = number of your logical processors (thread" +
+        "s).");
             this.processCountNumericUpDown.Value = new decimal(new int[] {
             1,
             0,
@@ -268,9 +268,9 @@ namespace BlenderRenderController
             this.processCountLabel.Size = new System.Drawing.Size(91, 15);
             this.processCountLabel.TabIndex = 15;
             this.processCountLabel.Text = "Processes Max";
-            this.toolTipInfo.SetToolTip(this.processCountLabel, "Maximum number of Blender processes that will be parallely rendering your video.\r" +
-        "\n\"Auto\" = number of your logical processors (threads), which should work the bes" +
-        "t.\r\n\r\n\r\n");
+            this.toolTipInfo.SetToolTip(this.processCountLabel, "Maximum number of Blender processes that will run in parallel when rendering your" +
+        " video.\r\n\r\nIf \"Auto\" is checked, Max = number of your logical processors (thread" +
+        "s).");
             // 
             // totalTimeLabel
             // 
@@ -456,9 +456,9 @@ namespace BlenderRenderController
             this.infoDurationLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.infoDurationLabel.Location = new System.Drawing.Point(182, 15);
             this.infoDurationLabel.Name = "infoDurationLabel";
-            this.infoDurationLabel.Size = new System.Drawing.Size(75, 15);
+            this.infoDurationLabel.Size = new System.Drawing.Size(58, 15);
             this.infoDurationLabel.TabIndex = 31;
-            this.infoDurationLabel.Text = "Length Total";
+            this.infoDurationLabel.Text = "T. Length";
             // 
             // infoResolution
             // 
@@ -645,12 +645,13 @@ namespace BlenderRenderController
             this.afterRenderDoNothingRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.afterRenderDoNothingRadio.Location = new System.Drawing.Point(3, 53);
             this.afterRenderDoNothingRadio.Name = "afterRenderDoNothingRadio";
-            this.afterRenderDoNothingRadio.Size = new System.Drawing.Size(130, 19);
+            this.afterRenderDoNothingRadio.Size = new System.Drawing.Size(107, 19);
             this.afterRenderDoNothingRadio.TabIndex = 33;
             this.afterRenderDoNothingRadio.Tag = "";
-            this.afterRenderDoNothingRadio.Text = "Render just chunks";
-            this.toolTipInfo.SetToolTip(this.afterRenderDoNothingRadio, "Will render only chunks.\r\nStill, you can render mixdown separately and join it ma" +
-        "nually using the buttons on the right.\r\n");
+            this.afterRenderDoNothingRadio.Text = "No extra action";
+            this.toolTipInfo.SetToolTip(this.afterRenderDoNothingRadio, "Render chunks w/ no extra action.\r\n\r\nStill, you can render mixdown separately and" +
+        " join it manually using the buttons under \'Extra\' \r\nor w/ an external tool of yo" +
+        "ur choosing.");
             this.afterRenderDoNothingRadio.UseVisualStyleBackColor = true;
             this.afterRenderDoNothingRadio.CheckedChanged += new System.EventHandler(this.AfterRenderAction_Changed);
             // 

@@ -10,12 +10,6 @@ namespace BlenderRenderController
         public const string ScriptsSubfolder = "Scripts";
         public const string APP_TITLE = "Blender Render Controller";
         public const string ChunksTxtFileName = "chunklist.txt";
-
-        /// <summary>
-        /// In case <see cref="PyGetInfo"/> fails to fix relative paths,
-        /// this will be in the process output
-        /// </summary>
-        public const string PY_FolderCountError = "<class '__main__.FolderCountError'>";
     }
 
     enum AppState

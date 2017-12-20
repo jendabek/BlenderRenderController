@@ -107,11 +107,14 @@ namespace BRClib
                 throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
                                             nameof(start));
 
+            if (chunkNum == 0)
+                throw new ArgumentException("N# of Chunks cannot be 0");
+
             if (chunkNum == 1)
                 // return a single chunk
                 return new Chunk[] { new Chunk(start, end) };
 
-            var lenght = Math.Ceiling((end - start + 1) / (decimal)chunkNum);
+            var lenght = Math.Ceiling((end - start + 1) / (double)chunkNum);
 
             return GenChunks(start, end, (int)lenght);
         }
@@ -134,45 +137,13 @@ namespace BRClib
             return GenChunks(start, end, chunkLenght);
         }
 
-         /*
-        private static List<Chunk> GenChunks(int start, int end, int chunkLen)
-        {
-            int cStart = start,
-                cEnd,
-                cDiff = chunkLen - 1;
-
-            int totalLen = end - start + 1;
-
-            List<Chunk> chunkList = new List<Chunk>();
-
-            while (chunkList.TotalLength() < totalLen)
-            {
-                cEnd = cStart + cDiff;
-
-                if (cEnd + 1 < end)
-                {
-                    chunkList.Add(new Chunk(cStart, cEnd));
-                    cStart = cEnd + 1;
-                }
-                else
-                {
-                    // last chunk matches the end
-                    chunkList.Add(new Chunk(cStart, end));
-                }
-            }
-
-            return chunkList;
-        }
-         */
-
-        // !! DO NOT REMOVE BREAK STATEMENT AFTER LAST CHUNK (outofmemory in big loops?) !!
         private static IEnumerable<Chunk> GenChunks(int start, int end, int chunkLen)
         {
             int cStart = start,
                 cEnd = 0,
                 cDiff = chunkLen - 1;
 
-            while (cEnd < end)
+            while (true)
             {
                 cEnd = cStart + cDiff;
 
