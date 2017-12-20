@@ -77,9 +77,6 @@ namespace BlenderRenderController
 
         private void BrcForm_Load(object sender, EventArgs e)
         {
-            // TODO: Setup a paypal for donations
-            donationTSBtn.Enabled = false;
-
             //add version numbers to label
             verToolStripLbl.Text = " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(); 
 
@@ -1000,20 +997,21 @@ namespace BlenderRenderController
 
         private void donateButton_Click(object sender, EventArgs e)
         {
-            //string business = "jendabek@gmail.com";  // your paypal email
-            //string description = "Donation for Blender Render Controller";
-            //string country = "CZE";                  // AU, US, etc.
-            //string currency = "USD";                 // AUD, USD, etc.
+            string business = "9SGQVK6TK2UJG";
+            string description = "Donation%20for%20Blender%20Render%20Controller";
+            string country = "BR";
+            string currency = "USD";
 
-            //string url = "https://www.paypal.com/cgi-bin/webscr" +
-            //        "?cmd=_donations" +
-            //        "&business=" + business +
-            //        "&lc=" + country +
-            //        "&item_name=" + description +
-            //        "&currency_code=" + currency +
-            //        "&bn=PP%2dDonationsBF";
+            string url = "https://www.paypal.com/cgi-bin/webscr" +
+                    "?cmd=_donations" +
+                    "&business=" + business +
+                    "&lc=" + country +
+                    "&item_name=" + description +
+                    "&item_number=BRC" +
+                    "&currency_code=" + currency +
+                    "&bn=PP%2dDonationsBF";
 
-            //Process.Start(url);
+            Process.Start(url);
         }
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
