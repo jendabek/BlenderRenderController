@@ -14,7 +14,7 @@ Any questions, bug reports or suggestions? [Let us know](https://github.com/jend
 
 - *"Fatal python error"* when opening projects in Windows 7
 	- Blender crashes when BRC requests project info.
-	- Work-around: Launch _BlenderRenderController.exe_ from the command line, you can download a convenient _.bat_ file [here](https://github.com/jendabek/BlenderRenderController/blob/master/BlenderRenderController/utilities/runWin7.bat).
+	- Work-around: Launch _BlenderRenderController.exe_ from the command line, you can get a convenient _.bat_ file [here](https://github.com/jendabek/BlenderRenderController/blob/master/extras/utilities/runWin7.bat).
 
 - Older versions of FFmpeg may fail to join chunks if AAC audio is used ([link](https://trac.ffmpeg.org/wiki/Encode/AAC#NativeFFmpegAACencoder))
 
