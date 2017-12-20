@@ -28,6 +28,6 @@ Any questions, bug reports or suggestions? [Let us know](https://github.com/jend
 - jendabek
 
 ## Support the development &#9829;
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=9SGQVK6TK2UJG&lc=US&item_name=Donation%20for%20Blender%20Render%20Controller&item_number=BRC&currency_code=BRL&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=9SGQVK6TK2UJG&lc=US&item_name=Donation%20for%20Blender%20Render%20Controller&item_number=BRC&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">
 <img align="left" src="https://github.com/jendabek/BlenderRenderController/blob/master/extras/imgs/donate-github.png" width="110"/>
 </a>
