@@ -49,7 +49,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release Unix|AnyCPU'">
     <OutputPath>bin\Release Unix\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>bin\Release\BRClib.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -86,6 +87,7 @@
     <Compile Include="Models.cs" />
     <Compile Include="Others.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenderManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -97,6 +99,9 @@
     <Content Include="Scripts\mixdown_audio.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infra\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

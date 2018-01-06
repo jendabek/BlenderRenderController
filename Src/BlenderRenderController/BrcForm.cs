@@ -41,7 +41,6 @@ namespace BlenderRenderController
         AppSettings _appSettings;
         ProjectSettings _project;
         RenderManager _renderMngr;
-        //Progress<RenderProgressInfo> _renderProg;
         int _autoStartF, _autoEndF;
         AppState _appState;
         Stopwatch _chrono;
@@ -81,7 +80,7 @@ namespace BlenderRenderController
             verToolStripLbl.Text = " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(); 
 
             // save appSettings on exit
-            AppDomain.CurrentDomain.ProcessExit += (ad, cd) => _appSettings.Save();
+            AppDomain.CurrentDomain.ProcessExit += (ad, cd) => _appSettings.SaveCurrent();
 
             // load recent blends from file
             UpdateRecentBlendsMenu();
@@ -170,7 +169,7 @@ namespace BlenderRenderController
                     InstructionText = info,
                     Text = errMsg,
                     Icon = TaskDialogStandardIcon.Warning,
-                    StandardButtons = TaskDialogStandardButtons.Ok
+                    StandardButtons = TaskDialogStandardButtons.Close
                 };
 
                 var tdCmdLink = new TaskDialogCommandLink("BtnOpenSettings", "Goto Settings");
@@ -183,9 +182,10 @@ namespace BlenderRenderController
                 td.Controls.Add(tdCmdLink);
                 td.Show();
 #else
-                var res = MessageBox.Show(errMsg, cap + " - " + info, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                errMsg += "\n\n" + "Click 'Retry' to open Settings";
+                var res = MessageBox.Show(errMsg, cap + " - " + info, MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
 
-                if (res == DialogResult.OK)
+                if (res == DialogResult.Retry)
                 {
                     // fix width and show
                     _settingsForm.MaximumSize = _settingsForm.Size;
@@ -405,6 +405,8 @@ namespace BlenderRenderController
 
             _renderMngr.Setup(_project);
             _renderMngr.Action = _appSettings.AfterRender;
+            _renderMngr.BlenderProgram = _appSettings.BlenderProgram;
+            _renderMngr.FFmpegProgram = _appSettings.FFmpegProgram;
 
             totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
 

@@ -1,6 +1,4 @@
-﻿using BlenderRenderController.Infra;
-using BRClib;
-using BRClib.Commands;
+﻿using BRClib.Commands;
 using NLog;
 using System;
 using System.Collections.Concurrent;
@@ -10,13 +8,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 
-using Resources = BlenderRenderController.Properties.Resources;
 using Timer = System.Timers.Timer;
 
 
-namespace BlenderRenderController
+namespace BRClib
 {
     /// <summary>
     /// Manages the render process of a list of <see cref="Chunk"/>s.
@@ -42,12 +38,9 @@ namespace BlenderRenderController
         private Timer timer;
 
         // Progress stuff
-        bool canReportProgress;
-        IProgress<RenderProgressInfo> progress;
         int _reportCount;
         const int PROG_STACK_SIZE = 3;
 
-        AppSettings appSettings = AppSettings.Current;
         ProjectSettings _proj;
 
         // after render
@@ -57,6 +50,14 @@ namespace BlenderRenderController
         const string CONCAT_KEY = "concat";
         CancellationTokenSource _arCts;
 
+        const string BAD_RESULT_FMT = "Exit code: {0}\n\n" +
+                                        "Std Error:\n{1}\n\n\n" +
+                                        "Std Output:\n{2}";
+
+        const string CHUNK_TXT = "chunklist.txt",
+                     CHUNK_DIR = "chunks";
+
+
 
         public int NumberOfFramesRendered => framesRendered.Count;
 
@@ -64,29 +65,18 @@ namespace BlenderRenderController
 
         public bool WasAborted { get; private set; }
 
+        public string BlenderProgram { get; set; }
+
+        public string FFmpegProgram { get; set; }
+
         string ChunksFolderPath
         {
             get
             {
                 if (_proj == null || string.IsNullOrWhiteSpace(_proj.BlendData.OutputPath)) return null;
-                return Path.Combine(_proj.BlendData.OutputPath, Constants.ChunksSubfolder);
+                return Path.Combine(_proj.BlendData.OutputPath, CHUNK_DIR);
             }
         }
-
-        //string OutputFileName
-        //{
-        //    get
-        //    {
-        //        if (ChunksFolderPath == null)
-        //        {
-        //            return null;
-        //        }
-
-        //        var videoExt = Path.GetExtension(Utilities.GetChunkFiles(ChunksFolderPath).FirstOrDefault());
-
-        //        return _proj.BlendData.ProjectName + videoExt;
-        //    }
-        //}
 
         string MixdownFile
         {
@@ -117,7 +107,9 @@ namespace BlenderRenderController
         public AfterRenderAction Action { get; set; } = AfterRenderAction.NOTHING;
 
         IReadOnlyList<Chunk> ChunkList;
-        SimpleSyncObject _sync = new SimpleSyncObject();
+        //SimpleSyncObject _sync = new SimpleSyncObject();
+        object _lock = new object();
+
 
 
         /// <summary>
@@ -136,18 +128,16 @@ namespace BlenderRenderController
             {
                 Interval = 100,
                 AutoReset = true,
-                SynchronizingObject = _sync,
+                //SynchronizingObject = _sync,
             };
 
-            timer.Elapsed += TryQueueRenderProcess;
-
-            Action = appSettings.AfterRender;
-        }
-
-        // for testing
-        internal RenderManager(AppSettings settings) : this()
-        {
-            this.appSettings = settings;
+            timer.Elapsed += delegate 
+            {
+                lock (_lock)
+                {
+                    TryQueueRenderProcess();
+                }
+            };
         }
 
         public RenderManager(ProjectSettings project) : this()
@@ -174,8 +164,7 @@ namespace BlenderRenderController
         /// <summary>
         /// Starts rendering 
         /// </summary>
-        /// <param name="progress">Progress handler</param>
-        public void StartAsync(IProgress<RenderProgressInfo> progress)
+        public void StartAsync()
         {
             // do not start if its already in progress
             if (InProgress)
@@ -186,19 +175,12 @@ namespace BlenderRenderController
 
             CheckForValidProperties();
 
-            this.progress = progress;
-            canReportProgress = progress != null;
-
             ResetFields();
 
             logger.Info("RENDER STARTING");
             timer.Start();
         }
 
-        /// <summary>
-        /// Starts rendering 
-        /// </summary>
-        public void StartAsync() => StartAsync(null);
 
         /// <summary>
         /// Aborts the render process
@@ -278,14 +260,14 @@ namespace BlenderRenderController
             var renderCom = new Process();
             var info = new ProcessStartInfo
             {
-                FileName = appSettings.BlenderProgram,
+                FileName = BlenderProgram,
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 Arguments = string.Format("-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a",
                                             _proj.BlendPath,
                                             Path.Combine(ChunksFolderPath, _proj.BlendData.ProjectName + "-#"),
-                                            appSettings.Renderer,
+                                            _proj.Renderer,
                                             chunk.Start,
                                             chunk.End),
             };
@@ -308,7 +290,7 @@ namespace BlenderRenderController
                 return false;
             }
 
-            string chunksTxtFile = Path.Combine(chunksFolder, Constants.ChunksTxtFileName);
+            string chunksTxtFile = Path.Combine(chunksFolder, "chunklist.txt");
 
             //write txt for FFmpeg concatenation
             using (StreamWriter partListWriter = new StreamWriter(chunksTxtFile))
@@ -356,7 +338,7 @@ namespace BlenderRenderController
             }
         }
 
-        private void TryQueueRenderProcess(object sender, ElapsedEventArgs e)
+        private void TryQueueRenderProcess()
         {
             // start new render procs only within the concurrency limit and until the
             // end of ChunkList
@@ -403,10 +385,7 @@ namespace BlenderRenderController
             // Stagger report sending to save some heap allocation
             if (_reportCount++ % PROG_STACK_SIZE == 0)
             {
-                var progressInfo = new RenderProgressInfo(framesRendered, chunksCompleted);
-
-                ProgressChanged?.Raise(this, progressInfo);
-                if (canReportProgress) progress.Report(progressInfo);
+                ProgressChanged?.Raise(this, new RenderProgressInfo(framesRendered, chunksCompleted));
             }
         }
 
@@ -473,19 +452,19 @@ namespace BlenderRenderController
 
             var videoExt = Path.GetExtension(Utilities.GetChunkFiles(ChunksFolderPath).First());
             var projFinalPath = Path.Combine(_proj.BlendData.OutputPath, _proj.BlendData.ProjectName + videoExt);
-            var chunksTxt = Path.Combine(ChunksFolderPath, Constants.ChunksTxtFileName);
+            var chunksTxt = Path.Combine(ChunksFolderPath, CHUNK_TXT);
             var mixdownPath = Path.Combine(_proj.BlendData.OutputPath, MixdownFile);
 
 
-            MixdownCmd mixdown = new MixdownCmd(appSettings.BlenderProgram)
+            MixdownCmd mixdown = new MixdownCmd(BlenderProgram)
             {
                 BlendFile = _proj.BlendPath,
-                MixdownScript = Path.Combine(appSettings.ScriptsFolder, Constants.PyMixdown),
+                MixdownScript = Path.Combine(Environment.CurrentDirectory, "Scripts", "mixdown_audio.py"),
                 Range = fullc,
                 OutputFolder = _proj.BlendData.OutputPath
             };
 
-            ConcatCmd concat = new ConcatCmd(appSettings.FFmpegProgram)
+            ConcatCmd concat = new ConcatCmd(FFmpegProgram)
             {
                 ConcatTextFile = chunksTxt,
                 OutputFile = projFinalPath,
@@ -554,7 +533,7 @@ namespace BlenderRenderController
                         {
                             sw.Write("\n\n");
                             sw.Write("Mixdown ");
-                            sw.WriteLine(string.Format(Resources.BadProcResult_Report,
+                            sw.WriteLine(string.Format(BAD_RESULT_FMT,
                                                         mixdownProc.ExitCode, 
                                                         _afterRenderReport[MIX_KEY].StdError, 
                                                         _afterRenderReport[MIX_KEY].StdOutput));
@@ -564,7 +543,7 @@ namespace BlenderRenderController
                         {
                             sw.Write("\n\n");
                             sw.Write("FFMpeg concat ");
-                            sw.WriteLine(string.Format(Resources.BadProcResult_Report,
+                            sw.WriteLine(string.Format(BAD_RESULT_FMT,
                                                         concatProc.ExitCode, 
                                                         _afterRenderReport[CONCAT_KEY].StdError, 
                                                         _afterRenderReport[CONCAT_KEY].StdOutput));
@@ -599,15 +578,4 @@ namespace BlenderRenderController
     }
 
 
-    public class RenderProgressInfo
-    {
-        public int FramesRendered { get; }
-        public int PartsCompleted { get; }
-
-        public RenderProgressInfo(int framesRendered, int partsCompleted)
-        {
-            FramesRendered = framesRendered;
-            PartsCompleted = partsCompleted;
-        }
-    }
 }

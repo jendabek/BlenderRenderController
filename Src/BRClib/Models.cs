@@ -173,6 +173,8 @@ namespace BRClib
             set => SetProperty(ref _maxC, value);
         }
 
+        public Renderer Renderer { get; set; }
+
         public string ChunkSubdirPath
         {
             get
@@ -193,6 +195,19 @@ namespace BRClib
 
 
     }
+
+    public class RenderProgressInfo
+    {
+        public int FramesRendered { get; }
+        public int PartsCompleted { get; }
+
+        public RenderProgressInfo(int framesRendered, int partsCompleted)
+        {
+            FramesRendered = framesRendered;
+            PartsCompleted = partsCompleted;
+        }
+    }
+
 
     public enum Renderer
     {

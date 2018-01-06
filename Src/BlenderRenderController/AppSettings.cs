@@ -17,10 +17,10 @@ namespace BlenderRenderController
     public class AppSettings
     {
         private static readonly string _baseDir = Environment.CurrentDirectory;
+
         private string _scriptsFolderPath;
-        private const int RECENT_BLENDS_MAX_COUNT = 10;
         const string SETTINGS_FILE = "brc_settings.json";
-        //bool blenderFound, ffmpegFound;
+        string _blenderExe, _ffmpegExe;
 
 
         private static string DefBlenderFolder
@@ -71,8 +71,7 @@ namespace BlenderRenderController
                     {
                         if (_instance == null)
                         {
-                            //_instance = new AppSettings();
-                            _instance = Load();
+                            _instance = Load(Path.Combine(_baseDir, SETTINGS_FILE));
                         }
                     }
                 }
@@ -99,35 +98,53 @@ namespace BlenderRenderController
             set => _scriptsFolderPath = value;
         }
 
-        public string BlenderExeName { get; private set; }
-
-        public string FFmpegExeName { get; private set; }
-
-
-
         [JsonIgnore]
-        private static AppSettings Defaults
+        public string BlenderExeName
         {
             get
             {
-                var blenderExe = GetProgramFileName("blender");
-                var ffmpegExe = GetProgramFileName("ffmpeg");
-
-                return new AppSettings()
+                if (string.IsNullOrEmpty(_blenderExe))
                 {
-                    BlenderExeName = blenderExe,
-                    BlenderProgram = DefBlenderFolder + blenderExe,
-                    FFmpegExeName = ffmpegExe,
-                    FFmpegProgram = DefFFmpegFolder + ffmpegExe,
-                    Verbose = false,
-                    DisplayToolTips = true,
-                    AfterRender = AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN,
-                    Renderer = Renderer.BLENDER_RENDER,
-                    ScriptsFolder = Path.Combine(_baseDir, Constants.ScriptsSubfolder),
-                    RecentProjects = new RecentBlendsCollection(),
-                    DeleteChunksFolder = false
-                };
+                    _blenderExe = GetProgramFileName("blender");
+                }
+
+                return _blenderExe;
             }
+        }
+
+        [JsonIgnore]
+        public string FFmpegExeName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_ffmpegExe))
+                {
+                    _ffmpegExe = GetProgramFileName("ffmpeg");
+                }
+
+                return _ffmpegExe;
+            }
+        }
+
+
+
+        private static AppSettings GetDefaults()
+        {
+            var blenderExe = GetProgramFileName("blender");
+            var ffmpegExe = GetProgramFileName("ffmpeg");
+
+            return new AppSettings()
+            {
+                BlenderProgram = DefBlenderFolder + blenderExe,
+                FFmpegProgram = DefFFmpegFolder + ffmpegExe,
+                Verbose = false,
+                DisplayToolTips = true,
+                AfterRender = AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN,
+                Renderer = Renderer.BLENDER_RENDER,
+                ScriptsFolder = Path.Combine(_baseDir, Constants.ScriptsSubfolder),
+                RecentProjects = new RecentBlendsCollection(),
+                DeleteChunksFolder = false
+            };
         }
 
 
@@ -205,24 +222,36 @@ namespace BlenderRenderController
             }
         }
 
-        public void Save()
+        public void SaveCurrent(string path)
         {
-            var jsonStr = JsonConvert.SerializeObject(this, Formatting.Indented);
-            File.WriteAllText(Path.Combine(_baseDir, SETTINGS_FILE), jsonStr);
+            Save(this, path);
         }
 
-        static AppSettings Load()
+        public void SaveCurrent()
         {
-            return Load(Path.Combine(_baseDir, SETTINGS_FILE));
+            Save(this, Path.Combine(_baseDir, SETTINGS_FILE));
+        }
+
+        public static void Save(AppSettings settings, string path)
+        {
+            var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+            File.WriteAllText(path, json);
         }
 
         public static AppSettings Load(string settingsPath)
         {
-            return File.Exists(settingsPath) 
-                        ? JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(settingsPath))
-                        : AppSettings.Defaults;
+            if (File.Exists(settingsPath))
+            {
+                return JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(settingsPath));
+            }
+            else
+            {
+                // create settings file
+                var def = AppSettings.GetDefaults();
+                Save(def, settingsPath);
 
-
+                return def;
+            }
         }
     }
 }

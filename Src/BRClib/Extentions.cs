@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
+using ISynchronizeInvoke = System.ComponentModel.ISynchronizeInvoke;
+
 namespace BRClib
 {
     public static class Extentions
@@ -27,22 +29,55 @@ namespace BRClib
         }
 
         /// <summary>
-        /// Starts a process asynchronously
+        /// Safely raises any EventHandler event asynchronously.
         /// </summary>
-        /// <param name="token">Cancelation token, calls <see cref="Process.Kill()"/></param>
-        /// <returns>The processe's exit code</returns>
-        public static async Task<int> StartAsync(this Process proc, CancellationToken token = default)
+        /// <param name="sender">The object raising the event (usually this).</param>
+        /// <param name="args">The TArgs for this event.</param>
+        public static void Raise<TArgs>(this MulticastDelegate thisEvent, object sender, TArgs args)
         {
-            // we must be aware of when the proc exits
-            proc.EnableRaisingEvents = true;
+            var localMCD = thisEvent;
+            AsyncCallback callback = ar => ((EventHandler<TArgs>)ar.AsyncState).EndInvoke(ar);
 
-            int result = 0;
-            using (token.Register(ProcCancelCallback, proc))
+            foreach (Delegate d in localMCD.GetInvocationList())
             {
-                result = await RunProcessAsync(proc).ConfigureAwait(false);
+                if (d is EventHandler<TArgs> uiMethod)
+                {
+                    if (d.Target is ISynchronizeInvoke target)
+                    {
+                        target.BeginInvoke(uiMethod, new object[] { sender, args });
+                    }
+                    else
+                    {
+                        uiMethod.BeginInvoke(sender, args, callback, uiMethod);
+                    }
+                }
             }
+        }
 
-            return result;
+        /// <summary>
+        /// Safely raises any EventHandler event asynchronously.
+        /// </summary>
+        /// <param name="sender">The object raising the event (usually this).</param>
+        /// <param name="args">The EventArgs for this event.</param>
+        public static void Raise(this MulticastDelegate thisEvent, object sender, EventArgs args)
+        {
+            var localMCD = thisEvent;
+            AsyncCallback callback = ar => ((EventHandler)ar.AsyncState).EndInvoke(ar);
+
+            foreach (Delegate d in localMCD.GetInvocationList())
+            {
+                if (d is EventHandler uiMethod)
+                {
+                    if (d.Target is ISynchronizeInvoke target)
+                    {
+                        target.BeginInvoke(uiMethod, new object[] { sender, args });
+                    }
+                    else
+                    {
+                        uiMethod.BeginInvoke(sender, args, callback, uiMethod);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -60,14 +95,12 @@ namespace BRClib
                                                            bool getStdErr,
                                                            CancellationToken token = default)
         {
-            if (!getStdErr && !getStdOut)
-            {
-                var eCode = await StartAsync(proc, token);
-                return new ProcessResult(eCode);
-            }
+            //if (!getStdErr && !getStdOut)
+            //{
+            //    var eCode = await StartAsync(proc, token);
+            //    return new ProcessResult(eCode);
+            //}
 
-            proc.EnableRaisingEvents = true;
-            proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.RedirectStandardOutput = getStdOut;
             proc.StartInfo.RedirectStandardError = getStdErr;
 
@@ -86,9 +119,42 @@ namespace BRClib
             return new ProcessResult(eCodeTask.Result, soTask.Result, seTask.Result);
         }
 
+        /// <summary>
+        /// Starts a process asynchronously
+        /// </summary>
+        /// <param name="token">Cancelation token, calls <see cref="Process.Kill()"/></param>
+        /// <returns>A <see cref="ProcessResult"/> object with the exit code and, optionally, its 
+        /// standard output and standard error contents as strings</returns>
+        public async static Task<ProcessResult> StartAsync(this Process proc, CancellationToken token = default)
+        {
+            bool getStdOut = proc.StartInfo.RedirectStandardOutput;
+            bool getStdError = proc.StartInfo.RedirectStandardError;
+
+            Task<int> eCodeTask;
+            Task<string> soTask, seTask;
+
+            using (token.Register(ProcCancelCallback, proc))
+            {
+                eCodeTask = RunProcessAsync(proc);
+                soTask = getStdOut ? proc.StandardOutput.ReadToEndAsync() : Task.FromResult<string>(null);
+                seTask = getStdError ? proc.StandardError.ReadToEndAsync() : Task.FromResult<string>(null);
+
+                await Task.WhenAll(eCodeTask, soTask, seTask).ConfigureAwait(false);
+            }
+
+            return new ProcessResult(eCodeTask.Result, soTask.Result, seTask.Result);
+        }
+
         private static Task<int> RunProcessAsync(Process proc)
         {
             var tcs = new TaskCompletionSource<int>();
+
+            if (!proc.EnableRaisingEvents)
+            {
+                var ex = new InvalidOperationException("To run asynchronously, 'EnableRaisingEvents' must be set to true");
+                tcs.SetException(ex);
+                return tcs.Task;
+            }
 
             proc.Exited += (s, e) => tcs.SetResult((s as Process).ExitCode);
 
@@ -127,7 +193,7 @@ namespace BRClib
     }
 
     /// <summary>
-    /// Holds information about a process that ran asynchronously
+    /// The result of a process that ran asynchronously
     /// </summary>
     public class ProcessResult
     {

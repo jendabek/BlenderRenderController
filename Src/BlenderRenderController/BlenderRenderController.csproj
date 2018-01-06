@@ -150,8 +150,7 @@
     <Compile Include="ConcatForm.Designer.cs">
       <DependentUpon>ConcatForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ETACalculator.cs" />
-    <Compile Include="Extentions.cs" />
+    <Compile Include="Infra\ETACalculator.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -161,7 +160,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Infra\RecentBlendsCollection.cs" />
-    <Compile Include="RenderManager.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
