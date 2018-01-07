@@ -95,12 +95,6 @@ namespace BRClib
                                                            bool getStdErr,
                                                            CancellationToken token = default)
         {
-            //if (!getStdErr && !getStdOut)
-            //{
-            //    var eCode = await StartAsync(proc, token);
-            //    return new ProcessResult(eCode);
-            //}
-
             proc.StartInfo.RedirectStandardOutput = getStdOut;
             proc.StartInfo.RedirectStandardError = getStdErr;
 
@@ -151,9 +145,7 @@ namespace BRClib
 
             if (!proc.EnableRaisingEvents)
             {
-                var ex = new InvalidOperationException("To run asynchronously, 'EnableRaisingEvents' must be set to true");
-                tcs.SetException(ex);
-                return tcs.Task;
+                throw new InvalidOperationException("To run asynchronously, 'EnableRaisingEvents' must be set to true");
             }
 
             proc.Exited += (s, e) => tcs.SetResult((s as Process).ExitCode);
@@ -163,10 +155,8 @@ namespace BRClib
             bool started = proc.Start();
             if (!started)
             {
-                var ex = new InvalidOperationException($"Could not start process: {proc}.\n" +
+                throw new InvalidOperationException($"Could not start process: {proc}.\n" +
                     "Obs: Reusing existing processes is not supported.");
-
-                tcs.SetException(ex);
             }
 
             return tcs.Task;

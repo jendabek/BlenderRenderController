@@ -107,12 +107,14 @@ namespace BRClib
                 throw new ArgumentException("Start frame cannot be equal or greater them the end frame",
                                             nameof(start));
 
-            if (chunkNum == 0)
-                throw new ArgumentException("N# of Chunks cannot be 0");
+            if (chunkNum <= 0)
+                throw new ArgumentException("Invalid N# of Chunks", nameof(chunkNum));
 
             if (chunkNum == 1)
+            {
                 // return a single chunk
-                return new Chunk[] { new Chunk(start, end) };
+                return Enumerable.Repeat(new Chunk(start, end), 1);
+            }
 
             var lenght = Math.Ceiling((end - start + 1) / (double)chunkNum);
 
@@ -139,9 +141,9 @@ namespace BRClib
 
         private static IEnumerable<Chunk> GenChunks(int start, int end, int chunkLen)
         {
-            int cStart = start,
-                cEnd = 0,
-                cDiff = chunkLen - 1;
+            int cStart = start;
+            int cEnd = 0;
+            int cDiff = chunkLen - 1;
 
             while (true)
             {
@@ -154,7 +156,7 @@ namespace BRClib
                 }
                 else
                 {
-                    // last chunk, matches the 'end'
+                    // last chunk, matches the 'end' param
                     yield return new Chunk(cStart, end);
                     break;
                 }

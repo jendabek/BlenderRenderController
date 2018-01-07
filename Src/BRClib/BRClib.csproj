@@ -79,7 +79,6 @@
     <Compile Include="Chunk.cs" />
     <Compile Include="Commands\Concat.cs" />
     <Compile Include="Commands\ExternalCommand.cs" />
-    <Compile Include="Commands\GetInfo.cs" />
     <Compile Include="Commands\Mixdown.cs" />
     <Compile Include="Commands\Render.cs" />
     <Compile Include="ConcurrentHashSet.cs" />

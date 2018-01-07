@@ -173,7 +173,7 @@ namespace BRClib
             set => SetProperty(ref _maxC, value);
         }
 
-        public Renderer Renderer { get; set; }
+        //public Renderer Renderer { get; set; }
 
         public string ChunkSubdirPath
         {

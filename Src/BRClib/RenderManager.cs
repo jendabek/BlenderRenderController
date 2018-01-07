@@ -29,11 +29,12 @@ namespace BRClib
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // State trackers
-        private ConcurrentBag<Process> procBag;
-        private ConcurrentHashSet<int> framesRendered;
-        private int chunksToDo, chunksInProgress,
-                    initalChunkCount, currentIndex,
-                    maxConcurrency;
+        private ConcurrentDictionary<Chunk, Process> _workingRenderData;
+        IReadOnlyList<Chunk> _chunkList;
+        private ConcurrentHashSet<int> _framesRendered;
+        private int _chunksToDo, _chunksInProgress,
+                    _initalChunkCount, _currentIndex,
+                    _maxConcurrency;
 
         private Timer timer;
 
@@ -45,6 +46,7 @@ namespace BRClib
 
         // after render
         Dictionary<string, ProcessResult> _afterRenderReport;
+        List<Process> _afterRenderProcList;
         Task<bool> _arState;
         const string MIX_KEY = "mixdown";
         const string CONCAT_KEY = "concat";
@@ -59,7 +61,7 @@ namespace BRClib
 
 
 
-        public int NumberOfFramesRendered => framesRendered.Count;
+        public int NumberOfFramesRendered => _framesRendered.Count;
 
         public bool InProgress { get => timer.Enabled; }
 
@@ -68,6 +70,8 @@ namespace BRClib
         public string BlenderProgram { get; set; }
 
         public string FFmpegProgram { get; set; }
+
+        public Renderer Renderer { get; set; }
 
         string ChunksFolderPath
         {
@@ -106,9 +110,7 @@ namespace BRClib
 
         public AfterRenderAction Action { get; set; } = AfterRenderAction.NOTHING;
 
-        IReadOnlyList<Chunk> ChunkList;
-        //SimpleSyncObject _sync = new SimpleSyncObject();
-        object _lock = new object();
+        object _syncLock = new object();
 
 
 
@@ -128,12 +130,11 @@ namespace BRClib
             {
                 Interval = 100,
                 AutoReset = true,
-                //SynchronizingObject = _sync,
             };
 
             timer.Elapsed += delegate 
             {
-                lock (_lock)
+                lock (_syncLock)
                 {
                     TryQueueRenderProcess();
                 }
@@ -241,18 +242,20 @@ namespace BRClib
 
         void ResetFields()
         {
-            ChunkList = _proj.ChunkList.ToList();
-            procBag = new ConcurrentBag<Process>();
-            framesRendered = new ConcurrentHashSet<int>();
-            currentIndex = 0;
-            chunksInProgress = 0;
-            chunksToDo = ChunkList.Count;
-            initalChunkCount = ChunkList.Count;
+            var dictionary = _proj.ChunkList.ToDictionary(k => k, CreateRenderProcess);
+            _workingRenderData = new ConcurrentDictionary<Chunk, Process>(dictionary);
+            _chunkList = dictionary.Keys.ToList();
+            _afterRenderProcList = new List<Process>();
+            _framesRendered = new ConcurrentHashSet<int>();
+            _currentIndex = 0;
+            _chunksInProgress = 0;
+            _chunksToDo = dictionary.Count;
+            _initalChunkCount = dictionary.Count;
             _afterRenderReport = new Dictionary<string, ProcessResult>();
             _arCts = new CancellationTokenSource();
             WasAborted = false;
             _reportCount = 0;
-            maxConcurrency = _proj.MaxConcurrency;
+            _maxConcurrency = _proj.MaxConcurrency;
         }
 
         Process CreateRenderProcess(Chunk chunk)
@@ -267,7 +270,7 @@ namespace BRClib
                 Arguments = string.Format("-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a",
                                             _proj.BlendPath,
                                             Path.Combine(ChunksFolderPath, _proj.BlendData.ProjectName + "-#"),
-                                            _proj.Renderer,
+                                            Renderer,
                                             chunk.Start,
                                             chunk.End),
             };
@@ -312,7 +315,7 @@ namespace BRClib
                 if (e.Data.IndexOf("Fra:", StringComparison.InvariantCulture) == 0)
                 {
                     var line = e.Data.Split(' ')[0].Replace("Fra:", "");
-                    framesRendered.Add(int.Parse(line));
+                    _framesRendered.Add(int.Parse(line));
                 }
             }
         }
@@ -321,17 +324,17 @@ namespace BRClib
         // reaches 0
         private void RenderCom_Exited(object sender, EventArgs e)
         {
-            --chunksInProgress;
+            --_chunksInProgress;
          
             logger.Trace("Render proc exited with code {0}", (sender as Process).ExitCode);
 
             // check if the overall render is done
-            if (Interlocked.Decrement(ref chunksToDo) == 0)
+            if (Interlocked.Decrement(ref _chunksToDo) == 0)
             {
                 timer.Stop();
 
                 // all render processes are done at this point
-                Debug.Assert(framesRendered.ToList().Count == ChunkList.TotalLength(),
+                Debug.Assert(_framesRendered.ToList().Count == _chunkList.TotalLength(),
                             "Frames counted don't match the ChunkList TotalLenght");
 
                 OnChunksFinished();
@@ -342,21 +345,20 @@ namespace BRClib
         {
             // start new render procs only within the concurrency limit and until the
             // end of ChunkList
-            if (currentIndex < initalChunkCount && chunksInProgress < maxConcurrency)
+            if (_currentIndex < _initalChunkCount && _chunksInProgress < _maxConcurrency)
             {
-                var currentChunk = ChunkList[currentIndex];
-                var proc = CreateRenderProcess(currentChunk);
+                var currentChunk = _chunkList[_currentIndex];
+                var proc = _workingRenderData[currentChunk];
                 proc.Start();
                 proc.BeginOutputReadLine();
-                procBag.Add(proc);
 
-                chunksInProgress++;
-                currentIndex++;
+                _chunksInProgress++;
+                _currentIndex++;
 
-                logger.Trace("Started render n. {0}, frames: {1}", currentIndex, currentChunk);
+                logger.Trace("Started render n. {0}, frames: {1}", _currentIndex, currentChunk);
             }
 
-            ReportProgress(NumberOfFramesRendered, initalChunkCount - chunksToDo);
+            ReportProgress(NumberOfFramesRendered, _initalChunkCount - _chunksToDo);
         }
 
         private void OnChunksFinished()
@@ -391,7 +393,8 @@ namespace BRClib
 
         private void DisposeProcesses()
         {
-            var procList = procBag.ToList();
+            var procList = _workingRenderData.Values.ToList();
+            procList.AddRange(_afterRenderProcList);
 
             foreach (var p in procList)
             {
@@ -448,7 +451,7 @@ namespace BRClib
             }
 
             // full range of frames
-            var fullc = new Chunk(ChunkList.First().Start, ChunkList.Last().End);
+            var fullc = new Chunk(_chunkList.First().Start, _chunkList.Last().End);
 
             var videoExt = Path.GetExtension(Utilities.GetChunkFiles(ChunksFolderPath).First());
             var projFinalPath = Path.Combine(_proj.BlendData.OutputPath, _proj.BlendData.ProjectName + videoExt);
@@ -459,7 +462,9 @@ namespace BRClib
             MixdownCmd mixdown = new MixdownCmd(BlenderProgram)
             {
                 BlendFile = _proj.BlendPath,
-                MixdownScript = Path.Combine(Environment.CurrentDirectory, "Scripts", "mixdown_audio.py"),
+                MixdownScript = Path.Combine(Environment.CurrentDirectory, 
+                                             "Scripts", 
+                                             "mixdown_audio.py"),
                 Range = fullc,
                 OutputFolder = _proj.BlendData.OutputPath
             };
@@ -468,7 +473,8 @@ namespace BRClib
             {
                 ConcatTextFile = chunksTxt,
                 OutputFile = projFinalPath,
-                Duration = _proj.BlendData.Duration
+                Duration = _proj.BlendData.Duration,
+                MixdownFile = mixdownPath
             };
 
             Process mixdownProc = null, concatProc = null;
@@ -488,15 +494,14 @@ namespace BRClib
 
                     if (_arCts.IsCancellationRequested) return false;
 
-                    // we're creating the args here because the mixdown file
-                    // must exist for this to work
-                    concat.MixdownFile = mixdownPath;
-
                     concatProc = concat.GetProcess();
                     RunProc(ref concatProc, CONCAT_KEY);
 
                     break;
                 case AfterRenderAction.JOIN:
+
+                    // null out MixdownFile so it generates the proper Args
+                    concat.MixdownFile = null;
 
                     concatProc = concat.GetProcess();
                     RunProc(ref concatProc, CONCAT_KEY);
@@ -515,8 +520,7 @@ namespace BRClib
             if (_arCts.IsCancellationRequested) return false;
 
             // check for bad exit codes
-            Process[] processes = { mixdownProc, concatProc };
-            var badProcResults = processes.Where(p => p != null && p.ExitCode != 0).ToArray();
+            var badProcResults = _afterRenderProcList.Where(p => p != null && p.ExitCode != 0).ToArray();
 
             if (badProcResults.Length > 0)
             {
@@ -565,7 +569,7 @@ namespace BRClib
         {
             proc.Start();
 
-            procBag.Add(proc);
+            _afterRenderProcList.Add(proc);
 
             var readOutput = proc.StandardOutput.ReadToEndAsync();
             var readError = proc.StandardError.ReadToEndAsync();

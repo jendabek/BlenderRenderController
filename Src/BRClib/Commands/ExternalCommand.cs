@@ -53,25 +53,33 @@ namespace BRClib.Commands
             _procName = Path.GetFileNameWithoutExtension(ProgramPath);
         }
 
-
-        public virtual Process GetProcess()
+        public Process GetProcess()
         {
-            if (!File.Exists(ProgramPath))
+            return CreateProcess(ProgramPath, GetArgs());
+        }
+
+        protected virtual Process CreateProcess(string program, string args)
+        {
+            if (!File.Exists(program))
             {
                 throw new FileNotFoundException();
             }
 
-            var proc = new Process();
-            proc.StartInfo = new ProcessStartInfo()
+            var proc = new Process
             {
-                FileName = ProgramPath,
-                CreateNoWindow = true,
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = program,
+                    Arguments = args,
 
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
 
-                Arguments = GetArgs()
+                },
+
+                EnableRaisingEvents = true
             };
             proc.Exited += (ps, pe) =>
             {
@@ -85,12 +93,16 @@ namespace BRClib.Commands
 
         protected abstract string GetArgs();
 
-        public virtual Task<int> RunAsync(CancellationToken token = default)
+        public Task<int> RunAsync(CancellationToken token = default)
         {
-            var process = GetProcess();
+            return RunProcAsync(GetProcess(), token);
+        }
+
+        protected virtual Task<int> RunProcAsync(Process proc, CancellationToken token = default)
+        {
             var tcs = new TaskCompletionSource<int>();
 
-            var pTask = process.StartAsync(true, true, token);
+            var pTask = proc.StartAsync(true, true, token);
 
             pTask.ContinueWith(t =>
             {
