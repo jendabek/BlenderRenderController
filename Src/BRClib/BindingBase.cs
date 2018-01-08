@@ -13,11 +13,8 @@ namespace BRClib
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected Logger Log { get; private set; }
-
         public BindingBase()
         {
-            Log = LogManager.GetLogger(GetType().FullName);
         }
 
         protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName]string pName = null)
@@ -35,7 +32,6 @@ namespace BRClib
         protected virtual void OnPropertyChanged([CallerMemberName]string pName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(pName));
-            //Log.ConditionalDebug("{0} changed", pName);
         }
     }
 
