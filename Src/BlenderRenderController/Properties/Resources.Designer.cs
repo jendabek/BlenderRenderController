@@ -80,6 +80,33 @@ namespace BlenderRenderController.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Join chunks w/ Mixdown audio.
+        /// </summary>
+        internal static string AR_JoinMixdown {
+            get {
+                return ResourceManager.GetString("AR_JoinMixdown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Join chunks.
+        /// </summary>
+        internal static string AR_JoinOnly {
+            get {
+                return ResourceManager.GetString("AR_JoinOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No extra action.
+        /// </summary>
+        internal static string AR_NoAction {
+            get {
+                return ResourceManager.GetString("AR_NoAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap blend_icon {
@@ -189,11 +216,12 @@ namespace BlenderRenderController.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://github.com/jendabek/BlenderRenderController.
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static string project_page {
+        internal static System.Drawing.Bitmap Refresh_grey_16x {
             get {
-                return ResourceManager.GetString("project_page", resourceCulture);
+                object obj = ResourceManager.GetObject("Refresh_grey_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

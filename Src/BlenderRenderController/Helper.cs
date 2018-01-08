@@ -79,6 +79,12 @@ namespace BlenderRenderController
             return controlsWithTags;
         }
 
-
+        static public readonly Dictionary<AfterRenderAction, string> AfterRenderResources =
+            new Dictionary<AfterRenderAction, string>
+            {
+                [AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN] = Resources.AR_JoinMixdown,
+                [AfterRenderAction.JOIN] = Resources.AR_JoinOnly,
+                [AfterRenderAction.NOTHING] = Resources.AR_NoAction
+            };
     }
 }

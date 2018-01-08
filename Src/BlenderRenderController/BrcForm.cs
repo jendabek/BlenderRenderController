@@ -34,15 +34,16 @@ namespace BlenderRenderController
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        const string TimePassedPrefix = "Time Elapsed: ",
+        const string TimePassedPrefix = "Time: ",
                      ETR_Prefix = "ETR: ",
                      TimeFmt = @"hh\:mm\:ss";
+
+        int _autoStartF, _autoEndF;
+        AppState _appState;
 
         AppSettings _appSettings;
         ProjectSettings _project;
         RenderManager _renderMngr;
-        int _autoStartF, _autoEndF;
-        AppState _appState;
         Stopwatch _chrono;
         ETACalculator _etaCalc;
         SettingsForm _settingsForm;
@@ -77,7 +78,17 @@ namespace BlenderRenderController
         private void BrcForm_Load(object sender, EventArgs e)
         {
             //add version numbers to label
-            verToolStripLbl.Text = " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(); 
+            //verToolStripLbl.Text = " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString(); 
+            cbRenderer.Items.Add(Renderer.BLENDER_RENDER);
+            cbRenderer.Items.Add(Renderer.CYCLES);
+            cbRenderer.SelectedValue = _appSettings.Renderer;
+
+            var arNames = Enum.GetNames(typeof(AfterRenderAction));
+
+            cbAfterRenderAction.Items.AddRange(arNames);
+            cbAfterRenderAction.DataSource = Helper.AfterRenderResources.ToList();
+            cbAfterRenderAction.DisplayMember = "Value";
+            cbAfterRenderAction.ValueMember = "Key";
 
             // save appSettings on exit
             AppDomain.CurrentDomain.ProcessExit += (ad, cd) => _appSettings.SaveCurrent();
@@ -94,7 +105,7 @@ namespace BlenderRenderController
             projectSettingsBindingSource.DataSource = _project;
 
             // Time duration format
-            infoDuration.DataBindings["Text"].Format += (fs, fe) =>
+            infoDuration.DataBindings["Value"].Format += (fs, fe) =>
             {
                 if (!Convert.IsDBNull(fe.Value) && fe.Value != null)
                 {
@@ -109,22 +120,6 @@ namespace BlenderRenderController
             chunkLengthNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
             processCountNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
 
-            infoActiveScene.TextChanged += (s, args) => toolTipInfo.SetToolTip(infoActiveScene, infoActiveScene.Text);
-
-            // set what afterRenderRadio button is checked
-            switch (_appSettings.AfterRender)
-            {
-                case AfterRenderAction.JOIN:
-                    afterRenderJoinRadio.Checked = true;
-                    break;
-                case AfterRenderAction.NOTHING:
-                    afterRenderDoNothingRadio.Checked = true;
-                    break;
-                case AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN:
-                default:
-                    afterRenderJoinMixdownRadio.Checked = true;
-                    break;
-            }
 #if UNIX
             forceUIUpdateToolStripMenuItem.Visible = true;
             forceUIUpdateToolStripMenuItem.Click += (s,args) => ForceBindingSourceUpdate();
@@ -153,7 +148,7 @@ namespace BlenderRenderController
 
             if (!_appSettings.CheckCorrectConfig())
             {
-                UpdateUI(AppState.NOT_CONFIGURED);
+                UpdateState(AppState.NOT_CONFIGURED);
 
                 _settingsForm = new SettingsForm();
                 _settingsForm.FormClosed += SettingsForm_FormClosed;
@@ -195,7 +190,7 @@ namespace BlenderRenderController
             }
             else
             {
-                UpdateUI(AppState.AFTER_START);
+                UpdateState(AppState.AFTER_START);
             }
 
         }
@@ -234,10 +229,10 @@ namespace BlenderRenderController
                 if (_appState == AppState.READY_FOR_RENDER)
                     return;
 
-                UpdateUI(AppState.AFTER_START);
+                UpdateState(AppState.AFTER_START);
             }
             else
-                UpdateUI(AppState.NOT_CONFIGURED);
+                UpdateState(AppState.NOT_CONFIGURED);
 
         }
 
@@ -268,23 +263,35 @@ namespace BlenderRenderController
             var giScript = Path.Combine(_appSettings.ScriptsFolder,
                                         Constants.PyGetInfo);
 
-            var giCmd = new GetInfoCmd(_appSettings.BlenderProgram, 
-                                        blendFile, 
-                                        giScript);
+            var giProc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = _appSettings.BlenderProgram,
+                    Arguments = $"-b \"{blendFile}\" -P \"{giScript}\"",
 
-            //var pResult = await giCmd.GetProcess().StartAsync(true, true);
-            var pResult = await giCmd.RunAsync();
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                },
+
+                EnableRaisingEvents = true,
+            };
+
+            var pResult = await giProc.StartAsync();
+            //var pResult = await giCmd.RunAsync();
 
             // errors
-            if (giCmd.StdOutput.Length > 0)
+            if (pResult.StdOutput.Length > 0)
             {
                 logger.Debug("Blender output errors detected");
                 //Debug.WriteLine('\n' + pResult.StdError + '\n');
             }
 
-            if (giCmd.StdOutput.Length == 0)
+            if (pResult.StdOutput.Length == 0)
             {
-                var detailsContent = $"Blender's exit code {giCmd.ExitCode}\nOutput:\n\n" + giCmd.StdError;
+                var detailsContent = $"Blender's exit code {pResult.ExitCode}\nOutput:\n\n" + pResult.StdError;
 
                 var err = Ui.Dialogs.ShowErrorBox("Could not open project, no information was received.", 
                                                   "Failed to read project", 
@@ -295,7 +302,7 @@ namespace BlenderRenderController
                 return;
             }
 
-            var blendData = Utilities.ParsePyOutput(giCmd.StdOutput);
+            var blendData = Utilities.ParsePyOutput(pResult.StdOutput);
 
             if (blendData != null)
             {
@@ -312,14 +319,19 @@ namespace BlenderRenderController
 
                 if (RenderFormats.IMAGES.Contains(blendData.FileFormat))
                 {
-                    Helper.ShowErrors(MessageBoxIcon.Asterisk, AppErrorCode.RENDER_FORMAT_IS_IMAGE);
+                    var eMsg = string.Format(Resources.AppErr_RenderFormatIsImage, 
+                                             blendData.FileFormat);
+
+                    MessageBox.Show(eMsg, "", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                 }
 
                 // output path w/o project name
                 if (string.IsNullOrWhiteSpace(_project.BlendData.OutputPath))
                 {
                     // use .blend folder path if outputPath is unset, display a warning about it
-                    Helper.ShowErrors(MessageBoxIcon.Information, AppErrorCode.BLEND_OUTPUT_INVALID);
+                    MessageBox.Show(Resources.AppErr_BlendOutputInvalid, "", 
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                     _project.BlendData.OutputPath = Path.GetDirectoryName(blendFile);
                 }
                 else
@@ -332,7 +344,7 @@ namespace BlenderRenderController
             {
                 //var detailContents = string.Format("# STD output:\n\n{0}\n\n# STD errors:\n\n{1}", fullOutput, fullErrors);
                 var errorBox = Ui.Dialogs.ShowErrorBox("Failed to read blend file info.", 
-                    "Read error", "Error output:\n\n" + giCmd.StdError);
+                    "Read error", "Error output:\n\n" + pResult.StdError);
 
                 //errorBox.Show();
                 ReadFail();
@@ -342,7 +354,7 @@ namespace BlenderRenderController
             var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, _project.MaxConcurrency);
             UpdateCurrentChunks(chunks.ToArray());
             _appSettings.RecentProjects.Add(blendFile);
-            UpdateUI(AppState.READY_FOR_RENDER);
+            UpdateState(AppState.READY_FOR_RENDER);
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             // ---
 
@@ -350,12 +362,12 @@ namespace BlenderRenderController
             void ReadFail()
             {
                 logger.Error(".blend was NOT loaded");
-                UpdateUI(AppState.AFTER_START, "Error loading blend file");
+                UpdateState(AppState.AFTER_START, "Error loading blend file");
                 renderProgressBar.Style = ProgressBarStyle.Blocks;
             };
         }
 
-        private void blendBrowseBtn_Click(object sender, EventArgs e)
+        private void OpenBlend_Click(object sender, EventArgs e)
         {
             var result = openBlendDialog.ShowDialog();
 
@@ -366,7 +378,7 @@ namespace BlenderRenderController
             }
         }
         
-        private void reloadBlenderDataButton_Click(object sender, EventArgs e)
+        private void ReloadBlend_Click(object sender, EventArgs e)
         {
             var blend = _project.BlendPath;
             if (!string.IsNullOrEmpty(blend))
@@ -379,6 +391,27 @@ namespace BlenderRenderController
         {
             var recentBtn = sender as Button;
             recentBlendsMenu.Show(recentBtn, 0, recentBtn.Height);
+        }
+
+        private void RecentBlendsItem_Click(object sender, EventArgs e)
+        {
+            var recentItem = (ToolStripMenuItem)sender;
+            var blendPath = recentItem.ToolTipText;
+
+            if (!File.Exists(blendPath))
+            {
+                var res = MessageBox.Show("Blend file not found, remove it from the recents list?", "Not found",
+                                            MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                if (res == DialogResult.Yes)
+                {
+                    _appSettings.RecentProjects.Remove(blendPath);
+                }
+
+                return;
+            }
+
+            GetBlendInfo(blendPath);
         }
         #endregion
 
@@ -399,7 +432,7 @@ namespace BlenderRenderController
 
             UpdateCurrentChunks(chunks.ToArray());
 
-            logger.Info(() => "Chunks: " + string.Join(", ", chunks));
+            logger.Info("Chunks: " + string.Join(", ", chunks));
 
             IsWorking = true;
 
@@ -407,14 +440,15 @@ namespace BlenderRenderController
             _renderMngr.Action = _appSettings.AfterRender;
             _renderMngr.BlenderProgram = _appSettings.BlenderProgram;
             _renderMngr.FFmpegProgram = _appSettings.FFmpegProgram;
+            _renderMngr.Renderer = _appSettings.Renderer;
 
-            totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
+            statusTime.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
 
 #if WIN
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
             TaskbarManager.Instance.SetProgressValue(0, 100);
 #endif
-            UpdateUI(AppState.RENDERING_ALL, "Starting render...");
+            UpdateState(AppState.RENDERING_ALL, "Starting render...");
 
             _chrono.Start();
             //_renderMngr.StartAsync(_renderProg);
@@ -452,18 +486,18 @@ namespace BlenderRenderController
                 if (dialog == DialogResult.Yes)
                     OpenOutputFolder();
 
-                UpdateUI(AppState.READY_FOR_RENDER);
+                UpdateState(AppState.READY_FOR_RENDER);
             }
             else if (!_renderMngr.WasAborted) // Erros detected
             {
-                var dialog = MessageBox.Show(Resources.AR_error_msg, Resources.Error,
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                //var dialog = MessageBox.Show(Resources.AR_error_msg, Resources.Error,
+                //                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                UpdateUI(AppState.READY_FOR_RENDER, "Errors detected");
+                UpdateState(AppState.READY_FOR_RENDER, "Errors detected");
             }
             else // operation aborted
             {
-                UpdateUI(AppState.READY_FOR_RENDER, "Operation Aborted");
+                UpdateState(AppState.READY_FOR_RENDER, "Operation Aborted");
             }
 
         }
@@ -511,8 +545,8 @@ namespace BlenderRenderController
             renderProgressBar.Style = ProgressBarStyle.Blocks;
             renderProgressBar.Refresh();
 
-            ETALabel.Text = ETR_Prefix + TimeSpan.Zero.ToString(TimeFmt);
-            totalTimeLabel.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
+            statusETR.Text = ETR_Prefix + TimeSpan.Zero.ToString(TimeFmt);
+            statusTime.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
 
             Text = Constants.APP_TITLE;
 
@@ -520,7 +554,7 @@ namespace BlenderRenderController
             TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
 #endif
 
-            UpdateUI(AppState.READY_FOR_RENDER);
+            UpdateState(AppState.READY_FOR_RENDER);
         }
 
         private void renderAllButton_Click(object sender, EventArgs e)
@@ -586,13 +620,13 @@ namespace BlenderRenderController
             if (_etaCalc.ETAIsAvailable)
             {
                 var etr = ETR_Prefix + _etaCalc.ETR.ToString(TimeFmt);
-                Status(etr, ETALabel);
+                Status(etr, statusETR);
             }
 
             //time elapsed display
             TimeSpan runTime = _chrono.Elapsed;
             var tElapsed = TimePassedPrefix + runTime.ToString(TimeFmt);
-            Status(tElapsed, totalTimeLabel);
+            Status(tElapsed, statusTime);
 
             //title progress
             var titleProg = progressPercentage.ToString() + "% rendered - " + Constants.APP_TITLE;
@@ -640,28 +674,7 @@ namespace BlenderRenderController
                 recentBlendsMenu.Items.Add(menuItem);
             }
 
-            UpdateUI();
-        }
-
-        private void RecentBlendsItem_Click(object sender, EventArgs e)
-        {
-            ToolStripMenuItem recentItem = (ToolStripMenuItem)sender;
-            var blendPath = recentItem.ToolTipText;
-
-            if (!File.Exists(blendPath))
-            {
-                var res = MessageBox.Show("Blend file not found, remove it from the recents list?", "Not found", 
-                                            MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-                if (res == DialogResult.Yes)
-                {
-                    _appSettings.RecentProjects.Remove(blendPath);
-                }
-
-                return;
-            }
-
-            GetBlendInfo(blendPath);
+            UpdateState();
         }
 
 
@@ -672,11 +685,8 @@ namespace BlenderRenderController
         /// </summary>
         /// <param name="msg">new text</param>
         /// <param name="ctrl">Control to update, <seealso cref="statusLabel"/> by default</param>
-        private void Status(string msg, Control ctrl = null)
+        private void Status(string msg, Control ctrl)
         {
-            if (ctrl == null)
-                ctrl = statusLabel;
-
             if (ctrl.InvokeRequired)
             {
                 ctrl.Invoke(new StatusDelegate(Status), msg, ctrl);
@@ -687,6 +697,15 @@ namespace BlenderRenderController
             }
         }
 
+        private void Status(string msg, ToolStripItem tsItem = null)
+        {
+            if (tsItem == null) tsItem = statusMessage;
+
+            // Needs Invoke?
+
+            tsItem.Text = msg;
+        }
+
         #endregion
 
 
@@ -695,7 +714,7 @@ namespace BlenderRenderController
             IsWorking = true;
             ResetCTS();
 
-            UpdateUI(AppState.RENDERING_ALL, "Rendering mixdown...");
+            UpdateState(AppState.RENDERING_ALL, "Rendering mixdown...");
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
             var mix = new MixdownCmd(_appSettings.BlenderProgram,
@@ -710,7 +729,7 @@ namespace BlenderRenderController
 
             if (result == 0)
             {
-                UpdateUI(AppState.READY_FOR_RENDER, "Mixdown complete");
+                UpdateState(AppState.READY_FOR_RENDER, "Mixdown complete");
             }
             else
             {
@@ -719,7 +738,7 @@ namespace BlenderRenderController
 
                 mix.SaveReport(_project.BlendData.OutputPath);
 
-                UpdateUI(AppState.READY_FOR_RENDER, "Something went wrong...");
+                UpdateState(AppState.READY_FOR_RENDER, "Something went wrong...");
             }
 
 
@@ -734,7 +753,7 @@ namespace BlenderRenderController
 
             var startingState = _appState;
 
-            UpdateUI(AppState.RENDERING_ALL, "Concatenating...");
+            UpdateState(AppState.RENDERING_ALL, "Concatenating...");
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
             var manConcat = new ConcatForm();
@@ -751,7 +770,7 @@ namespace BlenderRenderController
 
                 if (result == 0)
                 {
-                    UpdateUI(startingState, "Concatenation complete");
+                    UpdateState(startingState, "Concatenation complete");
                 }
                 else
                 {
@@ -761,12 +780,12 @@ namespace BlenderRenderController
                     var outFolder = Path.GetDirectoryName(manConcat.OutputFile);
                     concat.SaveReport(outFolder);
 
-                    UpdateUI(startingState, "Something went wrong...");
+                    UpdateState(startingState, "Something went wrong...");
                 }
             }
             else
             {
-                UpdateUI(startingState);
+                UpdateState(startingState);
             }
 
             renderProgressBar.Style = ProgressBarStyle.Blocks;
@@ -850,20 +869,7 @@ namespace BlenderRenderController
 
         private void AfterRenderAction_Changed(object sender, EventArgs e)
         {
-            var radio = sender as RadioButton;
 
-            if (radio.Checked)
-            {
-                if (radio.Name == afterRenderJoinMixdownRadio.Name)
-                    _appSettings.AfterRender = AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN;
-
-                else if (radio.Name == afterRenderJoinRadio.Name)
-                    _appSettings.AfterRender = AfterRenderAction.JOIN;
-
-                else if (radio.Name == afterRenderDoNothingRadio.Name)
-                    _appSettings.AfterRender = AfterRenderAction.NOTHING;
-
-            }
         }
 
         private void outputFolderBrowseButton_Click(object sender, EventArgs e)
@@ -883,7 +889,7 @@ namespace BlenderRenderController
             if (result == CommonFileDialogResult.Ok)
             {
                 _project.BlendData.OutputPath = folderPicker.FileName;
-                UpdateUI();
+                UpdateState();
             }
 #else
             var folderPicker = new FolderBrowserDialog
@@ -949,53 +955,13 @@ namespace BlenderRenderController
                 errorProvider.Clear();
         }
 
-        private void RendererType_RadioChanged(object sender, EventArgs e)
+        private void Renderer_Changed(object sender, EventArgs e)
         {
-            var radio = sender as RadioButton;
-
-            if (radio.Checked)
-            {
-                if (radio.Name == rendererRadioButtonBlender.Name)
-                    _appSettings.Renderer = Renderer.BLENDER_RENDER;
-
-                else
-                    _appSettings.Renderer = Renderer.CYCLES;
-            }
+            _appSettings.Renderer = (Renderer)cbRenderer.SelectedItem;
         }
 
 
-        private void AuthorLink_Clicked(object sender, EventArgs e)
-        {
-            var item = sender as ToolStripMenuItem;
-            string link;
-
-            switch (item.Name)
-            {
-                case nameof(isti115MenuItem):
-                    link = "https://github.com/Isti115/BlenderRenderController";
-                    break;
-                case nameof(jendabekMenuItem):
-                    link = "https://github.com/jendabek/BlenderRenderController";
-                    break;
-                case nameof(meTwentyFiveMenuItem):
-                    link = "https://github.com/MeTwentyFive/BlenderRenderController";
-                    break;
-                case nameof(redRaptorMenuItem):
-                    link = "https://github.com/RedRaptor93/BlenderRenderController";
-                    break;
-                default:
-                    return;
-            }
-
-            Process.Start(link);
-        }
-
-        private void tipsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            toolTipInfo.Active =
-            toolTipWarn.Active =
-            _appSettings.DisplayToolTips = tipsToolStripMenuItem.Checked;
-        }
+        // TODO: Tooltip switch on / off
 
         private void donateButton_Click(object sender, EventArgs e)
         {
@@ -1040,6 +1006,10 @@ namespace BlenderRenderController
             if (response == DialogResult.Yes) _appSettings.RecentProjects.Clear();
         }
 
+        private void miGithub_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/jendabek/BlenderRenderController");
+        }
 
         private void ForceBindingSourceUpdate()
         {
@@ -1053,9 +1023,9 @@ namespace BlenderRenderController
         /// Updates UI according to <see cref="AppState"/>
         /// </summary>
         /// <param name="statusMsg">Status message</param>
-        private void UpdateUI(string statusMsg)
+        private void UpdateState(string statusMsg)
         {
-            UpdateUI(null, statusMsg);
+            UpdateState(null, statusMsg);
         }
 
         /// <summary>
@@ -1063,7 +1033,7 @@ namespace BlenderRenderController
         /// </summary>
         /// <param name="newState">New state, leave empty to refresh using the current state</param>
         /// <param name="statusMsg">Overrides the default message sent to <see cref="Status"/></param>
-        private void UpdateUI(AppState? newState = null, string statusMsg = null)
+        private void UpdateState(AppState? newState = null, string statusMsg = null)
         {
             _appState = newState ?? _appState;
             string msgToSend = null;
@@ -1072,148 +1042,24 @@ namespace BlenderRenderController
             if (_appState == AppState.RENDERING_ALL)
             {
                 renderAllButton.Text = "Stop Render";
-                renderAllButton.Image = Resources.stop_icon_small;
+                renderAllButton.Image = Resources.stop_icon;
             }
             else
             {
                 renderAllButton.Text = "Start Render";
-                renderAllButton.Image = Resources.render_icon_small;
+                renderAllButton.Image = Resources.render_icon;
             }
 
             // showRecents btn
-            if (_appState == AppState.RENDERING_ALL || 
-                _appState == AppState.NOT_CONFIGURED)
-            {
-                showRecentBlendsBtn.Enabled = false;
-            }
-            else
-            {
-                showRecentBlendsBtn.Enabled = recentBlendsMenu.Items.Count > 0;
-            }
-
-            // the world's longest switch block!
-            // enabling / disabling UI according to current app state
-            switch (_appState)
-            {
-                case AppState.AFTER_START:
-                    blendNameLabel.Visible = false;
-                    renderAllButton.Enabled = false;
-                    menuToolStrip.Enabled = true;
-                    blendBrowseBtn.Enabled = true;
-                    mixDownButton.Enabled = false;
-                    totalStartNumericUpDown.Enabled = false;
-                    totalEndNumericUpDown.Enabled = false;
-                    chunkLengthNumericUpDown.Enabled = false;
-                    processCountNumericUpDown.Enabled = false;
-                    concatenatePartsButton.Enabled = true;
-                    reloadBlenderDataButton.Enabled = false;
-                    openOutputFolderButton.Enabled = false;
-                    outputFolderBrowseButton.Enabled = false;
-                    outputFolderTextBox.Enabled = false;
-                    statusLabel.Visible = true;
-                    ETALabel.Visible = false;
-                    totalTimeLabel.Visible = false;
-                    rendererRadioButtonBlender.Enabled = true;
-                    rendererRadioButtonCycles.Enabled = true;
-                    startEndBlendRadio.Enabled = false;
-                    startEndCustomRadio.Enabled = false;
-                    renderOptionsCustomRadio.Enabled = false;
-                    renderOptionsAutoRadio.Enabled = false;
-                    afterRenderDoNothingRadio.Enabled = false;
-                    afterRenderJoinMixdownRadio.Enabled = false;
-                    afterRenderJoinRadio.Enabled = false;
-                    renderInfoLabel.Enabled = false;
-                    //Status("Select a file");
-                    msgToSend = statusMsg ?? "Select a file";
-                    break;
-                case AppState.NOT_CONFIGURED:
-                    renderAllButton.Enabled = false;
-                    menuToolStrip.Enabled = true;
-                    mixDownButton.Enabled = false;
-                    totalStartNumericUpDown.Enabled = false;
-                    totalEndNumericUpDown.Enabled = false;
-                    chunkLengthNumericUpDown.Enabled = false;
-                    processCountNumericUpDown.Enabled = false;
-                    concatenatePartsButton.Enabled = false;
-                    reloadBlenderDataButton.Enabled = false;
-                    blendBrowseBtn.Enabled = false;
-                    outputFolderBrowseButton.Enabled = false;
-                    openOutputFolderButton.Enabled = false;
-                    outputFolderTextBox.Enabled = false;
-                    statusLabel.Visible = true;
-                    ETALabel.Visible = false;
-                    totalTimeLabel.Visible = false;
-                    rendererRadioButtonBlender.Enabled = true;
-                    rendererRadioButtonCycles.Enabled = true;
-                    startEndBlendRadio.Enabled = false;
-                    startEndCustomRadio.Enabled = false;
-                    renderOptionsCustomRadio.Enabled = false;
-                    renderOptionsAutoRadio.Enabled = false;
-                    afterRenderDoNothingRadio.Enabled = false;
-                    afterRenderJoinMixdownRadio.Enabled = false;
-                    afterRenderJoinRadio.Enabled = false;
-                    renderInfoLabel.Enabled = false;
-                    //Status("Required program(s) not found, see Settings");
-                    msgToSend = statusMsg ?? "Required program(s) not found, see Settings";
-                    break;
-                case AppState.READY_FOR_RENDER:
-                    blendNameLabel.Visible = true;
-                    renderAllButton.Enabled = true;
-                    menuToolStrip.Enabled = true;
-                    mixDownButton.Enabled = true;
-                    totalStartNumericUpDown.Enabled = startEndCustomRadio.Checked;
-                    totalEndNumericUpDown.Enabled = startEndCustomRadio.Checked;
-                    chunkLengthNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
-                    processCountNumericUpDown.Enabled = renderOptionsCustomRadio.Checked;
-                    concatenatePartsButton.Enabled = true;
-                    reloadBlenderDataButton.Enabled = true;
-                    blendBrowseBtn.Enabled = true;
-                    outputFolderBrowseButton.Enabled = true;
-                    outputFolderTextBox.Enabled = true;
-                    openOutputFolderButton.Enabled = true;
-                    statusLabel.Visible = true;
-                    ETALabel.Visible = true;
-                    totalTimeLabel.Visible = true;
-                    rendererRadioButtonBlender.Enabled = true;
-                    rendererRadioButtonCycles.Enabled = true;
-                    startEndBlendRadio.Enabled = true;
-                    startEndCustomRadio.Enabled = true;
-                    renderOptionsCustomRadio.Enabled = true;
-                    renderOptionsAutoRadio.Enabled = true;
-                    afterRenderDoNothingRadio.Enabled = true;
-                    afterRenderJoinMixdownRadio.Enabled = true;
-                    afterRenderJoinRadio.Enabled = true;
-                    renderInfoLabel.Enabled = true;
-                    //Status("Ready");
-                    msgToSend = statusMsg ?? "Ready";
-                    break;
-                case AppState.RENDERING_ALL:
-                    menuToolStrip.Enabled = false;
-                    mixDownButton.Enabled = false;
-                    totalStartNumericUpDown.Enabled = false;
-                    totalEndNumericUpDown.Enabled = false;
-                    chunkLengthNumericUpDown.Enabled = false;
-                    processCountNumericUpDown.Enabled = false;
-                    concatenatePartsButton.Enabled = false;
-                    reloadBlenderDataButton.Enabled = false;
-                    blendBrowseBtn.Enabled = false;
-                    outputFolderBrowseButton.Enabled = false;
-                    outputFolderTextBox.Enabled = false;
-                    openOutputFolderButton.Enabled = true;
-                    statusLabel.Visible = true;
-                    ETALabel.Visible = true;
-                    rendererRadioButtonBlender.Enabled = false;
-                    rendererRadioButtonCycles.Enabled = false;
-                    renderOptionsCustomRadio.Enabled = false;
-                    renderOptionsAutoRadio.Enabled = false;
-                    startEndBlendRadio.Enabled = false;
-                    startEndCustomRadio.Enabled = false;
-                    afterRenderDoNothingRadio.Enabled = false;
-                    afterRenderJoinMixdownRadio.Enabled = false;
-                    afterRenderJoinRadio.Enabled = false;
-                    msgToSend = statusMsg;
-                    break;
-            }
+            //if (_appState == AppState.RENDERING_ALL || 
+            //    _appState == AppState.NOT_CONFIGURED)
+            //{
+            //    showRecentBlendsBtn.Enabled = false;
+            //}
+            //else
+            //{
+            //    showRecentBlendsBtn.Enabled = recentBlendsMenu.Items.Count > 0;
+            //}
 
             if (msgToSend != null)
                 Status(msgToSend);

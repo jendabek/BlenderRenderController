@@ -37,98 +37,110 @@ namespace BlenderRenderController
             this.blendDataBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.startFrameLabel = new System.Windows.Forms.Label();
             this.outputFolderTextBox = new System.Windows.Forms.TextBox();
-            this.statusLabel = new System.Windows.Forms.Label();
             this.totalFrameCountLabel = new System.Windows.Forms.Label();
             this.totalEndNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.processCountNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.projectSettingsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.processCountLabel = new System.Windows.Forms.Label();
-            this.totalTimeLabel = new System.Windows.Forms.Label();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tipsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clearRecentProjectsListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.extrasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemBug = new System.Windows.Forms.ToolStripMenuItem();
-            this.authorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.jendabekMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.isti115MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.meTwentyFiveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.redRaptorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.forceUIUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label1 = new System.Windows.Forms.Label();
-            this.infoPanel = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.infoDurationLabel = new System.Windows.Forms.Label();
-            this.infoResolution = new System.Windows.Forms.TextBox();
-            this.infoFramerate = new System.Windows.Forms.TextBox();
-            this.infoDuration = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.infoFramesTotal = new System.Windows.Forms.TextBox();
-            this.infoActiveScene = new System.Windows.Forms.TextBox();
-            this.infoFramesTotalLabel = new System.Windows.Forms.Label();
             this.toolTipWarn = new System.Windows.Forms.ToolTip(this.components);
             this.toolTipInfo = new System.Windows.Forms.ToolTip(this.components);
             this.chunkLengthLabel = new System.Windows.Forms.Label();
             this.chunkLengthNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.afterRenderJoinMixdownRadio = new System.Windows.Forms.RadioButton();
-            this.afterRenderJoinRadio = new System.Windows.Forms.RadioButton();
-            this.afterRenderDoNothingRadio = new System.Windows.Forms.RadioButton();
             this.renderInfoLabel = new System.Windows.Forms.Label();
-            this.reloadBlenderDataButton = new System.Windows.Forms.Button();
             this.renderAllButton = new System.Windows.Forms.Button();
-            this.showRecentBlendsBtn = new System.Windows.Forms.Button();
+            this.cbRenderer = new System.Windows.Forms.ComboBox();
+            this.cbAfterRenderAction = new System.Windows.Forms.ComboBox();
             this.recentBlendsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.concatenatePartsButton = new System.Windows.Forms.Button();
-            this.mixDownButton = new System.Windows.Forms.Button();
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.miEmptyPH = new System.Windows.Forms.ToolStripMenuItem();
+            this.miOpenRecent = new System.Windows.Forms.ToolStripMenuItem();
+            this.openRecentsTSButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.blendFileNameLabel = new System.Windows.Forms.Label();
-            this.rendererRadioButtonCycles = new System.Windows.Forms.RadioButton();
-            this.rendererRadioButtonBlender = new System.Windows.Forms.RadioButton();
             this.startEndBlendRadio = new System.Windows.Forms.RadioButton();
             this.startEndCustomRadio = new System.Windows.Forms.RadioButton();
             this.renderOptionsAutoRadio = new System.Windows.Forms.RadioButton();
             this.renderOptionsCustomRadio = new System.Windows.Forms.RadioButton();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.openOutputFolderButton = new System.Windows.Forms.Button();
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
-            this.ETALabel = new System.Windows.Forms.Label();
-            this.blendBrowseBtn = new System.Windows.Forms.Button();
             this.openBlendDialog = new System.Windows.Forms.OpenFileDialog();
-            this.startEndFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.flpStartEnd = new System.Windows.Forms.FlowLayoutPanel();
             this.blendNameLabel = new System.Windows.Forms.Label();
-            this.menuToolStrip = new System.Windows.Forms.ToolStrip();
+            this.toolStrip = new System.Windows.Forms.ToolStrip();
+            this.openTSButton = new System.Windows.Forms.ToolStripButton();
+            this.reloadTSButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.verToolStripLbl = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.donationTSBtn = new System.Windows.Forms.ToolStripButton();
+            this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
-            this.label5 = new System.Windows.Forms.Label();
+            this.panelFrameRange = new System.Windows.Forms.Panel();
+            this.flpChunkMode = new System.Windows.Forms.FlowLayoutPanel();
+            this.panelChunkSize = new System.Windows.Forms.Panel();
+            this.menuStrip = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miOpenFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.miReloadCurrent = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.miSettings = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miRenderMixdown = new System.Windows.Forms.ToolStripMenuItem();
+            this.miJoinChunks = new System.Windows.Forms.ToolStripMenuItem();
+            this.forceUIUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miGithub = new System.Windows.Forms.ToolStripMenuItem();
+            this.miReportBug = new System.Windows.Forms.ToolStripMenuItem();
+            this.miDonate = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.miAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.statusMessage = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusTime = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusETR = new System.Windows.Forms.ToolStripStatusLabel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.infoBox = new System.Windows.Forms.FlowLayoutPanel();
+            this.frOptions = new System.Windows.Forms.TableLayoutPanel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.infoActiveScene = new BlenderRenderController.Ui.InfoBoxItem();
+            this.infoDuration = new BlenderRenderController.Ui.InfoBoxItem();
+            this.infoFPS = new BlenderRenderController.Ui.InfoBoxItem();
+            this.infoResolution = new BlenderRenderController.Ui.InfoBoxItem();
             ((System.ComponentModel.ISupportInitialize)(this.totalStartNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.blendDataBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).BeginInit();
-            this.infoPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).BeginInit();
-            this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
-            this.startEndFLP.SuspendLayout();
-            this.menuToolStrip.SuspendLayout();
+            this.recentBlendsMenu.SuspendLayout();
+            this.flpStartEnd.SuspendLayout();
+            this.toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
+            this.panelFrameRange.SuspendLayout();
+            this.flpChunkMode.SuspendLayout();
+            this.panelChunkSize.SuspendLayout();
+            this.menuStrip.SuspendLayout();
+            this.statusStrip.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.infoBox.SuspendLayout();
+            this.frOptions.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // renderProgressBar
             // 
-            this.renderProgressBar.Location = new System.Drawing.Point(32, 543);
+            this.renderProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.renderProgressBar.Location = new System.Drawing.Point(12, 487);
             this.renderProgressBar.MarqueeAnimationSpeed = 75;
             this.renderProgressBar.Name = "renderProgressBar";
-            this.renderProgressBar.Size = new System.Drawing.Size(612, 20);
+            this.renderProgressBar.Size = new System.Drawing.Size(449, 20);
             this.renderProgressBar.Step = 1;
             this.renderProgressBar.TabIndex = 2;
             this.toolTipInfo.SetToolTip(this.renderProgressBar, "Progress bar");
@@ -138,7 +150,7 @@ namespace BlenderRenderController
             this.totalStartNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "Start", true));
             this.totalStartNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.errorProvider.SetIconAlignment(this.totalStartNumericUpDown, System.Windows.Forms.ErrorIconAlignment.BottomRight);
-            this.totalStartNumericUpDown.Location = new System.Drawing.Point(136, 237);
+            this.totalStartNumericUpDown.Location = new System.Drawing.Point(6, 21);
             this.totalStartNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -147,7 +159,7 @@ namespace BlenderRenderController
             this.totalStartNumericUpDown.Name = "totalStartNumericUpDown";
             this.totalStartNumericUpDown.Size = new System.Drawing.Size(90, 22);
             this.totalStartNumericUpDown.TabIndex = 5;
-            this.totalStartNumericUpDown.Tag = "DIRENDER";
+            this.totalStartNumericUpDown.Tag = "";
             this.totalStartNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.totalStartNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
             this.totalStartNumericUpDown.Validating += new System.ComponentModel.CancelEventHandler(this.StartEnd_Validating);
@@ -161,7 +173,7 @@ namespace BlenderRenderController
             // 
             this.startFrameLabel.AutoSize = true;
             this.startFrameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startFrameLabel.Location = new System.Drawing.Point(133, 220);
+            this.startFrameLabel.Location = new System.Drawing.Point(3, 4);
             this.startFrameLabel.Name = "startFrameLabel";
             this.startFrameLabel.Size = new System.Drawing.Size(71, 15);
             this.startFrameLabel.TabIndex = 6;
@@ -171,10 +183,11 @@ namespace BlenderRenderController
             // 
             this.outputFolderTextBox.BackColor = System.Drawing.Color.White;
             this.outputFolderTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "OutputPath", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.outputFolderTextBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.outputFolderTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.outputFolderTextBox.Location = new System.Drawing.Point(32, 321);
+            this.outputFolderTextBox.Location = new System.Drawing.Point(0, 0);
             this.outputFolderTextBox.Name = "outputFolderTextBox";
-            this.outputFolderTextBox.Size = new System.Drawing.Size(427, 22);
+            this.outputFolderTextBox.Size = new System.Drawing.Size(449, 22);
             this.outputFolderTextBox.TabIndex = 11;
             this.outputFolderTextBox.Tag = "DIFNL;DIRENDER";
             this.toolTipInfo.SetToolTip(this.outputFolderTextBox, "Path to folder where your video will be rendered to.\r\nIt is automatically set to " +
@@ -182,24 +195,11 @@ namespace BlenderRenderController
             this.outputFolderTextBox.WordWrap = false;
             this.outputFolderTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
             // 
-            // statusLabel
-            // 
-            this.statusLabel.AutoSize = true;
-            this.statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.statusLabel.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.statusLabel.Location = new System.Drawing.Point(32, 571);
-            this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(145, 16);
-            this.statusLabel.TabIndex = 11;
-            this.statusLabel.Text = "Some status message.";
-            this.toolTipInfo.SetToolTip(this.statusLabel, "Progress");
-            this.statusLabel.Visible = false;
-            // 
             // totalFrameCountLabel
             // 
             this.totalFrameCountLabel.AutoSize = true;
             this.totalFrameCountLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.totalFrameCountLabel.Location = new System.Drawing.Point(233, 220);
+            this.totalFrameCountLabel.Location = new System.Drawing.Point(103, 4);
             this.totalFrameCountLabel.Name = "totalFrameCountLabel";
             this.totalFrameCountLabel.Size = new System.Drawing.Size(68, 15);
             this.totalFrameCountLabel.TabIndex = 13;
@@ -210,7 +210,7 @@ namespace BlenderRenderController
             this.totalEndNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "End", true));
             this.totalEndNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.errorProvider.SetIconAlignment(this.totalEndNumericUpDown, System.Windows.Forms.ErrorIconAlignment.BottomRight);
-            this.totalEndNumericUpDown.Location = new System.Drawing.Point(236, 237);
+            this.totalEndNumericUpDown.Location = new System.Drawing.Point(106, 21);
             this.totalEndNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -234,7 +234,7 @@ namespace BlenderRenderController
             // 
             this.processCountNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "MaxConcurrency", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.processCountNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.processCountNumericUpDown.Location = new System.Drawing.Point(542, 237);
+            this.processCountNumericUpDown.Location = new System.Drawing.Point(102, 21);
             this.processCountNumericUpDown.Minimum = new decimal(new int[] {
             1,
             0,
@@ -262,300 +262,14 @@ namespace BlenderRenderController
             // processCountLabel
             // 
             this.processCountLabel.AutoSize = true;
-            this.processCountLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.processCountLabel.Location = new System.Drawing.Point(539, 219);
+            this.processCountLabel.Location = new System.Drawing.Point(99, 3);
             this.processCountLabel.Name = "processCountLabel";
             this.processCountLabel.Size = new System.Drawing.Size(91, 15);
             this.processCountLabel.TabIndex = 15;
-            this.processCountLabel.Text = "Processes Max";
+            this.processCountLabel.Text = "Max Processes";
             this.toolTipInfo.SetToolTip(this.processCountLabel, "Maximum number of Blender processes that will run in parallel when rendering your" +
         " video.\r\n\r\nIf \"Auto\" is checked, Max = number of your logical processors (thread" +
         "s).");
-            // 
-            // totalTimeLabel
-            // 
-            this.totalTimeLabel.AutoSize = true;
-            this.totalTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.totalTimeLabel.Location = new System.Drawing.Point(494, 571);
-            this.totalTimeLabel.Name = "totalTimeLabel";
-            this.totalTimeLabel.Size = new System.Drawing.Size(147, 16);
-            this.totalTimeLabel.TabIndex = 19;
-            this.totalTimeLabel.Text = "Time Elapsed: 00:00:00";
-            // 
-            // optionsToolStripMenuItem
-            // 
-            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.settingsToolStripMenuItem,
-            this.tipsToolStripMenuItem,
-            this.clearRecentProjectsListToolStripMenuItem});
-            this.optionsToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 25);
-            this.optionsToolStripMenuItem.Text = "Options";
-            this.optionsToolStripMenuItem.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
-            this.optionsToolStripMenuItem.ToolTipText = "Extra options";
-            // 
-            // settingsToolStripMenuItem
-            // 
-            this.settingsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("settingsToolStripMenuItem.Image")));
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.settingsToolStripMenuItem.Text = "Settings";
-            this.settingsToolStripMenuItem.ToolTipText = "Open BRC\'s settings";
-            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
-            // 
-            // tipsToolStripMenuItem
-            // 
-            this.tipsToolStripMenuItem.Checked = true;
-            this.tipsToolStripMenuItem.CheckOnClick = true;
-            this.tipsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.tipsToolStripMenuItem.Name = "tipsToolStripMenuItem";
-            this.tipsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.tipsToolStripMenuItem.Text = "Tooltips";
-            this.tipsToolStripMenuItem.ToolTipText = "Show/Hide Tooltips";
-            this.tipsToolStripMenuItem.Click += new System.EventHandler(this.tipsToolStripMenuItem_Click);
-            // 
-            // clearRecentProjectsListToolStripMenuItem
-            // 
-            this.clearRecentProjectsListToolStripMenuItem.Image = global::BlenderRenderController.Properties.Resources.Broom_50;
-            this.clearRecentProjectsListToolStripMenuItem.Name = "clearRecentProjectsListToolStripMenuItem";
-            this.clearRecentProjectsListToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.clearRecentProjectsListToolStripMenuItem.Text = "Clear recent projects";
-            this.clearRecentProjectsListToolStripMenuItem.Click += new System.EventHandler(this.clearRecentProjectsListToolStripMenuItem_Click);
-            // 
-            // extrasToolStripMenuItem
-            // 
-            this.extrasToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemBug,
-            this.authorsToolStripMenuItem,
-            this.forceUIUpdateToolStripMenuItem});
-            this.extrasToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.extrasToolStripMenuItem.Name = "extrasToolStripMenuItem";
-            this.extrasToolStripMenuItem.Size = new System.Drawing.Size(53, 25);
-            this.extrasToolStripMenuItem.Text = "Extras";
-            // 
-            // toolStripMenuItemBug
-            // 
-            this.toolStripMenuItemBug.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.toolStripMenuItemBug.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.toolStripMenuItemBug.Image = global::BlenderRenderController.Properties.Resources.bug_icon;
-            this.toolStripMenuItemBug.Name = "toolStripMenuItemBug";
-            this.toolStripMenuItemBug.Size = new System.Drawing.Size(171, 22);
-            this.toolStripMenuItemBug.Text = "Report a Bug";
-            this.toolStripMenuItemBug.Click += new System.EventHandler(this.toolStripMenuItemBug_Click);
-            // 
-            // authorsToolStripMenuItem
-            // 
-            this.authorsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.jendabekMenuItem,
-            this.isti115MenuItem,
-            this.meTwentyFiveMenuItem,
-            this.redRaptorMenuItem});
-            this.authorsToolStripMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.authorsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.authorsToolStripMenuItem.Image = global::BlenderRenderController.Properties.Resources.github_logo_small;
-            this.authorsToolStripMenuItem.Name = "authorsToolStripMenuItem";
-            this.authorsToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.authorsToolStripMenuItem.Text = "Authors on Github";
-            // 
-            // jendabekMenuItem
-            // 
-            this.jendabekMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.jendabekMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.jendabekMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("jendabekMenuItem.Image")));
-            this.jendabekMenuItem.Name = "jendabekMenuItem";
-            this.jendabekMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.jendabekMenuItem.Text = "jendabek";
-            this.jendabekMenuItem.Click += new System.EventHandler(this.AuthorLink_Clicked);
-            // 
-            // isti115MenuItem
-            // 
-            this.isti115MenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.isti115MenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.isti115MenuItem.Image = ((System.Drawing.Image)(resources.GetObject("isti115MenuItem.Image")));
-            this.isti115MenuItem.Name = "isti115MenuItem";
-            this.isti115MenuItem.Size = new System.Drawing.Size(152, 22);
-            this.isti115MenuItem.Text = "Isti115";
-            this.isti115MenuItem.Click += new System.EventHandler(this.AuthorLink_Clicked);
-            // 
-            // meTwentyFiveMenuItem
-            // 
-            this.meTwentyFiveMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.meTwentyFiveMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.meTwentyFiveMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("meTwentyFiveMenuItem.Image")));
-            this.meTwentyFiveMenuItem.Name = "meTwentyFiveMenuItem";
-            this.meTwentyFiveMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.meTwentyFiveMenuItem.Text = "MeTwentyFive";
-            this.meTwentyFiveMenuItem.Click += new System.EventHandler(this.AuthorLink_Clicked);
-            // 
-            // redRaptorMenuItem
-            // 
-            this.redRaptorMenuItem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.redRaptorMenuItem.ForeColor = System.Drawing.Color.CornflowerBlue;
-            this.redRaptorMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("redRaptorMenuItem.Image")));
-            this.redRaptorMenuItem.Name = "redRaptorMenuItem";
-            this.redRaptorMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.redRaptorMenuItem.Text = "RedRaptor93";
-            this.redRaptorMenuItem.Click += new System.EventHandler(this.AuthorLink_Clicked);
-            // 
-            // forceUIUpdateToolStripMenuItem
-            // 
-            this.forceUIUpdateToolStripMenuItem.Name = "forceUIUpdateToolStripMenuItem";
-            this.forceUIUpdateToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
-            this.forceUIUpdateToolStripMenuItem.Text = "Force UI update";
-            this.forceUIUpdateToolStripMenuItem.ToolTipText = "If your UI elements are not reacting to changes, click here to \r\nforce them to up" +
-    "date.";
-            this.forceUIUpdateToolStripMenuItem.Visible = false;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(8, 15);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(76, 15);
-            this.label1.TabIndex = 21;
-            this.label1.Text = "Active Scene";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.toolTipWarn.SetToolTip(this.label1, "This program will only render the ACTIVE scene, if you \r\nhave more then one scene" +
-        " on your project sure you \r\nsave it with the scene you want OPEN.");
-            // 
-            // infoPanel
-            // 
-            this.infoPanel.BackColor = System.Drawing.SystemColors.Info;
-            this.infoPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.infoPanel.Controls.Add(this.label4);
-            this.infoPanel.Controls.Add(this.infoDurationLabel);
-            this.infoPanel.Controls.Add(this.infoResolution);
-            this.infoPanel.Controls.Add(this.infoFramerate);
-            this.infoPanel.Controls.Add(this.infoDuration);
-            this.infoPanel.Controls.Add(this.label7);
-            this.infoPanel.Controls.Add(this.infoFramesTotal);
-            this.infoPanel.Controls.Add(this.infoActiveScene);
-            this.infoPanel.Controls.Add(this.label1);
-            this.infoPanel.Controls.Add(this.infoFramesTotalLabel);
-            this.infoPanel.Location = new System.Drawing.Point(23, 79);
-            this.infoPanel.Name = "infoPanel";
-            this.infoPanel.Size = new System.Drawing.Size(443, 87);
-            this.infoPanel.TabIndex = 22;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(295, 16);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(66, 15);
-            this.label4.TabIndex = 33;
-            this.label4.Text = "Resolution";
-            // 
-            // infoDurationLabel
-            // 
-            this.infoDurationLabel.AutoSize = true;
-            this.infoDurationLabel.BackColor = System.Drawing.SystemColors.Info;
-            this.infoDurationLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoDurationLabel.Location = new System.Drawing.Point(182, 15);
-            this.infoDurationLabel.Name = "infoDurationLabel";
-            this.infoDurationLabel.Size = new System.Drawing.Size(58, 15);
-            this.infoDurationLabel.TabIndex = 31;
-            this.infoDurationLabel.Text = "T. Length";
-            // 
-            // infoResolution
-            // 
-            this.infoResolution.BackColor = System.Drawing.SystemColors.Control;
-            this.infoResolution.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoResolution.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Resolution", true, System.Windows.Forms.DataSourceUpdateMode.Never, "..."));
-            this.infoResolution.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.infoResolution.Location = new System.Drawing.Point(298, 34);
-            this.infoResolution.Name = "infoResolution";
-            this.infoResolution.ReadOnly = true;
-            this.infoResolution.Size = new System.Drawing.Size(77, 20);
-            this.infoResolution.TabIndex = 32;
-            this.infoResolution.TabStop = false;
-            this.infoResolution.Text = "...";
-            this.infoResolution.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // infoFramerate
-            // 
-            this.infoFramerate.BackColor = System.Drawing.SystemColors.Control;
-            this.infoFramerate.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoFramerate.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Fps", true, System.Windows.Forms.DataSourceUpdateMode.Never, "...", "###.##"));
-            this.infoFramerate.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.infoFramerate.Location = new System.Drawing.Point(378, 34);
-            this.infoFramerate.Name = "infoFramerate";
-            this.infoFramerate.ReadOnly = true;
-            this.infoFramerate.Size = new System.Drawing.Size(49, 20);
-            this.infoFramerate.TabIndex = 30;
-            this.infoFramerate.TabStop = false;
-            this.infoFramerate.Text = "...";
-            this.infoFramerate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // infoDuration
-            // 
-            this.infoDuration.BackColor = System.Drawing.SystemColors.Control;
-            this.infoDuration.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoDuration.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "Duration", true, System.Windows.Forms.DataSourceUpdateMode.Never, "..."));
-            this.infoDuration.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.infoDuration.Location = new System.Drawing.Point(185, 34);
-            this.infoDuration.Name = "infoDuration";
-            this.infoDuration.ReadOnly = true;
-            this.infoDuration.Size = new System.Drawing.Size(110, 20);
-            this.infoDuration.TabIndex = 30;
-            this.infoDuration.TabStop = false;
-            this.infoDuration.Text = "...";
-            this.infoDuration.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(375, 16);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(30, 15);
-            this.label7.TabIndex = 29;
-            this.label7.Text = "FPS";
-            // 
-            // infoFramesTotal
-            // 
-            this.infoFramesTotal.BackColor = System.Drawing.SystemColors.Control;
-            this.infoFramesTotal.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoFramesTotal.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "TotalFrames", true, System.Windows.Forms.DataSourceUpdateMode.Never, "...", "# \"f\""));
-            this.infoFramesTotal.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.infoFramesTotal.Location = new System.Drawing.Point(108, 34);
-            this.infoFramesTotal.Name = "infoFramesTotal";
-            this.infoFramesTotal.ReadOnly = true;
-            this.infoFramesTotal.Size = new System.Drawing.Size(74, 20);
-            this.infoFramesTotal.TabIndex = 30;
-            this.infoFramesTotal.TabStop = false;
-            this.infoFramesTotal.Text = "...";
-            this.infoFramesTotal.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // infoActiveScene
-            // 
-            this.infoActiveScene.BackColor = System.Drawing.SystemColors.Control;
-            this.infoActiveScene.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.infoActiveScene.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "ActiveScene", true, System.Windows.Forms.DataSourceUpdateMode.Never, "..."));
-            this.infoActiveScene.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.infoActiveScene.Location = new System.Drawing.Point(11, 34);
-            this.infoActiveScene.Name = "infoActiveScene";
-            this.infoActiveScene.ReadOnly = true;
-            this.infoActiveScene.Size = new System.Drawing.Size(94, 20);
-            this.infoActiveScene.TabIndex = 25;
-            this.infoActiveScene.TabStop = false;
-            this.infoActiveScene.Text = "...";
-            this.infoActiveScene.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.toolTipInfo.SetToolTip(this.infoActiveScene, "...");
-            // 
-            // infoFramesTotalLabel
-            // 
-            this.infoFramesTotalLabel.AutoSize = true;
-            this.infoFramesTotalLabel.BackColor = System.Drawing.SystemColors.Info;
-            this.infoFramesTotalLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infoFramesTotalLabel.Location = new System.Drawing.Point(105, 15);
-            this.infoFramesTotalLabel.Name = "infoFramesTotalLabel";
-            this.infoFramesTotalLabel.Size = new System.Drawing.Size(62, 15);
-            this.infoFramesTotalLabel.TabIndex = 29;
-            this.infoFramesTotalLabel.Text = "T. Frames";
             // 
             // toolTipWarn
             // 
@@ -574,7 +288,7 @@ namespace BlenderRenderController
             // 
             this.chunkLengthLabel.AutoSize = true;
             this.chunkLengthLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkLengthLabel.Location = new System.Drawing.Point(445, 220);
+            this.chunkLengthLabel.Location = new System.Drawing.Point(1, 3);
             this.chunkLengthLabel.Name = "chunkLengthLabel";
             this.chunkLengthLabel.Size = new System.Drawing.Size(69, 15);
             this.chunkLengthLabel.TabIndex = 13;
@@ -585,7 +299,7 @@ namespace BlenderRenderController
             // 
             this.chunkLengthNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectSettingsBindingSource, "ChunkLenght", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.chunkLengthNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(448, 238);
+            this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(4, 21);
             this.chunkLengthNumericUpDown.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -599,7 +313,7 @@ namespace BlenderRenderController
             this.chunkLengthNumericUpDown.Name = "chunkLengthNumericUpDown";
             this.chunkLengthNumericUpDown.Size = new System.Drawing.Size(86, 22);
             this.chunkLengthNumericUpDown.TabIndex = 7;
-            this.chunkLengthNumericUpDown.Tag = "DIRENDER";
+            this.chunkLengthNumericUpDown.Tag = "";
             this.chunkLengthNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.toolTipInfo.SetToolTip(this.chunkLengthNumericUpDown, resources.GetString("chunkLengthNumericUpDown.ToolTip"));
             this.chunkLengthNumericUpDown.Value = new decimal(new int[] {
@@ -609,89 +323,26 @@ namespace BlenderRenderController
             0});
             this.chunkLengthNumericUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Enter_GotoNext);
             // 
-            // afterRenderJoinMixdownRadio
-            // 
-            this.afterRenderJoinMixdownRadio.AutoSize = true;
-            this.afterRenderJoinMixdownRadio.Checked = true;
-            this.afterRenderJoinMixdownRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.afterRenderJoinMixdownRadio.Location = new System.Drawing.Point(3, 9);
-            this.afterRenderJoinMixdownRadio.Name = "afterRenderJoinMixdownRadio";
-            this.afterRenderJoinMixdownRadio.Size = new System.Drawing.Size(283, 19);
-            this.afterRenderJoinMixdownRadio.TabIndex = 33;
-            this.afterRenderJoinMixdownRadio.TabStop = true;
-            this.afterRenderJoinMixdownRadio.Tag = "";
-            this.afterRenderJoinMixdownRadio.Text = "Automatically join chunks && use mixdown audio";
-            this.toolTipInfo.SetToolTip(this.afterRenderJoinMixdownRadio, resources.GetString("afterRenderJoinMixdownRadio.ToolTip"));
-            this.afterRenderJoinMixdownRadio.UseVisualStyleBackColor = true;
-            this.afterRenderJoinMixdownRadio.CheckedChanged += new System.EventHandler(this.AfterRenderAction_Changed);
-            // 
-            // afterRenderJoinRadio
-            // 
-            this.afterRenderJoinRadio.AutoSize = true;
-            this.afterRenderJoinRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.afterRenderJoinRadio.Location = new System.Drawing.Point(3, 31);
-            this.afterRenderJoinRadio.Name = "afterRenderJoinRadio";
-            this.afterRenderJoinRadio.Size = new System.Drawing.Size(162, 19);
-            this.afterRenderJoinRadio.TabIndex = 33;
-            this.afterRenderJoinRadio.Tag = "";
-            this.afterRenderJoinRadio.Text = "Automatically join chunks";
-            this.toolTipInfo.SetToolTip(this.afterRenderJoinRadio, "This option will:\r\n\r\n1. Render all chunks,\r\n2. Join the chunks together.");
-            this.afterRenderJoinRadio.UseVisualStyleBackColor = true;
-            this.afterRenderJoinRadio.CheckedChanged += new System.EventHandler(this.AfterRenderAction_Changed);
-            // 
-            // afterRenderDoNothingRadio
-            // 
-            this.afterRenderDoNothingRadio.AutoSize = true;
-            this.afterRenderDoNothingRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.afterRenderDoNothingRadio.Location = new System.Drawing.Point(3, 53);
-            this.afterRenderDoNothingRadio.Name = "afterRenderDoNothingRadio";
-            this.afterRenderDoNothingRadio.Size = new System.Drawing.Size(107, 19);
-            this.afterRenderDoNothingRadio.TabIndex = 33;
-            this.afterRenderDoNothingRadio.Tag = "";
-            this.afterRenderDoNothingRadio.Text = "No extra action";
-            this.toolTipInfo.SetToolTip(this.afterRenderDoNothingRadio, "Render chunks w/ no extra action.\r\n\r\nStill, you can render mixdown separately and" +
-        " join it manually using the buttons under \'Extra\' \r\nor w/ an external tool of yo" +
-        "ur choosing.");
-            this.afterRenderDoNothingRadio.UseVisualStyleBackColor = true;
-            this.afterRenderDoNothingRadio.CheckedChanged += new System.EventHandler(this.AfterRenderAction_Changed);
-            // 
             // renderInfoLabel
             // 
             this.renderInfoLabel.AutoSize = true;
-            this.renderInfoLabel.BackColor = System.Drawing.SystemColors.Control;
-            this.renderInfoLabel.Image = global::BlenderRenderController.Properties.Resources.info_icon;
-            this.renderInfoLabel.Location = new System.Drawing.Point(198, 478);
+            this.renderInfoLabel.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.renderInfoLabel.Location = new System.Drawing.Point(308, 441);
             this.renderInfoLabel.Name = "renderInfoLabel";
             this.renderInfoLabel.Padding = new System.Windows.Forms.Padding(8, 3, 8, 3);
             this.renderInfoLabel.Size = new System.Drawing.Size(16, 19);
             this.renderInfoLabel.TabIndex = 35;
             this.toolTipInfo.SetToolTip(this.renderInfoLabel, resources.GetString("renderInfoLabel.ToolTip"));
             // 
-            // reloadBlenderDataButton
-            // 
-            this.reloadBlenderDataButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.reloadBlenderDataButton.Image = global::BlenderRenderController.Properties.Resources.reload_icon_small;
-            this.reloadBlenderDataButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.reloadBlenderDataButton.Location = new System.Drawing.Point(472, 132);
-            this.reloadBlenderDataButton.Name = "reloadBlenderDataButton";
-            this.reloadBlenderDataButton.Padding = new System.Windows.Forms.Padding(20, 0, 5, 0);
-            this.reloadBlenderDataButton.Size = new System.Drawing.Size(172, 34);
-            this.reloadBlenderDataButton.TabIndex = 2;
-            this.reloadBlenderDataButton.Tag = "DIFNL;DIRENDER";
-            this.reloadBlenderDataButton.Text = "Reload Blend";
-            this.toolTipInfo.SetToolTip(this.reloadBlenderDataButton, "Re-reads data from the .blend again and updates the form accordingly.");
-            this.reloadBlenderDataButton.UseVisualStyleBackColor = true;
-            this.reloadBlenderDataButton.Click += new System.EventHandler(this.reloadBlenderDataButton_Click);
-            // 
             // renderAllButton
             // 
-            this.renderAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderAllButton.Image = global::BlenderRenderController.Properties.Resources.render_icon_small;
+            this.renderAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderAllButton.Image = global::BlenderRenderController.Properties.Resources.render_icon;
             this.renderAllButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.renderAllButton.Location = new System.Drawing.Point(32, 478);
+            this.renderAllButton.Location = new System.Drawing.Point(155, 441);
             this.renderAllButton.Name = "renderAllButton";
             this.renderAllButton.Padding = new System.Windows.Forms.Padding(10, 0, 12, 0);
-            this.renderAllButton.Size = new System.Drawing.Size(160, 47);
+            this.renderAllButton.Size = new System.Drawing.Size(147, 34);
             this.renderAllButton.TabIndex = 13;
             this.renderAllButton.Tag = "DIFNL";
             this.renderAllButton.Text = "Start Render";
@@ -700,153 +351,120 @@ namespace BlenderRenderController
             this.renderAllButton.UseVisualStyleBackColor = true;
             this.renderAllButton.Click += new System.EventHandler(this.renderAllButton_Click);
             // 
-            // showRecentBlendsBtn
+            // cbRenderer
             // 
-            this.showRecentBlendsBtn.ContextMenuStrip = this.recentBlendsMenu;
-            this.showRecentBlendsBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.showRecentBlendsBtn.Location = new System.Drawing.Point(619, 79);
-            this.showRecentBlendsBtn.Name = "showRecentBlendsBtn";
-            this.showRecentBlendsBtn.Size = new System.Drawing.Size(27, 44);
-            this.showRecentBlendsBtn.TabIndex = 38;
-            this.showRecentBlendsBtn.Tag = "DIRENDER";
-            this.showRecentBlendsBtn.Text = "˅";
-            this.toolTipInfo.SetToolTip(this.showRecentBlendsBtn, "Recent .blend files");
-            this.showRecentBlendsBtn.UseVisualStyleBackColor = true;
-            this.showRecentBlendsBtn.Click += new System.EventHandler(this.showRecentBlendsBtn_Click);
+            this.cbRenderer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbRenderer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cbRenderer.FormattingEnabled = true;
+            this.cbRenderer.Location = new System.Drawing.Point(0, 18);
+            this.cbRenderer.Name = "cbRenderer";
+            this.cbRenderer.Size = new System.Drawing.Size(184, 21);
+            this.cbRenderer.TabIndex = 53;
+            this.toolTipInfo.SetToolTip(this.cbRenderer, "Renderer");
+            this.cbRenderer.SelectedIndexChanged += new System.EventHandler(this.Renderer_Changed);
+            // 
+            // cbAfterRenderAction
+            // 
+            this.cbAfterRenderAction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbAfterRenderAction.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cbAfterRenderAction.FormattingEnabled = true;
+            this.cbAfterRenderAction.Location = new System.Drawing.Point(0, 19);
+            this.cbAfterRenderAction.Name = "cbAfterRenderAction";
+            this.cbAfterRenderAction.Size = new System.Drawing.Size(189, 21);
+            this.cbAfterRenderAction.TabIndex = 51;
+            this.toolTipInfo.SetToolTip(this.cbAfterRenderAction, "Joining action");
+            this.cbAfterRenderAction.SelectedIndexChanged += new System.EventHandler(this.AfterRenderAction_Changed);
             // 
             // recentBlendsMenu
             // 
+            this.recentBlendsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.clearToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.miEmptyPH});
             this.recentBlendsMenu.Name = "recentBlendsMenu";
-            this.recentBlendsMenu.Size = new System.Drawing.Size(61, 4);
+            this.recentBlendsMenu.Size = new System.Drawing.Size(109, 54);
             // 
-            // concatenatePartsButton
+            // clearToolStripMenuItem
             // 
-            this.concatenatePartsButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.concatenatePartsButton.Image = global::BlenderRenderController.Properties.Resources.connect_icon_small;
-            this.concatenatePartsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.concatenatePartsButton.Location = new System.Drawing.Point(378, 438);
-            this.concatenatePartsButton.Name = "concatenatePartsButton";
-            this.concatenatePartsButton.Padding = new System.Windows.Forms.Padding(7, 0, 7, 0);
-            this.concatenatePartsButton.Size = new System.Drawing.Size(128, 38);
-            this.concatenatePartsButton.TabIndex = 15;
-            this.concatenatePartsButton.Tag = "DIRENDER";
-            this.concatenatePartsButton.Text = "Join Chunks";
-            this.concatenatePartsButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolTipInfo.SetToolTip(this.concatenatePartsButton, "Manually join chunks\r\n");
-            this.concatenatePartsButton.UseVisualStyleBackColor = true;
-            this.concatenatePartsButton.Click += new System.EventHandler(this.concatenatePartsButton_Click);
+            this.clearToolStripMenuItem.Image = global::BlenderRenderController.Properties.Resources.CleanData_16x;
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.clearToolStripMenuItem.Text = "Clear";
             // 
-            // mixDownButton
+            // toolStripSeparator3
             // 
-            this.mixDownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.mixDownButton.Image = global::BlenderRenderController.Properties.Resources.volume_small;
-            this.mixDownButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.mixDownButton.Location = new System.Drawing.Point(378, 395);
-            this.mixDownButton.Name = "mixDownButton";
-            this.mixDownButton.Padding = new System.Windows.Forms.Padding(8, 0, 7, 0);
-            this.mixDownButton.Size = new System.Drawing.Size(155, 38);
-            this.mixDownButton.TabIndex = 14;
-            this.mixDownButton.Tag = "DIFNL;DIRENDER";
-            this.mixDownButton.Text = "Render Mixdown";
-            this.mixDownButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.toolTipInfo.SetToolTip(this.mixDownButton, "Renders the current project\'s audio.");
-            this.mixDownButton.UseVisualStyleBackColor = true;
-            this.mixDownButton.Click += new System.EventHandler(this.mixDownButton_Click);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(105, 6);
+            // 
+            // miEmptyPH
+            // 
+            this.miEmptyPH.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.miEmptyPH.Enabled = false;
+            this.miEmptyPH.Name = "miEmptyPH";
+            this.miEmptyPH.Size = new System.Drawing.Size(108, 22);
+            this.miEmptyPH.Text = "Empty";
+            // 
+            // miOpenRecent
+            // 
+            this.miOpenRecent.DropDown = this.recentBlendsMenu;
+            this.miOpenRecent.Image = global::BlenderRenderController.Properties.Resources.Time_16x;
+            this.miOpenRecent.Name = "miOpenRecent";
+            this.miOpenRecent.Size = new System.Drawing.Size(152, 22);
+            this.miOpenRecent.Text = "Open Re&cent";
+            // 
+            // openRecentsTSButton
+            // 
+            this.openRecentsTSButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.openRecentsTSButton.DropDown = this.recentBlendsMenu;
+            this.openRecentsTSButton.Image = global::BlenderRenderController.Properties.Resources.Time_16x;
+            this.openRecentsTSButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.openRecentsTSButton.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
+            this.openRecentsTSButton.Name = "openRecentsTSButton";
+            this.openRecentsTSButton.Size = new System.Drawing.Size(29, 20);
+            this.openRecentsTSButton.Text = "Open Recent";
             // 
             // blendFileLabel
             // 
             this.blendFileLabel.AutoSize = true;
             this.blendFileLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.blendFileLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.blendFileLabel.Location = new System.Drawing.Point(19, 43);
+            this.blendFileLabel.Location = new System.Drawing.Point(9, 62);
             this.blendFileLabel.Name = "blendFileLabel";
-            this.blendFileLabel.Size = new System.Drawing.Size(102, 20);
+            this.blendFileLabel.Size = new System.Drawing.Size(84, 20);
             this.blendFileLabel.TabIndex = 25;
-            this.blendFileLabel.Text = "1. Blend File";
+            this.blendFileLabel.Text = "Blend File";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label2.Location = new System.Drawing.Point(19, 289);
+            this.label2.Location = new System.Drawing.Point(9, 343);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(129, 20);
+            this.label2.Size = new System.Drawing.Size(111, 20);
             this.label2.TabIndex = 25;
-            this.label2.Text = "4. Output Folder";
+            this.label2.Text = "Output Folder";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
             this.label8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label8.Location = new System.Drawing.Point(19, 186);
+            this.label8.Location = new System.Drawing.Point(9, 160);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(107, 20);
+            this.label8.Size = new System.Drawing.Size(67, 20);
             this.label8.TabIndex = 25;
-            this.label8.Text = "2. Start / End";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
-            this.label10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label10.Location = new System.Drawing.Point(19, 367);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(81, 20);
-            this.label10.TabIndex = 25;
-            this.label10.Text = "5. Render";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
-            this.label12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label12.Location = new System.Drawing.Point(342, 186);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(144, 20);
-            this.label12.TabIndex = 25;
-            this.label12.Text = "3. Render Options";
+            this.label8.Text = "Options";
             // 
             // blendFileNameLabel
             // 
             this.blendFileNameLabel.AutoSize = true;
             this.blendFileNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.blendFileNameLabel.ForeColor = System.Drawing.Color.Black;
-            this.blendFileNameLabel.Location = new System.Drawing.Point(20, 43);
+            this.blendFileNameLabel.Location = new System.Drawing.Point(10, 62);
             this.blendFileNameLabel.Name = "blendFileNameLabel";
             this.blendFileNameLabel.Size = new System.Drawing.Size(0, 25);
             this.blendFileNameLabel.TabIndex = 25;
-            // 
-            // rendererRadioButtonCycles
-            // 
-            this.rendererRadioButtonCycles.AutoSize = true;
-            this.rendererRadioButtonCycles.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonCycles.Location = new System.Drawing.Point(478, 276);
-            this.rendererRadioButtonCycles.Name = "rendererRadioButtonCycles";
-            this.rendererRadioButtonCycles.Size = new System.Drawing.Size(60, 19);
-            this.rendererRadioButtonCycles.TabIndex = 10;
-            this.rendererRadioButtonCycles.Tag = "DIRENDER";
-            this.rendererRadioButtonCycles.Text = "Cycles";
-            this.rendererRadioButtonCycles.UseVisualStyleBackColor = true;
-            this.rendererRadioButtonCycles.Visible = false;
-            this.rendererRadioButtonCycles.CheckedChanged += new System.EventHandler(this.RendererType_RadioChanged);
-            // 
-            // rendererRadioButtonBlender
-            // 
-            this.rendererRadioButtonBlender.AutoSize = true;
-            this.rendererRadioButtonBlender.Checked = true;
-            this.rendererRadioButtonBlender.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rendererRadioButtonBlender.Location = new System.Drawing.Point(364, 276);
-            this.rendererRadioButtonBlender.Name = "rendererRadioButtonBlender";
-            this.rendererRadioButtonBlender.Size = new System.Drawing.Size(112, 19);
-            this.rendererRadioButtonBlender.TabIndex = 9;
-            this.rendererRadioButtonBlender.TabStop = true;
-            this.rendererRadioButtonBlender.Tag = "DIRENDER";
-            this.rendererRadioButtonBlender.Text = "Blender Render";
-            this.rendererRadioButtonBlender.UseVisualStyleBackColor = true;
-            this.rendererRadioButtonBlender.Visible = false;
-            this.rendererRadioButtonBlender.CheckedChanged += new System.EventHandler(this.RendererType_RadioChanged);
             // 
             // startEndBlendRadio
             // 
@@ -867,8 +485,7 @@ namespace BlenderRenderController
             // 
             this.startEndCustomRadio.AutoSize = true;
             this.startEndCustomRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startEndCustomRadio.Location = new System.Drawing.Point(3, 25);
-            this.startEndCustomRadio.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
+            this.startEndCustomRadio.Location = new System.Drawing.Point(98, 3);
             this.startEndCustomRadio.Name = "startEndCustomRadio";
             this.startEndCustomRadio.Size = new System.Drawing.Size(67, 19);
             this.startEndCustomRadio.TabIndex = 4;
@@ -881,7 +498,7 @@ namespace BlenderRenderController
             this.renderOptionsAutoRadio.AutoSize = true;
             this.renderOptionsAutoRadio.Checked = true;
             this.renderOptionsAutoRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderOptionsAutoRadio.Location = new System.Drawing.Point(3, 0);
+            this.renderOptionsAutoRadio.Location = new System.Drawing.Point(3, 3);
             this.renderOptionsAutoRadio.Name = "renderOptionsAutoRadio";
             this.renderOptionsAutoRadio.Size = new System.Drawing.Size(49, 19);
             this.renderOptionsAutoRadio.TabIndex = 9;
@@ -895,7 +512,7 @@ namespace BlenderRenderController
             // 
             this.renderOptionsCustomRadio.AutoSize = true;
             this.renderOptionsCustomRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderOptionsCustomRadio.Location = new System.Drawing.Point(3, 21);
+            this.renderOptionsCustomRadio.Location = new System.Drawing.Point(58, 3);
             this.renderOptionsCustomRadio.Name = "renderOptionsCustomRadio";
             this.renderOptionsCustomRadio.Size = new System.Drawing.Size(67, 19);
             this.renderOptionsCustomRadio.TabIndex = 10;
@@ -903,36 +520,18 @@ namespace BlenderRenderController
             this.renderOptionsCustomRadio.Text = "Custom";
             this.renderOptionsCustomRadio.UseVisualStyleBackColor = true;
             // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.renderOptionsAutoRadio);
-            this.panel1.Controls.Add(this.renderOptionsCustomRadio);
-            this.panel1.Location = new System.Drawing.Point(361, 221);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(79, 47);
-            this.panel1.TabIndex = 32;
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.afterRenderDoNothingRadio);
-            this.panel2.Controls.Add(this.afterRenderJoinMixdownRadio);
-            this.panel2.Controls.Add(this.afterRenderJoinRadio);
-            this.panel2.Location = new System.Drawing.Point(32, 395);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(328, 83);
-            this.panel2.TabIndex = 34;
-            // 
             // openOutputFolderButton
             // 
+            this.openOutputFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.openOutputFolderButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.openOutputFolderButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
+            this.openOutputFolderButton.Image = global::BlenderRenderController.Properties.Resources.FolderOpen_16x;
             this.openOutputFolderButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.openOutputFolderButton.Location = new System.Drawing.Point(564, 319);
+            this.openOutputFolderButton.Location = new System.Drawing.Point(369, 27);
             this.openOutputFolderButton.Name = "openOutputFolderButton";
             this.openOutputFolderButton.Padding = new System.Windows.Forms.Padding(8, 0, 5, 0);
             this.openOutputFolderButton.Size = new System.Drawing.Size(80, 25);
             this.openOutputFolderButton.TabIndex = 16;
-            this.openOutputFolderButton.Tag = "DIFNL";
+            this.openOutputFolderButton.Tag = "";
             this.openOutputFolderButton.Text = "Open";
             this.openOutputFolderButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.openOutputFolderButton.UseVisualStyleBackColor = true;
@@ -940,58 +539,34 @@ namespace BlenderRenderController
             // 
             // outputFolderBrowseButton
             // 
+            this.outputFolderBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.outputFolderBrowseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.outputFolderBrowseButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
+            this.outputFolderBrowseButton.Image = global::BlenderRenderController.Properties.Resources.FolderOpen_16x;
             this.outputFolderBrowseButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.outputFolderBrowseButton.Location = new System.Drawing.Point(465, 319);
+            this.outputFolderBrowseButton.Location = new System.Drawing.Point(268, 27);
             this.outputFolderBrowseButton.Name = "outputFolderBrowseButton";
             this.outputFolderBrowseButton.Padding = new System.Windows.Forms.Padding(8, 0, 7, 1);
             this.outputFolderBrowseButton.Size = new System.Drawing.Size(95, 25);
             this.outputFolderBrowseButton.TabIndex = 12;
-            this.outputFolderBrowseButton.Tag = "DIFNL;DIRENDER";
-            this.outputFolderBrowseButton.Text = "  Change";
+            this.outputFolderBrowseButton.Tag = "";
+            this.outputFolderBrowseButton.Text = "Change";
             this.outputFolderBrowseButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.outputFolderBrowseButton.UseVisualStyleBackColor = true;
             this.outputFolderBrowseButton.Click += new System.EventHandler(this.outputFolderBrowseButton_Click);
-            // 
-            // ETALabel
-            // 
-            this.ETALabel.AutoSize = true;
-            this.ETALabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.ETALabel.Location = new System.Drawing.Point(552, 590);
-            this.ETALabel.Name = "ETALabel";
-            this.ETALabel.Size = new System.Drawing.Size(90, 16);
-            this.ETALabel.TabIndex = 19;
-            this.ETALabel.Text = "ETR: 00:00:00";
-            // 
-            // blendBrowseBtn
-            // 
-            this.blendBrowseBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blendBrowseBtn.Image = global::BlenderRenderController.Properties.Resources.blend_icon;
-            this.blendBrowseBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.blendBrowseBtn.Location = new System.Drawing.Point(472, 79);
-            this.blendBrowseBtn.Name = "blendBrowseBtn";
-            this.blendBrowseBtn.Padding = new System.Windows.Forms.Padding(3, 5, 0, 0);
-            this.blendBrowseBtn.Size = new System.Drawing.Size(145, 44);
-            this.blendBrowseBtn.TabIndex = 37;
-            this.blendBrowseBtn.Tag = "DIRENDER";
-            this.blendBrowseBtn.Text = " Open Blend";
-            this.blendBrowseBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.blendBrowseBtn.UseVisualStyleBackColor = true;
-            this.blendBrowseBtn.Click += new System.EventHandler(this.blendBrowseBtn_Click);
             // 
             // openBlendDialog
             // 
             this.openBlendDialog.Filter = "Blend|*.blend";
             // 
-            // startEndFLP
+            // flpStartEnd
             // 
-            this.startEndFLP.Controls.Add(this.startEndBlendRadio);
-            this.startEndFLP.Controls.Add(this.startEndCustomRadio);
-            this.startEndFLP.Location = new System.Drawing.Point(27, 220);
-            this.startEndFLP.Name = "startEndFLP";
-            this.startEndFLP.Size = new System.Drawing.Size(99, 47);
-            this.startEndFLP.TabIndex = 39;
+            this.flpStartEnd.Controls.Add(this.startEndBlendRadio);
+            this.flpStartEnd.Controls.Add(this.startEndCustomRadio);
+            this.flpStartEnd.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.flpStartEnd.Location = new System.Drawing.Point(0, 61);
+            this.flpStartEnd.Name = "flpStartEnd";
+            this.flpStartEnd.Size = new System.Drawing.Size(219, 31);
+            this.flpStartEnd.TabIndex = 39;
             // 
             // blendNameLabel
             // 
@@ -999,123 +574,432 @@ namespace BlenderRenderController
             this.blendNameLabel.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.blendDataBindingSource, "ProjectName", true));
             this.blendNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Bold);
             this.blendNameLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.blendNameLabel.Location = new System.Drawing.Point(132, 43);
+            this.blendNameLabel.Location = new System.Drawing.Point(122, 62);
             this.blendNameLabel.Name = "blendNameLabel";
             this.blendNameLabel.Size = new System.Drawing.Size(105, 20);
             this.blendNameLabel.TabIndex = 40;
             this.blendNameLabel.Text = "blend name";
             this.blendNameLabel.Visible = false;
             // 
-            // menuToolStrip
+            // toolStrip
             // 
-            this.menuToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsToolStripMenuItem,
-            this.extrasToolStripMenuItem,
+            this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openTSButton,
+            this.openRecentsTSButton,
+            this.reloadTSButton,
             this.toolStripSeparator1,
-            this.verToolStripLbl,
-            this.toolStripSeparator2,
-            this.donationTSBtn});
-            this.menuToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.menuToolStrip.Location = new System.Drawing.Point(0, 0);
-            this.menuToolStrip.Name = "menuToolStrip";
-            this.menuToolStrip.Size = new System.Drawing.Size(664, 25);
-            this.menuToolStrip.TabIndex = 41;
-            this.menuToolStrip.Text = "menuToolStrip";
+            this.helpToolStripButton});
+            this.toolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
+            this.toolStrip.Location = new System.Drawing.Point(0, 24);
+            this.toolStrip.Name = "toolStrip";
+            this.toolStrip.Padding = new System.Windows.Forms.Padding(10, 0, 1, 0);
+            this.toolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.toolStrip.Size = new System.Drawing.Size(472, 23);
+            this.toolStrip.TabIndex = 41;
+            this.toolStrip.Text = "menuToolStrip";
+            // 
+            // openTSButton
+            // 
+            this.openTSButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.openTSButton.Image = global::BlenderRenderController.Properties.Resources.blend_icon;
+            this.openTSButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.openTSButton.Name = "openTSButton";
+            this.openTSButton.Size = new System.Drawing.Size(23, 20);
+            this.openTSButton.Text = "&Open";
+            this.openTSButton.Click += new System.EventHandler(this.OpenBlend_Click);
+            // 
+            // reloadTSButton
+            // 
+            this.reloadTSButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.reloadTSButton.Image = global::BlenderRenderController.Properties.Resources.Refresh_grey_16x;
+            this.reloadTSButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.reloadTSButton.Name = "reloadTSButton";
+            this.reloadTSButton.Size = new System.Drawing.Size(23, 20);
+            this.reloadTSButton.Text = "toolStripButton1";
+            this.reloadTSButton.Click += new System.EventHandler(this.ReloadBlend_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 23);
             // 
-            // verToolStripLbl
+            // helpToolStripButton
             // 
-            this.verToolStripLbl.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.verToolStripLbl.Name = "verToolStripLbl";
-            this.verToolStripLbl.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.verToolStripLbl.Size = new System.Drawing.Size(49, 22);
-            this.verToolStripLbl.Text = " v0.0.0.0";
-            this.verToolStripLbl.ToolTipText = "Version";
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
-            // donationTSBtn
-            // 
-            this.donationTSBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.donationTSBtn.Image = global::BlenderRenderController.Properties.Resources.donate_icon;
-            this.donationTSBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.donationTSBtn.Name = "donationTSBtn";
-            this.donationTSBtn.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.donationTSBtn.Size = new System.Drawing.Size(65, 22);
-            this.donationTSBtn.Text = "Donate";
-            this.donationTSBtn.ToolTipText = "Feeling specially awesome? Donate!";
-            this.donationTSBtn.Click += new System.EventHandler(this.donateButton_Click);
+            this.helpToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.helpToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("helpToolStripButton.Image")));
+            this.helpToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.helpToolStripButton.Name = "helpToolStripButton";
+            this.helpToolStripButton.Size = new System.Drawing.Size(23, 20);
+            this.helpToolStripButton.Text = "He&lp";
             // 
             // errorProvider
             // 
             this.errorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
             this.errorProvider.ContainerControl = this;
             // 
-            // label5
+            // panelFrameRange
             // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F, System.Drawing.FontStyle.Underline);
-            this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label5.Location = new System.Drawing.Point(374, 367);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(57, 20);
-            this.label5.TabIndex = 25;
-            this.label5.Text = "Extras";
+            this.panelFrameRange.Controls.Add(this.flpStartEnd);
+            this.panelFrameRange.Controls.Add(this.totalStartNumericUpDown);
+            this.panelFrameRange.Controls.Add(this.totalEndNumericUpDown);
+            this.panelFrameRange.Controls.Add(this.startFrameLabel);
+            this.panelFrameRange.Controls.Add(this.totalFrameCountLabel);
+            this.panelFrameRange.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelFrameRange.Location = new System.Drawing.Point(3, 3);
+            this.panelFrameRange.Name = "panelFrameRange";
+            this.panelFrameRange.Size = new System.Drawing.Size(219, 92);
+            this.panelFrameRange.TabIndex = 43;
+            // 
+            // flpChunkMode
+            // 
+            this.flpChunkMode.Controls.Add(this.renderOptionsAutoRadio);
+            this.flpChunkMode.Controls.Add(this.renderOptionsCustomRadio);
+            this.flpChunkMode.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.flpChunkMode.Location = new System.Drawing.Point(0, 61);
+            this.flpChunkMode.Name = "flpChunkMode";
+            this.flpChunkMode.Size = new System.Drawing.Size(206, 31);
+            this.flpChunkMode.TabIndex = 44;
+            // 
+            // panelChunkSize
+            // 
+            this.panelChunkSize.Controls.Add(this.processCountLabel);
+            this.panelChunkSize.Controls.Add(this.processCountNumericUpDown);
+            this.panelChunkSize.Controls.Add(this.chunkLengthNumericUpDown);
+            this.panelChunkSize.Controls.Add(this.flpChunkMode);
+            this.panelChunkSize.Controls.Add(this.chunkLengthLabel);
+            this.panelChunkSize.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelChunkSize.Location = new System.Drawing.Point(228, 3);
+            this.panelChunkSize.Name = "panelChunkSize";
+            this.panelChunkSize.Size = new System.Drawing.Size(206, 92);
+            this.panelChunkSize.TabIndex = 45;
+            // 
+            // menuStrip
+            // 
+            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.toolsToolStripMenuItem,
+            this.helpToolStripMenuItem});
+            this.menuStrip.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip.Name = "menuStrip";
+            this.menuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.menuStrip.Size = new System.Drawing.Size(472, 24);
+            this.menuStrip.TabIndex = 50;
+            this.menuStrip.Text = "menuStrip";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miOpenFile,
+            this.miOpenRecent,
+            this.miReloadCurrent,
+            this.toolStripSeparator2,
+            this.miSettings,
+            this.toolStripSeparator4,
+            this.exitToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "&File";
+            // 
+            // miOpenFile
+            // 
+            this.miOpenFile.Image = global::BlenderRenderController.Properties.Resources.blend_icon;
+            this.miOpenFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miOpenFile.Name = "miOpenFile";
+            this.miOpenFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.miOpenFile.Size = new System.Drawing.Size(152, 22);
+            this.miOpenFile.Text = "&Open";
+            this.miOpenFile.Click += new System.EventHandler(this.OpenBlend_Click);
+            // 
+            // miReloadCurrent
+            // 
+            this.miReloadCurrent.Image = global::BlenderRenderController.Properties.Resources.Refresh_grey_16x;
+            this.miReloadCurrent.Name = "miReloadCurrent";
+            this.miReloadCurrent.Size = new System.Drawing.Size(152, 22);
+            this.miReloadCurrent.Text = "&Reload";
+            this.miReloadCurrent.Click += new System.EventHandler(this.ReloadBlend_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            // 
+            // miSettings
+            // 
+            this.miSettings.Image = global::BlenderRenderController.Properties.Resources.settings_icon;
+            this.miSettings.Name = "miSettings";
+            this.miSettings.Size = new System.Drawing.Size(152, 22);
+            this.miSettings.Text = "&Settings";
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(149, 6);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Text = "E&xit";
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miRenderMixdown,
+            this.miJoinChunks,
+            this.forceUIUpdateToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Text = "&Tools";
+            // 
+            // miRenderMixdown
+            // 
+            this.miRenderMixdown.Name = "miRenderMixdown";
+            this.miRenderMixdown.Size = new System.Drawing.Size(163, 22);
+            this.miRenderMixdown.Text = "Render Mixdown";
+            // 
+            // miJoinChunks
+            // 
+            this.miJoinChunks.Name = "miJoinChunks";
+            this.miJoinChunks.Size = new System.Drawing.Size(163, 22);
+            this.miJoinChunks.Text = "Join Chunks";
+            // 
+            // forceUIUpdateToolStripMenuItem
+            // 
+            this.forceUIUpdateToolStripMenuItem.Name = "forceUIUpdateToolStripMenuItem";
+            this.forceUIUpdateToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.forceUIUpdateToolStripMenuItem.Text = "Force UI update";
+            this.forceUIUpdateToolStripMenuItem.Visible = false;
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miGithub,
+            this.miReportBug,
+            this.miDonate,
+            this.toolStripSeparator7,
+            this.miAbout});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "&Help";
+            // 
+            // miGithub
+            // 
+            this.miGithub.Name = "miGithub";
+            this.miGithub.Size = new System.Drawing.Size(142, 22);
+            this.miGithub.Text = "Github";
+            this.miGithub.Click += new System.EventHandler(this.miGithub_Click);
+            // 
+            // miReportBug
+            // 
+            this.miReportBug.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
+            this.miReportBug.ForeColor = System.Drawing.Color.CornflowerBlue;
+            this.miReportBug.Name = "miReportBug";
+            this.miReportBug.Size = new System.Drawing.Size(142, 22);
+            this.miReportBug.Text = "Report a Bug";
+            // 
+            // miDonate
+            // 
+            this.miDonate.Name = "miDonate";
+            this.miDonate.Size = new System.Drawing.Size(142, 22);
+            this.miDonate.Text = "Donate";
+            this.miDonate.Click += new System.EventHandler(this.donateButton_Click);
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(139, 6);
+            // 
+            // miAbout
+            // 
+            this.miAbout.Name = "miAbout";
+            this.miAbout.Size = new System.Drawing.Size(142, 22);
+            this.miAbout.Text = "&About...";
+            // 
+            // statusStrip
+            // 
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusMessage,
+            this.statusTime,
+            this.statusETR});
+            this.statusStrip.Location = new System.Drawing.Point(0, 515);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(472, 22);
+            this.statusStrip.TabIndex = 51;
+            // 
+            // statusMessage
+            // 
+            this.statusMessage.Name = "statusMessage";
+            this.statusMessage.Size = new System.Drawing.Size(300, 17);
+            this.statusMessage.Spring = true;
+            this.statusMessage.Text = "Some Status message";
+            this.statusMessage.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // statusTime
+            // 
+            this.statusTime.Name = "statusTime";
+            this.statusTime.Size = new System.Drawing.Size(82, 17);
+            this.statusTime.Text = "Time: 00:00:00";
+            // 
+            // statusETR
+            // 
+            this.statusETR.Name = "statusETR";
+            this.statusETR.Size = new System.Drawing.Size(75, 17);
+            this.statusETR.Text = "ETR: 00:00:00";
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.outputFolderTextBox);
+            this.panel1.Controls.Add(this.openOutputFolderButton);
+            this.panel1.Controls.Add(this.outputFolderBrowseButton);
+            this.panel1.Location = new System.Drawing.Point(12, 368);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(449, 55);
+            this.panel1.TabIndex = 53;
+            // 
+            // infoBox
+            // 
+            this.infoBox.AutoScroll = true;
+            this.infoBox.BackColor = System.Drawing.SystemColors.Info;
+            this.infoBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.infoBox.Controls.Add(this.infoActiveScene);
+            this.infoBox.Controls.Add(this.infoDuration);
+            this.infoBox.Controls.Add(this.infoFPS);
+            this.infoBox.Controls.Add(this.infoResolution);
+            this.infoBox.Location = new System.Drawing.Point(15, 87);
+            this.infoBox.Name = "infoBox";
+            this.infoBox.Padding = new System.Windows.Forms.Padding(5);
+            this.infoBox.Size = new System.Drawing.Size(446, 64);
+            this.infoBox.TabIndex = 54;
+            this.infoBox.WrapContents = false;
+            // 
+            // frOptions
+            // 
+            this.frOptions.ColumnCount = 2;
+            this.frOptions.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.48742F));
+            this.frOptions.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.51258F));
+            this.frOptions.Controls.Add(this.panelChunkSize, 1, 0);
+            this.frOptions.Controls.Add(this.panelFrameRange, 0, 0);
+            this.frOptions.Controls.Add(this.panel2, 1, 1);
+            this.frOptions.Controls.Add(this.panel3, 0, 1);
+            this.frOptions.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.frOptions.Location = new System.Drawing.Point(15, 183);
+            this.frOptions.Name = "frOptions";
+            this.frOptions.RowCount = 2;
+            this.frOptions.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 68.18182F));
+            this.frOptions.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 31.81818F));
+            this.frOptions.Size = new System.Drawing.Size(437, 145);
+            this.frOptions.TabIndex = 55;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.label1);
+            this.panel2.Controls.Add(this.cbRenderer);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(228, 101);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(206, 41);
+            this.panel2.TabIndex = 46;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(59, 15);
+            this.label1.TabIndex = 52;
+            this.label1.Text = "Renderer";
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.label3);
+            this.panel3.Controls.Add(this.cbAfterRenderAction);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(3, 101);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(219, 41);
+            this.panel3.TabIndex = 47;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label3.Location = new System.Drawing.Point(0, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(83, 15);
+            this.label3.TabIndex = 50;
+            this.label3.Text = "Joining action";
+            // 
+            // infoActiveScene
+            // 
+            this.infoActiveScene.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "ActiveScene", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "..."));
+            this.infoActiveScene.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.infoActiveScene.Location = new System.Drawing.Point(8, 8);
+            this.infoActiveScene.MinimumSize = new System.Drawing.Size(34, 36);
+            this.infoActiveScene.Name = "infoActiveScene";
+            this.infoActiveScene.Size = new System.Drawing.Size(105, 42);
+            this.infoActiveScene.TabIndex = 0;
+            this.infoActiveScene.Title = "Active Scene";
+            this.infoActiveScene.Value = "...";
+            // 
+            // infoDuration
+            // 
+            this.infoDuration.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "Duration", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "..."));
+            this.infoDuration.Location = new System.Drawing.Point(119, 8);
+            this.infoDuration.MinimumSize = new System.Drawing.Size(34, 36);
+            this.infoDuration.Name = "infoDuration";
+            this.infoDuration.Size = new System.Drawing.Size(131, 42);
+            this.infoDuration.TabIndex = 2;
+            this.infoDuration.Title = "Duration";
+            this.infoDuration.Value = "...";
+            // 
+            // infoFPS
+            // 
+            this.infoFPS.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "Fps", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "..."));
+            this.infoFPS.Location = new System.Drawing.Point(256, 8);
+            this.infoFPS.MinimumSize = new System.Drawing.Size(34, 36);
+            this.infoFPS.Name = "infoFPS";
+            this.infoFPS.Size = new System.Drawing.Size(78, 42);
+            this.infoFPS.TabIndex = 4;
+            this.infoFPS.Title = "FPS";
+            this.infoFPS.Value = "...";
+            // 
+            // infoResolution
+            // 
+            this.infoResolution.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.blendDataBindingSource, "Resolution", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "..."));
+            this.infoResolution.Location = new System.Drawing.Point(340, 8);
+            this.infoResolution.MinimumSize = new System.Drawing.Size(34, 36);
+            this.infoResolution.Name = "infoResolution";
+            this.infoResolution.Size = new System.Drawing.Size(91, 42);
+            this.infoResolution.TabIndex = 3;
+            this.infoResolution.Title = "Resolution";
+            this.infoResolution.Value = "...";
             // 
             // BrcForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(664, 621);
-            this.Controls.Add(this.menuToolStrip);
+            this.ClientSize = new System.Drawing.Size(472, 537);
+            this.Controls.Add(this.frOptions);
+            this.Controls.Add(this.infoBox);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.statusStrip);
+            this.Controls.Add(this.toolStrip);
+            this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.blendNameLabel);
-            this.Controls.Add(this.startEndFLP);
-            this.Controls.Add(this.showRecentBlendsBtn);
-            this.Controls.Add(this.blendBrowseBtn);
             this.Controls.Add(this.renderInfoLabel);
-            this.Controls.Add(this.rendererRadioButtonBlender);
-            this.Controls.Add(this.rendererRadioButtonCycles);
             this.Controls.Add(this.blendFileNameLabel);
             this.Controls.Add(this.blendFileLabel);
-            this.Controls.Add(this.label5);
             this.Controls.Add(this.renderAllButton);
-            this.Controls.Add(this.label10);
-            this.Controls.Add(this.label12);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.infoPanel);
-            this.Controls.Add(this.ETALabel);
-            this.Controls.Add(this.totalTimeLabel);
-            this.Controls.Add(this.reloadBlenderDataButton);
-            this.Controls.Add(this.mixDownButton);
-            this.Controls.Add(this.openOutputFolderButton);
-            this.Controls.Add(this.concatenatePartsButton);
-            this.Controls.Add(this.processCountLabel);
-            this.Controls.Add(this.processCountNumericUpDown);
-            this.Controls.Add(this.chunkLengthLabel);
-            this.Controls.Add(this.totalFrameCountLabel);
-            this.Controls.Add(this.statusLabel);
-            this.Controls.Add(this.chunkLengthNumericUpDown);
-            this.Controls.Add(this.startFrameLabel);
-            this.Controls.Add(this.totalEndNumericUpDown);
-            this.Controls.Add(this.outputFolderTextBox);
-            this.Controls.Add(this.totalStartNumericUpDown);
-            this.Controls.Add(this.outputFolderBrowseButton);
             this.Controls.Add(this.renderProgressBar);
-            this.Controls.Add(this.panel1);
-            this.Controls.Add(this.panel2);
+            this.MainMenuStrip = this.menuStrip;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(700, 660);
-            this.MinimumSize = new System.Drawing.Size(680, 400);
+            this.MaximumSize = new System.Drawing.Size(1000, 1000);
+            this.MinimumSize = new System.Drawing.Size(150, 150);
             this.Name = "BrcForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Blender Render Controller";
@@ -1127,18 +1011,31 @@ namespace BlenderRenderController
             ((System.ComponentModel.ISupportInitialize)(this.totalEndNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.processCountNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.projectSettingsBindingSource)).EndInit();
-            this.infoPanel.ResumeLayout(false);
-            this.infoPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chunkLengthNumericUpDown)).EndInit();
+            this.recentBlendsMenu.ResumeLayout(false);
+            this.flpStartEnd.ResumeLayout(false);
+            this.flpStartEnd.PerformLayout();
+            this.toolStrip.ResumeLayout(false);
+            this.toolStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
+            this.panelFrameRange.ResumeLayout(false);
+            this.panelFrameRange.PerformLayout();
+            this.flpChunkMode.ResumeLayout(false);
+            this.flpChunkMode.PerformLayout();
+            this.panelChunkSize.ResumeLayout(false);
+            this.panelChunkSize.PerformLayout();
+            this.menuStrip.ResumeLayout(false);
+            this.menuStrip.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.infoBox.ResumeLayout(false);
+            this.frOptions.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            this.startEndFLP.ResumeLayout(false);
-            this.startEndFLP.PerformLayout();
-            this.menuToolStrip.ResumeLayout(false);
-            this.menuToolStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1150,78 +1047,80 @@ namespace BlenderRenderController
         private System.Windows.Forms.Label startFrameLabel;
         private System.Windows.Forms.Button outputFolderBrowseButton;
         private System.Windows.Forms.TextBox outputFolderTextBox;
-        private System.Windows.Forms.Label statusLabel;
         private System.Windows.Forms.Label totalFrameCountLabel;
         private System.Windows.Forms.NumericUpDown totalEndNumericUpDown;
         private System.Windows.Forms.NumericUpDown processCountNumericUpDown;
         private System.Windows.Forms.Label processCountLabel;
         private System.Windows.Forms.Button renderAllButton;
-		private System.Windows.Forms.Button reloadBlenderDataButton;
-		private System.Windows.Forms.Label totalTimeLabel;
-        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox infoActiveScene;
         private System.Windows.Forms.ToolTip toolTipWarn;
         private System.Windows.Forms.ToolTip toolTipInfo;
-        private System.Windows.Forms.ToolStripMenuItem tipsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem extrasToolStripMenuItem;
         private System.Windows.Forms.Label blendFileLabel;
         private System.Windows.Forms.NumericUpDown chunkLengthNumericUpDown;
         private System.Windows.Forms.Label chunkLengthLabel;
-        private System.Windows.Forms.TextBox infoFramerate;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox infoDuration;
-        private System.Windows.Forms.TextBox infoFramesTotal;
-        private System.Windows.Forms.Label infoFramesTotalLabel;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Label infoDurationLabel;
         private System.Windows.Forms.Button openOutputFolderButton;
         private System.Windows.Forms.Label blendFileNameLabel;
-        private System.Windows.Forms.RadioButton rendererRadioButtonCycles;
-        private System.Windows.Forms.RadioButton rendererRadioButtonBlender;
-        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem authorsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem isti115MenuItem;
-        private System.Windows.Forms.ToolStripMenuItem jendabekMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem meTwentyFiveMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem redRaptorMenuItem;
         private System.Windows.Forms.RadioButton startEndBlendRadio;
         private System.Windows.Forms.RadioButton startEndCustomRadio;
-        private System.Windows.Forms.Panel infoPanel;
         private System.Windows.Forms.RadioButton renderOptionsAutoRadio;
         private System.Windows.Forms.RadioButton renderOptionsCustomRadio;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.RadioButton afterRenderJoinMixdownRadio;
-        private System.Windows.Forms.RadioButton afterRenderJoinRadio;
-        private System.Windows.Forms.RadioButton afterRenderDoNothingRadio;
-        private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label renderInfoLabel;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemBug;
-        private System.Windows.Forms.TextBox infoResolution;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ToolStripMenuItem clearRecentProjectsListToolStripMenuItem;
-        private System.Windows.Forms.Label ETALabel;
-        private System.Windows.Forms.Button showRecentBlendsBtn;
-        private System.Windows.Forms.Button blendBrowseBtn;
         private System.Windows.Forms.ContextMenuStrip recentBlendsMenu;
         private System.Windows.Forms.OpenFileDialog openBlendDialog;
         private System.Windows.Forms.BindingSource projectSettingsBindingSource;
         private System.Windows.Forms.BindingSource blendDataBindingSource;
-        private System.Windows.Forms.FlowLayoutPanel startEndFLP;
+        private System.Windows.Forms.FlowLayoutPanel flpStartEnd;
         private System.Windows.Forms.Label blendNameLabel;
-        private System.Windows.Forms.ToolStripMenuItem forceUIUpdateToolStripMenuItem;
-        private System.Windows.Forms.ToolStrip menuToolStrip;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripLabel verToolStripLbl;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripButton donationTSBtn;
+        private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ErrorProvider errorProvider;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button concatenatePartsButton;
-        private System.Windows.Forms.Button mixDownButton;
+        private System.Windows.Forms.Panel panelFrameRange;
+        private System.Windows.Forms.FlowLayoutPanel flpChunkMode;
+        private System.Windows.Forms.Panel panelChunkSize;
+        private System.Windows.Forms.ComboBox cbRenderer;
+        private System.Windows.Forms.MenuStrip menuStrip;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripMenuItem miAbout;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miOpenFile;
+        private System.Windows.Forms.ToolStripMenuItem miOpenRecent;
+        private System.Windows.Forms.ToolStripMenuItem miReloadCurrent;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem miSettings;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miRenderMixdown;
+        private System.Windows.Forms.ToolStripMenuItem miJoinChunks;
+        private System.Windows.Forms.ToolStripMenuItem miGithub;
+        private System.Windows.Forms.ToolStripMenuItem miReportBug;
+        private System.Windows.Forms.ToolStripMenuItem miDonate;
+        private System.Windows.Forms.ToolStripButton openTSButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton helpToolStripButton;
+        private System.Windows.Forms.ToolStripMenuItem forceUIUpdateToolStripMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton openRecentsTSButton;
+        private System.Windows.Forms.ToolStripButton reloadTSButton;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem miEmptyPH;
+        private System.Windows.Forms.ToolStripStatusLabel statusMessage;
+        private System.Windows.Forms.ToolStripStatusLabel statusTime;
+        private System.Windows.Forms.ToolStripStatusLabel statusETR;
+        private System.Windows.Forms.FlowLayoutPanel infoBox;
+        private System.Windows.Forms.Panel panel1;
+        private InfoBoxItem infoActiveScene;
+        private InfoBoxItem infoDuration;
+        private InfoBoxItem infoResolution;
+        private InfoBoxItem infoFPS;
+        private System.Windows.Forms.TableLayoutPanel frOptions;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox cbAfterRenderAction;
     }
 }
 

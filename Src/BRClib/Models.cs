@@ -173,8 +173,6 @@ namespace BRClib
             set => SetProperty(ref _maxC, value);
         }
 
-        //public Renderer Renderer { get; set; }
-
         public string ChunkSubdirPath
         {
             get
@@ -217,9 +215,9 @@ namespace BRClib
     [Flags]
     public enum AfterRenderAction
     {
-        JOIN = 0x2,
-        MIXDOWN = 0x1,
-        NOTHING = 0x0
+        JOIN = 0x0002,
+        MIXDOWN = 0x0001,
+        NOTHING = 0x0000
     }
 
 

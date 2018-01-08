@@ -92,7 +92,7 @@
             // 
             this.changeOutputPathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.changeOutputPathButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.changeOutputPathButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
+            this.changeOutputPathButton.Image = global::BlenderRenderController.Properties.Resources.FolderOpen_16x;
             this.changeOutputPathButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.changeOutputPathButton.Location = new System.Drawing.Point(592, 46);
             this.changeOutputPathButton.Name = "changeOutputPathButton";
@@ -106,7 +106,7 @@
             // 
             this.changeChunksFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.changeChunksFolderButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.changeChunksFolderButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
+            this.changeChunksFolderButton.Image = global::BlenderRenderController.Properties.Resources.FolderOpen_16x;
             this.changeChunksFolderButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.changeChunksFolderButton.Location = new System.Drawing.Point(592, 46);
             this.changeChunksFolderButton.Name = "changeChunksFolderButton";
@@ -120,7 +120,7 @@
             // 
             this.changeMixdownFileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.changeMixdownFileButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.changeMixdownFileButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
+            this.changeMixdownFileButton.Image = global::BlenderRenderController.Properties.Resources.FolderOpen_16x;
             this.changeMixdownFileButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.changeMixdownFileButton.Location = new System.Drawing.Point(592, 46);
             this.changeMixdownFileButton.Name = "changeMixdownFileButton";

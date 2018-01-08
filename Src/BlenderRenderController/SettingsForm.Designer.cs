@@ -127,7 +127,7 @@
             // ffmpegChangePathButton
             // 
             this.ffmpegChangePathButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ffmpegChangePathButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
+            this.ffmpegChangePathButton.Image = global::BlenderRenderController.Properties.Resources.FolderOpen_16x;
             this.ffmpegChangePathButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.ffmpegChangePathButton.Location = new System.Drawing.Point(411, 174);
             this.ffmpegChangePathButton.Name = "ffmpegChangePathButton";
@@ -140,7 +140,7 @@
             // blenderChangePathButton
             // 
             this.blenderChangePathButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blenderChangePathButton.Image = global::BlenderRenderController.Properties.Resources.folder_icon_smaller;
+            this.blenderChangePathButton.Image = global::BlenderRenderController.Properties.Resources.FolderOpen_16x;
             this.blenderChangePathButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.blenderChangePathButton.Location = new System.Drawing.Point(411, 109);
             this.blenderChangePathButton.Name = "blenderChangePathButton";

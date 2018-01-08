@@ -1,5 +1,4 @@
-﻿using NLog;
-
+﻿
 namespace BlenderRenderController
 {
     class Constants
