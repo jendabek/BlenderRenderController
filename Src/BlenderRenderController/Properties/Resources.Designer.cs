@@ -61,24 +61,21 @@ namespace BlenderRenderController.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The chunks rendered sucessfully, but one or more After Render actions have failed, check your output content..
+        ///   Looks up a localized string similar to Unable to read output path, using project location..
         /// </summary>
-        internal static string AR_error_msg {
+        internal static string AppErr_BlendOutputInvalid {
             get {
-                return ResourceManager.GetString("AR_error_msg", resourceCulture);
+                return ResourceManager.GetString("AppErr_BlendOutputInvalid", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exit code: {0}
-        ///
-        ///Std Error:
-        ///{1}
-        ///.
+        ///   Looks up a localized string similar to The render format is a {0} image.
+        ///You can render an image sequence with this tool but you will need to make a video with other SW..
         /// </summary>
-        internal static string BadProcResult_Report {
+        internal static string AppErr_RenderFormatIsImage {
             get {
-                return ResourceManager.GetString("BadProcResult_Report", resourceCulture);
+                return ResourceManager.GetString("AppErr_RenderFormatIsImage", resourceCulture);
             }
         }
         
@@ -95,29 +92,9 @@ namespace BlenderRenderController.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Blender_Big {
+        internal static System.Drawing.Bitmap blend_icon_small {
             get {
-                object obj = ResourceManager.GetObject("Blender_Big", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon blender_icon {
-            get {
-                object obj = ResourceManager.GetObject("blender_icon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Broom_50 {
-            get {
-                object obj = ResourceManager.GetObject("Broom_50", resourceCulture);
+                object obj = ResourceManager.GetObject("blend_icon_small", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -125,9 +102,9 @@ namespace BlenderRenderController.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Broom_64 {
+        internal static System.Drawing.Bitmap brc_icon {
             get {
-                object obj = ResourceManager.GetObject("Broom_64", resourceCulture);
+                object obj = ResourceManager.GetObject("brc_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -145,19 +122,9 @@ namespace BlenderRenderController.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap clear_recent_icon {
+        internal static System.Drawing.Bitmap CleanData_16x {
             get {
-                object obj = ResourceManager.GetObject("clear_recent_icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap connect_icon {
-            get {
-                object obj = ResourceManager.GetObject("connect_icon", resourceCulture);
+                object obj = ResourceManager.GetObject("CleanData_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -168,36 +135,6 @@ namespace BlenderRenderController.Properties {
         internal static System.Drawing.Bitmap connect_icon_small {
             get {
                 object obj = ResourceManager.GetObject("connect_icon_small", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap donate_2 {
-            get {
-                object obj = ResourceManager.GetObject("donate_2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap donate_Big {
-            get {
-                object obj = ResourceManager.GetObject("donate_Big", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap donate_icon {
-            get {
-                object obj = ResourceManager.GetObject("donate_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -214,9 +151,9 @@ namespace BlenderRenderController.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_icon {
+        internal static System.Drawing.Bitmap FindinFiles_16x {
             get {
-                object obj = ResourceManager.GetObject("folder_icon", resourceCulture);
+                object obj = ResourceManager.GetObject("FindinFiles_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -224,19 +161,9 @@ namespace BlenderRenderController.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap folder_icon_small {
+        internal static System.Drawing.Bitmap FolderOpen_16x {
             get {
-                object obj = ResourceManager.GetObject("folder_icon_small", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap folder_icon_smaller {
-            get {
-                object obj = ResourceManager.GetObject("folder_icon_smaller", resourceCulture);
+                object obj = ResourceManager.GetObject("FolderOpen_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -254,49 +181,28 @@ namespace BlenderRenderController.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap github_logo_small {
+        internal static System.Drawing.Bitmap History_16x {
             get {
-                object obj = ResourceManager.GetObject("github_logo_small", resourceCulture);
+                object obj = ResourceManager.GetObject("History_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/jendabek/BlenderRenderController.
+        /// </summary>
+        internal static string project_page {
+            get {
+                return ResourceManager.GetString("project_page", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap info_icon {
+        internal static System.Drawing.Bitmap render_icon {
             get {
-                object obj = ResourceManager.GetObject("info_icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap reload_icon {
-            get {
-                object obj = ResourceManager.GetObject("reload_icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap reload_icon_small {
-            get {
-                object obj = ResourceManager.GetObject("reload_icon_small", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap render_icon_small {
-            get {
-                object obj = ResourceManager.GetObject("render_icon_small", resourceCulture);
+                object obj = ResourceManager.GetObject("render_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -324,38 +230,9 @@ namespace BlenderRenderController.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap stop_icon_small {
+        internal static System.Drawing.Bitmap Time_16x {
             get {
-                object obj = ResourceManager.GetObject("stop_icon_small", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} exited with a code {1}, see logs?.
-        /// </summary>
-        internal static string Unexp_eCode_msg {
-            get {
-                return ResourceManager.GetString("Unexp_eCode_msg", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap volume_512 {
-            get {
-                object obj = ResourceManager.GetObject("volume_512", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap volume_small {
-            get {
-                object obj = ResourceManager.GetObject("volume_small", resourceCulture);
+                object obj = ResourceManager.GetObject("Time_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

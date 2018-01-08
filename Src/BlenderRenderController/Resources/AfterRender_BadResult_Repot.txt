@@ -1,9 +1,0 @@
-Exit code: {0}
-
-Std Error:
-{1}
-
-
-
-Std Output:
-{2}

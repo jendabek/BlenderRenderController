@@ -118,94 +118,60 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Blender_Big" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Blender Alpha_00000.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="stop_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\stop-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="blend_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\blend-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Broom_50" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Broom-50.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Broom_64" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Broom-64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="bug_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\bug-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="clear_recent_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\clear_recent_icon.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="connect_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\connect-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="project_page" xml:space="preserve">
+    <value>https://github.com/jendabek/BlenderRenderController</value>
+    <comment>Github page</comment>
   </data>
   <data name="connect_icon_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\connect-icon-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="donate_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\donate-2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="blend_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\blend_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="donate_Big" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\239009-200.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="bug_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bug-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="donate_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\donate-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="folder_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="folder_icon_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder-icon-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="folder_icon_smaller" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder-icon-smaller.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="github_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\github-logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="github_logo_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\github-logo-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="info_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\info-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="reload_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\reload-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="reload_icon_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\reload-icon-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="render_icon_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\render-icon-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AppErr_RenderFormatIsImage" xml:space="preserve">
+    <value>The render format is a {0} image.
+You can render an image sequence with this tool but you will need to make a video with other SW.</value>
   </data>
   <data name="settings_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\settings-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="stop_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\stop-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="blend_icon_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\blend_icon_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="stop_icon_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\stop-icon-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="render_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\render-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="volume_512" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\volume-512.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="volume_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\volume-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="blender_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\blender_icon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="BadProcResult_Report" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\AfterRender_BadResult_Repot.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="AR_error_msg" xml:space="preserve">
-    <value>The chunks rendered sucessfully, but one or more After Render actions have failed, check your output content.</value>
+  <data name="brc_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\brc_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Error" xml:space="preserve">
     <value>Error</value>
   </data>
-  <data name="Unexp_eCode_msg" xml:space="preserve">
-    <value>{0} exited with a code {1}, see logs?</value>
+  <data name="AppErr_BlendOutputInvalid" xml:space="preserve">
+    <value>Unable to read output path, using project location.</value>
+  </data>
+  <data name="History_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\History_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FolderOpen_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FolderOpen_grey_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Time_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Time_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FindinFiles_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FindinFiles_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="github_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\github-logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CleanData_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CleanData_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
