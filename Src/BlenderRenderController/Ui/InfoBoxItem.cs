@@ -19,7 +19,7 @@ namespace BlenderRenderController.Ui
             set => titleLabel.Text = value;
         }
 
-        [Category("Info")]
+        [Category("Info"), Bindable(BindableSupport.Yes)]
         public string Value
         {
             get => valueLabel.Text;

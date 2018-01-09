@@ -19,7 +19,7 @@ namespace BRClib
     /// </summary>
     /// <remarks>
     /// Properties values must remain the same once <see cref="Start"/> is called,
-    /// attempting to call <see cref="Setup(ProjectSettings)"/> while 
+    /// attempting to call <see cref="Setup(Project)"/> while 
     /// <see cref="InProgress"/> is true will throw an Exception, 
     /// you must <seealso cref="Abort"/> or wait for the process to finish before 
     /// changing any values
@@ -42,7 +42,7 @@ namespace BRClib
         int _reportCount;
         const int PROG_STACK_SIZE = 3;
 
-        ProjectSettings _proj;
+        Project _proj;
 
         // after render
         Dictionary<string, ProcessResult> _afterRenderReport;
@@ -77,8 +77,8 @@ namespace BRClib
         {
             get
             {
-                if (_proj == null || string.IsNullOrWhiteSpace(_proj.BlendData.OutputPath)) return null;
-                return Path.Combine(_proj.BlendData.OutputPath, CHUNK_DIR);
+                if (_proj == null || string.IsNullOrWhiteSpace(_proj.OutputPath)) return null;
+                return Path.Combine(_proj.OutputPath, CHUNK_DIR);
             }
         }
 
@@ -88,8 +88,8 @@ namespace BRClib
             {
                 if (_proj == null) return null;
 
-                var mixdownFmt = _proj.BlendData.FFmpegAudioCodec;
-                var projName = _proj.BlendData.ProjectName;
+                var mixdownFmt = _proj.FFmpegAudioCodec;
+                var projName = _proj.ProjectName;
 
                 if (projName == null) return null;
 
@@ -141,7 +141,7 @@ namespace BRClib
             };
         }
 
-        public RenderManager(ProjectSettings project) : this()
+        public RenderManager(Project project) : this()
         {
             Setup(project);
         }
@@ -151,7 +151,7 @@ namespace BRClib
         /// Setup <see cref="RenderManager"/> using a <see cref="ProjectSettings"/> object
         /// </summary>
         /// <param name="project"></param>
-        public void Setup(ProjectSettings project)
+        public void Setup(Project project)
         {
             if (InProgress)
             {
@@ -222,9 +222,9 @@ namespace BRClib
                 throw new Exception("Chunk list is empty");
             }
 
-            if (!File.Exists(_proj.BlendPath))
+            if (!File.Exists(_proj.BlendFilePath))
             {
-                throw new FileNotFoundException("Could not find 'blend' file", _proj.BlendPath);
+                throw new FileNotFoundException("Could not find 'blend' file", _proj.BlendFilePath);
             }
 
             if (!Directory.Exists(ChunksFolderPath))
@@ -268,8 +268,8 @@ namespace BRClib
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 Arguments = string.Format("-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a",
-                                            _proj.BlendPath,
-                                            Path.Combine(ChunksFolderPath, _proj.BlendData.ProjectName + "-#"),
+                                            _proj.BlendFilePath,
+                                            Path.Combine(ChunksFolderPath, _proj.ProjectName + "-#"),
                                             Renderer,
                                             chunk.Start,
                                             chunk.End),
@@ -454,26 +454,26 @@ namespace BRClib
             var fullc = new Chunk(_chunkList.First().Start, _chunkList.Last().End);
 
             var videoExt = Path.GetExtension(Utilities.GetChunkFiles(ChunksFolderPath).First());
-            var projFinalPath = Path.Combine(_proj.BlendData.OutputPath, _proj.BlendData.ProjectName + videoExt);
+            var projFinalPath = Path.Combine(_proj.OutputPath, _proj.ProjectName + videoExt);
             var chunksTxt = Path.Combine(ChunksFolderPath, CHUNK_TXT);
-            var mixdownPath = Path.Combine(_proj.BlendData.OutputPath, MixdownFile);
+            var mixdownPath = Path.Combine(_proj.OutputPath, MixdownFile);
 
 
             MixdownCmd mixdown = new MixdownCmd(BlenderProgram)
             {
-                BlendFile = _proj.BlendPath,
+                BlendFile = _proj.BlendFilePath,
                 MixdownScript = Path.Combine(Environment.CurrentDirectory, 
                                              "Scripts", 
                                              "mixdown_audio.py"),
                 Range = fullc,
-                OutputFolder = _proj.BlendData.OutputPath
+                OutputFolder = _proj.OutputPath
             };
 
             ConcatCmd concat = new ConcatCmd(FFmpegProgram)
             {
                 ConcatTextFile = chunksTxt,
                 OutputFile = projFinalPath,
-                Duration = _proj.BlendData.Duration,
+                //Duration = _proj.BlendData.Duration,
                 MixdownFile = mixdownPath
             };
 
@@ -525,7 +525,7 @@ namespace BRClib
             if (badProcResults.Length > 0)
             {
                 // create a file report file
-                string arReportFile = Path.Combine(_proj.BlendData.OutputPath, GetRandSulfix("AfterRenderReport_"));
+                string arReportFile = Path.Combine(_proj.OutputPath, GetRandSulfix("AfterRenderReport_"));
 
                 using (var sw = File.AppendText(arReportFile))
                 {

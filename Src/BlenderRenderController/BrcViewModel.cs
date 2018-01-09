@@ -9,18 +9,24 @@ namespace BlenderRenderController
 {
     class BrcViewModel : BindingBase
     {
-        private bool _projLoaded;
+        private Project _proj;
+
+        public Project Project
+        {
+            get { return _proj; }
+            set
+            {
+                if (SetProperty(ref _proj, value))
+                {
+                    OnPropertyChanged(nameof(CanRender));
+                    OnPropertyChanged(nameof(ProjectLoaded));
+                }
+            }
+        }
 
         public bool ProjectLoaded
         {
-            get { return _projLoaded; }
-            set
-            {
-                if (SetProperty(ref _projLoaded, value))
-                {
-                    OnPropertyChanged(nameof(CanRender));
-                }
-            }
+            get { return Project != null; }
         }
 
         private bool _busy;

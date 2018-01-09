@@ -41,7 +41,7 @@ namespace BlenderRenderController
         int _autoStartF, _autoEndF;
 
         AppSettings _appSettings;
-        ProjectSettings _project;
+        //ProjectSettings _vm.Project;
         RenderManager _renderMngr;
         Stopwatch _chrono;
         ETACalculator _etaCalc;
@@ -55,8 +55,7 @@ namespace BlenderRenderController
         {
             InitializeComponent();
 
-            _project = new ProjectSettings();
-            _project.BlendData = new BlendData();
+            //_vm.Project = new ProjectSettings();
             _appSettings = AppSettings.Current;
             _vm = new BrcViewModel();
             _vm.PropertyChanged += ViewModel_PropertyChanged;
@@ -99,11 +98,10 @@ namespace BlenderRenderController
 
             _appSettings.RecentProjects.CollectionChanged += delegate { UpdateRecentBlendsMenu(); };
 
-            processCountNumericUpDown.Maximum = 
-            _project.MaxConcurrency = Environment.ProcessorCount;
+            processCountNumericUpDown.Maximum = Environment.ProcessorCount;
 
             // set source for project binding
-            projectSettingsBindingSource.DataSource = _project;
+            //projectSettingsBindingSource.DataSource = _vm.Project;
 
             // Time duration format
             infoDuration.DataBindings["Value"].Format += (fs, fe) =>
@@ -324,16 +322,19 @@ namespace BlenderRenderController
 
             if (blendData != null)
             {
-                _project.BlendData = blendData;
-                _project.BlendPath = blendFile;
+                _vm.Project = new Project(blendData)
+                {
+                    BlendFilePath = blendFile,
+                    MaxConcurrency = Environment.ProcessorCount
+                };
 
                 // save copy of start and end frames values
                 _autoStartF = blendData.Start;
                 _autoEndF = blendData.End;
 
                 // refresh binding source for blend data
-                blendDataBindingSource.DataSource = _project.BlendData;
-                blendDataBindingSource.ResetBindings(false);
+                //blendDataBindingSource.DataSource = _vm.Project;
+                //blendDataBindingSource.ResetBindings(false);
 
                 if (RenderFormats.IMAGES.Contains(blendData.FileFormat))
                 {
@@ -344,16 +345,16 @@ namespace BlenderRenderController
                 }
 
                 // output path w/o project name
-                if (string.IsNullOrWhiteSpace(_project.BlendData.OutputPath))
+                if (string.IsNullOrWhiteSpace(_vm.Project.OutputPath))
                 {
                     // use .blend folder path if outputPath is unset, display a warning about it
                     MessageBox.Show(Resources.AppErr_BlendOutputInvalid, "", 
                                     MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    _project.BlendData.OutputPath = Path.GetDirectoryName(blendFile);
+                    _vm.Project.OutputPath = Path.GetDirectoryName(blendFile);
                 }
                 else
-                    _project.BlendData.OutputPath = Path.GetDirectoryName(_project.BlendData.OutputPath);
+                    _vm.Project.OutputPath = Path.GetDirectoryName(_vm.Project.OutputPath);
 
 
                 logger.Info(".blend loaded successfully");
@@ -369,12 +370,12 @@ namespace BlenderRenderController
                 return;
             }
 
-            var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, _project.MaxConcurrency);
+            var chunks = Chunk.CalcChunks(blendData.Start, blendData.End, _vm.Project.MaxConcurrency);
             UpdateCurrentChunks(chunks.ToArray());
             _appSettings.RecentProjects.Add(blendFile);
             UpdateProgressBars();
 
-            _vm.ProjectLoaded = true;
+            //_vm.ProjectLoaded = true;
             // ---
 
             // call this if GetBlendInfo fails
@@ -399,7 +400,7 @@ namespace BlenderRenderController
         
         private void ReloadBlend_Click(object sender, EventArgs e)
         {
-            var blend = _project.BlendPath;
+            var blend = _vm.Project.BlendFilePath;
             if (!string.IsNullOrEmpty(blend))
             {
                 GetBlendInfo(blend);
@@ -437,13 +438,13 @@ namespace BlenderRenderController
             // Calculate chunks
             bool customLen = renderOptionsCustomRadio.Checked;
             var chunks = customLen 
-                ? Chunk.CalcChunksByLength(_project.BlendData.Start, 
-                                           _project.BlendData.End,
-                                           _project.ChunkLenght)
+                ? Chunk.CalcChunksByLength(_vm.Project.Start, 
+                                           _vm.Project.End,
+                                           _vm.Project.ChunkLenght)
                 
-                : Chunk.CalcChunks(_project.BlendData.Start, 
-                                   _project.BlendData.End,
-                                   _project.MaxConcurrency);
+                : Chunk.CalcChunks(_vm.Project.Start, 
+                                   _vm.Project.End,
+                                   _vm.Project.MaxConcurrency);
 
             UpdateCurrentChunks(chunks.ToArray());
 
@@ -451,7 +452,7 @@ namespace BlenderRenderController
 
             _vm.IsBusy = true;
 
-            _renderMngr.Setup(_project);
+            _renderMngr.Setup(_vm.Project);
             _renderMngr.Action = _appSettings.AfterRender;
             _renderMngr.BlenderProgram = _appSettings.BlenderProgram;
             _renderMngr.FFmpegProgram = _appSettings.FFmpegProgram;
@@ -482,7 +483,7 @@ namespace BlenderRenderController
                 {
                     try
                     {
-                        Directory.Delete(_project.ChunkSubdirPath, true);
+                        Directory.Delete(_vm.Project.DefaultChunksDirPath, true);
                     }
                     catch (Exception ex)
                     {
@@ -580,10 +581,10 @@ namespace BlenderRenderController
             }
             else
             {
-                var outputDir = _project.BlendData.OutputPath;
+                var outputDir = _vm.Project.OutputPath;
 
                 if ((Directory.Exists(outputDir) && Directory.GetFiles(outputDir).Length > 0)
-                    || Directory.Exists(_project.ChunkSubdirPath))
+                    || Directory.Exists(_vm.Project.DefaultChunksDirPath))
                 {
                     var dialogResult = MessageBox.Show("All existing files will be deleted!\n" +
                                                         "Do you want to continue?",
@@ -611,9 +612,9 @@ namespace BlenderRenderController
         /// </summary>
         private void UpdateProgress(RenderProgressInfo info)
         {
-            int progressPercentage = (int)Math.Floor((info.FramesRendered / (double)_project.BlendData.TotalFrames) * 100);
+            int progressPercentage = (int)Math.Floor((info.FramesRendered / (double)_vm.Project.TotalFrames) * 100);
 
-            Status($"Completed {info.PartsCompleted} / {_project.ChunkList.Count} chunks, {info.FramesRendered} frames rendered");
+            Status($"Completed {info.PartsCompleted} / {_vm.Project.ChunkList.Count} chunks, {info.FramesRendered} frames rendered");
 
             UpdateProgressBars(progressPercentage);
 
@@ -663,20 +664,20 @@ namespace BlenderRenderController
         /// <param name="newChunks"></param>
         private void UpdateCurrentChunks(params Chunk[] newChunks)
         {
-            bool ignore = (newChunks.TotalLength() > _project.BlendData.TotalFrames) 
-                        || newChunks.SequenceEqual(_project.ChunkList);
+            bool ignore = (newChunks.TotalLength() > _vm.Project.TotalFrames) 
+                        || newChunks.SequenceEqual(_vm.Project.ChunkList);
 
             if (ignore) return;
 
-            if (_project.ChunkList.Count > 0)
-                _project.ChunkList.Clear();
+            if (_vm.Project.ChunkList.Count > 0)
+                _vm.Project.ChunkList.Clear();
 
             foreach (var chnk in newChunks)
             {
-                _project.ChunkList.Add(chnk);
+                _vm.Project.ChunkList.Add(chnk);
             }
 
-            _project.ChunkLenght = _project.ChunkList.First().Length;
+            _vm.Project.ChunkLenght = _vm.Project.ChunkList.First().Length;
 
 #if UNIX
             ForceBindingSourceUpdate();
@@ -761,12 +762,12 @@ namespace BlenderRenderController
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
             var mix = new MixdownCmd(_appSettings.BlenderProgram,
-                                    _project.BlendPath, 
-                                    _project.BlendData.Start, 
-                                    _project.BlendData.End, 
+                                    _vm.Project.BlendFilePath, 
+                                    _vm.Project.Start, 
+                                    _vm.Project.End, 
                                     Path.Combine(_appSettings.ScriptsFolder, 
                                                 Constants.PyMixdown),
-                                    _project.BlendData.OutputPath);
+                                    _vm.Project.OutputPath);
 
             var result = await mix.RunAsync(_afterRenderCancelSrc.Token);
 
@@ -779,7 +780,7 @@ namespace BlenderRenderController
                 MessageBox.Show("Something went wrong, check logs at the output folder...", 
                         Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                mix.SaveReport(_project.BlendData.OutputPath);
+                mix.SaveReport(_vm.Project.OutputPath);
 
                 Status("Something went wrong...");
             }
@@ -841,9 +842,9 @@ namespace BlenderRenderController
 
         private void OpenOutputFolder()
         {
-            if (Directory.Exists(_project.BlendData.OutputPath))
+            if (Directory.Exists(_vm.Project.OutputPath))
             {
-                Process.Start(_project.BlendData.OutputPath);
+                Process.Start(_vm.Project.OutputPath);
             }
             else
             {
@@ -877,7 +878,7 @@ namespace BlenderRenderController
             {
                 if (radio.Checked)
                 {
-                    _project.MaxConcurrency = Environment.ProcessorCount;
+                    _vm.Project.MaxConcurrency = Environment.ProcessorCount;
                     // recalc auto chunks:
                     var currentStart = totalStartNumericUpDown.Value;
                     var currentEnd = totalEndNumericUpDown.Value;
@@ -885,7 +886,7 @@ namespace BlenderRenderController
 
                     var expectedChunkLen = Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
 
-                    _project.ChunkLenght = (int)expectedChunkLen;
+                    _vm.Project.ChunkLenght = (int)expectedChunkLen;
                     //chunkLengthNumericUpDown.Value = expectedChunkLen;
                 }
             }
@@ -894,8 +895,8 @@ namespace BlenderRenderController
                 if (radio.Checked)
                 {
                     // set to blend values
-                    _project.BlendData.Start = _autoStartF;
-                    _project.BlendData.End = _autoEndF;
+                    _vm.Project.Start = _autoStartF;
+                    _vm.Project.End = _autoEndF;
                 }
             }
 #if UNIX
@@ -914,7 +915,7 @@ namespace BlenderRenderController
 #if WIN
             var folderPicker = new CommonOpenFileDialog
             {
-                InitialDirectory = _project.BlendData.OutputPath,
+                InitialDirectory = _vm.Project.OutputPath,
                 IsFolderPicker = true,
                 Title = dialogTxt,
 
@@ -924,13 +925,13 @@ namespace BlenderRenderController
 
             if (result == CommonFileDialogResult.Ok)
             {
-                _project.BlendData.OutputPath = folderPicker.FileName;
+                _vm.Project.OutputPath = folderPicker.FileName;
             }
 #else
             var folderPicker = new FolderBrowserDialog
             {
                 RootFolder = Environment.SpecialFolder.MyComputer,
-                SelectedPath = _project.BlendData.OutputPath,
+                SelectedPath = _vm.Project.OutputPath,
                 ShowNewFolderButton = true,
                 Description = dialogTxt
             };
@@ -938,7 +939,7 @@ namespace BlenderRenderController
 
             if (result == DialogResult.OK)
             {
-                _project.BlendData.OutputPath = folderPicker.SelectedPath;
+                _vm.Project.OutputPath = folderPicker.SelectedPath;
 
                 blendDataBindingSource.ResetBindings(false);
             }
@@ -954,7 +955,7 @@ namespace BlenderRenderController
             if (renderOptionsAutoRadio.Checked)
             {
                 var expectedChunkLen = Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
-                _project.ChunkLenght = (int)expectedChunkLen;
+                _vm.Project.ChunkLenght = (int)expectedChunkLen;
 #if UNIX
                 ForceBindingSourceUpdate();
 #endif
@@ -1042,6 +1043,12 @@ namespace BlenderRenderController
                 _appSettings.RecentProjects.Clear();
         }
 
+        private void UnloadCurrent_Click(object sender, EventArgs e)
+        {
+            _vm.Project = null;
+            projectBindingSrc.ResetBindings(true);
+        }
+
         private void miGithub_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/jendabek/BlenderRenderController");
@@ -1051,14 +1058,12 @@ namespace BlenderRenderController
         {
             // WinForm databinding in Mono doesn't update the UI elements 
             // properly, so do it manually
-            blendDataBindingSource.ResetBindings(false);
-            projectSettingsBindingSource.ResetBindings(false);
+            projectBindingSrc.ResetBindings(false);
         }
 
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-
             //if (_vm.IsBusy)
             //{
             //    renderAllButton.Text = "Stop Render";
@@ -1069,8 +1074,15 @@ namespace BlenderRenderController
             //    renderAllButton.Text = "Start Render";
             //    renderAllButton.Image = Resources.render_icon;
             //}
-            
+
             //renderAllButton.Enabled = _vm.CanRender;
+
+            if (e.PropertyName == nameof(_vm.Project) && _vm.ProjectLoaded)
+            {
+                projectBindingSrc.DataSource = _vm.Project;
+            }
+
+            unloadToolStripMenuItem.Enabled = _vm.CanEditCurrentProject;
 
             miRenderMixdown.Enabled =
             miJoinChunks.Enabled = !_vm.IsBusy;

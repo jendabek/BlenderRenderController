@@ -30,14 +30,7 @@ namespace UnitTests
 
         public static BlendData GetBlendData(string blendPath)
         {
-            var getInfoCmd = new GetInfoCmd(MockSettings.BlenderProgram)
-            {
-                BlendFile = blendPath,
-                ProjInfoScript = Path.Combine(SCRIPTS_DIR, "get_project_info.py")
-            };
-
-
-            var proc = getInfoCmd.GetProcess();
+            var proc = GetBlendDataProc(blendPath);
 
             proc.Start();
             var output = proc.StandardOutput.ReadToEnd();
@@ -47,13 +40,25 @@ namespace UnitTests
 
         public static Process GetBlendDataProc(string path)
         {
-            var getInfoCmd = new GetInfoCmd(MockSettings.BlenderProgram)
+            var giScript = Path.Combine(SCRIPTS_DIR, "get_project_info.py");
+
+            var giProc = new Process
             {
-                BlendFile = path,
-                ProjInfoScript = Path.Combine(SCRIPTS_DIR, "get_project_info.py")
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = MockSettings.BlenderProgram,
+                    Arguments = $"-b \"{path}\" -P \"{giScript}\"",
+
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                },
+
+                EnableRaisingEvents = true,
             };
 
-            return getInfoCmd.GetProcess();
+            return giProc;
         }
 
         public static void ClearFolder(string path)

@@ -200,6 +200,7 @@
     </EmbeddedResource>
     <None Include="Properties\DataSources\AppSettings.datasource" />
     <None Include="Properties\DataSources\BRClib.BlendData.datasource" />
+    <None Include="Properties\DataSources\BRClib.Project.datasource" />
     <None Include="Properties\DataSources\BRClib.ProjectSettings.datasource" />
     <None Include="Resources\brc_icon.ico" />
     <None Include="Resources\volume-small.png" />

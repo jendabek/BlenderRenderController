@@ -20,42 +20,28 @@ namespace BRClib
         public int Start
         {
             get => _start;
-            set
-            {
-                if (SetProperty(ref _start, value))
-                {
-                    OnPropertyChanged(nameof(Duration));
-                    OnPropertyChanged(nameof(TotalFrames));
-                }
-            }
+            set => SetProperty(ref _start, value);
         }
 
         [JsonProperty("end")]
         public int End
         {
             get => _end;
-            set
-            {
-                if (SetProperty(ref _end, value))
-                {
-                    OnPropertyChanged(nameof(Duration));
-                    OnPropertyChanged(nameof(TotalFrames));
-                }
-            }
+            set => SetProperty(ref _end, value);
         }
-        
+
         [JsonProperty("fps")]
         public double Fps
         {
             get => _fps;
-            private set => SetProperty(ref _fps, value);
+            set => SetProperty(ref _fps, value);
         }
 
         [JsonProperty("resolution")]
         public string Resolution
         {
             get => _res;
-            private set => SetProperty(ref _res, value);
+            set => SetProperty(ref _res, value);
         }
 
         [JsonProperty("outputPath")]
@@ -76,44 +62,22 @@ namespace BRClib
         public string ActiveScene
         {
             get => _activeScene;
-            private set => SetProperty(ref _activeScene, value);
+            set => SetProperty(ref _activeScene, value);
         }
 
         // scene.render.image_settings.file_format
         [JsonProperty("imgFormat")]
-        public string FileFormat { get; private set; }
+        public string FileFormat { get; set; }
 
         // scene.render.ffmpeg.format
         [JsonProperty("ffmpegFmt")]
-        public string FFmpegVideoFormat { get; private set; }
+        public string FFmpegVideoFormat { get; set; }
 
         // scene.render.ffmpeg.audio_codec
         [JsonProperty("ffmpegAudio")]
-        public string FFmpegAudioCodec { get; private set; }
+        public string FFmpegAudioCodec { get; set; }
 
-        public TimeSpan? Duration
-        {
-            get
-            {
-                var duration = (End - Start + 1) / Fps;
-                if (!double.IsNaN(duration) && !double.IsInfinity(duration))
-                    return TimeSpan.FromSeconds(duration);
-                else
-                    return null;
-            }
-        }
-
-        public int? TotalFrames
-        {
-            get
-            {
-                if (End <= Start)
-                {
-                    return null;
-                }
-                return End - Start + 1;
-            }
-        }
+      
 
         //public string AudioFileFormat
         //{
@@ -137,62 +101,6 @@ namespace BRClib
         //}
     }
 
-    /// <summary>
-    /// Holds settings to the BRC render process
-    /// </summary>
-    public class ProjectSettings : BindingBase
-    {
-        private readonly ObservableCollection<Chunk> _chunkList;
-        private string _blendPath;
-        private int _chunkLen, _maxC;
-        private BlendData _bData;
-
-        public BlendData BlendData
-        {
-            get { return _bData; }
-            set { SetProperty(ref _bData, value); }
-        }
-
-        public string BlendPath
-        {
-            get => _blendPath;
-            set => SetProperty(ref _blendPath, value);
-        }
-
-        public ObservableCollection<Chunk> ChunkList => _chunkList;
-
-        public int ChunkLenght
-        {
-            get => _chunkLen;
-            set => SetProperty(ref _chunkLen, value);
-        }
-
-        public int MaxConcurrency
-        {
-            get => _maxC;
-            set => SetProperty(ref _maxC, value);
-        }
-
-        public string ChunkSubdirPath
-        {
-            get
-            {
-                if (BlendData == null || BlendData.OutputPath == null)
-                    return null;
-
-                return Path.Combine(BlendData.OutputPath, "chunks");
-            }
-        }
-
-
-        public ProjectSettings() : base()
-        {
-            _chunkList = new ObservableCollection<Chunk>();
-            ChunkLenght = 50;
-        }
-
-
-    }
 
     public class RenderProgressInfo
     {
