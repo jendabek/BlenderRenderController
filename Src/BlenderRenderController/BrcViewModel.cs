@@ -14,7 +14,13 @@ namespace BlenderRenderController
         public bool ProjectLoaded
         {
             get { return _projLoaded; }
-            set { SetProperty(ref _projLoaded, value); }
+            set
+            {
+                if (SetProperty(ref _projLoaded, value))
+                {
+                    OnPropertyChanged(nameof(CanRender));
+                }
+            }
         }
 
         private bool _busy;
@@ -42,14 +48,6 @@ namespace BlenderRenderController
 
         public bool CanReloadCurrentProject => ConfigOk && ProjectLoaded && !IsBusy;
 
-
-
-        public bool WorkToggle()
-        {
-            IsBusy = !IsBusy;
-            return IsBusy;
-        }
-
         public string DefaultStatusMessage
         {
             get
@@ -76,5 +74,14 @@ namespace BlenderRenderController
                 return msg;
             }
         }
+
+
+        public bool WorkToggle()
+        {
+            IsBusy = !IsBusy;
+            return IsBusy;
+        }
+
+        public void InvokePropChanged(string propName) => OnPropertyChanged(propName);
     }
 }

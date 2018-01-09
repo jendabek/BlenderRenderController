@@ -80,21 +80,24 @@ namespace BlenderRenderController
         {
             _vm.ConfigOk = _appSettings.CheckCorrectConfig();
 
-            cbRenderer.Items.Add(Renderer.BLENDER_RENDER);
-            cbRenderer.Items.Add(Renderer.CYCLES);
-            cbRenderer.SelectedItem = _appSettings.AfterRender;
+            // setup sources for ComboBoxes
+            cbRenderer.DataSource = Enum.GetValues(typeof(Renderer));
+            cbRenderer.SelectedItem = _appSettings.Renderer;
+            cbRenderer.SelectedIndexChanged += Renderer_Changed;
 
             cbAfterRenderAction.DisplayMember = "Value";
             cbAfterRenderAction.ValueMember = "Key";
             cbAfterRenderAction.DataSource = Helper.AfterRenderResources.ToList();
+            cbAfterRenderAction.SelectedValue = _appSettings.AfterRender;
+            cbAfterRenderAction.SelectedIndexChanged += AfterRenderAction_Changed;
 
             // save appSettings on exit
-            AppDomain.CurrentDomain.ProcessExit += (ad, cd) => _appSettings.SaveCurrent();
+            AppDomain.CurrentDomain.ProcessExit += delegate { _appSettings.SaveCurrent(); };
 
             // load recent blends from file
             UpdateRecentBlendsMenu();
 
-            _appSettings.RecentProjects.CollectionChanged += (s, args) => UpdateRecentBlendsMenu();
+            _appSettings.RecentProjects.CollectionChanged += delegate { UpdateRecentBlendsMenu(); };
 
             processCountNumericUpDown.Maximum = 
             _project.MaxConcurrency = Environment.ProcessorCount;
@@ -119,6 +122,37 @@ namespace BlenderRenderController
             processCountNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
 
             exitToolStripMenuItem.Click += delegate { Close(); };
+
+            // ViewModel binding
+            var renderBtnTxtBind = new Binding("Text", _vm, "IsBusy", true);
+            var renderBtnImgBind = new Binding("Image", _vm, "IsBusy", true);
+            renderBtnTxtBind.Format += BtnContentFmt;
+            renderBtnImgBind.Format += BtnContentFmt;
+
+            renderAllButton.DataBindings.DefaultDataSourceUpdateMode = DataSourceUpdateMode.OnPropertyChanged;
+
+            renderAllButton.DataBindings.Add("Enabled", _vm, "CanRender");
+            renderAllButton.DataBindings.Add(renderBtnTxtBind);
+            renderAllButton.DataBindings.Add(renderBtnImgBind);
+
+            void BtnContentFmt(object ps, ConvertEventArgs pargs)
+            {
+                bool busy = (bool)pargs.Value;
+
+                if (pargs.DesiredType == typeof(string))
+                {
+                    pargs.Value = busy ? "Stop Render" : "Start Render";
+                }
+                else if (pargs.DesiredType == typeof(System.Drawing.Image))
+                {
+                    pargs.Value = busy ? Resources.stop_icon : Resources.render_icon;
+                }
+                else
+                {
+                    throw new FormatException("Invalid type");
+                }
+            }
+
 #if UNIX
             forceUIUpdateToolStripMenuItem.Visible = true;
             forceUIUpdateToolStripMenuItem.Click += (s,args) => ForceBindingSourceUpdate();
@@ -652,16 +686,14 @@ namespace BlenderRenderController
 
         private void UpdateRecentBlendsMenu()
         {
-            // clear local blends
-            //recentBlendsMenu.Items.Clear();
-
+            // clear local recent items
             var oldItems = recentBlendsMenu.Items.Find("recent", false);
-
             foreach (var rItem in oldItems)
             {
                 recentBlendsMenu.Items.Remove(rItem);
             }
 
+            // show placeholder if recents list is empty
             if (_appSettings.RecentProjects.Count == 0)
             {
                 miEmptyPH.Visible = true;
@@ -672,7 +704,7 @@ namespace BlenderRenderController
                 miEmptyPH.Visible = false;
             }
 
-            // make blends from recent list
+            // make items from recent list
             foreach (string item in _appSettings.RecentProjects)
             {
                 var menuItem = new ToolStripMenuItem
@@ -761,8 +793,6 @@ namespace BlenderRenderController
         {
             _vm.WorkToggle();
             ResetCTS();
-
-            var startingState = _appState;
 
             renderProgressBar.Style = ProgressBarStyle.Marquee;
 
@@ -880,13 +910,13 @@ namespace BlenderRenderController
 
         private void outputFolderBrowseButton_Click(object sender, EventArgs e)
         {
-
+            string dialogTxt = "Select output location";
 #if WIN
             var folderPicker = new CommonOpenFileDialog
             {
                 InitialDirectory = _project.BlendData.OutputPath,
                 IsFolderPicker = true,
-                Title = "Select output location",
+                Title = dialogTxt,
 
             };
 
@@ -901,7 +931,8 @@ namespace BlenderRenderController
             {
                 RootFolder = Environment.SpecialFolder.MyComputer,
                 SelectedPath = _project.BlendData.OutputPath,
-                ShowNewFolderButton = true
+                ShowNewFolderButton = true,
+                Description = dialogTxt
             };
             var result = folderPicker.ShowDialog();
 
@@ -961,7 +992,7 @@ namespace BlenderRenderController
 
         private void Renderer_Changed(object sender, EventArgs e)
         {
-            _appSettings.Renderer = (Renderer)cbRenderer.SelectedItem;
+            _appSettings.Renderer = (Renderer)cbRenderer.SelectedValue;
         }
 
 
@@ -1007,7 +1038,8 @@ namespace BlenderRenderController
                  "Clear recent blends?",
                  MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
-            if (response == DialogResult.Yes) _appSettings.RecentProjects.Clear();
+            if (response == DialogResult.Yes)
+                _appSettings.RecentProjects.Clear();
         }
 
         private void miGithub_Click(object sender, EventArgs e)
@@ -1027,18 +1059,18 @@ namespace BlenderRenderController
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
 
-            if (_vm.IsBusy)
-            {
-                renderAllButton.Text = "Stop Render";
-                renderAllButton.Image = Resources.stop_icon;
-            }
-            else
-            {
-                renderAllButton.Text = "Start Render";
-                renderAllButton.Image = Resources.render_icon;
-            }
-
-            renderAllButton.Enabled = _vm.CanRender;
+            //if (_vm.IsBusy)
+            //{
+            //    renderAllButton.Text = "Stop Render";
+            //    renderAllButton.Image = Resources.stop_icon;
+            //}
+            //else
+            //{
+            //    renderAllButton.Text = "Start Render";
+            //    renderAllButton.Image = Resources.render_icon;
+            //}
+            
+            //renderAllButton.Enabled = _vm.CanRender;
 
             miRenderMixdown.Enabled =
             miJoinChunks.Enabled = !_vm.IsBusy;
@@ -1048,13 +1080,17 @@ namespace BlenderRenderController
             miReloadCurrent.Enabled =
             reloadTSButton.Enabled = _vm.CanReloadCurrentProject;
 
-            frOptions.Enabled =
             frOutputFolder.Enabled = _vm.CanEditCurrentProject;
 
+            panelChunkSize.Enabled =
+            panelFrameRange.Enabled = _vm.CanEditCurrentProject;
+
             miOpenFile.Enabled =
-            openFileTSButton.Enabled =
+            openFileTSButton.Enabled = _vm.CanLoadNewProject;
+
             miOpenRecent.Enabled =
             openRecentsTSButton.Enabled = _vm.CanLoadNewProject;
+            
 
             Status(_vm.DefaultStatusMessage);
         }

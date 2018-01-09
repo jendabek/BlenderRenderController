@@ -175,6 +175,21 @@ for most cases.
   <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>22, 18</value>
   </metadata>
+  <data name="renderInfoLabel.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1
+        MAAA6mAAADqYAAAXb5JfxUYAAAAJcEhZcwACKaQAAimkAScW8mcAAAH1SURBVDhPbVNLT1NRED5/RFgA
+        f0SWYF2jBFCXNaAJWCgbFwSKhMfCeLVAAgkxpDxC+gIESgtJaREhNqHVLnEpbW/bWx4VO8x3bi+cWJuc
+        TGe+b86cmfmusDkD4vFgUDwa8IuH3R7R2u/reDEZ972aSZ71zqV1WPb9HO8EDh74yJN/Whxe0dzjaXg+
+        ETt0+TP0Ye8Pafs3ii0T4ox/ZV4j+MizKj6wa9+L7miF3oevaWJTp2F/jhxLGWnhIw785ceEwRfUIU8+
+        9dl4LAVgcsugd8EcDflypO0WKJS6ZJuXPuLA3VHCC34iDz22jfgy8mYQxtZ1GlzJ0sJBkfBbjBvSRxw4
+        eGiB854KHkYIPQGUBD6jQZ2mIwX6HCvS1Jc8uQImZh3wOS8seJq/MRQ12cmVtk8vqHhVoZUjgwaWzcrW
+        Af/1bPJc9M2nrzBVFXzjydLqt5J8tvekRA72VRyVkVdTGad/KUtrx2YyLHwVNyunzmt6xlErw8JX8WrP
+        EUz7CaZnTVv2zD3uJC/pb4WkhY/4P9Nul3vmvf1Q9wziJ96zFspLayXe7zmelnuGUqAYu5YwAODm8Q2d
+        hrw5ervGgmELH3HgrLAS8+ulwhRtN0G7prbLd5q2bFXbR+Ddafs/X1UXDyPA0zzjdehsf8FHHDh44Nuc
+        AXELExx4W+z8aXgAAAAASUVORK5CYII=
+</value>
+  </data>
   <data name="renderInfoLabel.ToolTip" xml:space="preserve">
     <value>Make sure that Blender itself can render your project (or the selected frame range) well.
 If there is an issue in a video produced by this tool, it is the most likely caused by an incorrect Blender rendering.
