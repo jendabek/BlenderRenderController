@@ -267,6 +267,7 @@
     <None Include="Resources\brc_icon.png" />
     <None Include="Resources\FindinFiles_16x.png" />
     <None Include="Resources\CleanData_16x.png" />
+    <None Include="Resources\blender_icon.png" />
     <Content Include="Resources\FolderOpen_grey_16x.png" />
     <Content Include="Resources\FolderOpen_grey_16x_24.bmp" />
     <None Include="Resources\History_16x.png" />

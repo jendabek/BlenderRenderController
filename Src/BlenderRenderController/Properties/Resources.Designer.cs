@@ -119,9 +119,9 @@ namespace BlenderRenderController.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blend_icon_small {
+        internal static System.Drawing.Bitmap blender_icon {
             get {
-                object obj = ResourceManager.GetObject("blend_icon_small", resourceCulture);
+                object obj = ResourceManager.GetObject("blender_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

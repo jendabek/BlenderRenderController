@@ -18,7 +18,6 @@ namespace BRClib
 
         public Project()
         {
-            _maxC = Environment.ProcessorCount;
         }
 
         public Project(BlendData blend)

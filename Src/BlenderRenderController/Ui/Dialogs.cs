@@ -12,9 +12,9 @@ namespace BlenderRenderController.Ui
 {
     class Dialogs
     {
-#if WIN
         public static DialogResult ShowErrorBox(string textBody, string mainText, string caption, string details)
         {
+#if WIN
             var td = new TaskDialog();
             td.Text = textBody;
             td.InstructionText = mainText;
@@ -29,29 +29,71 @@ namespace BlenderRenderController.Ui
             td.StandardButtons = TaskDialogStandardButtons.Ok;
 
             return ToDR(td.Show());
-
-            //return td;
+#else
+            string msg = mainText + "\n\n" + textBody;
+            ErrorBox eb = new ErrorBox(msg, caption, details);
+            return eb.ShowDialog();
+#endif
         }
+
         public static DialogResult ShowErrorBox(string textBody, string mainText, string details)
         {
-            var td = new TaskDialog();
-            td.Text = textBody;
-            td.InstructionText = mainText;
-
-            td.DetailsExpanded = false;
-            td.DetailsExpandedLabel = "Show details";
-            td.DetailsExpandedText = details;
-            td.ExpansionMode = TaskDialogExpandedDetailsLocation.ExpandFooter;
-
-            td.Icon = TaskDialogStandardIcon.Error;
-            td.FooterIcon = TaskDialogStandardIcon.Information;
-            td.StandardButtons = TaskDialogStandardButtons.Ok;
-
-            return ToDR(td.Show());
-
-            //return td;
+#if WIN
+            return ShowErrorBox(textBody, mainText, null, details);
+#else
+            var eb = new ErrorBox(textBody, mainText, details);
+            return eb.ShowDialog();
+#endif
         }
 
+
+        public static string OutputFolderSelection(string title, string initialDir)
+        {
+#if WIN
+            var dialog = new CommonOpenFileDialog
+            {
+                InitialDirectory = initialDir,
+                IsFolderPicker = true,
+                Title = title,
+            };
+
+            var res = dialog.ShowDialog();
+            string path = null;
+
+            if (res == CommonFileDialogResult.Ok)
+            {
+                path = dialog.FileName;
+            }
+
+            //return ((DialogResult)res, path);
+            return path;
+#else
+            var dialog = new FolderBrowserDialog
+            {
+                RootFolder = Environment.SpecialFolder.MyComputer,
+                SelectedPath = initialDir,
+                ShowNewFolderButton = true,
+                Description = title,
+            };
+
+            var res = dialog.ShowDialog();
+            string path = null;
+
+            if (res == DialogResult.OK)
+            {
+                path = dialog.SelectedPath;
+            }
+
+            //return (res, path);
+            return path;
+#endif
+        }
+
+
+
+
+
+#if WIN
         static DialogResult ToDR(TaskDialogResult tdr)
         {
             switch (tdr)
@@ -74,19 +116,7 @@ namespace BlenderRenderController.Ui
                 default:
                     throw new NotSupportedException("Task result not supported");
             }
-        }
-#else
-        public static DialogResult ShowErrorBox(string textBody, string mainText, string caption, string details)
-        {
-            string msg = mainText + "\n\n" + textBody;
-            ErrorBox eb = new ErrorBox(msg, caption, details);
-            return eb.ShowDialog();
-        }
-        public static DialogResult ShowErrorBox(string textBody, string mainText, string details)
-        {
-            ErrorBox eb = new ErrorBox(textBody, mainText, details);
-            return eb.ShowDialog();
-        }
+        } 
 #endif
     }
 }

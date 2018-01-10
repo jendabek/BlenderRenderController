@@ -87,7 +87,5 @@ namespace BlenderRenderController
             IsBusy = !IsBusy;
             return IsBusy;
         }
-
-        public void InvokePropChanged(string propName) => OnPropertyChanged(propName);
     }
 }
