@@ -95,7 +95,7 @@ namespace BRClib
         /// <returns></returns>
         public static IList<string> GetChunkFiles(params string[] files)
         {
-            string[] exts = RenderFormats.AllowedFileExts;
+            string[] exts = RenderFormats.VideoFileExts;
 
             var fileList = files
                 .Where(f => 
@@ -145,9 +145,11 @@ namespace BRClib
         /// <summary>
         /// Allowed video file extentions
         /// </summary>
-        public static readonly string[] AllowedFileExts = { ".avi", ".mp4", ".mov", ".mkv", ".mpg", ".flv", ".dv", ".dvd", ".ogv" };
+        public static readonly string[] VideoFileExts = 
+            { ".avi", ".mp4", ".mov", ".mkv", ".mpg", ".flv", ".dv", ".dvd", ".ogv" };
 
-        public static readonly string[] AllowedAudioFileExts = { ".mp3", ".ac3", ".aac", ".ogg", ".flac", ".wav" };
+        public static readonly string[] AudioFileExts = 
+            { ".mp3", ".ac3", ".aac", ".ogg", ".flac", ".wav" };
 
         // TODO maybe: Make a list that relates format property to output file format
         //public static readonly Dictionary<string, string> ExtForEncoding = 

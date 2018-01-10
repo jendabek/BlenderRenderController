@@ -100,7 +100,7 @@ namespace BlenderRenderController
 
         private void changeOutputFileButton_Click(object sender, EventArgs e)
         {
-            var exts = AllowedFileExts;
+            var exts = VideoFileExts;
             var btn = sender as Button;
 
             var saveDialog = new SaveFileDialog()
@@ -128,7 +128,7 @@ namespace BlenderRenderController
             var openDialog = new OpenFileDialog()
             {
                 Title = "Select mixdown audio file",
-                Filter = MakeDiagFilter(AllowedAudioFileExts),
+                Filter = MakeDiagFilter(AudioFileExts),
                 FilterIndex = 0,
                 CheckFileExists = true,
             };

@@ -96,9 +96,9 @@
     <Content Include="Scripts\get_project_info.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\mixdown_audio.py">
+    <EmbeddedResource Include="Scripts\mixdown_audio.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Infra\" />

@@ -41,7 +41,6 @@ namespace BlenderRenderController
         int _autoStartF, _autoEndF;
 
         AppSettings _appSettings;
-        //ProjectSettings _vm.Project;
         RenderManager _renderMngr;
         Stopwatch _chrono;
         ETACalculator _etaCalc;
@@ -68,10 +67,11 @@ namespace BlenderRenderController
             _renderMngr.Finished += RenderManager_Finished;
             _renderMngr.AfterRenderStarted += RenderManager_AfterRenderStarted;
             _renderMngr.ProgressChanged += (s, prog) => UpdateProgress(prog);
-            //_renderProg = new Progress<RenderProgressInfo>(UpdateProgress);
 
             _chrono = new Stopwatch();
             _etaCalc = new ETACalculator(5, 1);
+
+            //...
         }
 
 
@@ -100,9 +100,6 @@ namespace BlenderRenderController
 
             processCountNumericUpDown.Maximum = Environment.ProcessorCount;
 
-            // set source for project binding
-            //projectSettingsBindingSource.DataSource = _vm.Project;
-
             // Time duration format
             infoDuration.DataBindings["Value"].Format += (fs, fe) =>
             {
@@ -122,34 +119,34 @@ namespace BlenderRenderController
             exitToolStripMenuItem.Click += delegate { Close(); };
 
             // ViewModel binding
-            var renderBtnTxtBind = new Binding("Text", _vm, "IsBusy", true);
-            var renderBtnImgBind = new Binding("Image", _vm, "IsBusy", true);
-            renderBtnTxtBind.Format += BtnContentFmt;
-            renderBtnImgBind.Format += BtnContentFmt;
+            //var renderBtnTxtBind = new Binding("Text", _vm, "IsBusy", true);
+            //var renderBtnImgBind = new Binding("Image", _vm, "IsBusy", true);
+            //renderBtnTxtBind.Format += BtnContentFmt;
+            //renderBtnImgBind.Format += BtnContentFmt;
 
-            renderAllButton.DataBindings.DefaultDataSourceUpdateMode = DataSourceUpdateMode.OnPropertyChanged;
+            //renderAllButton.DataBindings.DefaultDataSourceUpdateMode = DataSourceUpdateMode.OnPropertyChanged;
 
-            renderAllButton.DataBindings.Add("Enabled", _vm, "CanRender");
-            renderAllButton.DataBindings.Add(renderBtnTxtBind);
-            renderAllButton.DataBindings.Add(renderBtnImgBind);
+            //renderAllButton.DataBindings.Add("Enabled", _vm, "CanRender");
+            //renderAllButton.DataBindings.Add(renderBtnTxtBind);
+            //renderAllButton.DataBindings.Add(renderBtnImgBind);
 
-            void BtnContentFmt(object ps, ConvertEventArgs pargs)
-            {
-                bool busy = (bool)pargs.Value;
+            //void BtnContentFmt(object ps, ConvertEventArgs pargs)
+            //{
+            //    bool busy = (bool)pargs.Value;
 
-                if (pargs.DesiredType == typeof(string))
-                {
-                    pargs.Value = busy ? "Stop Render" : "Start Render";
-                }
-                else if (pargs.DesiredType == typeof(System.Drawing.Image))
-                {
-                    pargs.Value = busy ? Resources.stop_icon : Resources.render_icon;
-                }
-                else
-                {
-                    throw new FormatException("Invalid type");
-                }
-            }
+            //    if (pargs.DesiredType == typeof(string))
+            //    {
+            //        pargs.Value = busy ? "Stop Render" : "Start Render";
+            //    }
+            //    else if (pargs.DesiredType == typeof(System.Drawing.Image))
+            //    {
+            //        pargs.Value = busy ? Resources.stop_icon : Resources.render_icon;
+            //    }
+            //    else
+            //    {
+            //        throw new FormatException("Invalid type");
+            //    }
+            //}
 
 #if UNIX
             forceUIUpdateToolStripMenuItem.Visible = true;
@@ -183,8 +180,8 @@ namespace BlenderRenderController
                 _settingsForm = new SettingsForm();
                 _settingsForm.FormClosed += SettingsForm_FormClosed;
 
-                string errMsg = "One or more required program(s) were not found (Path invalid OR first time run), " +
-                                "set the paths in the Settings window";
+                string errMsg = "One or more required program(s) were not found " +
+                    "(Path invalid OR first time run), set the paths in the Settings window";
                 string cap = "Setup required";
                 string info = "Paths missing";
 #if WIN
@@ -194,13 +191,14 @@ namespace BlenderRenderController
                     InstructionText = info,
                     Text = errMsg,
                     Icon = TaskDialogStandardIcon.Warning,
-                    StandardButtons = TaskDialogStandardButtons.Close
+                    StandardButtons = TaskDialogStandardButtons.Close,
+                    OwnerWindowHandle = this.Handle
                 };
 
                 var tdCmdLink = new TaskDialogCommandLink("BtnOpenSettings", "Goto Settings");
-                tdCmdLink.Click += (tdS, tdE) =>
+                tdCmdLink.Click += delegate
                 {
-                    _settingsForm.Show();
+                    _settingsForm.Show(this);
                     td.Close();
                 };
 
@@ -223,6 +221,8 @@ namespace BlenderRenderController
 
         private void BrcForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // BUG: e.Cancel is set to true after a render process is done
+
             if (_vm.IsBusy)
             {
                 var result = MessageBox.Show(
@@ -241,6 +241,8 @@ namespace BlenderRenderController
                     StopWork(false);
                 }
             }
+
+            e.Cancel = false;
 
             logger.Info("Program closing");
         }
@@ -1045,42 +1047,54 @@ namespace BlenderRenderController
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            //if (_vm.IsBusy)
-            //{
-            //    renderAllButton.Text = "Stop Render";
-            //    renderAllButton.Image = Resources.stop_icon;
-            //}
-            //else
-            //{
-            //    renderAllButton.Text = "Start Render";
-            //    renderAllButton.Image = Resources.render_icon;
-            //}
+            var vm = (BrcViewModel)sender;
 
-            //renderAllButton.Enabled = _vm.CanRender;
+            if (vm.IsBusy)
+            {
+                renderAllButton.Text = "Stop Render";
+                renderAllButton.Image = Resources.stop_icon;
 
-            unloadToolStripMenuItem.Enabled = _vm.CanEditCurrentProject;
+                if (!projectBindingSrc.IsBindingSuspended)
+                    projectBindingSrc.SuspendBinding();
+            }
+            else
+            {
+                renderAllButton.Text = "Start Render";
+                renderAllButton.Image = Resources.render_icon;
+
+                if (projectBindingSrc.IsBindingSuspended)
+                    projectBindingSrc.ResumeBinding();
+            }
+
+            renderAllButton.Enabled = vm.CanRender;
+
+
+            unloadToolStripMenuItem.Enabled = vm.CanEditCurrentProject;
 
             miRenderMixdown.Enabled =
-            miJoinChunks.Enabled = !_vm.IsBusy;
+            miJoinChunks.Enabled = !vm.IsBusy;
 
-            miSettings.Enabled = !_vm.IsBusy;
+            miSettings.Enabled = !vm.IsBusy;
 
             miReloadCurrent.Enabled =
-            reloadTSButton.Enabled = _vm.CanReloadCurrentProject;
+            reloadTSButton.Enabled = vm.CanReloadCurrentProject;
 
-            frOutputFolder.Enabled = _vm.CanEditCurrentProject;
+            frOutputFolder.Enabled = vm.CanEditCurrentProject;
 
             panelChunkSize.Enabled =
-            panelFrameRange.Enabled = _vm.CanEditCurrentProject;
+            panelFrameRange.Enabled = vm.CanEditCurrentProject;
+
+            cbRenderer.Enabled =
+            cbAfterRenderAction.Enabled = !vm.IsBusy;
 
             miOpenFile.Enabled =
-            openFileTSButton.Enabled = _vm.CanLoadNewProject;
+            openFileTSButton.Enabled = vm.CanLoadNewProject;
 
             miOpenRecent.Enabled =
-            openRecentsTSButton.Enabled = _vm.CanLoadNewProject;
+            openRecentsTSButton.Enabled = vm.CanLoadNewProject;
 
 
-            Status(_vm.DefaultStatusMessage);
+            Status(vm.DefaultStatusMessage);
         }
 
 

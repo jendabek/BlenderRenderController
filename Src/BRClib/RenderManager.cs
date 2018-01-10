@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
 
 using Timer = System.Timers.Timer;
 
@@ -77,7 +78,9 @@ namespace BRClib
         {
             get
             {
-                if (_proj == null || string.IsNullOrWhiteSpace(_proj.OutputPath)) return null;
+                if (_proj == null || string.IsNullOrWhiteSpace(_proj.OutputPath))
+                    return null;
+
                 return Path.Combine(_proj.OutputPath, CHUNK_DIR);
             }
         }
@@ -205,12 +208,12 @@ namespace BRClib
 
         private void CheckForValidProperties()
         {
-            //string[] mustHaveValues = { ChunksFolderPath, _proj.BlendPath, OutputFileName };
+            string[] mustHaveValues = { BlenderProgram, FFmpegProgram };
 
-            //if (mustHaveValues.Any(x => string.IsNullOrWhiteSpace(x)))
-            //{
-            //    throw new Exception("Required info missing");
-            //}
+            if (mustHaveValues.Any(x => string.IsNullOrWhiteSpace(x)))
+            {
+                throw new Exception("Required info missing");
+            }
 
             if (_proj == null)
             {
@@ -293,7 +296,7 @@ namespace BRClib
                 return false;
             }
 
-            string chunksTxtFile = Path.Combine(chunksFolder, "chunklist.txt");
+            string chunksTxtFile = Path.Combine(chunksFolder, CHUNK_TXT);
 
             //write txt for FFmpeg concatenation
             using (StreamWriter partListWriter = new StreamWriter(chunksTxtFile))
@@ -367,13 +370,9 @@ namespace BRClib
             logger.Info("RENDER FINISHED");
 
             // Send a '100%' ProgressReport
-            ReportProgress(NumberOfFramesRendered, 0);
+            ReportProgress(NumberOfFramesRendered, _initalChunkCount);
 
-            _arState = Task.Factory.StartNew(() =>
-            {
-                return AfterRenderProc(Action);
-            }, 
-            _arCts.Token);
+            _arState = Task.Factory.StartNew(AfterRenderProc, this.Action, _arCts.Token);
 
             _arState.ContinueWith(t =>
             {
@@ -422,15 +421,12 @@ namespace BRClib
 
         }
 
-        string GetRandSulfix(string baseName)
-        {
-            var tmp = Path.GetRandomFileName();
-            return baseName + Path.ChangeExtension(tmp, "txt");
-        }
 
 
-        bool AfterRenderProc(AfterRenderAction action)
+        bool AfterRenderProc(object state)
         {
+            var action = (AfterRenderAction)state;
+
             AfterRenderStarted?.Raise(this, action);
 
             if (action == AfterRenderAction.NOTHING)
@@ -457,14 +453,13 @@ namespace BRClib
             var projFinalPath = Path.Combine(_proj.OutputPath, _proj.ProjectName + videoExt);
             var chunksTxt = Path.Combine(ChunksFolderPath, CHUNK_TXT);
             var mixdownPath = Path.Combine(_proj.OutputPath, MixdownFile);
+            var mixdownTmpScript = EmbeddedScriptToDisk("Scripts.mixdown_audio.py");
 
 
             MixdownCmd mixdown = new MixdownCmd(BlenderProgram)
             {
                 BlendFile = _proj.BlendFilePath,
-                MixdownScript = Path.Combine(Environment.CurrentDirectory, 
-                                             "Scripts", 
-                                             "mixdown_audio.py"),
+                MixdownScript = mixdownTmpScript,
                 Range = fullc,
                 OutputFolder = _proj.OutputPath
             };
@@ -473,7 +468,7 @@ namespace BRClib
             {
                 ConcatTextFile = chunksTxt,
                 OutputFile = projFinalPath,
-                //Duration = _proj.BlendData.Duration,
+                Duration = _proj.Duration,
                 MixdownFile = mixdownPath
             };
 
@@ -562,6 +557,13 @@ namespace BRClib
             {
                 return !_arCts.IsCancellationRequested;
             }
+
+
+            string GetRandSulfix(string baseName)
+            {
+                var tmp = Path.GetRandomFileName();
+                return baseName + Path.ChangeExtension(tmp, "txt");
+            }
         }
 
 
@@ -579,7 +581,23 @@ namespace BRClib
 
             proc.WaitForExit();
         }
+
+        
+        private string EmbeddedScriptToDisk(string resourceName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resPath = assembly.GetName().Name + "." + resourceName;
+
+            var file = Path.Combine(Path.GetTempPath(), resourceName);
+
+            using (var resStream = assembly.GetManifestResourceStream(resPath))
+            using (var fileStream = File.OpenWrite(file))
+            {
+                resStream.Seek(0, SeekOrigin.Begin);
+                resStream.CopyTo(fileStream);
+            }
+
+            return file;
+        }
     }
-
-
 }
