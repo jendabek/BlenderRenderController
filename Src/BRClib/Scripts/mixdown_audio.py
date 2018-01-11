@@ -1,3 +1,7 @@
+# Part of Blender Render Controller
+# https://github.com/jendabek/BlenderRenderController
+# Copyright 2017-present Pedro Oliva Rodrigues
+
 import os
 import sys
 import bpy

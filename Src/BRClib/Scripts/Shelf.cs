@@ -7,6 +7,8 @@ using System.IO;
 
 namespace BRClib.Scripts
 {
+    using Res = BRClib.Properties.Resources;
+
     public static class Shelf
     {
         const string PyGetProjInfo = "get_project_info.py";
@@ -66,8 +68,7 @@ namespace BRClib.Scripts
 
             if (sp.Default == null && !allowNull)
             {
-                var rsName = GetPyScriptFileName(script);
-                sp.Default = EmbeddedScriptToDisk(rsName);
+                sp.Default = EmbeddedScriptToDisk(script);
             }
 
             _internalData[script] = sp;
@@ -75,9 +76,17 @@ namespace BRClib.Scripts
             return sp.Default;
         }
 
-        private static string GetCustomPath(PyScript script) => 
-            _internalData[script].Custom;
+        private static string GetCustomPath(PyScript script)
+        {
+            var custom = _internalData[script].Custom;
+            return File.Exists(custom) ? custom : null;
+        }
 
+        private static string EmbeddedScriptToDisk(PyScript script, string dir = null)
+        {
+            var rsName = GetPyScriptFileName(script);
+            return EmbeddedScriptToDisk(rsName, dir);
+        }
 
         private static string EmbeddedScriptToDisk(string resourceName, string dir = null)
         {
@@ -97,6 +106,12 @@ namespace BRClib.Scripts
             using (var resStream = assembly.GetManifestResourceStream(resPath))
             using (var fileStream = File.OpenWrite(file))
             {
+                string genHeader = "# " + Res.GenFileHeader + "\n";
+                byte[] header = Encoding.UTF8.GetBytes(genHeader);
+
+                fileStream.Write(header, 0, header.Length);
+
+                // copy contents to file
                 resStream.Seek(0, SeekOrigin.Begin);
                 resStream.CopyTo(fileStream);
             }

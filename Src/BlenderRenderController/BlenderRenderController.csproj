@@ -180,13 +180,6 @@
     <Compile Include="Ui\InfoBoxItem.Designer.cs">
       <DependentUpon>InfoBoxItem.cs</DependentUpon>
     </Compile>
-    <Compile Include="Ui\IPrefControl.cs" />
-    <Compile Include="Ui\PrefsControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Ui\PrefsControl.Designer.cs">
-      <DependentUpon>PrefsControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Ui\SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -206,9 +199,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Ui\InfoBoxItem.resx">
       <DependentUpon>InfoBoxItem.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Ui\PrefsControl.resx">
-      <DependentUpon>PrefsControl.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\DataSources\BRClib.BlendData.datasource" />
     <None Include="Properties\DataSources\BRClib.Project.datasource" />

@@ -4,10 +4,11 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ISynchronizeInvoke = System.ComponentModel.ISynchronizeInvoke;
 
-namespace BRClib
+namespace BRClib.Extentions
 {
+    using ISynchronizeInvoke = System.ComponentModel.ISynchronizeInvoke;
+
     public static class Extentions
     {
         /// <summary>
@@ -145,7 +146,8 @@ namespace BRClib
 
             if (!proc.EnableRaisingEvents)
             {
-                throw new InvalidOperationException("To run asynchronously, 'EnableRaisingEvents' must be set to true");
+                throw new InvalidOperationException("Cannot run process asynchronously, " +
+                    "'EnableRaisingEvents' must be set to true");
             }
 
             proc.Exited += (s, e) => tcs.SetResult((s as Process).ExitCode);

@@ -8,6 +8,7 @@
 using BlenderRenderController.Properties;
 using BRClib;
 using BRClib.Commands;
+using BRClib.Extentions;
 #if WIN
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Taskbar;
@@ -231,13 +232,6 @@ namespace BlenderRenderController
                 ReadFail();
                 return;
             }
-            //if (!Directory.Exists(_appSettings.ScriptsFolder))
-            //{
-            //    // Error scriptsfolder not found
-            //    MessageBox.Show("Scripts folder not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    ReadFail();
-            //    return;
-            //}
 
             logger.Info("Loading .blend");
             Status("Reading .blend file...");
@@ -426,10 +420,8 @@ namespace BlenderRenderController
 
             statusTime.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
 
-#if WIN
-            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
-            TaskbarManager.Instance.SetProgressValue(0, 100);
-#endif
+            UpdateProgressBars();
+
             Status("Starting render...");
 
             _chrono.Start();
@@ -730,9 +722,9 @@ namespace BlenderRenderController
         {
             _vm.IsBusy = true;
             ResetCTS();
+            UpdateProgressBars(-1);
 
             Status("Rendering mixdown...");
-            renderProgressBar.Style = ProgressBarStyle.Marquee;
 
             var mix = new MixdownCmd(_appSettings.BlenderProgram,
                                     _vm.Project.BlendFilePath,
@@ -757,8 +749,7 @@ namespace BlenderRenderController
                 Status("Something went wrong...");
             }
 
-
-            renderProgressBar.Style = ProgressBarStyle.Blocks;
+            UpdateProgressBars();
             _vm.IsBusy = false;
         }
 
@@ -766,8 +757,8 @@ namespace BlenderRenderController
         {
             _vm.WorkToggle();
             ResetCTS();
+            UpdateProgressBars(-1);
 
-            renderProgressBar.Style = ProgressBarStyle.Marquee;
 
             var manConcat = new ConcatForm();
             var dResult = manConcat.ShowDialog();
@@ -797,7 +788,7 @@ namespace BlenderRenderController
                 }
             }
 
-            renderProgressBar.Style = ProgressBarStyle.Blocks;
+            UpdateProgressBars();
             _vm.WorkToggle();
         }
 
@@ -944,7 +935,6 @@ namespace BlenderRenderController
         }
 
 
-        // TODO: Tooltip switch on / off
 
         private void donateButton_Click(object sender, EventArgs e)
         {

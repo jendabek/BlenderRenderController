@@ -66,7 +66,7 @@ namespace BRClib
         }
 
         // scene.render.image_settings.file_format
-        [JsonProperty("imgFormat")]
+        [JsonProperty("fileFormat")]
         public string FileFormat { get; set; }
 
         // scene.render.ffmpeg.format

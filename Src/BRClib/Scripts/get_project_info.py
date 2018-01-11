@@ -1,3 +1,7 @@
+# Part of Blender Render Controller
+# https://github.com/jendabek/BlenderRenderController
+# Copyright 2017-present Pedro Oliva Rodrigues
+
 import os
 import json
 import bpy
@@ -68,7 +72,7 @@ class ProjectInfo:
                 'resolution': resolution,
 		        'outputPath': outputPath,
 		        'sceneActive': sceneActive,
-		        'imgFormat': imgFormat,
+		        'fileFormat': imgFormat,
                 'ffmpegFmt': ffmpegFmt,
                 'ffmpegCodec': ffmpegCodec,
                 'ffmpegAudio': ffmpegAudio

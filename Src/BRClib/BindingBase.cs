@@ -7,7 +7,7 @@ using System;
 namespace BRClib
 {
     /// <summary>
-    /// A base class with <see cref="INotifyPropertyChanged"/> methods
+    /// A base class with a <see cref="INotifyPropertyChanged"/> implementation
     /// </summary>
     public class BindingBase : INotifyPropertyChanged
     {

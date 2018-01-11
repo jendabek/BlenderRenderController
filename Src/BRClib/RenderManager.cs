@@ -12,7 +12,7 @@ using System.Reflection;
 
 using Timer = System.Timers.Timer;
 using ScriptShelf = BRClib.Scripts.Shelf;
-
+using BRClib.Extentions;
 
 namespace BRClib
 {
@@ -565,32 +565,31 @@ namespace BRClib
                 var tmp = Path.GetRandomFileName();
                 return baseName + Path.ChangeExtension(tmp, "txt");
             }
+
+            void RunProc(ref Process proc, string key)
+            {
+                proc.Start();
+
+                _afterRenderProcList.Add(proc);
+
+                var readOutput = proc.StandardOutput.ReadToEndAsync();
+                var readError = proc.StandardError.ReadToEndAsync();
+
+                readOutput.ContinueWith(t => _afterRenderReport[key].StdOutput = t.Result);
+                readError.ContinueWith(t => _afterRenderReport[key].StdError = t.Result);
+
+                proc.WaitForExit();
+            }
         }
 
-
-        void RunProc(ref Process proc, string key)
-        {
-            proc.Start();
-
-            _afterRenderProcList.Add(proc);
-
-            var readOutput = proc.StandardOutput.ReadToEndAsync();
-            var readError = proc.StandardError.ReadToEndAsync();
-
-            readOutput.ContinueWith(t => _afterRenderReport[key].StdOutput = t.Result);
-            readError.ContinueWith(t => _afterRenderReport[key].StdError = t.Result);
-
-            proc.WaitForExit();
-        }
-
-        
 
     }
 
-    public interface IRequiredPaths
+    public interface IRenderSettings
     {
         string Blender { get; set; }
         string FFmpeg { get; set; }
-        string MixdownPyScript { get; set; }
+        AfterRenderAction AfterRender { get; set; }
+
     }
 }
