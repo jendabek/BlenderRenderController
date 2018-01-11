@@ -74,6 +74,17 @@ namespace BlenderRenderController
             _etaCalc = new ETACalculator(5, 1);
         }
 
+        public BrcForm(string blendFile) : this()
+        {
+            if (_appSettings.CheckCorrectConfig())
+            {
+                // window must be visible
+                Show(); 
+
+                GetBlendInfo(blendFile);
+            }
+        }
+
 
         private void BrcForm_Load(object sender, EventArgs e)
         {

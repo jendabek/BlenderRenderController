@@ -82,7 +82,7 @@ namespace BRClib.Scripts
             return File.Exists(custom) ? custom : null;
         }
 
-        private static string EmbeddedScriptToDisk(PyScript script, string dir = null)
+        public static string EmbeddedScriptToDisk(PyScript script, string dir = null)
         {
             var rsName = GetPyScriptFileName(script);
             return EmbeddedScriptToDisk(rsName, dir);

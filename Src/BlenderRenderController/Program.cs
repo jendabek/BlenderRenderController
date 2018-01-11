@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
-using NLog.Common;
+using BRClib.Scripts;
 using System.Windows.Forms;
 using System.IO;
 
@@ -14,14 +14,41 @@ namespace BlenderRenderController
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            NlogSetup();
+
+            // parse args
+            if (args.Contains("--gen"))
+            {
+                Console.WriteLine("Writing scripts to temp folder...");
+                string[] paths = 
+                {
+                    Shelf.EmbeddedScriptToDisk(Shelf.PyScript.GetProjectInfo),
+                    Shelf.EmbeddedScriptToDisk(Shelf.PyScript.MixdownAudio),
+                };
+
+                Console.WriteLine(string.Join("\n", paths));
+            }
+
+            var cmdFile = args.Where(a => Path.GetExtension(a) == ".blend")
+                              .FirstOrDefault();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            NlogSetup();
+            BrcForm form;
 
-            Application.Run(new BrcForm());
+            if (cmdFile != null)
+            {
+                form = new BrcForm(cmdFile);
+            }
+            else
+            {
+                form = new BrcForm();
+            }
+
+            Application.Run(form);
         }
 
 
@@ -44,6 +71,14 @@ namespace BlenderRenderController
 
             LogManager.ReconfigExistingLoggers();
 
+        }
+
+        [Flags]
+        enum CmdAction
+        {
+            None,
+            GenerateScripts,
+            LoadBlend
         }
     }
 }
