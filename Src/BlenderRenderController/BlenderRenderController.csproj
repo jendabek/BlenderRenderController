@@ -167,7 +167,6 @@
     <Compile Include="SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Infra\Sync.cs" />
     <Compile Include="Ui\Dialogs.cs" />
     <Compile Include="Ui\ErrorBox.cs">
       <SubType>Form</SubType>
@@ -181,6 +180,13 @@
     <Compile Include="Ui\InfoBoxItem.Designer.cs">
       <DependentUpon>InfoBoxItem.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ui\IPrefControl.cs" />
+    <Compile Include="Ui\PrefsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Ui\PrefsControl.Designer.cs">
+      <DependentUpon>PrefsControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ui\SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -192,13 +198,18 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="SettingsForm.resx">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Ui\ErrorBox.resx">
       <DependentUpon>ErrorBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ui\InfoBoxItem.resx">
       <DependentUpon>InfoBoxItem.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="Properties\DataSources\AppSettings.datasource" />
+    <EmbeddedResource Include="Ui\PrefsControl.resx">
+      <DependentUpon>PrefsControl.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\DataSources\BRClib.BlendData.datasource" />
     <None Include="Properties\DataSources\BRClib.Project.datasource" />
     <None Include="Resources\brc_icon.ico" />
@@ -219,9 +230,6 @@
     <EmbeddedResource Include="BrcForm.resx">
       <DependentUpon>BrcForm.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SettingsForm.resx">
-      <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>

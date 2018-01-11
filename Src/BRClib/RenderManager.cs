@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 
 using Timer = System.Timers.Timer;
+using ScriptShelf = BRClib.Scripts.Shelf;
 
 
 namespace BRClib
@@ -453,7 +454,7 @@ namespace BRClib
             var projFinalPath = Path.Combine(_proj.OutputPath, _proj.ProjectName + videoExt);
             var chunksTxt = Path.Combine(ChunksFolderPath, CHUNK_TXT);
             var mixdownPath = Path.Combine(_proj.OutputPath, MixdownFile);
-            var mixdownTmpScript = EmbeddedScriptToDisk("Scripts.mixdown_audio.py");
+            var mixdownTmpScript = ScriptShelf.MixdownAudio;
 
 
             MixdownCmd mixdown = new MixdownCmd(BlenderProgram)
@@ -583,21 +584,13 @@ namespace BRClib
         }
 
         
-        private string EmbeddedScriptToDisk(string resourceName)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var resPath = assembly.GetName().Name + "." + resourceName;
 
-            var file = Path.Combine(Path.GetTempPath(), resourceName);
+    }
 
-            using (var resStream = assembly.GetManifestResourceStream(resPath))
-            using (var fileStream = File.OpenWrite(file))
-            {
-                resStream.Seek(0, SeekOrigin.Begin);
-                resStream.CopyTo(fileStream);
-            }
-
-            return file;
-        }
+    public interface IRequiredPaths
+    {
+        string Blender { get; set; }
+        string FFmpeg { get; set; }
+        string MixdownPyScript { get; set; }
     }
 }

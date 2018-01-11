@@ -9,6 +9,12 @@ namespace BlenderRenderController
 {
     class BrcViewModel : BindingBase
     {
+
+        public BrcViewModel()
+        {
+            OnPropertyChanged("Created");
+        }
+
         private Project _proj;
 
         public Project Project

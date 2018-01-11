@@ -85,18 +85,17 @@ namespace BlenderRenderController
 
         public string BlenderProgram { get; set; }
         public string FFmpegProgram { get; set; }
-        public bool Verbose { get; set; }
         public bool DisplayToolTips { get; set; }
         public AfterRenderAction AfterRender { get; set; }
         public Renderer Renderer { get; set; }
         public bool DeleteChunksFolder { get; set; }
+        public int LoggingLevel { get; set; }
 
-
-        public string ScriptsFolder
-        {
-            get => _scriptsFolderPath;
-            set => _scriptsFolderPath = value;
-        }
+        //public string ScriptsFolder
+        //{
+        //    get => _scriptsFolderPath;
+        //    set => _scriptsFolderPath = value;
+        //}
 
         [JsonIgnore]
         public string BlenderExeName
@@ -137,11 +136,11 @@ namespace BlenderRenderController
             {
                 BlenderProgram = DefBlenderFolder + blenderExe,
                 FFmpegProgram = DefFFmpegFolder + ffmpegExe,
-                Verbose = false,
+                LoggingLevel = 0,
                 DisplayToolTips = true,
                 AfterRender = AfterRenderAction.JOIN | AfterRenderAction.MIXDOWN,
                 Renderer = Renderer.BLENDER_RENDER,
-                ScriptsFolder = Path.Combine(_baseDir, Constants.ScriptsSubfolder),
+                //ScriptsFolder = Path.Combine(_baseDir, Constants.ScriptsSubfolder),
                 RecentProjects = new RecentBlendsCollection(),
                 DeleteChunksFolder = false
             };

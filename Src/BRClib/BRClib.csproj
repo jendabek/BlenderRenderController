@@ -82,26 +82,21 @@
     <Compile Include="Commands\Mixdown.cs" />
     <Compile Include="Commands\Render.cs" />
     <Compile Include="ConcurrentHashSet.cs" />
-    <Compile Include="Extentions.cs" />
+    <Compile Include="Extentions\Extentions.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Others.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderManager.cs" />
+    <Compile Include="Scripts\Shelf.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\get_project_info.py">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <EmbeddedResource Include="Scripts\mixdown_audio.py">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Scripts\get_project_info.py" />
+    <EmbeddedResource Include="Scripts\mixdown_audio.py" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Infra\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

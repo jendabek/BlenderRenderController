@@ -27,15 +27,23 @@ namespace BlenderRenderController
 
         static void NlogSetup()
         {
-            if (AppSettings.Current.Verbose)
-            {
-                foreach (var rule in LogManager.Configuration.LoggingRules)
-                {
-                    rule.EnableLoggingForLevel(LogLevel.Info);
-                }
+            var _sett = AppSettings.Current;
+            LogLevel lLvl;
 
-                LogManager.ReconfigExistingLoggers();
+            switch (_sett.LoggingLevel)
+            {
+                case 1: lLvl = LogLevel.Info; break;
+                case 2: lLvl = LogLevel.Trace; break;
+                default: return;
             }
+
+            foreach (var rule in LogManager.Configuration.LoggingRules)
+            {
+                rule.EnableLoggingForLevel(lLvl);
+            }
+
+            LogManager.ReconfigExistingLoggers();
+
         }
     }
 }

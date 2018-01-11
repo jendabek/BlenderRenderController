@@ -27,6 +27,8 @@ using System.Windows.Forms;
 
 namespace BlenderRenderController
 {
+    using ScriptShelf = BRClib.Scripts.Shelf;
+
     /// <summary>
     /// Main Window
     /// </summary>
@@ -54,7 +56,6 @@ namespace BlenderRenderController
         {
             InitializeComponent();
 
-            //_vm.Project = new ProjectSettings();
             _appSettings = AppSettings.Current;
             _vm = new BrcViewModel();
             _vm.PropertyChanged += ViewModel_PropertyChanged;
@@ -70,8 +71,6 @@ namespace BlenderRenderController
 
             _chrono = new Stopwatch();
             _etaCalc = new ETACalculator(5, 1);
-
-            //...
         }
 
 
@@ -89,9 +88,6 @@ namespace BlenderRenderController
             cbAfterRenderAction.DataSource = Helper.AfterRenderResources.ToList();
             cbAfterRenderAction.SelectedValue = _appSettings.AfterRender;
             cbAfterRenderAction.SelectedIndexChanged += AfterRenderAction_Changed;
-
-            // save appSettings on exit
-            AppDomain.CurrentDomain.ProcessExit += delegate { _appSettings.SaveCurrent(); };
 
             // load recent blends from file
             UpdateRecentBlendsMenu();
@@ -117,36 +113,6 @@ namespace BlenderRenderController
             processCountNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
 
             exitToolStripMenuItem.Click += delegate { Close(); };
-
-            // ViewModel binding
-            //var renderBtnTxtBind = new Binding("Text", _vm, "IsBusy", true);
-            //var renderBtnImgBind = new Binding("Image", _vm, "IsBusy", true);
-            //renderBtnTxtBind.Format += BtnContentFmt;
-            //renderBtnImgBind.Format += BtnContentFmt;
-
-            //renderAllButton.DataBindings.DefaultDataSourceUpdateMode = DataSourceUpdateMode.OnPropertyChanged;
-
-            //renderAllButton.DataBindings.Add("Enabled", _vm, "CanRender");
-            //renderAllButton.DataBindings.Add(renderBtnTxtBind);
-            //renderAllButton.DataBindings.Add(renderBtnImgBind);
-
-            //void BtnContentFmt(object ps, ConvertEventArgs pargs)
-            //{
-            //    bool busy = (bool)pargs.Value;
-
-            //    if (pargs.DesiredType == typeof(string))
-            //    {
-            //        pargs.Value = busy ? "Stop Render" : "Start Render";
-            //    }
-            //    else if (pargs.DesiredType == typeof(System.Drawing.Image))
-            //    {
-            //        pargs.Value = busy ? Resources.stop_icon : Resources.render_icon;
-            //    }
-            //    else
-            //    {
-            //        throw new FormatException("Invalid type");
-            //    }
-            //}
 
 #if UNIX
             forceUIUpdateToolStripMenuItem.Visible = true;
@@ -242,8 +208,8 @@ namespace BlenderRenderController
                 }
             }
 
-            e.Cancel = false;
-
+            //e.Cancel = false;
+            _appSettings.SaveCurrent();
             logger.Info("Program closing");
         }
 
@@ -265,21 +231,20 @@ namespace BlenderRenderController
                 ReadFail();
                 return;
             }
-            if (!Directory.Exists(_appSettings.ScriptsFolder))
-            {
-                // Error scriptsfolder not found
-                MessageBox.Show("Scripts folder not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                ReadFail();
-                return;
-            }
+            //if (!Directory.Exists(_appSettings.ScriptsFolder))
+            //{
+            //    // Error scriptsfolder not found
+            //    MessageBox.Show("Scripts folder not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    ReadFail();
+            //    return;
+            //}
 
             logger.Info("Loading .blend");
             Status("Reading .blend file...");
             UpdateProgressBars(-1);
 
             // exec process asynchronously
-            var giScript = Path.Combine(_appSettings.ScriptsFolder,
-                                        Constants.PyGetInfo);
+            var giScript = ScriptShelf.GetProjectInfo;
 
             var giProc = new Process
             {
@@ -773,8 +738,7 @@ namespace BlenderRenderController
                                     _vm.Project.BlendFilePath,
                                     _vm.Project.Start,
                                     _vm.Project.End,
-                                    Path.Combine(_appSettings.ScriptsFolder,
-                                                Constants.PyMixdown),
+                                    ScriptShelf.MixdownAudio,
                                     _vm.Project.OutputPath);
 
             var result = await mix.RunAsync(_afterRenderCancelSrc.Token);
@@ -1017,6 +981,9 @@ namespace BlenderRenderController
 
         private void clearRecentProjectsListToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (_appSettings.RecentProjects.Count == 0)
+                return;
+
             var response = MessageBox.Show(
                  "This will clear all files in the recent blends list, are you sure?",
                  "Clear recent blends?",
