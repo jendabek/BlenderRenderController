@@ -18,7 +18,7 @@ namespace BlenderRenderController
     {
         private static readonly string _baseDir = Environment.CurrentDirectory;
 
-        private string _scriptsFolderPath;
+        //private string _scriptsFolderPath;
         const string SETTINGS_FILE = "brc_settings.json";
         string _blenderExe, _ffmpegExe;
 
@@ -180,18 +180,19 @@ namespace BlenderRenderController
                 return false;
             }
 
-            Process p = new Process();
-            ProcessStartInfo info = new ProcessStartInfo
+            Process p = new Process
             {
-                FileName = fullExe,
-                Arguments = args,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = fullExe,
+                    Arguments = args,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true
+                }
             };
-
-            p.StartInfo = info;
             p.Start();
+
             var line = p.StandardOutput.ReadLine();
 
             return line.IndexOf(match, StringComparison.InvariantCultureIgnoreCase) == 0;

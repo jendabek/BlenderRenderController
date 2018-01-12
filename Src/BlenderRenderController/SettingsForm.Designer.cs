@@ -45,15 +45,18 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.findBlenderDialog = new System.Windows.Forms.OpenFileDialog();
             this.findFFmpegDialog = new System.Windows.Forms.OpenFileDialog();
+            this.settingsBindingSrc = new System.Windows.Forms.BindingSource(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.settingsBindingSrc)).BeginInit();
             this.SuspendLayout();
             // 
             // blenderPathTextBox
             // 
             this.blenderPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.blenderPathTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.settingsBindingSrc, "BlenderProgram", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.blenderPathTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.blenderPathTextBox.Location = new System.Drawing.Point(10, 47);
             this.blenderPathTextBox.Name = "blenderPathTextBox";
@@ -65,6 +68,7 @@
             // 
             this.ffmpegPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.ffmpegPathTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.settingsBindingSrc, "FFmpegProgram", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.ffmpegPathTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ffmpegPathTextBox.Location = new System.Drawing.Point(10, 122);
             this.ffmpegPathTextBox.Name = "ffmpegPathTextBox";
@@ -135,6 +139,7 @@
             // chkBoxDelChunks
             // 
             this.chkBoxDelChunks.AutoSize = true;
+            this.chkBoxDelChunks.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this.settingsBindingSrc, "DeleteChunksFolder", true));
             this.chkBoxDelChunks.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkBoxDelChunks.Location = new System.Drawing.Point(7, 54);
             this.chkBoxDelChunks.Name = "chkBoxDelChunks";
@@ -148,6 +153,7 @@
             // chkBoxShowTooltips
             // 
             this.chkBoxShowTooltips.AutoSize = true;
+            this.chkBoxShowTooltips.DataBindings.Add(new System.Windows.Forms.Binding("Checked", this.settingsBindingSrc, "DisplayToolTips", true));
             this.chkBoxShowTooltips.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkBoxShowTooltips.Location = new System.Drawing.Point(6, 29);
             this.chkBoxShowTooltips.Name = "chkBoxShowTooltips";
@@ -194,9 +200,9 @@
             "Warnigs and Errors (default)",
             "Detailed",
             "Developer"});
-            this.cbLoggingLvl.Location = new System.Drawing.Point(5, 27);
+            this.cbLoggingLvl.Location = new System.Drawing.Point(6, 27);
             this.cbLoggingLvl.Name = "cbLoggingLvl";
-            this.cbLoggingLvl.Size = new System.Drawing.Size(146, 23);
+            this.cbLoggingLvl.Size = new System.Drawing.Size(176, 23);
             this.cbLoggingLvl.TabIndex = 33;
             // 
             // groupBox3
@@ -205,7 +211,7 @@
             this.groupBox3.Controls.Add(this.cbLoggingLvl);
             this.groupBox3.Location = new System.Drawing.Point(217, 240);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(157, 56);
+            this.groupBox3.Size = new System.Drawing.Size(188, 56);
             this.groupBox3.TabIndex = 35;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Logging level";
@@ -217,6 +223,10 @@
             // findFFmpegDialog
             // 
             this.findFFmpegDialog.Title = "Find ";
+            // 
+            // settingsBindingSrc
+            // 
+            this.settingsBindingSrc.DataSource = typeof(BlenderRenderController.AppSettings);
             // 
             // SettingsForm
             // 
@@ -247,6 +257,7 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.settingsBindingSrc)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -268,5 +279,6 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.OpenFileDialog findBlenderDialog;
         private System.Windows.Forms.OpenFileDialog findFFmpegDialog;
+        private System.Windows.Forms.BindingSource settingsBindingSrc;
     }
 }

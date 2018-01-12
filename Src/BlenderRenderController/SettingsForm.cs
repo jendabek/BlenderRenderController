@@ -13,23 +13,18 @@ namespace BlenderRenderController
 {
     public partial class SettingsForm : Form
     {
-
         private AppSettings _setts;
 
         public SettingsForm()
         {
             InitializeComponent();
             _setts = AppSettings.Current;
+            settingsBindingSrc.Add(_setts);
         }
 
         private void onFormLoad(object sender, EventArgs e)
         {
-            // bindings
-            blenderPathTextBox.DataBindings.Add("Text", _setts, nameof(AppSettings.BlenderProgram));
-            ffmpegPathTextBox.DataBindings.Add("Text", _setts, nameof(AppSettings.FFmpegProgram));
-            chkBoxShowTooltips.DataBindings.Add("Checked", _setts, nameof(AppSettings.DisplayToolTips));
-            chkBoxDelChunks.DataBindings.Add(nameof(CheckBox.Checked), _setts, nameof(AppSettings.DeleteChunksFolder));
-
+            // load settings
             cbLoggingLvl.SelectedIndex = _setts.LoggingLevel;
             cbLoggingLvl.SelectedIndexChanged += CbLoggingLvl_SelectedIndexChanged;
 
@@ -48,6 +43,7 @@ namespace BlenderRenderController
             findFFmpegDialog.Filter = "FFmpeg|" + _setts.FFmpegExeName;
             findFFmpegDialog.Title += _setts.FFmpegExeName;
 #if UNIX
+            cbLoggingLvl.BackColor =
             ffmpegPathTextBox.BackColor =
             blenderPathTextBox.BackColor = System.Drawing.Color.White;
 #endif
@@ -91,7 +87,6 @@ namespace BlenderRenderController
             if (!_setts.CheckCorrectConfig())
             {
                 this.DialogResult = DialogResult.Abort;
-                //Application.Exit();
             }
 
         }
