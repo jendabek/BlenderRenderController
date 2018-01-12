@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("BlenderRenderController")]
 [assembly: AssemblyDescription("A tool for significant speedup of rendering with Blender VSE")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("8RedHands")]
 [assembly: AssemblyProduct("BlenderRenderController")]
-[assembly: AssemblyCopyright("Copyright Pedro Rodrigues and Jen Kaderabek")]
+[assembly: AssemblyCopyright("Copyright Pedro Rodrigues")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -34,5 +34,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.5.4")]
-[assembly: AssemblyFileVersion("1.0.5.4")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]

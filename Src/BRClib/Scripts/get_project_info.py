@@ -13,7 +13,7 @@ class ProjectInfo:
 
     # get number of Scenes and active scene name
     scene = bpy.context.scene
-    scenes = bpy.data.scenes
+    #scenes = bpy.data.scenes
 
 
     # requests info from blender
@@ -23,96 +23,80 @@ class ProjectInfo:
 
         blendPath = bpy.context.blend_data.filepath;
         projectName  = bpy.path.display_name_from_filepath( blendPath );
-
-        # get values from strings
-        sceneActive = str(self.scene).partition('("')[-1].rpartition('")')[0]
-
+        
         scene = self.scene
 
-        # set infos acording to active Scene
-        start = scene.frame_start
-        end   = scene.frame_end
-        imgFormat = scene.render.image_settings.file_format
-        resolutionPercentage = scene.render.resolution_percentage
-        resolution = "{0} x {1}".format(math.floor(scene.render.resolution_x * resolutionPercentage / 100),
-                                        math.floor(scene.render.resolution_y * resolutionPercentage / 100))
-        
-        # ffmpeg info
-        ffmpegFmt = scene.render.ffmpeg.format
-        ffmpegCodec = scene.render.ffmpeg.codec
-        ffmpegAudio = scene.render.ffmpeg.audio_codec
+        # get ActiveScene
+        sceneActive = str(scene).partition('("')[-1].rpartition('")')[0]
 
+        # resolution
+        res_p = scene.render.resolution_percentage
+        resolution = "{0} x {1}".format(math.floor(scene.render.resolution_x * res_p / 100),
+                                        math.floor(scene.render.resolution_y * res_p / 100))
+        
         # calc real fps
-        fpsSource  = scene.render.fps
-        fpsBase = scene.render.fps_base
-        fps = fpsSource / fpsBase
+        fps = scene.render.fps / scene.render.fps_base
 
         # convert output path to absolute
-        # make sure path separator is constant
         output = bpy.path.abspath(scene.render.filepath)
-        outputPath = bpy.path.native_pathsep(output) 
+        outputPath = ""
 
-        # split and see if it needs fixing (one of the elements is '..')
-        outSplit = outputPath.split(os.sep)
+        # see if path needs fixing (one of the elements is '\..\')
+        updir = os.sep + '..' + os.sep
         
-        if ".." in outSplit:
+        if output.find(updir) != -1:
             print("Path has relative folders '/../'")
             print("Before: " + output)
-            outputPath = self.fix_path(outSplit)
+            outputPath = self.fix_path(output)
             print("After: " + outputPath, end='\n\n')
 
         print("Building data...")
 
         return {
                 'projectName': projectName,
-                'blendPath': blendPath,
-		        'start': start,
-		        'end': end,
+		        'sceneActive': sceneActive,
+		        'start': scene.frame_start,
+		        'end': scene.frame_end,
 		        'fps': fps,
                 'resolution': resolution,
 		        'outputPath': outputPath,
-		        'sceneActive': sceneActive,
-		        'fileFormat': imgFormat,
-                'ffmpegFmt': ffmpegFmt,
-                'ffmpegCodec': ffmpegCodec,
-                'ffmpegAudio': ffmpegAudio
+		        'fileFormat': scene.render.image_settings.file_format,
+                'ffmpegFmt': scene.render.ffmpeg.format,
+                'ffmpegCodec': scene.render.ffmpeg.codec,
+                'ffmpegAudio': scene.render.ffmpeg.audio_codec
             };
 
 
-    # fixes relative paths
+    # removes 'up' directories from a path str
     def fix_path(self, path):
 
-        print("Fixing output path...")
-        relIndexes = [i for i, x in enumerate(path) if x == ".."]
-        foldersToDel = []
+        # create collection (pos, value)
+        p_split = path.split(os.sep)
+        idx_vals = [i for i in enumerate(p_split)]
+        pi = []
         
-        count = 0
-        for idx in relIndexes:
-            count += 1
-            folderIdx = idx - count
+        # find 'up' dirs
+        dot_items = [x for x in idx_vals if x[1] == '..']
+        dot_count = len(dot_items)
+        
+        # set range of indexes to ignore
+        # ignore all 'up' dirs and the folders they represent
+        del_start = dot_items[0][0] - dot_count
+        del_end = dot_items[-1][0]
+        del_range = list(range(del_start, del_end + 1))
+
+        # build fixed path
+        for info in idx_vals:
+            val, ignore = info[1], info[0] in del_range
             
-            if folderIdx not in foldersToDel:
-                foldersToDel.append(folderIdx)
-                count += 1
+            if not ignore:
+                pi.append(val)
 
-
-        if len(foldersToDel) > 0:
-            relIndexes = list(set(relIndexes + foldersToDel))
-
-        relIndexes.sort()
-
-        print("Deleting indexes: " + str(relIndexes))
-
-        # removes elemets from largest index down
-        for i in relIndexes[::-1]:
-            del path[i]
-
-        outputAbs = os.sep.join(path)
-        return outputAbs
+        return os.sep.join(pi);
 
 
 
 if __name__ == "__main__":
     p = ProjectInfo()
     jsonStr = p.get_info()
-    print(json.dumps(jsonStr, indent=4, skipkeys=True, sort_keys=True))
+    print(json.dumps(jsonStr, indent=4, skipkeys=True))
