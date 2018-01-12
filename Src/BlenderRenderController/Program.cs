@@ -29,6 +29,11 @@ namespace BlenderRenderController
                 };
 
                 Console.WriteLine(string.Join("\n", paths));
+
+                if (args.Contains("-q"))
+                {
+                    return;
+                }
             }
 
             var cmdFile = args.Where(a => Path.GetExtension(a) == ".blend")

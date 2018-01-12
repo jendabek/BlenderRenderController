@@ -12,7 +12,6 @@ namespace BlenderRenderController
 
         public BrcViewModel()
         {
-            OnPropertyChanged("Created");
         }
 
         private Project _proj;

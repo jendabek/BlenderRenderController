@@ -531,22 +531,12 @@ namespace BRClib
                     {
                         if (mixdownProc?.ExitCode != 0)
                         {
-                            sw.Write("\n\n");
-                            sw.Write("Mixdown ");
-                            sw.WriteLine(string.Format(BAD_RESULT_FMT,
-                                                        mixdownProc.ExitCode, 
-                                                        _afterRenderReport[MIX_KEY].StdError, 
-                                                        _afterRenderReport[MIX_KEY].StdOutput));
+                            WriteReport(sw, "Mixdown ", _afterRenderReport[MIX_KEY]);
                         }
 
                         if (concatProc?.ExitCode != 0)
                         {
-                            sw.Write("\n\n");
-                            sw.Write("FFMpeg concat ");
-                            sw.WriteLine(string.Format(BAD_RESULT_FMT,
-                                                        concatProc.ExitCode, 
-                                                        _afterRenderReport[CONCAT_KEY].StdError, 
-                                                        _afterRenderReport[CONCAT_KEY].StdOutput));
+                            WriteReport(sw, "FFMpeg concat ", _afterRenderReport[CONCAT_KEY]);
                         } 
                     }
 
@@ -559,6 +549,16 @@ namespace BRClib
                 return !_arCts.IsCancellationRequested;
             }
 
+
+            void WriteReport(StreamWriter writer, string title, ProcessResult result)
+            {
+                writer.Write("\n\n");
+                writer.Write(title);
+                writer.WriteLine(string.Format(BAD_RESULT_FMT, 
+                                    result.ExitCode,
+                                    result.StdError,
+                                    result.StdOutput));
+            }
 
             string GetRandSulfix(string baseName)
             {
@@ -579,6 +579,8 @@ namespace BRClib
                 readError.ContinueWith(t => _afterRenderReport[key].StdError = t.Result);
 
                 proc.WaitForExit();
+
+                _afterRenderReport[key].ExitCode = proc.ExitCode;
             }
         }
 

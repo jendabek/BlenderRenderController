@@ -64,8 +64,8 @@ namespace BlenderRenderController
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.outputFolderLabel = new System.Windows.Forms.Label();
             this.optionsLabel = new System.Windows.Forms.Label();
-            this.renderOptionsAutoRadio = new System.Windows.Forms.RadioButton();
-            this.renderOptionsCustomRadio = new System.Windows.Forms.RadioButton();
+            this.chunkOptionsAutoRadio = new System.Windows.Forms.RadioButton();
+            this.chunkOptionsCustomRadio = new System.Windows.Forms.RadioButton();
             this.openOutputFolderButton = new System.Windows.Forms.Button();
             this.outputFolderBrowseButton = new System.Windows.Forms.Button();
             this.openBlendDialog = new System.Windows.Forms.OpenFileDialog();
@@ -309,7 +309,7 @@ namespace BlenderRenderController
             // 
             // chunkLengthNumericUpDown
             // 
-            this.chunkLengthNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectBindingSrc, "ChunkLenght", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation, "50"));
+            this.chunkLengthNumericUpDown.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.projectBindingSrc, "ChunkLenght", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged, "50"));
             this.chunkLengthNumericUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chunkLengthNumericUpDown.Location = new System.Drawing.Point(4, 21);
             this.chunkLengthNumericUpDown.Maximum = new decimal(new int[] {
@@ -402,7 +402,7 @@ namespace BlenderRenderController
             this.startEndBlendRadio.Text = "From Blend";
             this.toolTipInfo.SetToolTip(this.startEndBlendRadio, "Match the Start and End of the project");
             this.startEndBlendRadio.UseVisualStyleBackColor = true;
-            this.startEndBlendRadio.CheckedChanged += new System.EventHandler(this.AutoOptionsRadio_CheckedChanged);
+            this.startEndBlendRadio.CheckedChanged += new System.EventHandler(this.StartEndOptionsRadio_CheckedChanged);
             // 
             // startEndCustomRadio
             // 
@@ -538,32 +538,32 @@ namespace BlenderRenderController
             this.optionsLabel.TabIndex = 25;
             this.optionsLabel.Text = "Options";
             // 
-            // renderOptionsAutoRadio
+            // chunkOptionsAutoRadio
             // 
-            this.renderOptionsAutoRadio.AutoSize = true;
-            this.renderOptionsAutoRadio.Checked = true;
-            this.renderOptionsAutoRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderOptionsAutoRadio.Location = new System.Drawing.Point(3, 3);
-            this.renderOptionsAutoRadio.Name = "renderOptionsAutoRadio";
-            this.renderOptionsAutoRadio.Size = new System.Drawing.Size(49, 19);
-            this.renderOptionsAutoRadio.TabIndex = 9;
-            this.renderOptionsAutoRadio.TabStop = true;
-            this.renderOptionsAutoRadio.Tag = "";
-            this.renderOptionsAutoRadio.Text = "Auto";
-            this.renderOptionsAutoRadio.UseVisualStyleBackColor = true;
-            this.renderOptionsAutoRadio.CheckedChanged += new System.EventHandler(this.AutoOptionsRadio_CheckedChanged);
+            this.chunkOptionsAutoRadio.AutoSize = true;
+            this.chunkOptionsAutoRadio.Checked = true;
+            this.chunkOptionsAutoRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chunkOptionsAutoRadio.Location = new System.Drawing.Point(3, 3);
+            this.chunkOptionsAutoRadio.Name = "chunkOptionsAutoRadio";
+            this.chunkOptionsAutoRadio.Size = new System.Drawing.Size(49, 19);
+            this.chunkOptionsAutoRadio.TabIndex = 9;
+            this.chunkOptionsAutoRadio.TabStop = true;
+            this.chunkOptionsAutoRadio.Tag = "";
+            this.chunkOptionsAutoRadio.Text = "Auto";
+            this.chunkOptionsAutoRadio.UseVisualStyleBackColor = true;
+            this.chunkOptionsAutoRadio.CheckedChanged += new System.EventHandler(this.ChunkOptionsRadio_CheckedChanged);
             // 
-            // renderOptionsCustomRadio
+            // chunkOptionsCustomRadio
             // 
-            this.renderOptionsCustomRadio.AutoSize = true;
-            this.renderOptionsCustomRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderOptionsCustomRadio.Location = new System.Drawing.Point(58, 3);
-            this.renderOptionsCustomRadio.Name = "renderOptionsCustomRadio";
-            this.renderOptionsCustomRadio.Size = new System.Drawing.Size(67, 19);
-            this.renderOptionsCustomRadio.TabIndex = 10;
-            this.renderOptionsCustomRadio.Tag = "DIFNL;DIRENDER";
-            this.renderOptionsCustomRadio.Text = "Custom";
-            this.renderOptionsCustomRadio.UseVisualStyleBackColor = true;
+            this.chunkOptionsCustomRadio.AutoSize = true;
+            this.chunkOptionsCustomRadio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chunkOptionsCustomRadio.Location = new System.Drawing.Point(58, 3);
+            this.chunkOptionsCustomRadio.Name = "chunkOptionsCustomRadio";
+            this.chunkOptionsCustomRadio.Size = new System.Drawing.Size(67, 19);
+            this.chunkOptionsCustomRadio.TabIndex = 10;
+            this.chunkOptionsCustomRadio.Tag = "";
+            this.chunkOptionsCustomRadio.Text = "Custom";
+            this.chunkOptionsCustomRadio.UseVisualStyleBackColor = true;
             // 
             // openOutputFolderButton
             // 
@@ -699,8 +699,8 @@ namespace BlenderRenderController
             // 
             // flpChunkMode
             // 
-            this.flpChunkMode.Controls.Add(this.renderOptionsAutoRadio);
-            this.flpChunkMode.Controls.Add(this.renderOptionsCustomRadio);
+            this.flpChunkMode.Controls.Add(this.chunkOptionsAutoRadio);
+            this.flpChunkMode.Controls.Add(this.chunkOptionsCustomRadio);
             this.flpChunkMode.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flpChunkMode.Location = new System.Drawing.Point(0, 61);
             this.flpChunkMode.Name = "flpChunkMode";
@@ -817,6 +817,7 @@ namespace BlenderRenderController
             this.miRenderMixdown.Name = "miRenderMixdown";
             this.miRenderMixdown.Size = new System.Drawing.Size(163, 22);
             this.miRenderMixdown.Text = "Render Mixdown";
+            this.miRenderMixdown.Click += new System.EventHandler(this.mixDownButton_Click);
             // 
             // miJoinChunks
             // 
@@ -824,6 +825,7 @@ namespace BlenderRenderController
             this.miJoinChunks.Name = "miJoinChunks";
             this.miJoinChunks.Size = new System.Drawing.Size(163, 22);
             this.miJoinChunks.Text = "Join Chunks";
+            this.miJoinChunks.Click += new System.EventHandler(this.concatenatePartsButton_Click);
             // 
             // forceUIUpdateToolStripMenuItem
             // 
@@ -859,6 +861,7 @@ namespace BlenderRenderController
             this.miReportBug.Name = "miReportBug";
             this.miReportBug.Size = new System.Drawing.Size(142, 22);
             this.miReportBug.Text = "Report a &Bug";
+            this.miReportBug.Click += new System.EventHandler(this.toolStripMenuItemBug_Click);
             // 
             // miDonate
             // 
@@ -878,6 +881,7 @@ namespace BlenderRenderController
             this.miAbout.Name = "miAbout";
             this.miAbout.Size = new System.Drawing.Size(142, 22);
             this.miAbout.Text = "&About...";
+            this.miAbout.Click += new System.EventHandler(this.About_Click);
             // 
             // statusStrip
             // 
@@ -1080,8 +1084,8 @@ namespace BlenderRenderController
         private System.Windows.Forms.Button openOutputFolderButton;
         private System.Windows.Forms.RadioButton startEndBlendRadio;
         private System.Windows.Forms.RadioButton startEndCustomRadio;
-        private System.Windows.Forms.RadioButton renderOptionsAutoRadio;
-        private System.Windows.Forms.RadioButton renderOptionsCustomRadio;
+        private System.Windows.Forms.RadioButton chunkOptionsAutoRadio;
+        private System.Windows.Forms.RadioButton chunkOptionsCustomRadio;
         private System.Windows.Forms.Label renderInfoLabel;
         private System.Windows.Forms.ContextMenuStrip recentBlendsMenu;
         private System.Windows.Forms.OpenFileDialog openBlendDialog;

@@ -60,6 +60,9 @@ namespace BlenderRenderController
             _appSettings = AppSettings.Current;
             _vm = new BrcViewModel();
             _vm.PropertyChanged += ViewModel_PropertyChanged;
+
+            // invoke manually to set starting state
+            ViewModel_PropertyChanged(_vm, new PropertyChangedEventArgs("Created"));
 #if WIN
             // set the form icon outside designer
             this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
@@ -121,32 +124,25 @@ namespace BlenderRenderController
             totalStartNumericUpDown.DataBindings.Add("Enabled", startEndCustomRadio, "Checked");
             totalEndNumericUpDown.DataBindings.Add("Enabled", startEndCustomRadio, "Checked");
 
-            chunkLengthNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
-            processCountNumericUpDown.DataBindings.Add("Enabled", renderOptionsCustomRadio, "Checked");
+            chunkLengthNumericUpDown.DataBindings.Add("Enabled", chunkOptionsCustomRadio, "Checked");
+            processCountNumericUpDown.DataBindings.Add("Enabled", chunkOptionsCustomRadio, "Checked");
 
             exitToolStripMenuItem.Click += delegate { Close(); };
 
 #if UNIX
+            EventHandler fbsu = delegate { ForceBindingSourceUpdate(); };
+
             forceUIUpdateToolStripMenuItem.Visible = true;
-            forceUIUpdateToolStripMenuItem.Click += (s,args) => ForceBindingSourceUpdate();
-            totalStartNumericUpDown.EnabledChanged += NumericUpDown_EnableChanged;
-            totalEndNumericUpDown.EnabledChanged += NumericUpDown_EnableChanged;
-            chunkLengthNumericUpDown.EnabledChanged += NumericUpDown_EnableChanged;
-            processCountNumericUpDown.EnabledChanged += NumericUpDown_EnableChanged;
+            forceUIUpdateToolStripMenuItem.Click += fbsu;
+            startEndBlendRadio.CheckedChanged += fbsu;
+            chunkOptionsAutoRadio.CheckedChanged += fbsu;
+            totalStartNumericUpDown.Validated += fbsu;
+            totalEndNumericUpDown.Validated += fbsu;
+
+
 #endif
         }
 
-#if UNIX
-        private void NumericUpDown_EnableChanged(object sender, EventArgs e)
-        {
-            // Work around Mono not gray-ing out if disabled
-            var numeric = sender as NumericUpDown;
-            numeric.BackColor = (numeric.Enabled)
-                                ? System.Drawing.Color.White
-                                : System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
-            //numeric.Invalidate();
-        }
-#endif
 
         private void BrcForm_Shown(object sender, EventArgs e)
         {
@@ -199,8 +195,6 @@ namespace BlenderRenderController
 
         private void BrcForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // BUG: e.Cancel is set to true after a render process is done
-
             if (_vm.IsBusy)
             {
                 var result = MessageBox.Show(
@@ -220,7 +214,6 @@ namespace BlenderRenderController
                 }
             }
 
-            //e.Cancel = false;
             _appSettings.SaveCurrent();
             logger.Info("Program closing");
         }
@@ -407,7 +400,7 @@ namespace BlenderRenderController
         private void RenderAll()
         {
             // Calculate chunks
-            bool customLen = renderOptionsCustomRadio.Checked;
+            bool customLen = chunkOptionsCustomRadio.Checked;
             var chunks = customLen
                 ? Chunk.CalcChunksByLength(_vm.Project.Start,
                                            _vm.Project.End,
@@ -580,13 +573,14 @@ namespace BlenderRenderController
         /// </summary>
         private void UpdateProgress(RenderProgressInfo info)
         {
-            int progressPercentage = (int)Math.Floor((info.FramesRendered / (double)_vm.Project.TotalFrames) * 100);
+            float progPct = info.FramesRendered / (float)_vm.Project.TotalFrames;
 
-            Status($"Completed {info.PartsCompleted} / {_vm.Project.ChunkList.Count} chunks, {info.FramesRendered} frames rendered");
+            Status($"Completed {info.PartsCompleted} / {_vm.Project.ChunkList.Count} chunks, " +
+                $"{info.FramesRendered} frames rendered");
 
-            UpdateProgressBars(progressPercentage);
+            UpdateProgressBars((int)(progPct * 100));
 
-            _etaCalc.Update(progressPercentage / 100f);
+            _etaCalc.Update(progPct);
 
             if (_etaCalc.ETAIsAvailable)
             {
@@ -844,39 +838,32 @@ namespace BlenderRenderController
             OpenOutputFolder();
         }
 
-        private void AutoOptionsRadio_CheckedChanged(object sender, EventArgs e)
+        private void StartEndOptionsRadio_CheckedChanged(object sender, EventArgs e)
         {
-            var radio = sender as RadioButton;
-
-            if (radio.Name == renderOptionsAutoRadio.Name)
+            if (startEndBlendRadio.Checked)
             {
-                if (radio.Checked)
-                {
-                    _vm.Project.MaxConcurrency = Environment.ProcessorCount;
-                    // recalc auto chunks:
-                    var currentStart = totalStartNumericUpDown.Value;
-                    var currentEnd = totalEndNumericUpDown.Value;
-                    var currentProcessors = processCountNumericUpDown.Value;
-
-                    var expectedChunkLen = Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
-
-                    _vm.Project.ChunkLenght = (int)expectedChunkLen;
-                    //chunkLengthNumericUpDown.Value = expectedChunkLen;
-                }
+                // set to blend values
+                _vm.Project.Start = _autoStartF;
+                _vm.Project.End = _autoEndF;
             }
-            else if (radio.Name == startEndBlendRadio.Name)
-            {
-                if (radio.Checked)
-                {
-                    // set to blend values
-                    _vm.Project.Start = _autoStartF;
-                    _vm.Project.End = _autoEndF;
-                }
-            }
-#if UNIX
-            ForceBindingSourceUpdate();
-#endif
         }
+
+        private void ChunkOptionsRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chunkOptionsAutoRadio.Checked)
+            {
+                _vm.Project.MaxConcurrency = Environment.ProcessorCount;
+                // recalc auto chunks:
+                var currentStart = totalStartNumericUpDown.Value;
+                var currentEnd = totalEndNumericUpDown.Value;
+                var currentProcessors = processCountNumericUpDown.Value;
+
+                var expectedChunkLen = Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
+
+                _vm.Project.ChunkLenght = (int)expectedChunkLen;
+            }
+        }
+
 
         private void AfterRenderAction_Changed(object sender, EventArgs e)
         {
@@ -901,13 +888,10 @@ namespace BlenderRenderController
             var currentEnd = totalEndNumericUpDown.Value;
             var currentProcessors = processCountNumericUpDown.Value;
 
-            if (renderOptionsAutoRadio.Checked)
+            if (chunkOptionsAutoRadio.Checked)
             {
                 var expectedChunkLen = Math.Ceiling((currentEnd - currentStart + 1) / currentProcessors);
                 _vm.Project.ChunkLenght = (int)expectedChunkLen;
-#if UNIX
-                ForceBindingSourceUpdate();
-#endif
             }
 
             // set max chunk size to total frames
@@ -998,6 +982,11 @@ namespace BlenderRenderController
         {
             projectBindingSrc.Clear();
             _vm.Project = null;
+        }
+
+        private void About_Click(object sender, EventArgs e)
+        {
+
         }
 
         private void miGithub_Click(object sender, EventArgs e)

@@ -13,10 +13,12 @@ namespace BRClib
         /// <see cref="Chunk"/>'s start frame
         /// </summary>
         public int Start { get; set; }
+
         /// <summary>
         /// <see cref="Chunk"/>'s end frame
         /// </summary>
         public int End { get; set; }
+
         /// <summary>
         /// The <see cref="Chunk"/>'s frame length
         /// </summary>

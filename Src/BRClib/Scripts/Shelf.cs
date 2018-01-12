@@ -8,6 +8,7 @@ using System.IO;
 namespace BRClib.Scripts
 {
     using Res = BRClib.Properties.Resources;
+    using Env = Environment;
 
     public static class Shelf
     {
@@ -94,7 +95,11 @@ namespace BRClib.Scripts
             var resPath = assembly.GetName().Name + ".Scripts." + resourceName;
 
             if (dir == null)
-                dir = Path.GetTempPath();
+            {
+                var appdataR = Env.GetFolderPath(Env.SpecialFolder.ApplicationData);
+                dir = Path.Combine(appdataR, "BlenderRenderController", "scripts");
+                Directory.CreateDirectory(dir);
+            }
 
             var file = Path.Combine(dir, resourceName);
 
