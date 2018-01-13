@@ -28,39 +28,39 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.BntLeft = new System.Windows.Forms.Button();
-            this.BntRight = new System.Windows.Forms.Button();
+            this.BtnLeft = new System.Windows.Forms.Button();
+            this.BtnRight = new System.Windows.Forms.Button();
             this.ErrorContentBox = new System.Windows.Forms.TextBox();
             this.ErrorBoxLabel = new System.Windows.Forms.Label();
-            this.BntMiddle = new System.Windows.Forms.Button();
+            this.BtnMiddle = new System.Windows.Forms.Button();
             this.ErrorIcon = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIcon)).BeginInit();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // BntLeft
+            // BtnLeft
             // 
-            this.BntLeft.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.BntLeft.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BntLeft.Location = new System.Drawing.Point(266, 293);
-            this.BntLeft.Name = "BntLeft";
-            this.BntLeft.Size = new System.Drawing.Size(75, 30);
-            this.BntLeft.TabIndex = 0;
-            this.BntLeft.Text = "Continue";
-            this.BntLeft.UseVisualStyleBackColor = true;
-            this.BntLeft.Click += new System.EventHandler(this.Bnt_Click);
+            this.BtnLeft.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.BtnLeft.Location = new System.Drawing.Point(258, 19);
+            this.BtnLeft.Name = "BtnLeft";
+            this.BtnLeft.Size = new System.Drawing.Size(75, 30);
+            this.BtnLeft.TabIndex = 0;
+            this.BtnLeft.Text = "btn right";
+            this.BtnLeft.UseVisualStyleBackColor = true;
+            this.BtnLeft.Click += new System.EventHandler(this.Bnt_Click);
             // 
-            // BntRight
+            // BtnRight
             // 
-            this.BntRight.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.BntRight.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BntRight.Location = new System.Drawing.Point(81, 293);
-            this.BntRight.Name = "BntRight";
-            this.BntRight.Size = new System.Drawing.Size(75, 30);
-            this.BntRight.TabIndex = 1;
-            this.BntRight.Text = "Cancel";
-            this.BntRight.UseVisualStyleBackColor = true;
-            this.BntRight.Click += new System.EventHandler(this.Bnt_Click);
+            this.BtnRight.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.BtnRight.Location = new System.Drawing.Point(96, 19);
+            this.BtnRight.Name = "BtnRight";
+            this.BtnRight.Size = new System.Drawing.Size(75, 30);
+            this.BtnRight.TabIndex = 1;
+            this.BtnRight.Text = "btn left";
+            this.BtnRight.UseVisualStyleBackColor = true;
+            this.BtnRight.Click += new System.EventHandler(this.Bnt_Click);
             // 
             // ErrorContentBox
             // 
@@ -73,36 +73,34 @@
             this.ErrorContentBox.Name = "ErrorContentBox";
             this.ErrorContentBox.ReadOnly = true;
             this.ErrorContentBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.ErrorContentBox.Size = new System.Drawing.Size(405, 191);
+            this.ErrorContentBox.Size = new System.Drawing.Size(413, 173);
             this.ErrorContentBox.TabIndex = 2;
             this.ErrorContentBox.TabStop = false;
             this.ErrorContentBox.Text = "error contents here";
             // 
             // ErrorBoxLabel
             // 
-            this.ErrorBoxLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.ErrorBoxLabel.AutoSize = true;
-            this.ErrorBoxLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ErrorBoxLabel.Location = new System.Drawing.Point(68, 28);
-            this.ErrorBoxLabel.MaximumSize = new System.Drawing.Size(349, 0);
+            this.ErrorBoxLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ErrorBoxLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ErrorBoxLabel.Location = new System.Drawing.Point(68, 12);
+            this.ErrorBoxLabel.MaximumSize = new System.Drawing.Size(400, 200);
+            this.ErrorBoxLabel.MinimumSize = new System.Drawing.Size(320, 40);
             this.ErrorBoxLabel.Name = "ErrorBoxLabel";
-            this.ErrorBoxLabel.Size = new System.Drawing.Size(74, 16);
+            this.ErrorBoxLabel.Size = new System.Drawing.Size(349, 46);
             this.ErrorBoxLabel.TabIndex = 3;
             this.ErrorBoxLabel.Text = "Error Label";
-            this.ErrorBoxLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // BntMiddle
+            // BtnMiddle
             // 
-            this.BntMiddle.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.BntMiddle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BntMiddle.Location = new System.Drawing.Point(172, 293);
-            this.BntMiddle.Name = "BntMiddle";
-            this.BntMiddle.Size = new System.Drawing.Size(75, 30);
-            this.BntMiddle.TabIndex = 4;
-            this.BntMiddle.Text = "asd";
-            this.BntMiddle.UseVisualStyleBackColor = true;
-            this.BntMiddle.Visible = false;
-            this.BntMiddle.Click += new System.EventHandler(this.Bnt_Click);
+            this.BtnMiddle.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.BtnMiddle.Location = new System.Drawing.Point(177, 19);
+            this.BtnMiddle.Name = "BtnMiddle";
+            this.BtnMiddle.Size = new System.Drawing.Size(75, 30);
+            this.BtnMiddle.TabIndex = 4;
+            this.BtnMiddle.Text = "btn middle";
+            this.BtnMiddle.UseVisualStyleBackColor = true;
+            this.BtnMiddle.Click += new System.EventHandler(this.Bnt_Click);
             // 
             // ErrorIcon
             // 
@@ -117,12 +115,24 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 69);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(12, 67);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(50, 13);
+            this.label1.Size = new System.Drawing.Size(56, 15);
             this.label1.TabIndex = 6;
             this.label1.Text = "Details:";
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.Controls.Add(this.BtnRight);
+            this.panel1.Controls.Add(this.BtnLeft);
+            this.panel1.Controls.Add(this.BtnMiddle);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(0, 279);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(437, 69);
+            this.panel1.TabIndex = 7;
             // 
             // ErrorBox
             // 
@@ -130,14 +140,12 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(429, 344);
+            this.ClientSize = new System.Drawing.Size(437, 348);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.ErrorIcon);
             this.Controls.Add(this.ErrorBoxLabel);
-            this.Controls.Add(this.BntMiddle);
             this.Controls.Add(this.ErrorContentBox);
-            this.Controls.Add(this.BntRight);
-            this.Controls.Add(this.BntLeft);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -145,12 +153,12 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "ErrorBox";
             this.TopMost = true;
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ErrorBox_FormClosed);
             this.Shown += new System.EventHandler(this.ErrorBox_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIcon)).EndInit();
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -158,12 +166,13 @@
 
         #endregion
 
-        public System.Windows.Forms.Button BntLeft;
-        public System.Windows.Forms.Button BntRight;
+        public System.Windows.Forms.Button BtnLeft;
+        public System.Windows.Forms.Button BtnRight;
         public System.Windows.Forms.TextBox ErrorContentBox;
         public System.Windows.Forms.Label ErrorBoxLabel;
-        public System.Windows.Forms.Button BntMiddle;
+        public System.Windows.Forms.Button BtnMiddle;
         private System.Windows.Forms.PictureBox ErrorIcon;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Panel panel1;
     }
 }

@@ -159,7 +159,7 @@ namespace BlenderRenderController
                 string cap = "Setup required";
                 string info = "Paths missing";
 #if WIN
-                var td = new TaskDialog()
+                var td = new TaskDialog
                 {
                     Caption = cap,
                     InstructionText = info,
@@ -261,13 +261,11 @@ namespace BlenderRenderController
             };
 
             var pResult = await giProc.StartAsync();
-            //var pResult = await giCmd.RunAsync();
 
             // errors
             if (pResult.StdOutput.Length > 0)
             {
                 logger.Debug("Blender output errors detected");
-                //Debug.WriteLine('\n' + pResult.StdError + '\n');
             }
 
             if (pResult.StdOutput.Length == 0)
@@ -328,7 +326,6 @@ namespace BlenderRenderController
                 var errorBox = Ui.Dialogs.ShowErrorBox("Failed to read blend file info.",
                     "Read error", "Error output:\n\n" + pResult.StdError);
 
-                //errorBox.Show();
                 ReadFail();
                 return;
             }

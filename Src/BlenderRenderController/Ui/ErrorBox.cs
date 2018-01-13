@@ -13,60 +13,87 @@ namespace BlenderRenderController.Ui
 {
     public partial class ErrorBox : Form
     {
-        private string _result;
-
-        public string Result
-        {
-            get { return _result; }
-        }
-
-        public enum Buttons
-        {
-            Ok, RetryAbortIgnore, YesNo
-        }
 
         public ErrorBox()
         {
             InitializeComponent();
-            StartPosition = FormStartPosition.CenterParent;
 
             ErrorIcon.Image = SystemIcons.Hand.ToBitmap();
             ErrorIcon.SizeMode = PictureBoxSizeMode.CenterImage;
 
         }
 
-        public ErrorBox(string label, string title, IEnumerable<string> contents, Buttons bnts = Buttons.Ok)
+        public ErrorBox(string label, string title, IEnumerable<string> contents, MessageBoxButtons bnts = MessageBoxButtons.OK)
             : this()
         {
 
             ErrorBoxLabel.Text = label;
             this.Text = title;
             ErrorContentBox.Lines = contents.ToArray();
+            DefineButtons(bnts);
+        }
 
+        private void DefineButtons(MessageBoxButtons bnts)
+        {
+            // TODO: Localize text
             switch (bnts)
             {
-                case Buttons.Ok:
-                    BntLeft.Visible =
-                    BntRight.Visible = false;
-                    BntMiddle.Visible = true;
-                    BntMiddle.Text = "Ok";
+                case MessageBoxButtons.OK:
+                    BtnLeft.Visible =
+                    BtnRight.Visible = false;
+                    BtnMiddle.Text = "OK";
+
+                    BtnMiddle.Tag = DialogResult.OK;
                     break;
-                case Buttons.RetryAbortIgnore:
-                    BntMiddle.Visible = true;
-                    BntLeft.Text = "Retry";
-                    BntMiddle.Text = "Abort";
-                    BntRight.Text = "Ignore";
+                case MessageBoxButtons.AbortRetryIgnore:
+                    BtnLeft.Text = "Retry";
+                    BtnMiddle.Text = "Abort";
+                    BtnRight.Text = "Ignore";
+
+                    BtnLeft.Tag = DialogResult.Retry;
+                    BtnMiddle.Tag = DialogResult.Abort;
+                    BtnRight.Tag = DialogResult.Ignore;
                     break;
-                case Buttons.YesNo:
-                    BntLeft.Text = "Yes";
-                    BntRight.Text = "No";
+                case MessageBoxButtons.YesNo:
+                    BtnLeft.Text = "Yes";
+                    BtnRight.Text = "No";
+
+                    BtnLeft.Tag = DialogResult.Yes;
+                    BtnRight.Tag = DialogResult.No;
+                    break;
+                case MessageBoxButtons.OKCancel:
+                    BtnMiddle.Visible = false;
+
+                    BtnLeft.Text = "OK";
+                    BtnRight.Text = "Cancel";
+
+                    BtnLeft.Tag = DialogResult.OK;
+                    BtnRight.Tag = DialogResult.Cancel;
+                    break;
+                case MessageBoxButtons.YesNoCancel:
+                    BtnLeft.Text = "Yes";
+                    BtnMiddle.Text = "No";
+                    BtnRight.Text = "Cancel";
+
+                    BtnLeft.Tag = DialogResult.Yes;
+                    BtnMiddle.Tag = DialogResult.No;
+                    BtnRight.Tag = DialogResult.Cancel;
+                    break;
+                case MessageBoxButtons.RetryCancel:
+                    BtnMiddle.Visible = false;
+
+                    BtnLeft.Text = "Retry";
+                    BtnRight.Text = "Cancel";
+
+                    BtnLeft.Tag = DialogResult.Retry;
+                    BtnRight.Tag = DialogResult.Cancel;
                     break;
                 default:
-                    break;
+                    throw new Exception("Unknown buttons");
             }
         }
 
-        public ErrorBox(string message, string title, string contents, Buttons bnts = Buttons.Ok)
+        public ErrorBox(string message, string title, string contents, MessageBoxButtons bnts = MessageBoxButtons.OK)
             :this(message, title, new List<string> { contents }, bnts)
         {
 
@@ -75,7 +102,7 @@ namespace BlenderRenderController.Ui
         private void Bnt_Click(object sender, EventArgs e)
         {
             var b = (sender as Button);
-            _result = b.Text;
+            this.DialogResult = (DialogResult)b.Tag;
             this.Close();
         }
 
@@ -85,12 +112,5 @@ namespace BlenderRenderController.Ui
             System.Media.SystemSounds.Hand.Play();
         }
 
-        private void ErrorBox_FormClosed(object sender, FormClosedEventArgs e)
-        {
-
-            if (String.IsNullOrEmpty(_result))
-                return;
-
-        }
     }
 }

@@ -123,9 +123,10 @@ namespace BRClib
     [Flags]
     public enum AfterRenderAction
     {
-        JOIN = 0x0002,
-        MIXDOWN = 0x0001,
-        NOTHING = 0x0000
+        NOTHING = 0,
+        MIXDOWN = 1,
+        JOIN = 2,
+        MIX_JOIN = MIXDOWN | JOIN
     }
 
 

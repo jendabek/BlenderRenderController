@@ -83,7 +83,8 @@ namespace BRClib
         /// <returns></returns>
         public static IList<string> GetChunkFiles(string chunkFolderPath)
         {
-            var dirFiles = Directory.GetFiles(chunkFolderPath, "*.*", SearchOption.TopDirectoryOnly);
+            var dirFiles = Directory.EnumerateFiles(chunkFolderPath, "*.*", 
+                                            SearchOption.TopDirectoryOnly);
             return GetChunkFiles(dirFiles);
         }
 
@@ -93,7 +94,7 @@ namespace BRClib
         /// </summary>
         /// <param name="files"></param>
         /// <returns></returns>
-        public static IList<string> GetChunkFiles(params string[] files)
+        public static IList<string> GetChunkFiles(IEnumerable<string> files)
         {
             string[] exts = RenderFormats.VideoFileExts;
 
@@ -138,8 +139,8 @@ namespace BRClib
             { "PNG", "BMP", "IRIS", "JPEG", "JPEG2000", "TARGA", "TARGA_RAW",
             "CINEON", "DPX", "OPEN_EXR_MULTILAYER", "OPEN_EXR", "HDR", "TIFF" };
 
-        //public static readonly string[] VideoFormats =
-        //    { "AVI_JPEG", "AVI_RAW", "H264", "FFMPEG", "THEORA", "XVID" };
+        public static readonly string[] VideoFormats =
+            { "AVI_JPEG", "AVI_RAW", "H264", "FFMPEG", "THEORA", "XVID" };
 
 
         /// <summary>

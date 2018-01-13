@@ -31,14 +31,14 @@ namespace BRClib
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // State trackers
-        private ConcurrentDictionary<Chunk, Process> _workingRenderData;
+        List<Process> _processes;
         IReadOnlyList<Chunk> _chunkList;
         private ConcurrentHashSet<int> _framesRendered;
         private int _chunksToDo, _chunksInProgress,
                     _initalChunkCount, _currentIndex,
                     _maxConcurrency;
 
-        private Timer timer;
+        private Timer _timer;
 
         // Progress stuff
         int _reportCount;
@@ -47,8 +47,7 @@ namespace BRClib
         Project _proj;
 
         // after render
-        Dictionary<string, ProcessResult> _afterRenderReport;
-        List<Process> _afterRenderProcList;
+        List<Process> _arProcesses;
         Task<bool> _arState;
         const string MIX_KEY = "mixdown";
         const string CONCAT_KEY = "concat";
@@ -65,7 +64,7 @@ namespace BRClib
 
         public int NumberOfFramesRendered => _framesRendered.Count;
 
-        public bool InProgress { get => timer.Enabled; }
+        public bool InProgress { get => _timer.Enabled; }
 
         public bool WasAborted { get; private set; }
 
@@ -130,13 +129,13 @@ namespace BRClib
         
         public RenderManager()
         {
-            timer = new Timer
+            _timer = new Timer
             {
                 Interval = 100,
                 AutoReset = true,
             };
 
-            timer.Elapsed += delegate 
+            _timer.Elapsed += delegate 
             {
                 lock (_syncLock)
                 {
@@ -183,7 +182,7 @@ namespace BRClib
             ResetFields();
 
             logger.Info("RENDER STARTING");
-            timer.Start();
+            _timer.Start();
         }
 
 
@@ -194,7 +193,7 @@ namespace BRClib
         {
             if (InProgress)
             {
-                timer.Stop();
+                _timer.Stop();
                 WasAborted = true;
                 _arCts.Cancel();
                 DisposeProcesses();
@@ -246,16 +245,15 @@ namespace BRClib
 
         void ResetFields()
         {
-            var dictionary = _proj.ChunkList.ToDictionary(k => k, CreateRenderProcess);
-            _workingRenderData = new ConcurrentDictionary<Chunk, Process>(dictionary);
-            _chunkList = dictionary.Keys.ToList();
-            _afterRenderProcList = new List<Process>();
+            _chunkList = _proj.ChunkList.ToList();
+            _processes = _chunkList.Select(CreateRenderProcess).ToList();
+            _arProcesses = new List<Process>();
+
             _framesRendered = new ConcurrentHashSet<int>();
             _currentIndex = 0;
             _chunksInProgress = 0;
-            _chunksToDo = dictionary.Count;
-            _initalChunkCount = dictionary.Count;
-            _afterRenderReport = new Dictionary<string, ProcessResult>();
+            _chunksToDo = _chunkList.Count;
+            _initalChunkCount = _chunkList.Count;
             _arCts = new CancellationTokenSource();
             WasAborted = false;
             _reportCount = 0;
@@ -335,7 +333,7 @@ namespace BRClib
             // check if the overall render is done
             if (Interlocked.Decrement(ref _chunksToDo) == 0)
             {
-                timer.Stop();
+                _timer.Stop();
 
                 // all render processes are done at this point
                 Debug.Assert(_framesRendered.ToList().Count == _chunkList.TotalLength(),
@@ -352,7 +350,7 @@ namespace BRClib
             if (_currentIndex < _initalChunkCount && _chunksInProgress < _maxConcurrency)
             {
                 var currentChunk = _chunkList[_currentIndex];
-                var proc = _workingRenderData[currentChunk];
+                var proc = _processes[_currentIndex];
                 proc.Start();
                 proc.BeginOutputReadLine();
 
@@ -393,8 +391,8 @@ namespace BRClib
 
         private void DisposeProcesses()
         {
-            var procList = _workingRenderData.Values.ToList();
-            procList.AddRange(_afterRenderProcList);
+            var procList = _processes.ToList();
+            procList.AddRange(_arProcesses);
 
             foreach (var p in procList)
             {
@@ -437,7 +435,7 @@ namespace BRClib
 
             logger.Info("AfterRender started. Action: {0}", action);
 
-            if ((action & AfterRenderAction.JOIN) != 0)
+            if (action.HasFlag(AfterRenderAction.JOIN))
             {
                 // create chunklist.txt
                 if (!CreateChunksTxtFile(ChunksFolderPath))
@@ -475,8 +473,11 @@ namespace BRClib
 
             Process mixdownProc = null, concatProc = null;
 
-            _afterRenderReport.Add(MIX_KEY, new ProcessResult());
-            _afterRenderReport.Add(CONCAT_KEY, new ProcessResult());
+            var arReports = new Dictionary<string, ProcessResult>
+            {
+                [MIX_KEY] = new ProcessResult(),
+                [CONCAT_KEY] = new ProcessResult()
+            };
 
 
             if (_arCts.IsCancellationRequested) return false;
@@ -516,7 +517,7 @@ namespace BRClib
             if (_arCts.IsCancellationRequested) return false;
 
             // check for bad exit codes
-            var badProcResults = _afterRenderProcList.Where(p => p != null && p.ExitCode != 0).ToArray();
+            var badProcResults = _arProcesses.Where(p => p != null && p.ExitCode != 0).ToArray();
 
             if (badProcResults.Length > 0)
             {
@@ -531,12 +532,12 @@ namespace BRClib
                     {
                         if (mixdownProc?.ExitCode != 0)
                         {
-                            WriteReport(sw, "Mixdown ", _afterRenderReport[MIX_KEY]);
+                            WriteReport(sw, "Mixdown ", arReports[MIX_KEY]);
                         }
 
                         if (concatProc?.ExitCode != 0)
                         {
-                            WriteReport(sw, "FFMpeg concat ", _afterRenderReport[CONCAT_KEY]);
+                            WriteReport(sw, "FFMpeg concat ", arReports[CONCAT_KEY]);
                         } 
                     }
 
@@ -548,7 +549,7 @@ namespace BRClib
             {
                 return !_arCts.IsCancellationRequested;
             }
-
+            // -----
 
             void WriteReport(StreamWriter writer, string title, ProcessResult result)
             {
@@ -570,20 +571,19 @@ namespace BRClib
             {
                 proc.Start();
 
-                _afterRenderProcList.Add(proc);
+                _arProcesses.Add(proc);
 
                 var readOutput = proc.StandardOutput.ReadToEndAsync();
                 var readError = proc.StandardError.ReadToEndAsync();
 
-                readOutput.ContinueWith(t => _afterRenderReport[key].StdOutput = t.Result);
-                readError.ContinueWith(t => _afterRenderReport[key].StdError = t.Result);
+                readOutput.ContinueWith(t => arReports[key].StdOutput = t.Result);
+                readError.ContinueWith(t => arReports[key].StdError = t.Result);
 
                 proc.WaitForExit();
 
-                _afterRenderReport[key].ExitCode = proc.ExitCode;
+                arReports[key].ExitCode = proc.ExitCode;
             }
         }
-
 
     }
 
