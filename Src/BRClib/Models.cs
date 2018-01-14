@@ -129,5 +129,11 @@ namespace BRClib
         MIX_JOIN = MIXDOWN | JOIN
     }
 
-
+    public enum BrcRenderResult
+    {
+        AllOk,
+        Aborted,
+        AfterRenderFailed,
+        ChunkRenderFailed
+    }
 }

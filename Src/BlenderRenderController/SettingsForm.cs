@@ -13,12 +13,12 @@ namespace BlenderRenderController
 {
     public partial class SettingsForm : Form
     {
-        private AppSettings _setts;
+        private BrcSettings _setts;
 
         public SettingsForm()
         {
             InitializeComponent();
-            _setts = AppSettings.Current;
+            _setts = Services.Settings.Current;
             settingsBindingSrc.Add(_setts);
         }
 
@@ -37,11 +37,14 @@ namespace BlenderRenderController
                 ffmpegPathTextBox.Text = string.Empty;
             }
 
-            findBlenderDialog.Filter = "Blender|" + _setts.BlenderExeName;
-            findBlenderDialog.Title += _setts.BlenderExeName;
+            var blenderExe = Path.GetFileName(_setts.BlenderProgram);
+            var ffmpegExe = Path.GetFileName(_setts.FFmpegProgram);
 
-            findFFmpegDialog.Filter = "FFmpeg|" + _setts.FFmpegExeName;
-            findFFmpegDialog.Title += _setts.FFmpegExeName;
+            findBlenderDialog.Filter = "Blender|" + blenderExe;
+            findBlenderDialog.Title += blenderExe;
+
+            findFFmpegDialog.Filter = "FFmpeg|" + ffmpegExe;
+            findFFmpegDialog.Title += ffmpegExe;
 #if UNIX
             cbLoggingLvl.BackColor =
             ffmpegPathTextBox.BackColor =
@@ -78,13 +81,12 @@ namespace BlenderRenderController
 
         private void okButton_Click(object sender, EventArgs e)
         {
-
             Close();
         }
 
         private void SettingsForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (!_setts.CheckCorrectConfig())
+            if (!Services.Settings.CheckCorrectConfig())
             {
                 this.DialogResult = DialogResult.Abort;
             }

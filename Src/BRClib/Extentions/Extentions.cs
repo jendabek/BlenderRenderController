@@ -200,9 +200,9 @@ namespace BRClib.Extentions
             StdError = stdError;
         }
 
-        public int ExitCode { get; set; }
-        public string StdOutput { get; set; }
-        public string StdError { get; set; }
+        public int ExitCode { get; }
+        public string StdOutput { get; }
+        public string StdError { get; }
     }
 
 }

@@ -16,6 +16,8 @@ namespace BlenderRenderController
         [STAThread]
         static void Main(string[] args)
         {
+            Services.Settings.InitSettings();
+
             NlogSetup();
 
             // parse args
@@ -59,7 +61,7 @@ namespace BlenderRenderController
 
         static void NlogSetup()
         {
-            var _sett = AppSettings.Current;
+            var _sett = Services.Settings.Current;
             LogLevel lLvl;
 
             switch (_sett.LoggingLevel)

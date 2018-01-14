@@ -8,14 +8,26 @@ namespace BlenderRenderController.Infra
 {
     public class RecentBlendsCollection : ObservableCollection<string>
     {
-        uint _capacity = 10;
+        int _capacity = 10;
 
         public int MaxElements
         {
-            get => (int)_capacity;
-            set => _capacity = (uint)value;
+            get => _capacity;
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new Exception("Must a positive, non-zero value");
+                }
+                _capacity = value;
+            }
         }
 
+
+        public RecentBlendsCollection() { }
+
+        public RecentBlendsCollection(IEnumerable<string> collection) : base(collection)
+        { }
 
 
         protected override void InsertItem(int index, string item)

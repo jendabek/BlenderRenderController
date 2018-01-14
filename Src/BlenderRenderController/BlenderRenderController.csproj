@@ -121,10 +121,8 @@
       <HintPath>..\..\packages\NLog.4.4.11\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -136,8 +134,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="AppStuff.cs" />
-    <Compile Include="AppSettings.cs" />
     <Compile Include="BrcForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -151,6 +154,7 @@
     <Compile Include="ConcatForm.Designer.cs">
       <DependentUpon>ConcatForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Config\BrcSettings.cs" />
     <Compile Include="Infra\ETACalculator.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Program.cs" />
@@ -161,6 +165,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\Settings.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -183,6 +188,9 @@
     <Compile Include="Ui\SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ConcatForm.resx">
       <DependentUpon>ConcatForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -200,9 +208,9 @@
     <EmbeddedResource Include="Ui\InfoBoxItem.resx">
       <DependentUpon>InfoBoxItem.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="Properties\DataSources\AppSettings.datasource" />
     <None Include="Properties\DataSources\BRClib.BlendData.datasource" />
     <None Include="Properties\DataSources\BRClib.Project.datasource" />
+    <None Include="Properties\DataSources\BrcSettings.datasource" />
     <None Include="Resources\brc_icon.ico" />
     <None Include="Resources\volume-small.png" />
     <None Include="Resources\stop-icon.png" />
@@ -261,18 +269,15 @@
     <None Include="Resources\Refresh_grey_16x.png" />
     <None Include="Resources\Time_16x.png" />
     <None Include="Resources\blend_icon.png" />
-    <None Include="Resources\blend_icon_small.png" />
     <None Include="Resources\brc_icon.png" />
     <None Include="Resources\FindinFiles_16x.png" />
     <None Include="Resources\CleanData_16x.png" />
     <None Include="Resources\blender_icon.png" />
     <Content Include="Resources\FolderOpen_grey_16x.png" />
-    <Content Include="Resources\FolderOpen_grey_16x_24.bmp" />
     <None Include="Resources\History_16x.png" />
-    <Content Include="Resources\OpenFolder_16x_24.bmp" />
-    <Content Include="Resources\OpenFolder_gray_16x_24.bmp" />
     <None Include="Resources\render-icon.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

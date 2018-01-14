@@ -29,6 +29,7 @@ using System.Windows.Forms;
 namespace BlenderRenderController
 {
     using ScriptShelf = BRClib.Scripts.Shelf;
+    using Settings = Services.Settings;
 
     /// <summary>
     /// Main Window
@@ -43,7 +44,7 @@ namespace BlenderRenderController
 
         int _autoStartF, _autoEndF;
 
-        AppSettings _appSettings;
+        BrcSettings _appSettings;
         RenderManager _renderMngr;
         Stopwatch _chrono;
         ETACalculator _etaCalc;
@@ -57,7 +58,7 @@ namespace BlenderRenderController
         {
             InitializeComponent();
 
-            _appSettings = AppSettings.Current;
+            _appSettings = Settings.Current;
             _vm = new BrcViewModel();
             _vm.PropertyChanged += ViewModel_PropertyChanged;
 
@@ -74,12 +75,12 @@ namespace BlenderRenderController
             _renderMngr.ProgressChanged += (s, prog) => UpdateProgress(prog);
 
             _chrono = new Stopwatch();
-            _etaCalc = new ETACalculator(5, 1);
+            _etaCalc = new ETACalculator(10, 5);
         }
 
         public BrcForm(string blendFile) : this()
         {
-            if (_appSettings.CheckCorrectConfig())
+            if (Settings.CheckCorrectConfig())
             {
                 // window must be visible
                 Show(); 
@@ -91,7 +92,7 @@ namespace BlenderRenderController
 
         private void BrcForm_Load(object sender, EventArgs e)
         {
-            _vm.ConfigOk = _appSettings.CheckCorrectConfig();
+            _vm.ConfigOk = Settings.CheckCorrectConfig();
 
             // setup sources for ComboBoxes
             cbRenderer.DataSource = Enum.GetValues(typeof(Renderer));
@@ -214,7 +215,8 @@ namespace BlenderRenderController
                 }
             }
 
-            _appSettings.SaveCurrent();
+            //_appSettings.SaveCurrent();
+            Settings.Save();
             logger.Info("Program closing");
         }
 
@@ -222,7 +224,7 @@ namespace BlenderRenderController
         {
             // when closing the Settings window, check if valid
             // and update UI if needed
-            _vm.ConfigOk = _appSettings.CheckCorrectConfig();
+            _vm.ConfigOk = Settings.CheckCorrectConfig();
         }
 
 
@@ -981,9 +983,10 @@ namespace BlenderRenderController
             _vm.Project = null;
         }
 
-        private void About_Click(object sender, EventArgs e)
+        private void AboutBRC_Click(object sender, EventArgs e)
         {
-
+            var aboutBox = new AboutBox();
+            aboutBox.ShowDialog();
         }
 
         private void miGithub_Click(object sender, EventArgs e)

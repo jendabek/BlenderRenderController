@@ -226,7 +226,7 @@
             // 
             // settingsBindingSrc
             // 
-            this.settingsBindingSrc.DataSource = typeof(BlenderRenderController.AppSettings);
+            this.settingsBindingSrc.DataSource = typeof(BlenderRenderController.BrcSettings);
             // 
             // SettingsForm
             // 

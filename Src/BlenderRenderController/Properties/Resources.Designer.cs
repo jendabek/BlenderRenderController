@@ -80,15 +80,6 @@ namespace BlenderRenderController.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The chunks rendered sucessfully, but one or more After Render actions have failed, check your output content..
-        /// </summary>
-        internal static string AR_errors_detected {
-            get {
-                return ResourceManager.GetString("AR_errors_detected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Join chunks w/ Mixdown audio.
         /// </summary>
         internal static string AR_JoinMixdown {
@@ -251,6 +242,15 @@ namespace BlenderRenderController.Properties {
             get {
                 object obj = ResourceManager.GetObject("render_icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected error ocurred while rendering, check the output folder for a log file.
+        /// </summary>
+        internal static string RM_unexpected_error {
+            get {
+                return ResourceManager.GetString("RM_unexpected_error", resourceCulture);
             }
         }
         

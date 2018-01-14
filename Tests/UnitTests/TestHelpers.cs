@@ -16,7 +16,7 @@ namespace UnitTests
         public const string BLEND_PATH = @"E:\Bibliotecas E\_projetos\Blender\Video\teste\stuff\test project2.blend";
         public const string OUT_PATH = @"E:\Bibliotecas E\_projetos\Blender\Video\teste\expo";
         const string SCRIPTS_DIR = @"C:\Users\Pedro\Source\Repos\BlenderRenderController\Src\BRClib\Scripts";
-        public static AppSettings MockSettings = new AppSettings
+        public static BrcSettings MockSettings = new BrcSettings
         {
             BlenderProgram = "C:\\Program Files\\Blender Foundation\\Blender\\blender.exe",
             FFmpegProgram = "E:\\Programas\\FFmpeg\\Snapshot\\bin\\ffmpeg.exe",

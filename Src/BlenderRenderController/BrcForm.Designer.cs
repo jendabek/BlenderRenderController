@@ -59,8 +59,8 @@ namespace BlenderRenderController
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.miEmptyPH = new System.Windows.Forms.ToolStripMenuItem();
-            this.openRecentsTSButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.miOpenRecent = new System.Windows.Forms.ToolStripMenuItem();
+            this.openRecentsTSButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.blendFileLabel = new System.Windows.Forms.Label();
             this.outputFolderLabel = new System.Windows.Forms.Label();
             this.optionsLabel = new System.Windows.Forms.Label();
@@ -75,7 +75,7 @@ namespace BlenderRenderController
             this.openFileTSButton = new System.Windows.Forms.ToolStripButton();
             this.reloadTSButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.helpToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.aboutToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.panelFrameRange = new System.Windows.Forms.Panel();
             this.flpChunkMode = new System.Windows.Forms.FlowLayoutPanel();
@@ -460,7 +460,7 @@ namespace BlenderRenderController
             this.toolStripSeparator3,
             this.miEmptyPH});
             this.recentBlendsMenu.Name = "recentBlendsMenu";
-            this.recentBlendsMenu.OwnerItem = this.miOpenRecent;
+            this.recentBlendsMenu.OwnerItem = this.openRecentsTSButton;
             this.recentBlendsMenu.Size = new System.Drawing.Size(109, 54);
             // 
             // clearToolStripMenuItem
@@ -485,6 +485,15 @@ namespace BlenderRenderController
             this.miEmptyPH.Size = new System.Drawing.Size(108, 22);
             this.miEmptyPH.Text = "Empty";
             // 
+            // miOpenRecent
+            // 
+            this.miOpenRecent.DropDown = this.recentBlendsMenu;
+            this.miOpenRecent.Image = global::BlenderRenderController.Properties.Resources.Time_16x;
+            this.miOpenRecent.Name = "miOpenRecent";
+            this.miOpenRecent.Size = new System.Drawing.Size(151, 22);
+            this.miOpenRecent.Text = "Open Re&cent";
+            this.miOpenRecent.ToolTipText = "Open Recent";
+            // 
             // openRecentsTSButton
             // 
             this.openRecentsTSButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -495,15 +504,6 @@ namespace BlenderRenderController
             this.openRecentsTSButton.Name = "openRecentsTSButton";
             this.openRecentsTSButton.Size = new System.Drawing.Size(29, 20);
             this.openRecentsTSButton.Text = "Open Recent";
-            // 
-            // miOpenRecent
-            // 
-            this.miOpenRecent.DropDown = this.recentBlendsMenu;
-            this.miOpenRecent.Image = global::BlenderRenderController.Properties.Resources.Time_16x;
-            this.miOpenRecent.Name = "miOpenRecent";
-            this.miOpenRecent.Size = new System.Drawing.Size(151, 22);
-            this.miOpenRecent.Text = "Open Re&cent";
-            this.miOpenRecent.ToolTipText = "Open Recent";
             // 
             // blendFileLabel
             // 
@@ -633,7 +633,7 @@ namespace BlenderRenderController
             this.openRecentsTSButton,
             this.reloadTSButton,
             this.toolStripSeparator1,
-            this.helpToolStripButton});
+            this.aboutToolStripButton});
             this.toolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.toolStrip.Location = new System.Drawing.Point(0, 24);
             this.toolStrip.Name = "toolStrip";
@@ -670,14 +670,15 @@ namespace BlenderRenderController
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 23);
             // 
-            // helpToolStripButton
+            // aboutToolStripButton
             // 
-            this.helpToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.helpToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("helpToolStripButton.Image")));
-            this.helpToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.helpToolStripButton.Name = "helpToolStripButton";
-            this.helpToolStripButton.Size = new System.Drawing.Size(23, 20);
-            this.helpToolStripButton.Text = "He&lp";
+            this.aboutToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.aboutToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("aboutToolStripButton.Image")));
+            this.aboutToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.aboutToolStripButton.Name = "aboutToolStripButton";
+            this.aboutToolStripButton.Size = new System.Drawing.Size(23, 20);
+            this.aboutToolStripButton.Text = "About";
+            this.aboutToolStripButton.Click += new System.EventHandler(this.AboutBRC_Click);
             // 
             // errorProvider
             // 
@@ -881,7 +882,7 @@ namespace BlenderRenderController
             this.miAbout.Name = "miAbout";
             this.miAbout.Size = new System.Drawing.Size(142, 22);
             this.miAbout.Text = "&About...";
-            this.miAbout.Click += new System.EventHandler(this.About_Click);
+            this.miAbout.Click += new System.EventHandler(this.AboutBRC_Click);
             // 
             // statusStrip
             // 
@@ -1117,7 +1118,7 @@ namespace BlenderRenderController
         private System.Windows.Forms.ToolStripMenuItem miDonate;
         private System.Windows.Forms.ToolStripButton openFileTSButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripButton helpToolStripButton;
+        private System.Windows.Forms.ToolStripButton aboutToolStripButton;
         private System.Windows.Forms.ToolStripMenuItem forceUIUpdateToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton openRecentsTSButton;
         private System.Windows.Forms.ToolStripButton reloadTSButton;

@@ -20,11 +20,24 @@ namespace BRClib.Commands
                                             "Std Error:\n{2}\n\n" +
                                             "Std Output:\n{3}";
 
-        string _stdErr, _stdOut, _procName, _rfn;
+        string _stdErr, _stdOut, _procName, _rfn, _progPath;
         int _eCode;
 
 
-        public string ProgramPath { get; set; }
+        public string ProgramPath
+        {
+            get => _progPath;
+            set
+            {
+                // account for relative paths
+                var fullPath = Path.GetFullPath(value);
+
+                if (!File.Exists(fullPath))
+                    throw new FileNotFoundException();
+
+                _progPath = fullPath;
+            }
+        }
 
         protected Logger Log { get; private set; }
 
@@ -61,10 +74,6 @@ namespace BRClib.Commands
 
         protected virtual Process CreateProcess(string program, string args)
         {
-            if (!File.Exists(program))
-            {
-                throw new FileNotFoundException();
-            }
 
             var proc = new Process
             {

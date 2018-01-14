@@ -473,11 +473,7 @@ namespace BRClib
 
             Process mixdownProc = null, concatProc = null;
 
-            var arReports = new Dictionary<string, ProcessResult>
-            {
-                [MIX_KEY] = new ProcessResult(),
-                [CONCAT_KEY] = new ProcessResult()
-            };
+            var arReports = new Dictionary<string, ProcessResult>(2);
 
 
             if (_arCts.IsCancellationRequested) return false;
@@ -570,28 +566,21 @@ namespace BRClib
             void RunProc(ref Process proc, string key)
             {
                 proc.Start();
-
                 _arProcesses.Add(proc);
 
                 var readOutput = proc.StandardOutput.ReadToEndAsync();
                 var readError = proc.StandardError.ReadToEndAsync();
 
-                readOutput.ContinueWith(t => arReports[key].StdOutput = t.Result);
-                readError.ContinueWith(t => arReports[key].StdError = t.Result);
+                //readOutput.ContinueWith(t => stdOut = t.Result);
+                //readError.ContinueWith(t => stdError = t.Result);
 
                 proc.WaitForExit();
 
-                arReports[key].ExitCode = proc.ExitCode;
+                arReports.Add(key, new ProcessResult(proc.ExitCode, readOutput.Result, readError.Result));
             }
         }
 
     }
 
-    public interface IRenderSettings
-    {
-        string Blender { get; set; }
-        string FFmpeg { get; set; }
-        AfterRenderAction AfterRender { get; set; }
 
-    }
 }
