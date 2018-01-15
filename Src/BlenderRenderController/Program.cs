@@ -23,7 +23,7 @@ namespace BlenderRenderController
             // parse args
             if (args.Contains("--gen"))
             {
-                Console.WriteLine("Writing scripts to temp folder...");
+                Console.WriteLine("Writing scripts to AppData folder...");
                 string[] paths = 
                 {
                     Shelf.EmbeddedScriptToDisk(Shelf.PyScript.GetProjectInfo),

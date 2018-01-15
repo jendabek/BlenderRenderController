@@ -96,6 +96,7 @@ namespace BlenderRenderController.Services
             switch (Env.OSVersion.Platform)
             {
                 case PlatformID.Win32NT:
+                    // GetFolderPath doesn't work and only returns the 32bit ProgramFiles
                     string envVar = Env.Is64BitOperatingSystem ? "ProgramW6432" : "ProgramFiles";
                     var programFiles = Env.GetEnvironmentVariable(envVar);
 
@@ -108,6 +109,8 @@ namespace BlenderRenderController.Services
                     break;
                 case PlatformID.Unix:
                 case PlatformID.MacOSX:
+                    // TODO: Mac specific guess?
+                    // remember: Platform == Unix on both Linux and MacOSX
                 default:
                     defBlenderDir = defFFmpegDir = "/usr/bin";
                     break;

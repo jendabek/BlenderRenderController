@@ -48,7 +48,6 @@ namespace BlenderRenderController
         RenderManager _renderMngr;
         Stopwatch _chrono;
         ETACalculator _etaCalc;
-        SettingsForm _settingsForm;
         CancellationTokenSource _afterRenderCancelSrc;
 
         BrcViewModel _vm;
@@ -152,8 +151,8 @@ namespace BlenderRenderController
             if (!_vm.ConfigOk)
             {
 
-                _settingsForm = new SettingsForm();
-                _settingsForm.FormClosed += SettingsForm_FormClosed;
+                var settingsForm = new SettingsForm();
+                settingsForm.FormClosed += SettingsForm_FormClosed;
 
                 string errMsg = "One or more required program(s) were not found " +
                     "(Path invalid OR first time run), set the paths in the Settings window";
@@ -173,7 +172,7 @@ namespace BlenderRenderController
                 var tdCmdLink = new TaskDialogCommandLink("BtnOpenSettings", "Goto Settings");
                 tdCmdLink.Click += delegate
                 {
-                    _settingsForm.Show(this);
+                    settingsForm.Show(this);
                     td.Close();
                 };
 
@@ -186,8 +185,8 @@ namespace BlenderRenderController
                 if (res == DialogResult.Retry)
                 {
                     // fix width and show
-                    _settingsForm.MaximumSize = _settingsForm.Size;
-                    _settingsForm.Show();
+                    settingsForm.MaximumSize = settingsForm.Size;
+                    settingsForm.Show();
                 }
 #endif
             }
@@ -951,9 +950,9 @@ namespace BlenderRenderController
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _settingsForm = new SettingsForm();
-            _settingsForm.FormClosed += SettingsForm_FormClosed;
-            _settingsForm.ShowDialog();
+            var settingsForm = new SettingsForm();
+            settingsForm.FormClosed += SettingsForm_FormClosed;
+            settingsForm.ShowDialog();
         }
 
         private void toolStripMenuItemBug_Click(object sender, EventArgs e)
@@ -1050,6 +1049,8 @@ namespace BlenderRenderController
             miOpenRecent.Enabled =
             openRecentsTSButton.Enabled = vm.CanLoadNewProject;
 
+            statusETR.Visible = 
+            statusTime.Visible = vm.IsBusy;
 
             Status(vm.DefaultStatusMessage);
         }

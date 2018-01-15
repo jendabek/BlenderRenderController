@@ -133,7 +133,7 @@ namespace BlenderRenderController
             // 
             // renderProgressBar
             // 
-            this.renderProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.renderProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.renderProgressBar.Location = new System.Drawing.Point(12, 486);
             this.renderProgressBar.MarqueeAnimationSpeed = 75;
@@ -350,7 +350,6 @@ namespace BlenderRenderController
             // 
             // renderAllButton
             // 
-            this.renderAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.renderAllButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.renderAllButton.Image = global::BlenderRenderController.Properties.Resources.render_icon;
             this.renderAllButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -1023,7 +1022,7 @@ namespace BlenderRenderController
             this.MainMenuStrip = this.menuStrip;
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(500, 600);
-            this.MinimumSize = new System.Drawing.Size(485, 200);
+            this.MinimumSize = new System.Drawing.Size(485, 300);
             this.Name = "BrcForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Blender Render Controller";

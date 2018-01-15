@@ -10,7 +10,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace BlenderRenderController.Ui
 {
-    class Dialogs
+    static class Dialogs
     {
         public static DialogResult ShowErrorBox(string textBody, string mainText, string caption, string details)
         {
@@ -28,7 +28,7 @@ namespace BlenderRenderController.Ui
             td.FooterIcon = TaskDialogStandardIcon.Information;
             td.StandardButtons = TaskDialogStandardButtons.Ok;
 
-            return ToDR(td.Show());
+            return td.Show().ToDR();
 #else
             string msg = mainText + "\n\n" + textBody;
             ErrorBox eb = new ErrorBox(msg, caption, details);
@@ -65,7 +65,6 @@ namespace BlenderRenderController.Ui
                 path = dialog.FileName;
             }
 
-            //return ((DialogResult)res, path);
             return path;
 #else
             var dialog = new FolderBrowserDialog
@@ -84,7 +83,6 @@ namespace BlenderRenderController.Ui
                 path = dialog.SelectedPath;
             }
 
-            //return (res, path);
             return path;
 #endif
         }
@@ -94,7 +92,7 @@ namespace BlenderRenderController.Ui
 
 
 #if WIN
-        static DialogResult ToDR(TaskDialogResult tdr)
+        static DialogResult ToDR(this TaskDialogResult tdr)
         {
             switch (tdr)
             {
