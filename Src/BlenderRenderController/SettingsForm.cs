@@ -28,6 +28,15 @@ namespace BlenderRenderController
             cbLoggingLvl.SelectedIndex = _setts.LoggingLevel;
             cbLoggingLvl.SelectedIndexChanged += CbLoggingLvl_SelectedIndexChanged;
 
+            var blenderExe = Path.GetFileName(_setts.BlenderProgram);
+            var ffmpegExe = Path.GetFileName(_setts.FFmpegProgram);
+
+            findBlenderDialog.Filter = "Blender|" + blenderExe;
+            findBlenderDialog.Title += blenderExe;
+
+            findFFmpegDialog.Filter = "FFmpeg|" + ffmpegExe;
+            findFFmpegDialog.Title += ffmpegExe;
+
             if (!File.Exists(_setts.BlenderProgram))
             {
                 blenderPathTextBox.Text = string.Empty;
@@ -37,14 +46,6 @@ namespace BlenderRenderController
                 ffmpegPathTextBox.Text = string.Empty;
             }
 
-            var blenderExe = Path.GetFileName(_setts.BlenderProgram);
-            var ffmpegExe = Path.GetFileName(_setts.FFmpegProgram);
-
-            findBlenderDialog.Filter = "Blender|" + blenderExe;
-            findBlenderDialog.Title += blenderExe;
-
-            findFFmpegDialog.Filter = "FFmpeg|" + ffmpegExe;
-            findFFmpegDialog.Title += ffmpegExe;
 #if UNIX
             cbLoggingLvl.BackColor =
             ffmpegPathTextBox.BackColor =

@@ -81,8 +81,7 @@ namespace BlenderRenderController.Services
             var envPATH = Env.GetEnvironmentVariable("PATH").Split(Path.PathSeparator);
 
             var exePath = envPATH.Select(x => Path.Combine(x, program))
-                                    .Where(x => File.Exists(x))
-                                    .FirstOrDefault();
+                                    .FirstOrDefault(File.Exists);
 
             return exePath;
         }
@@ -153,6 +152,14 @@ namespace BlenderRenderController.Services
         private static void SaveInternal(BrcSettings def, string settingsPath)
         {
             var json = JsonConvert.SerializeObject(def, Formatting.Indented);
+
+            var settingsDir = Directory.GetParent(settingsPath).FullName;
+
+            if (!Directory.Exists(settingsDir))
+            {
+                Directory.CreateDirectory(settingsDir);
+            }
+
             File.WriteAllText(settingsPath, json);
         }
     }
