@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using BlenderRenderController.Infra;
 using BRClib;
 using Newtonsoft.Json;
@@ -43,6 +44,8 @@ namespace BlenderRenderController.Services
         internal static void InitSettings()
         {
             _baseDir = Portable ? Env.CurrentDirectory : Dirs.AppData;
+
+            Env.SetEnvironmentVariable("BRC_VER", Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
             _setts = LoadInternal(Path.Combine(_baseDir, SETTINGS_FILE));
         }

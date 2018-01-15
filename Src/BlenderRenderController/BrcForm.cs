@@ -1027,7 +1027,7 @@ namespace BlenderRenderController
 
             unloadToolStripMenuItem.Enabled = vm.CanEditCurrentProject;
 
-            miRenderMixdown.Enabled =
+            miRenderMixdown.Enabled = vm.CanRender;
             miJoinChunks.Enabled = !vm.IsBusy;
 
             miSettings.Enabled = !vm.IsBusy;

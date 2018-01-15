@@ -94,7 +94,7 @@
     </Compile>
     <Compile Include="RenderFormats.cs" />
     <Compile Include="RenderManager.cs" />
-    <Compile Include="Scripts\Shelf.cs" />
+    <Compile Include="Scripts\Scripts.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
