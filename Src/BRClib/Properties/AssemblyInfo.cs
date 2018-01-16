@@ -5,13 +5,6 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-<<<<<<< HEAD:BlenderRenderController/BlenderRenderController/Properties/AssemblyInfo.cs
-[assembly: AssemblyTitle("BlenderRenderController")]
-[assembly: AssemblyDescription("Contributors:")]
-=======
-[assembly: AssemblyTitle("BRClib")]
-[assembly: AssemblyDescription("")]
->>>>>>> 728f0236885b42c1260ec51d33dc2af27b515bef:Src/BRClib/Properties/AssemblyInfo.cs
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("BRClib")]

@@ -304,9 +304,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-<<<<<<< HEAD
-/BlenderRenderController/BlenderRenderController/bkp.txt
-=======
 
 # CodeRush
 .cr/
@@ -321,4 +318,3 @@ __pycache__/
 /BlenderRenderController/BlenderRenderController/bkp.txt
 /BlenderRenderController/log.txt
 /Src/BlenderRenderController_core
->>>>>>> 728f0236885b42c1260ec51d33dc2af27b515bef
