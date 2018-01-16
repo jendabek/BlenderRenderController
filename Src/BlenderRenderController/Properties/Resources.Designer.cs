@@ -157,6 +157,16 @@ namespace BlenderRenderController.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap donate_icon {
+            get {
+                object obj = ResourceManager.GetObject("donate_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
         internal static string Error {
@@ -290,6 +300,16 @@ namespace BlenderRenderController.Properties {
         internal static System.Drawing.Bitmap Time_16x {
             get {
                 object obj = ResourceManager.GetObject("Time_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap UIAboutBox_16x {
+            get {
+                object obj = ResourceManager.GetObject("UIAboutBox_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

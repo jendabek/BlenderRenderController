@@ -13,8 +13,9 @@ using System.Reflection;
 using Timer = System.Timers.Timer;
 using ScriptShelf = BRClib.Scripts.Shelf;
 using BRClib.Extentions;
+using BRClib;
 
-namespace BRClib
+namespace BlenderRenderController.Render
 {
     /// <summary>
     /// Manages the render process of a list of <see cref="Chunk"/>s.
@@ -26,8 +27,11 @@ namespace BRClib
     /// you must <seealso cref="Abort"/> or wait for the process to finish before 
     /// changing any values
     /// </remarks>
-    public class RenderManager
+    public class RenderManager : IBrcRenderManager
     {
+
+        #region Fields
+
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         // State trackers
@@ -45,6 +49,10 @@ namespace BRClib
         const int PROG_STACK_SIZE = 3;
 
         Project _proj;
+        AfterRenderAction _action;
+        Renderer _renderer;
+
+        BrcSettings _setts = Services.Settings.Current;
 
         // after render
         List<Process> _arProcesses;
@@ -58,8 +66,9 @@ namespace BRClib
                                         "Std Output:\n{2}";
 
         const string CHUNK_TXT = "chunklist.txt",
-                     CHUNK_DIR = "chunks";
+                     CHUNK_DIR = "chunks"; 
 
+        #endregion
 
 
         public int NumberOfFramesRendered => _framesRendered.Count;
@@ -68,11 +77,6 @@ namespace BRClib
 
         public bool WasAborted { get; private set; }
 
-        public string BlenderProgram { get; set; }
-
-        public string FFmpegProgram { get; set; }
-
-        public Renderer Renderer { get; set; }
 
         string ChunksFolderPath
         {
@@ -111,7 +115,9 @@ namespace BRClib
             }
         }
 
-        public AfterRenderAction Action { get; set; } = AfterRenderAction.NOTHING;
+        public AfterRenderAction Action => _action;
+
+        public Renderer Renderer => _renderer;
 
         object _syncLock = new object();
 
@@ -120,7 +126,7 @@ namespace BRClib
         /// <summary>
         /// Raised when AfterRender actions finish
         /// </summary>
-        public event EventHandler Finished;
+        public event EventHandler<BrcRenderResult> Finished;
 
         public event EventHandler<RenderProgressInfo> ProgressChanged;
 
@@ -146,12 +152,12 @@ namespace BRClib
 
         public RenderManager(Project project) : this()
         {
-            Setup(project);
+            Setup(project, _setts.AfterRender, _setts.Renderer);
         }
 
 
         /// <summary>
-        /// Setup <see cref="RenderManager"/> using a <see cref="ProjectSettings"/> object
+        /// Setup <see cref="RenderManager"/> to render the Chunks in the <see cref="Project"/> 
         /// </summary>
         /// <param name="project"></param>
         public void Setup(Project project)
@@ -163,7 +169,25 @@ namespace BRClib
             }
 
             _proj = project;
+
+            _action = _setts.AfterRender;
+            _renderer = _setts.Renderer;
         }
+        /// <summary>
+        /// Setup <see cref="RenderManager"/> to render the Chunks in the <see cref="Project"/> and
+        /// override the default acton and renderer
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="action"></param>
+        /// <param name="renderer"></param>
+        public void Setup(Project project, AfterRenderAction action, Renderer renderer)
+        {
+            Setup(project);
+
+            _action = action;
+            _renderer = renderer;
+        }
+
 
         /// <summary>
         /// Starts rendering 
@@ -198,17 +222,15 @@ namespace BRClib
                 _arCts.Cancel();
                 DisposeProcesses();
                 logger.Warn("RENDER ABORTED");
+
+                Finished?.Raise(this, BrcRenderResult.Aborted);
             }
         }
 
-        public bool GetAfterRenderResult()
-        {
-            return _arState.Result;
-        }
 
         private void CheckForValidProperties()
         {
-            string[] mustHaveValues = { BlenderProgram, FFmpegProgram };
+            string[] mustHaveValues = { _setts.BlenderProgram, _setts.FFmpegProgram };
 
             if (mustHaveValues.Any(x => string.IsNullOrWhiteSpace(x)))
             {
@@ -265,14 +287,14 @@ namespace BRClib
             var renderCom = new Process();
             var info = new ProcessStartInfo
             {
-                FileName = BlenderProgram,
+                FileName = _setts.BlenderProgram,
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 Arguments = string.Format("-b \"{0}\" -o \"{1}\" -E {2} -s {3} -e {4} -a",
                                             _proj.BlendFilePath,
                                             Path.Combine(ChunksFolderPath, _proj.ProjectName + "-#"),
-                                            Renderer,
+                                            _renderer,
                                             chunk.Start,
                                             chunk.End),
             };
@@ -371,11 +393,21 @@ namespace BRClib
             // Send a '100%' ProgressReport
             ReportProgress(NumberOfFramesRendered, _initalChunkCount);
 
-            _arState = Task.Factory.StartNew(AfterRenderProc, this.Action, _arCts.Token);
+            _arState = Task.Factory.StartNew(AfterRenderProc, _action, _arCts.Token);
 
             _arState.ContinueWith(t =>
             {
-                Finished?.Raise(this, EventArgs.Empty);
+                BrcRenderResult result;
+                if (!t.Result && WasAborted)
+                {
+                    result = BrcRenderResult.Aborted;
+                }
+                else
+                {
+                    result = BrcRenderResult.AllOk;
+                }
+
+                Finished?.Raise(this, result);
             },
             TaskContinuationOptions.ExecuteSynchronously);
         }
@@ -410,7 +442,7 @@ namespace BRClib
                 {
                     // Processes may be in an invalid state, just swallow the errors 
                     // since we're diposing them anyway
-                    Debug.WriteLine(ex.ToString(), "RenderManager Proc dispose");
+                    Debug.WriteLine(ex.Message, "RenderManager Proc dispose");
                 }
                 finally
                 {
@@ -455,7 +487,7 @@ namespace BRClib
             var mixdownTmpScript = ScriptShelf.MixdownAudio;
 
 
-            MixdownCmd mixdown = new MixdownCmd(BlenderProgram)
+            MixdownCmd mixdown = new MixdownCmd(_setts.BlenderProgram)
             {
                 BlendFile = _proj.BlendFilePath,
                 MixdownScript = mixdownTmpScript,
@@ -463,7 +495,7 @@ namespace BRClib
                 OutputFolder = _proj.OutputPath
             };
 
-            ConcatCmd concat = new ConcatCmd(FFmpegProgram)
+            ConcatCmd concat = new ConcatCmd(_setts.FFmpegProgram)
             {
                 ConcatTextFile = chunksTxt,
                 OutputFile = projFinalPath,
@@ -570,9 +602,6 @@ namespace BRClib
 
                 var readOutput = proc.StandardOutput.ReadToEndAsync();
                 var readError = proc.StandardError.ReadToEndAsync();
-
-                //readOutput.ContinueWith(t => stdOut = t.Result);
-                //readError.ContinueWith(t => stdError = t.Result);
 
                 proc.WaitForExit();
 

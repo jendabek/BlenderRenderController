@@ -117,15 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="RM_unexpected_error" xml:space="preserve">
+    <value>An unexpected error ocurred while rendering, check the output folder for a log file</value>
+  </data>
+  <data name="AR_NoAction" xml:space="preserve">
+    <value>No extra action</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="FolderOpen_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\FolderOpen_grey_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="CleanData_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CleanData_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="stop_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\stop-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AR_NoAction" xml:space="preserve">
-    <value>No extra action</value>
+  <data name="info_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\info-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="blend_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\blend_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -143,8 +149,11 @@ You can render an image sequence with this tool but you will need to make a vide
   <data name="AR_JoinMixdown" xml:space="preserve">
     <value>Join chunks w/ Mixdown audio</value>
   </data>
-  <data name="CleanData_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CleanData_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="donate_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\donate-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="blender_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\blender_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="render_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\render-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -155,8 +164,17 @@ You can render an image sequence with this tool but you will need to make a vide
   <data name="Refresh_grey_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Refresh_grey_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="github_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\github-logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Join_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Join_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Error" xml:space="preserve">
     <value>Error</value>
+  </data>
+  <data name="SoundFile_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SoundFile_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="History_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\History_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -173,22 +191,10 @@ You can render an image sequence with this tool but you will need to make a vide
   <data name="FindinFiles_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FindinFiles_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="github_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\github-logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="FolderOpen_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FolderOpen_grey_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="info_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\info-icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Join_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Join_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="SoundFile_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\SoundFile_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="blender_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\blender_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="RM_unexpected_error" xml:space="preserve">
-    <value>An unexpected error ocurred while rendering, check the output folder for a log file</value>
+  <data name="UIAboutBox_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\UIAboutBox_16x.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

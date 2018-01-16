@@ -16,9 +16,6 @@ namespace BlenderRenderController
         [STAThread]
         static void Main(string[] args)
         {
-            Services.Settings.InitSettings();
-
-            NlogSetup();
 
             // parse args
             if (args.Contains("--gen"))
@@ -32,18 +29,24 @@ namespace BlenderRenderController
 
                 Console.WriteLine(string.Join("\n", paths));
 
-                if (args.Contains("-q"))
-                {
-                    return;
-                }
+                return;
             }
+            else if (args.Contains("--clear"))
+            {
+                Console.WriteLine("Clearing existing scripts...");
+                Directory.Delete(Dirs.Scripts, true);
+            }
+
+            Services.Settings.InitSettings();
+
+            NlogSetup();
 
             var cmdFile = args.Where(a => Path.GetExtension(a) == ".blend")
                               .FirstOrDefault();
 
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
             BrcForm form;
 
             if (cmdFile != null)
@@ -80,12 +83,5 @@ namespace BlenderRenderController
 
         }
 
-        [Flags]
-        enum CmdAction
-        {
-            None,
-            GenerateScripts,
-            LoadBlend
-        }
     }
 }

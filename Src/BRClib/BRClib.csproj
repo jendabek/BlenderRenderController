@@ -79,11 +79,13 @@
     <Compile Include="Chunk.cs" />
     <Compile Include="Commands\Concat.cs" />
     <Compile Include="Commands\ExternalCommand.cs" />
+    <Compile Include="Commands\GetInfo.cs" />
     <Compile Include="Commands\Mixdown.cs" />
     <Compile Include="Commands\Render.cs" />
     <Compile Include="ConcurrentHashSet.cs" />
     <Compile Include="Extentions\Extentions.cs" />
     <Compile Include="IBrcRenderManager.cs" />
+    <Compile Include="Scripts\IScriptPath.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -93,7 +95,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RenderFormats.cs" />
-    <Compile Include="RenderManager.cs" />
     <Compile Include="Scripts\Scripts.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>

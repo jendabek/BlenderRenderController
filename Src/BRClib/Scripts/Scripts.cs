@@ -14,7 +14,8 @@ namespace BRClib.Scripts
     {
         const string PyGetProjInfo = "get_project_info.py";
         const string PyMixdownAudio = "mixdown_audio.py";
-        static readonly string AppDataDir = Path.Combine(Env.GetFolderPath(Env.SpecialFolder.ApplicationData), "BlenderRenderController");
+        static readonly string AppDataDir = 
+            Path.Combine(Env.GetFolderPath(Env.SpecialFolder.ApplicationData), "BlenderRenderController");
 
         private static Dictionary<PyScript, ScriptPaths> _internalData =
             new Dictionary<PyScript, ScriptPaths>

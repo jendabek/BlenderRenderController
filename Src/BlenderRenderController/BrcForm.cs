@@ -6,6 +6,7 @@
 #endif
 
 using BlenderRenderController.Properties;
+using BlenderRenderController.Render;
 using BRClib;
 using BRClib.Commands;
 using BRClib.Extentions;
@@ -415,10 +416,6 @@ namespace BlenderRenderController
             _vm.IsBusy = true;
 
             _renderMngr.Setup(_vm.Project);
-            _renderMngr.Action = _appSettings.AfterRender;
-            _renderMngr.BlenderProgram = _appSettings.BlenderProgram;
-            _renderMngr.FFmpegProgram = _appSettings.FFmpegProgram;
-            _renderMngr.Renderer = _appSettings.Renderer;
 
             statusTime.Text = TimePassedPrefix + TimeSpan.Zero.ToString(TimeFmt);
 
@@ -430,12 +427,12 @@ namespace BlenderRenderController
             _renderMngr.StartAsync();
         }
 
-        private void RenderManager_Finished(object sender, EventArgs e)
+        private void RenderManager_Finished(object sender, BrcRenderResult e)
         {
             // all slow work is done
             StopWork(true);
 
-            if (_renderMngr.GetAfterRenderResult()) // AfterActions ran Ok
+            if (e == BrcRenderResult.AllOk) // AfterActions ran Ok
             {
                 if (_renderMngr.Action != AfterRenderAction.NOTHING &&
                     _appSettings.DeleteChunksFolder)
@@ -478,10 +475,7 @@ namespace BlenderRenderController
 
         private void RenderManager_AfterRenderStarted(object sender, AfterRenderAction e)
         {
-            renderProgressBar.Style = ProgressBarStyle.Marquee;
-#if WIN
-            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Indeterminate);
-#endif
+            UpdateProgressBars(-1);
 
             switch (e)
             {
@@ -1048,6 +1042,8 @@ namespace BlenderRenderController
 
             miOpenRecent.Enabled =
             openRecentsTSButton.Enabled = vm.CanLoadNewProject;
+
+            blendNameLabel.Visible = vm.ProjectLoaded;
 
             statusETR.Visible = 
             statusTime.Visible = vm.IsBusy;

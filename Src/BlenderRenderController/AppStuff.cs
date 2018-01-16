@@ -19,6 +19,8 @@ namespace BlenderRenderController
         static readonly string _appDataBase = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
         public static readonly string AppData = Path.Combine(_appDataBase, "BlenderRenderController");
+
+        public static readonly string Scripts = Path.Combine(AppData, "scripts");
     }
 
     enum AppState
