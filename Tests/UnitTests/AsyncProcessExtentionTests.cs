@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BRClib;
+using BRClib.Extentions;
 using System.Threading;
 using static UnitTests.TestHelpers;
 

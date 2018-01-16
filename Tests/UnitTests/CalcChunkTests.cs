@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using BRClib;
+using BRClib.Extentions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Collections.Generic;
